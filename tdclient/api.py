@@ -20,6 +20,14 @@ import sys
 import time
 import urllib
 try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
+try:
+    from urllib import quote as urlquote
+except ImportError:
+    from urllib.parse import quote as urlquote
+try:
     import urlparse
 except ImportError:
     import urllib.parse as urlparse
@@ -119,6 +127,10 @@ class API(object):
 
         self._headers = kwargs.get("headers", {})
 
+    @property
+    def apikey(self):
+        return self._apikey
+
     ####
     ## Database API
     ##
@@ -145,7 +157,7 @@ class API(object):
 
     # => {name:String => [type:Symbol, count:Integer]}
     def list_tables(self, db):
-        code, body, res = self.get("/v3/table/list/%s" % (urllib.quote(str(db))))
+        code, body, res = self.get("/v3/table/list/%s" % (urlquote(str(db))))
         if code != 200:
             self.raise_error("List tables failed", res)
         js = self.checked_json(body, ["tables"])
@@ -206,7 +218,7 @@ class API(object):
     # => (type:Symbol, status:String, result:String, url:String, result:String)
     def show_job(self, job_id):
         # use v3/job/status instead of v3/job/show to poll finish of a job
-        code, body, res = self.get("/v3/job/show/%s" % (urllib.quote(str(job_id))))
+        code, body, res = self.get("/v3/job/show/%s" % (urlquote(str(job_id))))
         if code != 200:
             self.raise_error("Show job failed", res)
         js = self.checked_json(body, ["status"])
@@ -232,7 +244,7 @@ class API(object):
                 result_size, result, hive_result_schema, priority, retry_limit, None, database]
 
     def job_status(self, job_id):
-        code, body, res = self.get("/v3/job/status/%s" % (urllib.quote(str(job_id))))
+        code, body, res = self.get("/v3/job/status/%s" % (urlquote(str(job_id))))
         if code != 200:
             self.raise_error("Get job status failed", res)
 
@@ -240,7 +252,7 @@ class API(object):
         return js["status"]
 
     def job_result(self, job_id):
-        code, body, res = self.get("/v3/job/result/%s" % (urllib.quote(str(job_id))), {"format": "msgpack"})
+        code, body, res = self.get("/v3/job/result/%s" % (urlquote(str(job_id))), {"format": "msgpack"})
         if code != 200:
             self.raise_error("Get job result failed", res)
         result = []
@@ -250,13 +262,13 @@ class API(object):
         return result
 
     def job_result_raw(self, job_id, _format):
-        code, body, res = self.get("/v3/job/result/%s" % (urllib.quote(str(job_id))), {"format": _format})
+        code, body, res = self.get("/v3/job/result/%s" % (urlquote(str(job_id))), {"format": _format})
         if code != 200:
             self.raise_error("Get job result failed", res)
         return body
 
     def kill(self, job_id):
-        code, body, res = post("/v3/job/kill/%s" % (urllib.quote(str(job_id))))
+        code, body, res = post("/v3/job/kill/%s" % (urlquote(str(job_id))))
         if code != 200:
             self.raise_error("Kill job failed", res)
         js = self.checked_json(body, [])
@@ -281,7 +293,7 @@ class API(object):
             params["priority"] = priority
         if retry_limit is not None:
             params["retry_limit"] = retry_limit
-        code, body, res = self.post("/v3/job/issue/%s/%s" % (urllib.quote(str(_type)), urllib.quote(str(db))), params)
+        code, body, res = self.post("/v3/job/issue/%s/%s" % (urlquote(str(_type)), urlquote(str(db))), params)
         if code != 200:
             self.raise_error("Query failed", res)
         js = self.checked_json(body, ["job_id"])
@@ -305,7 +317,7 @@ class API(object):
 
         path = self._base_path + url
         if 0 < len(params):
-            path += "?" + urllib.urlencode(params)
+            path += "?" + urlencode(params)
 
         header["Accept-Encoding"] = "deflate, gzip"
 
@@ -351,7 +363,7 @@ class API(object):
         path = self._base_path + url
         if len(params) < 1:
             header["Content-Length"] = 0
-        data = urllib.urlencode(params)
+        data = urlencode(params)
 
         # up to 7 retries with exponential (base 2) back-off starting at 'retry_delay'
         retry_delay = 5
