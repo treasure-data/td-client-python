@@ -24,3 +24,12 @@ td = tdclient.Client(os.getenv("TREASUREDATA_API_KEY"))
 for job in td.jobs():
     print(job.job_id)
 ```
+
+## Development
+
+Runnning tests.
+
+```sh
+$ python setup.py develop
+$ tox
+```

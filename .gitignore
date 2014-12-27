@@ -3,5 +3,6 @@
 *.pyo
 *.swo
 *.swp
+/.tox
 /build
 /dist
