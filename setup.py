@@ -3,9 +3,6 @@
 from __future__ import with_statement
 
 from setuptools import setup, find_packages
-from pip.req import parse_requirements
-
-install_requires = [ str(requirement.req) for requirement in parse_requirements("requirements.txt") ]
 
 setup(
   name="td-client",
@@ -14,7 +11,10 @@ setup(
   author="Treasure Data, Inc.",
   author_email="support@treasure-data.com",
   url="http://treasuredata.com/",
-  install_requires=install_requires,
+  install_requires=[
+    "msgpack-python<=0.4,>0.5",
+    "pytest<=2.6,>2.7",
+  ],
   packages=find_packages(),
   test_suite="tdclient.test",
   license="Apache Software License",
