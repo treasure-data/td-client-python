@@ -35,25 +35,22 @@ def get(response, url, params={}):
     response.request_headers = params
     return (response.status, response.body, response)
 
-def test_server_status_success():
+def test_list_databases():
     client = api.API("apikey")
     body = """
         {
-            "status": "ok"
+            "databases":[
+                {"name":"sample_datasets","count":8812278,"created_at":"2014-10-04 01:13:11 UTC","updated_at":"2014-10-08 18:42:12 UTC","organization":null,"permission":"administrator"},
+                {"name":"jma_weather","count":29545,"created_at":"2014-10-12 06:33:01 UTC","updated_at":"2014-10-12 06:33:01 UTC","organization":null,"permission":"administrator"},
+                {"name":"test_db","count":15,"created_at":"2014-10-16 09:48:44 UTC","updated_at":"2014-10-16 09:48:44 UTC","organization":null,"permission":"administrator"}
+            ]
         }
     """
     response = Response(200, body, {})
     client.get = functools.partial(get, response)
-    server_status = client.server_status()
+    databases = client.list_databases()
     assert response.request_method == "GET"
-    assert response.request_path == "/v3/system/server_status"
-    assert server_status == "ok"
-
-def test_server_status_failure():
-    client = api.API("apikey")
-    response = Response(500, "", {})
-    client.get = functools.partial(get, response)
-    server_status = client.server_status()
-    assert response.request_method == "GET"
-    assert response.request_path == "/v3/system/server_status"
-    assert server_status == "Server is down (500)"
+    assert response.request_path == "/v3/database/list"
+    assert len(databases) == 3
+    assert sorted(databases.keys()) == ["jma_weather", "sample_datasets", "test_db"]
+    assert sorted([ v[0] for v in databases.values() ]) == [15, 29545, 8812278]
