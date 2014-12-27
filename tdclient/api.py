@@ -354,6 +354,11 @@ class API(object):
             else:
                 body = zlib.decompress(body)
 
+        try:
+            http.close()
+        except:
+            pass
+
         return (response.status, body, response)
 
 
@@ -391,6 +396,12 @@ class API(object):
                 raise(RuntimeError("Retrying stopped after %d seconds." % (self._max_cumul_retry_delay)))
 
         body = response.read()
+
+        try:
+            http.close()
+        except:
+            pass
+
         return (response.status, body, response)
 
 
