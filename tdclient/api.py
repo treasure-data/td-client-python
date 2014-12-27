@@ -69,7 +69,7 @@ class API(object):
             self._user_agent = user_agent
         else:
             self._user_agent = "TD-Client-Python: %s" % (version.__version__)
-        
+
         if endpoint is not None:
             endpoint = endpoint
         elif os.getenv("TD_API_SERVER"):
@@ -206,6 +206,93 @@ class API(object):
         return [_from, to, interval, history]
 
     ####
+    ## Bulk import API
+    ##
+
+    # => nil
+    def create_bulk_import(self, name, db, table, params={}):
+        code, body, res = self.post("/v3/bulk_import/create/%s/%s/%s" % (urlquote(str(name)), urlquote(str(db)), urlquote(str(table))), params)
+        if code != 200:
+            self.raise_error("Create bulk import failed", res)
+        end
+        return None
+
+    # => nil
+    def delete_bulk_import(self, name, params={}):
+        code, body, res = self.post("/v3/bulk_import/delete/%s" % (urlquote(str(name))), params)
+        if code != 200:
+            self.raise_error("Delete bulk import failed", res)
+        end
+        return None
+
+    # => data:Hash
+    def show_bulk_import(self, name):
+        code, body, res = self.get("/v3/bulk_import/show/%s" % (urlquote(str(name))))
+        if code != 200:
+            self.raise_error("Show bulk import failed", res)
+        end
+        js = self.checked_json(body, ["status"])
+        return js
+
+    # => result:[data:Hash]
+    def list_bulk_imports(self, params={}):
+        code, body, res = self.get("/v3/bulk_import/list", params)
+        if code != 200:
+            self.raise_error("List bulk imports failed", res)
+        js = self.checked_json(body, ["bulk_imports"])
+        return js["bulk_imports"]
+
+    def list_bulk_import_parts(self, name, params={}):
+        code, body, res = self.get("/v3/bulk_import/list_parts/%s" % (urlquote(str(name))), params)
+        if code != 200:
+            self.raise_error("List bulk import parts failed", res)
+        js = self.checked_json(body, ["parts"])
+        return js["parts"]
+
+    # => nil
+    def bulk_import_upload_part(self, name, part_name, stream, size):
+        code, body, res = self.put("/v3/bulk_import/upload_part/%s/%s" % (urlquote(str(name)), urlquote(str(part_name))), stream, size)
+        if code / 100 != 2:
+            self.raise_error("Upload a part failed", res)
+        return None
+
+    # => nil
+    def bulk_import_delete_part(self, name, part_name, parms={}):
+        code, body, res = self.post("/v3/bulk_import/delete_part/%s/%s" % (urlquote(str(name)), urlquote(str(part_name))), params)
+        if code / 100 != 2:
+            self.raise_error("Delete a part failed", res)
+        return None
+
+    # => nil
+    def freeze_bulk_import(self, name, params={}):
+        code, body, res = self.post("/v3/bulk_import/freeze/%s" % (urlquote(str(name))), params)
+        if code != 200:
+            self.raise_error("Freeze bulk import failed", res)
+        return None
+
+    # => nil
+    def unfreeze_bulk_import(self, name, params={}):
+        code, body, res = self.post("/v3/bulk_import/unfreeze/%s" % (urlquote(str(name))), params)
+        if code != 200:
+            self.raise_error("Unfreeze bulk import failed", res)
+        return None
+
+    # => jobId:String
+    def perform_bulk_import(self, name, params={}):
+        code, body, res = self.post("/v3/bulk_import/perform/%s" % (urlquote(str(name))), params)
+        if code != 200:
+            self.raise_error("Perform bulk import failed", res)
+        js = self.checked_json(body, ["job_id"])
+        return str(js["job_id"])
+
+    # => nil
+    def commit_bulk_import(self, name, params={}):
+        code, body, res = self.post("/v3/bulk_import/commit/%s" % (urlquote(str(name))), params)
+        if code != 200:
+            eslf.raise_error("Commit bulk import failed", res)
+        return None
+
+    ####
     ## Database API
     ##
 
@@ -240,31 +327,17 @@ class API(object):
         return True
 
     ####
-    ## Table API
+    ## Export API
     ##
 
-    # => {name:String => [type:Symbol, count:Integer]}
-    def list_tables(self, db):
-        code, body, res = self.get("/v3/table/list/%s" % (urlquote(str(db))))
+    # => jobId:String
+    def export(self, db, table, storage_type, params={}):
+        params["storage_type"] = storage_type
+        code, body, res = self.post("/v3/export/run/%s/%s" % (urlquote(str(db)), urlquote(str(table))), params)
         if code != 200:
-            self.raise_error("List tables failed", res)
-        js = self.checked_json(body, ["tables"])
-        result = {}
-        for m in js["tables"]:
-            name = m.get("name")
-            _type = m.get("type", "?")
-            count = int(m.get("count", 0))
-            created_at = m.get("created_at")
-            updated_at = m.get("updated_at")
-            last_import = m.get("counter_updated_at")
-            last_log_timestamp = m.get("last_log_timestamp")
-            estimated_storage_size = int(m.get("estimated_storage_size", 0))
-            schema = json.loads(m.get("schema", "[]"))
-            expire_days = m.get("expire_days")
-            primary_key = m.get("primary_key")
-            primary_key_type = m.get("primary_key_type")
-            result[name] = [_type, schema, count, created_at, updated_at, estimated_storage_size, last_import, last_log_timestamp, expire_days, primary_key, primary_key_type]
-        return result
+            self.raise_error("Export failed", res)
+        js = self.checked_json(body, ["job_id"])
+        return str(js["job_id"])
 
     ####
     ## Job API
@@ -388,6 +461,131 @@ class API(object):
         return str(js["job_id"])
 
     ####
+    ## Partial delete API
+    ##
+
+    def partial_delete(self, db, table, to, _from, params={}):
+        params["to"] = str(to)
+        params["from"] = str(_from)
+        code, body, res = self.post("/v3/table/partialdelete/%s/%s" % (urlquote(str(db)), urlquote(str(table))), params)
+        if code != 200:
+            self.raise_error("Partial delete failed", res)
+        js = self.checked_json(body, ["job_id"])
+        return str(js["job_id"])
+
+    ####
+    ## Result API
+    ##
+
+    def list_result(self):
+        code, body, res = self.get("/v3/result/list")
+        if code != 200:
+          self.raise_error("List result table failed", res)
+        js = self.checked_json(body, ["results"])
+        return [ [m["name"], m["url"], None] for m in js["result"] ] # same as database
+
+    # => true
+    def create_result(self, name, url, params={}):
+        params.update({"url": url})
+        code, body, res = self.post("/v3/result/create/%s" % (urlquote(str(name))), params)
+        if code != 200:
+            self.raise_error("Create result table failed", res)
+        return True
+
+    # => true
+    def delete_result(self, name):
+        code, body, res = self.post("/v3/result/delete/%s" % (urlquote(str(name))))
+        if code != 200:
+            self.raise_error("Delete result table failed", res)
+        return True
+
+    ####
+    ## Schedule API
+    ##
+
+    # => start:String
+    def create_schedule(self, name, params={}):
+        params.update({"type": params.get("type", "hive")})
+        code, body, res = self.post("/v3/schedule/create/%s" % (urlquote(str(name))), params)
+        if code != 200:
+            self.raise_error("Create schedule failed", res)
+        js = self.checked_json(body, ["start"])
+        return js["start"]
+
+    # => cron:String, query:String
+    def delete_schedule(self, name):
+        code, body, res = self.post("/v3/schedule/delete/%s" % (urlquote(str(name))))
+        if code != 200:
+            self.raise_error("Delete schedule failed", res)
+        js = self.checked_json(body, [])
+        return (js["cron"], js["query"])
+
+    # => [(name:String, cron:String, query:String, database:String, result_url:String)]
+    def list_schedules(self):
+        code, body, res = self.get("/v3/schedule/list")
+        if code != 200:
+            self.raise_error("List schedules failed", res)
+        js = self.checked_json(body, ["schedules"])
+        def schedule(m):
+            name = m.get("name")
+            cron = m.get("cron")
+            query = m.get("query")
+            database = m.get("database")
+            result_url = m.get("result")
+            timezone = m.get("timezone")
+            delay = m.get("delay")
+            next_time = m.get("next_time")
+            priority = m.get("priority")
+            retry_limit = m.get("retry_limit")
+            return [name, cron, query, database, result_url, timezone, delay, next_time, priority, retry_limit, None] # same as database
+        return [ schedule(m) for m in js["schedules"] ]
+
+    def update_schedule(self, name, params):
+      code, body, res = post("/v3/schedule/update/%s" % (urlquote(str(name))), params)
+      if code != 200:
+          self.raise_error("Update schedule failed", res)
+      return None
+
+    def history(self, name, _from=0, to=None):
+        params = {}
+        if _from is not None:
+            params["from"] = str(_from)
+        if to is not None:
+            params["to"] = str(to)
+        code, body, res = self.get("/v3/schedule/history/%s" % (urlquote(str(name))), params)
+        if code != 200:
+            self.raise_error("List history failed", res)
+        js = self.checked_json(body, ["history"])
+        def history(m):
+            job_id = m.get("job_id")
+            _type = m.get("type", "?")
+            database = m.get("database")
+            status = m.get("status")
+            query = m.get("query")
+            start_at = m.get("start_at")
+            end_at = m.get("end_at")
+            scheduled_at = m.get("scheduled_at")
+            result_url = m.get("result")
+            priority = m.get("priority")
+            return [scheduled_at, job_id, _type, status, query, start_at, end_at, result_url, priority, database]
+        return [ history(m) for m in js["history"] ]
+
+    def run_schedule(self, name, time, num):
+        params = {}
+        if num is not None:
+            params = {"num": num}
+        code, body, res = self.post("/v3/schedule/run/%s/%s" % (urlquote(str(name)), urlquote(str(time))), params)
+        if code != 200:
+            self.raise_error("Run schedule failed", res)
+        js = self.checked_json(body, ["jobs"])
+        def job(m):
+            job_id = m.get("job_id")
+            scheduled_at = m.get("scheduled_at")
+            _type = m.get("type", "?")
+            return [job_id, _type, scheduled_at]
+        return [ job(m) for m in js["jobs"] ]
+
+    ####
     ## Server Status API
     ##
 
@@ -399,6 +597,170 @@ class API(object):
         js = self.checked_json(body, ["status"])
         status = js["status"]
         return status
+
+    ####
+    ## Table API
+    ##
+
+    # => {name:String => [type:Symbol, count:Integer]}
+    def list_tables(self, db):
+        code, body, res = self.get("/v3/table/list/%s" % (urlquote(str(db))))
+        if code != 200:
+            self.raise_error("List tables failed", res)
+        js = self.checked_json(body, ["tables"])
+        result = {}
+        for m in js["tables"]:
+            name = m.get("name")
+            _type = m.get("type", "?")
+            count = int(m.get("count", 0))
+            created_at = m.get("created_at")
+            updated_at = m.get("updated_at")
+            last_import = m.get("counter_updated_at")
+            last_log_timestamp = m.get("last_log_timestamp")
+            estimated_storage_size = int(m.get("estimated_storage_size", 0))
+            schema = json.loads(m.get("schema", "[]"))
+            expire_days = m.get("expire_days")
+            primary_key = m.get("primary_key")
+            primary_key_type = m.get("primary_key_type")
+            result[name] = [_type, schema, count, created_at, updated_at, estimated_storage_size, last_import, last_log_timestamp, expire_days, primary_key, primary_key_type]
+        return result
+
+    def _create_log_or_item_table(self, db, table, _type):
+        code, body, res = self.post("/v3/table/create/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table)), urlquote(str(_type))))
+        if code != 200:
+            self.raise_error("Create #{type} table failed", res)
+        return True
+
+    # => true
+    def create_log_table(self, db, table):
+        return self.create_table(db, table, "log")
+
+    # => true
+    def create_item_table(self, db, table, primary_key, primary_key_type):
+        params = {"primary_key": primary_key, "primary_key_type": primary_key_type}
+        return self.create_table(db, table, "item", params)
+
+    def _create_table(self, db, table, _type, params={}):
+        code, body, res = self.post("/v3/table/create/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table)), urlquote(str(_type))), params)
+        if code != 200:
+            self.raise_error("Create %s table failed" % (_type), res)
+        return True
+
+    # => true
+    def swap_table(self, db, table1, table2):
+        code, body, res = self.post("/v3/table/swap/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table1), urlquote(str(table2)))))
+        if code != 200:
+            self.raise_error("Swap tables failed", res)
+        return True
+
+    # => true
+    def update_schema(self, db, table, schema_json):
+        code, body, res = self.post("/v3/table/update-schema/%s/%s" % (urlquote(str(db)), urlquote(str(table))), {"schema": schema_json})
+        if code != 200:
+            self.raise_error("Create schema table failed", res)
+        return True
+
+    def update_expire(self, db, table, expire_days):
+        code, body, res = self.post("/v3/table/update/%s/%s" % (urlquote(str(db)), urlquote(str(table))), {"expire_days": expire_days})
+        if code != 200:
+            self.raise_error("Update table expiration failed", res)
+        return True
+
+    # => type:Symbol
+    def delete_table(self, db, table):
+        code, body, res = self.post("/v3/table/delete/%s/%s" % (urlquote(str(db)), urlquote(str(table))))
+        if code != 200:
+            self.raise_error("Delete table failed", res)
+        js = self.checked_json(body, [])
+        _type = js.get("type", "?")
+        return _type
+
+    ####
+    ## User API
+    ##
+
+    # apikey:String
+    def authenticate(self, user, password):
+        code, body, res = self.post("/v3/user/authenticate", {"user": user, "password": password})
+        if code != 200:
+            self.raise_error("Authentication failed", res)
+        js = self.checked_json(body, ["apikey"])
+        apikey = js["apikey"]
+        return apikey
+
+    # => [[name:String,organization:String,[user:String]]
+    def list_users(self):
+        code, body, res = self.get("/v3/user/list")
+        if code != 200:
+            self.raise_error("List users failed", res)
+        js = self.checked_json(body, ["users"])
+        def user(roleinfo):
+            name = roleinfo["name"]
+            email = roleinfo["email"]
+            return [name, None, None, email] # set nil to org and role for API compatibility
+        return [ user(roleinfo) for roleinfo in js["users"] ]
+
+    # => true
+    def add_user(self, name, org, email, password):
+        params = {"organization": org, "email": email, "password": password}
+        code, body, res = self.post("/v3/user/add/%s" % (urlquote(str(name))), params)
+        if code != 200:
+            self.raise_error("Adding user failed", res)
+        return True
+
+    # => true
+    def remove_user(self, user):
+        code, body, res = self.post("/v3/user/remove/%s" % (urlquote(str(user))))
+        if code != 200:
+            self.raise_error("Removing user failed", res)
+        return True
+
+    # => true
+    def change_email(self, user, email):
+        params = {"email": email}
+        code, body, res = self.post("/v3/user/email/change/%s" % (urlquote(str(user))), params)
+        if code != 200:
+            self.raise_error("Changing email failed", res)
+        return True
+
+    # => [apikey:String]
+    def list_apikeys(self, user):
+        code, body, res = self.get("/v3/user/apikey/list/%s" % (urlquote(str(user))))
+        if code != 200:
+            self.raise_error("List API keys failed", res)
+        js = self.checked_json(body, ["apikeys"])
+        return js["apikeys"]
+
+    # => true
+    def add_apikey(self, user):
+        code, body, res = self.post("/v3/user/apikey/add/%s" % (urlquote(str(user))))
+        if code != 200:
+            self.raise_error("Adding API key failed", res)
+        return True
+
+    # => true
+    def remove_apikey(self, user, apikey):
+        params = {"apikey": apikey}
+        code, body, res = self.post("/v3/user/apikey/remove/%s" % (urlquote(str(user))), params)
+        if code != 200:
+            self.raise_error("Removing API key failed", res)
+        return True
+
+    # => true
+    def change_password(self, user, password):
+        params = {"password": password}
+        code, body, res = self.post("/v3/user/password/change/%s" % (urlquote(str(user))), params)
+        if code != 200:
+            self.raise_error("Changing password failed", res)
+        return True
+
+    # => true
+    def change_my_password(self, old_password, password):
+        params = {"old_password": old_password, "password": password}
+        code, body, res = self.post("/v3/user/password/change", params)
+        if code != 200:
+            self.raise_error("Changing password failed", res)
+        return True
 
     def get(self, url, params={}):
         http, header = self.new_http()
