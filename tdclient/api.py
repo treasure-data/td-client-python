@@ -76,7 +76,7 @@ class API(object):
         elif os.getenv("TD_API_SERVER"):
             endpoint = os.getenv("TD_API_SERVER")
         else:
-            endpoint = DEFAULT_ENDPOINT
+            endpoint = self.DEFAULT_ENDPOINT
         
         uri = urlparse.urlparse(endpoint)
         
@@ -103,8 +103,13 @@ class API(object):
                 raise ValueError("Invalid endpoint: %s" % (endpoint))
 
             # generic URI
-            host, port = endpoint.split(":", 2)
-            if kwargs.has_key("ssl"):
+            port = None
+            if 0 < endpoint.find(":"):
+                host, _port = endpoint.split(":", 2)
+                port = int(_port)
+            else:
+                host = endpoint
+            if "ssl" in kwargs:
                 if port is None:
                     port = 443
                 self._ssl = True
