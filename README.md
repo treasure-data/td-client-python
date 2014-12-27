@@ -2,6 +2,16 @@
 
 *experimental*
 
+## Install
+
+```sh
+$ python setup.py install
+```
+
+## Examples
+
+Listing jobs.
+
 ```python
 #!/usr/bin/env python
 

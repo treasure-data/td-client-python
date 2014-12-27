@@ -1,17 +1,11 @@
 #!/usr/bin/env python
 
 from __future__ import with_statement
-import contextlib
-import re
 
-try:
-  from setuptools import setup, find_packages
-except ImportError:
-  from distutils.core import setup
-
+from setuptools import setup, find_packages
 from pip.req import parse_requirements
 
-install_requires = parse_requirements("requirements.txt")
+install_requires = [ str(requirement.req) for requirement in parse_requirements("requirements.txt") ]
 
 setup(
   name="td-client",
