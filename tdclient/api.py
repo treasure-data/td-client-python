@@ -33,6 +33,8 @@ except ImportError:
     import urllib.parse as urlparse
 import zlib
 
+from tdclient import version
+
 class ParameterValidationError(Exception):
     pass
 
@@ -69,7 +71,7 @@ class API(object):
         if user_agent is not None:
             self._user_agent = user_agent
         else:
-            self._user_agent = "TD-Client-Python: 0.0.1" # FIXME: display proper version
+            self._user_agent = "TD-Client-Python: %s" % (version.__version__)
         
         if endpoint is not None:
             endpoint = endpoint
