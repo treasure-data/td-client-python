@@ -9,6 +9,7 @@ import os
 
 from tdclient import api
 from tdclient import version
+from tdclient.test.test_helper import *
 
 def setup_function(function):
     try:
@@ -19,21 +20,6 @@ def setup_function(function):
         del os.environ["HTTP_PROXY"]
     except KeyError:
         pass
-
-class Response(object):
-    def __init__(self, status, body, headers):
-        self.status = status
-        self.body = body.encode("utf-8")
-        self.headers = headers
-        self.request_method = None
-        self.request_path = None
-        self.request_headers = None
-
-def get(response, url, params={}):
-    response.request_method = "GET"
-    response.request_path = url
-    response.request_headers = params
-    return (response.status, response.body, response)
 
 def test_list_tables():
     client = api.API("apikey")
