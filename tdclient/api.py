@@ -335,7 +335,8 @@ class API(object):
                     break
                 else:
                     print("Error %d: %s. Retrying after %d seconds..." % (status, response.reason, retry_delay), file=sys.stderr)
-            except socket.error: # FIXME: need to handle sort of errors
+            except ( httplib.NotConnected, httplib.IncompleteRead, httplib.CannotSendRequest, httplib.CannotSendHeader,
+                     httplib.ResponseNotReady, socket.error ):
                 pass
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
@@ -384,7 +385,8 @@ class API(object):
                     break
                 else:
                     print("Error %d: %s. Retrying after %d seconds..." % (status, response.reason, retry_delay), file=sys.stderr)
-            except socket.error: # FIXME: need to handle sort of errors
+            except ( httplib.NotConnected, httplib.IncompleteRead, httplib.CannotSendRequest, httplib.CannotSendHeader,
+                     httplib.ResponseNotReady, socket.error ):
                 pass
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
