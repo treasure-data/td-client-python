@@ -136,6 +136,76 @@ class API(object):
         return self._apikey
 
     ####
+    ## Access Control API
+    ##
+    def grant_access_control(self, subject, action, scope, grant_option):
+        params = {"subject": subject, "action": action, "scope": scope, "grant_option": str(grant_option)}
+        code, body, res = self.post("/v3/acl/grant", params)
+        if code != 200:
+            self.raise_error("Granting access control failed", res)
+        return True
+
+    def revoke_access_control(self, subject, action, scope):
+        params = {"subject": subject, "action": action, "scope": scope}
+        code, body, res = self.post("/v3/acl/revoke", params)
+        if code != 200:
+            self.raise_error("Revoking access control failed", res)
+        return True
+
+    # [true, [{subject:String,action:String,scope:String}]]
+    def test_access_control(self, user, action, scope):
+        params = {"user": user, "action": action, "scope": scope}
+        code, body, res = self.get("/v3/acl/test", params)
+        if code != 200:
+            self.raise_error("Testing access control failed", res)
+        js = self.checked_json(body, ["permission", "access_controls"])
+        perm = js["permission"]
+        acl = [ [roleinfo["subject"], roleinfo["action"], roleinfo["scope"]] for roleinfo in js["access_controls"] ]
+        return (perm, acl)
+
+    # [{subject:String,action:String,scope:String}]
+    def list_access_controls(self):
+        code, body, res = self.get("/v3/acl/list")
+        if code != 200:
+            self.raise_error("Listing access control failed", res)
+        js = self.checked_json(body, ["access_controls"])
+        acl = [ [roleinfo["subject"], roleinfo["action"], roleinfo["scope"], roleinfo["grant_option"]] for roleinfo in js["access_controls"] ]
+        return acl
+
+    ####
+    ## Account API
+    ##
+
+    def show_account(self):
+        code, body, res = self.get("/v3/account/show")
+        if code != 200:
+            self.raise_error("Show account failed", res)
+        js = self.checked_json(body, ["account"])
+        a = js["account"]
+        account_id = int(a["id"])
+        plan = int(a["plan"])
+        storage_size = int(a["storage_size"])
+        guaranteed_cores = int(a["guaranteed_cores"])
+        maximum_cores = int(a["maximum_cores"])
+        created_at = a["created_at"]
+        return [account_id, plan, storage_size, guaranteed_cores, maximum_cores, created_at]
+    def account_core_utilization(self, _from, to):
+        params = {}
+        if _from is not None:
+            params["from"] = str(_from)
+        if to is not None:
+            params["to"] = str(to)
+        code, body, res = get("/v3/account/core_utilization", params)
+        if code != 200:
+            self.raise_error("Show account failed", res)
+        js = self.checked_json(body, ["from", "to", "interval", "history"])
+        _from = time.strptime(js["from"], "%Y-%m-%d %H:%M:%S %Z")
+        to = time.strptime(js["to"], "%Y-%m-%d %H:%M:%S %Z")
+        interval = int(js["interval"])
+        history = js["history"]
+        return [_from, to, interval, history]
+
+    ####
     ## Database API
     ##
 
@@ -154,6 +224,20 @@ class API(object):
             permission = m.get("permission")
             result[name] = [count, created_at, updated_at, None, permission] # set nil to org for API copatibility
         return result
+
+    # => true
+    def delete_database(self, db):
+        code, body, res = self.post("/v3/database/delete/%s" % urlquote(str(db)))
+        if code != 200:
+            self.raise_error("Delete database failed", res)
+        return True
+
+    # => true
+    def create_database(self, db, params):
+        code, body, res = self.post("/v3/database/create/%s" % urlquote(str(db)), params)
+        if code != 200:
+            self.raise_error("Create database failed", res)
+        return True
 
     ####
     ## Table API
