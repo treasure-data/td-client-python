@@ -1,5 +1,7 @@
 # Treasure Data API library for Python
 
+[![Build Status](https://travis-ci.org/yyuu/td-client-python.svg?branch=master)](https://travis-ci.org/yyuu/td-client-python)
+
 *EXPERIMENTAL* Treasure Data API library for Python
 
 ## Install
