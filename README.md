@@ -1,8 +1,10 @@
 # Treasure Data API library for Python
 
-*experimental*
+*EXPERIMENTAL* Treasure Data API library for Python
 
 ## Install
+
+TODO: register to PyPI.
 
 ```sh
 $ python setup.py install
@@ -10,7 +12,7 @@ $ python setup.py install
 
 ## Examples
 
-Listing jobs.
+### Listing jobs
 
 ```python
 #!/usr/bin/env python
@@ -27,12 +29,24 @@ for job in td.jobs():
 
 ## Development
 
-I'd recommend you to install [pyenv](https://github.com/yyuu/pyenv) first.
+I'd recommend you to install [pyenv](https://github.com/yyuu/pyenv) to manage Pythons.
+
+```sh
+$ for version in $(cat .python-version); do [ -d "$(pyenv root)/versions/${version}" ] || pyenv install "${version}"; done
+```
+
+Install build dependencies.
+
+```sh
+$ python setup.py develop
+```
 
 Then, run tests.
 
 ```sh
-$ for version in $(cat .python-version); do [ -d "$(pyenv root)/versions/${version}" ] || pyenv install "${version}"; done
-$ python setup.py develop
 $ tox
 ```
+
+## License
+
+Apache Software License, Version 2.0
