@@ -78,7 +78,7 @@ class API(object):
         elif os.getenv("TD_API_SERVER"):
             endpoint = os.getenv("TD_API_SERVER")
         else:
-            endpoint = self.DEFAULT_ENDPOINT
+            endpoint = self.NEW_DEFAULT_ENDPOINT
         
         uri = urlparse.urlparse(endpoint)
         
