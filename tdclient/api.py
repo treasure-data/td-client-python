@@ -60,11 +60,8 @@ class NotFoundError(APIError):
 
 
 class API(object):
-    DEFAULT_ENDPOINT = "api.treasure-data.com"
-    DEFAULT_IMPORT_ENDPOINT = "api-import.treasure-data.com"
-
-    NEW_DEFAULT_ENDPOINT = "api.treasuredata.com"
-    NEW_DEFAULT_IMPORT_ENDPOINT = "api-import.treasuredata.com"
+    DEFAULT_ENDPOINT = "https://api.treasuredata.com/"
+    DEFAULT_IMPORT_ENDPOINT = "https://api-import.treasuredata.com/"
 
     def __init__(self, apikey, user_agent=None, endpoint=None, **kwargs):
         self._apikey = apikey
@@ -78,10 +75,10 @@ class API(object):
         elif os.getenv("TD_API_SERVER"):
             endpoint = os.getenv("TD_API_SERVER")
         else:
-            endpoint = self.NEW_DEFAULT_ENDPOINT
-        
+            endpoint = self.DEFAULT_ENDPOINT
+
         uri = urlparse.urlparse(endpoint)
-        
+
         self._connect_timeout = kwargs.get("connect_timeout", 60)
         self._read_timeout = kwargs.get("read_timeout", 600)
         self._send_timeout = kwargs.get("send_timeout", 600)
