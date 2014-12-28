@@ -19,8 +19,9 @@ setup(
     url="http://treasuredata.com/",
     install_requires=[
         "msgpack-python>=0.4,<0.5",
-        "pytest>=2.6,<2.7.0",
-        "tox>=1.8,<1.9.0",
+        "pytest>=2.6,<2.7",
+        "pytest-cov>=1.8,<1.9",
+        "tox>=1.8,<1.9",
     ],
     packages=find_packages(),
     test_suite="tdclient.test",
