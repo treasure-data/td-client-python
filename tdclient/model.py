@@ -12,6 +12,49 @@ class Model(object):
     def client(self):
         return self._client
 
+class Account(Model):
+    def __init__(self, client, account_id, plan, storage_size=None, guaranteed_cores=None, maximum_cores=None, created_at=None):
+        super(Account, self).__init__(client)
+        self._account_id = account_id
+        self._plan = plan
+        self._storage_size = storage_size
+        self._guaranteed_cores = guaranteed_cores
+        self._maximum_cores = maximum_cores
+        self._created_at = created_at
+
+    @property
+    def account_id(self):
+        return self._account_id
+
+    @property
+    def plan(self):
+        return self._plan
+
+    @property
+    def storage_size(self):
+        return self._storage_size
+
+    @property
+    def guaranteed_cores(self):
+        return self._guaranteed_cores
+
+    @property
+    def maximum_cores(self):
+        return self._maximum_cores
+
+    def created_at(self):
+        return self._created_at # TODO: parse datetime string
+
+    def storage_size_string(self):
+        if self._storage_size <= 1024 * 1024:
+            return "0.0 GB"
+        elif self._storage_size <= 60 * 1024 * 1024:
+            return "0.01 GB"
+        elif self._storage_size <= 60 * 1024 * 1024 * 1024:
+            return "%.1f GB" % (float(self._storage_size) / (1024 * 1024 * 1024))
+        else:
+            return "%d GB" % int(float(self._storage_size) / (1024 * 1024 * 1024))
+
 class Database(Model):
     PERMISSIONS = ["administrator", "full_access", "import_only", "query_only"]
     PERMISSION_LIST_TABLES = ["administrator", "full_access"]
@@ -47,8 +90,17 @@ class Database(Model):
             self._update_tables
         return self._tables
 
+    def create_log_table(self, name):
+        return self._client.create_log_table(self._db_name, name)
+
+    def create_item_table(self, name):
+        return self._client.create_item_table(self._db_name, name)
+
     def table(self, table_name):
         return self._client.table(self._db_name, table_name)
+
+    def delete(self):
+        return self._client.delete_database(self._db_name)
 
     def query(self, q):
         return self._client.query(self._db_name, q)
@@ -146,8 +198,51 @@ class Table(Model):
     def identifier(self):
         return "%s.%s" % (self._db_name, self._table_name)
 
+    def delete(self):
+        return self._client.delete_table(self._db_name, self._table_name)
+
+    def tail(self, count, to=None, _from=None):
+        return self._client.tail(self._db_name, self._table_name, count, to, _from)
+
+    def export(self, storage_type, **kwargs):
+        return self._client.export(self._db_name, self._table_name, storage_type, kwargs)
+
+    def estimated_storage_size_string(self):
+        if self._estimated_storage_size <= 1024*1024:
+            return "0.0 GB"
+        elif self._estimated_storage_size <= 60*1024*1024:
+            return "0.01 GB"
+        elif self._estimated_storage_size <= 60*1024*1024*1024:
+            return "%.1f GB" % (float(self._estimated_storage_size) / (1024*1024*1024))
+        else:
+            return "%d GB" % int(float(self._estimated_storage_size) / (1024*1024*1024))
+
     def _update_database(self):
         self.database = self._client.database(self._db_name)
+
+class Schema(object):
+    class Field(object):
+        def __init__(self, name, _type):
+            self._name = name
+            self._type = _type
+
+        @property
+        def name(self):
+            return self._name
+
+        @property
+        def type(self):
+            return self._type
+
+    def __init__(self, fields=[]):
+        self._fields = fields
+
+    @property
+    def fields(self):
+        return self._fields
+
+    def add_field(self, name, _type):
+        self._fields.append(Field(name, _type))
 
 class Job(Model):
     STATUS_QUEUED = "queued"
@@ -157,7 +252,7 @@ class Job(Model):
     STATUS_ERROR = "error"
     STATUS_KILLED = "killed"
     FINISHED_STATUS = [STATUS_SUCCESS, STATUS_ERROR, STATUS_KILLED]
-    
+
     def __init__(self, client, job_id, _type, query, status=None, url=None, debug=None, start_at=None, end_at=None, cpu_time=None,
                  result_size=None, result=None, result_url=None, hive_result_schema=None, priority=None, retry_limit=None,
                  org_name=None, db_name=None):
@@ -206,6 +301,12 @@ class Job(Model):
     @property
     def db_name(self):
         return self._db_name
+
+    def wait(self, timeout=None):
+        raise NotImplementedError # TODO
+
+    def kill(self):
+        raise NotImplementedError # TODO
 
     def query(self):
         if self._query is None or self.finished():
@@ -278,3 +379,198 @@ class Job(Model):
         self._priority = priority
         self._retry_limit = retry_limit
         self._db_name = db_name
+
+class ScheduledJob(Job):
+    def __init__(self, client, scheduled_at, *args, **kwargs):
+        super(ScheduledJob, self).__init__(client, *args, **kwargs)
+        self._scheduled_at = scheduled_at
+
+    def scheduled_at(self):
+        return self._created_at # TODO: parse datetime string
+
+class Schedule(Model):
+    def __init__(self, client, name, cron, query, database=None, result_url=None, timezone=None, delay=None, next_time=None, priority=None, retry_limit=None, org_name=None):
+        super(Schedule, self).__init__(client)
+        self._name = name
+        self._cron = cron
+        self._query = query
+        self._database = database
+        self._result_url = result_url
+        self._timezone = timezone
+        self._delay = delay
+        self._next_time = next_time
+        self._priority = priority
+        self._retry_limit = retry_limit
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def cron(self):
+        return self._cron
+
+    @property
+    def query(self):
+        return self._query
+
+    @property
+    def database(self):
+        return self._database
+
+    @property
+    def result_url(self):
+        return self._result_url
+
+    @property
+    def timezone(self):
+        return self._timezone
+
+    @property
+    def delay(self):
+        return self._delay
+
+    @property
+    def priority(self):
+        return self._priority
+
+    @property
+    def retry_limit(self):
+        return self._retry_limit
+
+    @property
+    def org_name(self):
+        return self._org_name
+
+    def next_time(self):
+        return self._next_time # TODO: parse datetime string
+
+    def run(self, time, num):
+        return self._client.run_schedule(time, num)
+
+class Result(Model):
+    def __init__(self, client, name, url, org_name):
+        super(Result, self).__init__(client)
+        self._name = name
+        self._url = url
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def url(self):
+        return self._url
+
+    @property
+    def org_name(self):
+        return self._org_name
+
+class BulkImport(Model):
+    def __init__(self, client, data={}):
+        super(BulkImport, self).__init__(client)
+        self._name = data.get("name")
+        self._database = data.get("database")
+        self._table = data.get("table")
+        self._status = data.get("status")
+        self._upload_frozen = data.get("upload_frozen")
+        self._job_id = data.get("job_id")
+        self._valid_records = data.get("valid_records")
+        self._error_records = data.get("error_records")
+        self._valid_parts = data.get("valid_parts")
+        self._error_parts = data.get("error_parts")
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def database(self):
+        return self._database
+
+    @property
+    def table(self):
+        return self._table
+
+    @property
+    def status(self):
+        return self._status
+
+    @property
+    def job_id(self):
+        return self._job_id
+
+    @property
+    def valid_records(self):
+        return self._valid_records
+
+    @property
+    def error_records(self):
+        return self._error_records
+
+    @property
+    def valid_parts(self):
+        return self._valid_parts
+
+    @property
+    def error_parts(self):
+        return self._error_parts
+
+    @property
+    def org_name(self):
+        return self._org_name
+
+    def upload_frozen(self):
+        return self._upload_frozen
+
+class User(Model):
+    def __init__(self, client, name, org_name, role_names, email):
+        super(User, self).__init__(client)
+        self._name = name
+        self._org_name = org_name
+        self._role_names = role_names
+        self._email = email
+
+    @property
+    def client(self):
+        return self._client
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def org_name(self):
+        return self._org_name
+
+    @property
+    def role_names(self):
+        return self._role_names
+
+    @property
+    def email(self):
+        return self._email
+
+class AccessControl(Model):
+    def __init__(self, client, subject, action, scope, grant_option):
+        super(AccessControl).__init__(client)
+        self._subject = subject
+        self._action = action
+        self._scope = scope
+        self._grant_option = grant_option
+
+    @property
+    def subject(self):
+        return self._subject
+
+    @property
+    def action(self):
+        return self._action
+
+    @property
+    def scope(self):
+        return self._scope
+
+    @property
+    def grant_option(self):
+        return self._grant_option
