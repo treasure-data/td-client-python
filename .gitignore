@@ -3,6 +3,7 @@
 *.pyo
 *.swo
 *.swp
+/.coverage
 /.envrc
 /.tox
 /build

@@ -18,6 +18,7 @@ setup(
     author_email="support@treasure-data.com",
     url="http://treasuredata.com/",
     install_requires=[
+        "coveralls>=0.5,<0.6",
         "msgpack-python>=0.4,<0.5",
         "pytest>=2.6,<2.7",
         "pytest-cov>=1.8,<1.9",

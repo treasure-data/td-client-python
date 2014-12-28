@@ -7,3 +7,6 @@ python:
 install: "pip install ."
 # command to run tests
 script: py.test
+after_success:
+  - py.test --cov tdclient tdclient/test
+  - coveralls

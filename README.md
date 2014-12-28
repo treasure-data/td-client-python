@@ -1,6 +1,7 @@
 # Treasure Data API library for Python
 
-[![Build Status](https://travis-ci.org/yyuu/td-client-python.svg?branch=master)](https://travis-ci.org/yyuu/td-client-python)
+[![Build Status](https://travis-ci.org/yyuu/td-client-python.svg)](https://travis-ci.org/yyuu/td-client-python)
+[![Coverage Status](https://coveralls.io/repos/yyuu/td-client-python/badge.png)](https://coveralls.io/r/yyuu/td-client-python)
 
 *EXPERIMENTAL* Treasure Data API library for Python
 
