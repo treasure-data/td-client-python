@@ -339,6 +339,29 @@ class API(object):
         js = self.checked_json(body, ["job_id"])
         return str(js["job_id"])
 
+  ####
+    ## Import API
+    ##
+
+    # TODO: `import` is not available as Python method name
+#   # => time:Float
+#   def import(self, db, table, _format, stream, size, unique_id=None):
+#       if unique_id is not None:
+#           path = "/v3/table/import_with_id/%s/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table)), urlquote(str(unique_id)), urlquote(str(format)))
+#       else:
+#           path = "/v3/table/import/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table)), urlquote(str(forat)))
+#       opts = {}
+#       if self._host == DEFAULT_ENDPOINT
+#           uri = urlparse.urlparse(DEFAULT_IMPORT_ENDPOINT)
+#           opts["host"] = uri.host
+#           opts["port"] = uri.port
+#       code, body, res = self.put(path, stream, size, opts)
+#       if code / 100 != 2:
+#           self.raise_error("Import failed", res)
+#       js = self.checked_json(body, [])
+#       time = float(js["elapsed_time"])
+#       return time
+
     ####
     ## Job API
     ##
@@ -828,7 +851,50 @@ class API(object):
         response = None
         while True:
             try:
-                http.request("POST", path, data, header)
+                http.request("POST", path, data, headers=header)
+                response = http.getresponse()
+                status = response.status
+                if status < 500:
+                    break
+                else:
+                    print("Error %d: %s. Retrying after %d seconds..." % (status, response.reason, retry_delay), file=sys.stderr)
+            except ( httplib.NotConnected, httplib.IncompleteRead, httplib.CannotSendRequest, httplib.CannotSendHeader,
+                     httplib.ResponseNotReady, socket.error ):
+                pass
+
+            if cumul_retry_delay <= self._max_cumul_retry_delay:
+                print("Retrying after %d seconds..." % (retry_delay), file=sys.stderr)
+                time.sleep(retry_delay)
+                cumul_retry_delay += retry_delay
+                retry_delay *= 2
+            else:
+                raise(RuntimeError("Retrying stopped after %d seconds." % (self._max_cumul_retry_delay)))
+
+        body = response.read()
+
+        try:
+            http.close()
+        except:
+            pass
+
+        return (response.status, body, response)
+
+    def put(self, url, stream, size):
+        http, header = self.new_http()
+
+        header["Content-Type"] = "application/octet-stream"
+        header["Content-Length"] = str(size)
+
+        path = self._base_path + url
+
+        # up to 7 retries with exponential (base 2) back-off starting at 'retry_delay'
+        retry_delay = 5
+        cumul_retry_delay = 0
+
+        response = None
+        while True:
+            try:
+                http.request("PUT", path, headers=header)
                 response = http.getresponse()
                 status = response.status
                 if status < 500:
