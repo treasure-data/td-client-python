@@ -7,10 +7,10 @@
 
 ## Install
 
-TODO: register to PyPI.
+You can install the releases from [PyPI](https://pypi.python.org/).
 
 ```sh
-$ python setup.py install
+$ pip install td-client
 ```
 
 ## Examples
