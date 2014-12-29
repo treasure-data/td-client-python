@@ -8,8 +8,8 @@ from tdclient import api
 from tdclient import model
 
 class Client(object):
-    def __init__(self, apikey, **kwargs):
-        self._api = api.API(apikey, **kwargs)
+    def __init__(self, **kwargs):
+        self._api = api.API(**kwargs)
 
     @property
     def api(self):
