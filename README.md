@@ -32,19 +32,23 @@ for job in td.jobs():
 
 ## Development
 
-I'd recommend you to install [pyenv](https://github.com/yyuu/pyenv) to manage Pythons.
+### Running tests
+
+Run tests.
+
+```sh
+$ python setup.py test
+```
+
+### Running tests (tox)
+
+You can run tests against all supported Python versions. I'd recommend you to install [pyenv](https://github.com/yyuu/pyenv) to manage Pythons.
 
 ```sh
 $ for version in $(cat .python-version); do [ -d "$(pyenv root)/versions/${version}" ] || pyenv install "${version}"; done
 ```
 
-Install build dependencies.
-
-```sh
-$ python setup.py develop
-```
-
-Then, run tests.
+Then, run `tox`.
 
 ```sh
 $ tox

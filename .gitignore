@@ -4,6 +4,7 @@
 *.swo
 *.swp
 /.coverage
+/.eggs
 /.envrc
 /.tox
 /build

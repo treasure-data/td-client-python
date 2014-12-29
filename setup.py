@@ -51,7 +51,6 @@ setup(
     ],
     packages=find_packages(),
     cmdclass = {"test": PyTest},
-    test_suite="tdclient.test",
     license="Apache Software License",
     platforms="Posix; MacOS X; Windows",
     classifiers=[
