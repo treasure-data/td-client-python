@@ -6,11 +6,15 @@ from setuptools.command.test import test as TestCommand
 import re
 import sys
 
-version = "0.0.1.dev.0"
+version = None
+
 with open("tdclient/version.py") as fp:
     m = re.search(r"^__version__ *= *\"([^\"]*)\" *$", fp.read(), re.MULTILINE)
     if m is not None:
         version = m.group(1)
+
+if version is None:
+    raise(RuntimeError("could not read tdclient/version.py"))
 
 class PyTest(TestCommand):
     user_options = [("pytest-args=", "a", "Arguments to pass to py.test")]
