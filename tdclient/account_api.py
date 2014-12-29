@@ -12,7 +12,7 @@ class AccountAPI(object):
     def show_account(self):
         code, body, res = self.get("/v3/account/show")
         if code != 200:
-            self.raise_error("Show account failed", res)
+            self.raise_error("Show account failed", res, body)
         js = self.checked_json(body, ["account"])
         a = js["account"]
         account_id = int(a["id"])
@@ -31,7 +31,7 @@ class AccountAPI(object):
             params["to"] = str(to)
         code, body, res = get("/v3/account/core_utilization", params)
         if code != 200:
-            self.raise_error("Show account failed", res)
+            self.raise_error("Show account failed", res, body)
         js = self.checked_json(body, ["from", "to", "interval", "history"])
         _from = time.strptime(js["from"], "%Y-%m-%d %H:%M:%S %Z")
         to = time.strptime(js["to"], "%Y-%m-%d %H:%M:%S %Z")

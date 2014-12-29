@@ -19,7 +19,7 @@ class ScheduleAPI(object):
         params.update({"type": params.get("type", "hive")})
         code, body, res = self.post("/v3/schedule/create/%s" % (urlquote(str(name))), params)
         if code != 200:
-            self.raise_error("Create schedule failed", res)
+            self.raise_error("Create schedule failed", res, body)
         js = self.checked_json(body, ["start"])
         return js["start"]
 
@@ -27,7 +27,7 @@ class ScheduleAPI(object):
     def delete_schedule(self, name):
         code, body, res = self.post("/v3/schedule/delete/%s" % (urlquote(str(name))))
         if code != 200:
-            self.raise_error("Delete schedule failed", res)
+            self.raise_error("Delete schedule failed", res, body)
         js = self.checked_json(body, [])
         return (js["cron"], js["query"])
 
@@ -35,7 +35,7 @@ class ScheduleAPI(object):
     def list_schedules(self):
         code, body, res = self.get("/v3/schedule/list")
         if code != 200:
-            self.raise_error("List schedules failed", res)
+            self.raise_error("List schedules failed", res, body)
         js = self.checked_json(body, ["schedules"])
         def schedule(m):
             name = m.get("name")
@@ -54,7 +54,7 @@ class ScheduleAPI(object):
     def update_schedule(self, name, params):
       code, body, res = post("/v3/schedule/update/%s" % (urlquote(str(name))), params)
       if code != 200:
-          self.raise_error("Update schedule failed", res)
+          self.raise_error("Update schedule failed", res, body)
       return None
 
     def history(self, name, _from=0, to=None):
@@ -65,7 +65,7 @@ class ScheduleAPI(object):
             params["to"] = str(to)
         code, body, res = self.get("/v3/schedule/history/%s" % (urlquote(str(name))), params)
         if code != 200:
-            self.raise_error("List history failed", res)
+            self.raise_error("List history failed", res, body)
         js = self.checked_json(body, ["history"])
         def history(m):
             job_id = m.get("job_id")
@@ -87,7 +87,7 @@ class ScheduleAPI(object):
             params = {"num": num}
         code, body, res = self.post("/v3/schedule/run/%s/%s" % (urlquote(str(name)), urlquote(str(time))), params)
         if code != 200:
-            self.raise_error("Run schedule failed", res)
+            self.raise_error("Run schedule failed", res, body)
         js = self.checked_json(body, ["jobs"])
         def job(m):
             job_id = m.get("job_id")

@@ -28,7 +28,7 @@ class ImportAPI(object):
 #           opts["port"] = uri.port
 #       code, body, res = self.put(path, stream, size, opts)
 #       if code / 100 != 2:
-#           self.raise_error("Import failed", res)
+#           self.raise_error("Import failed", res, body)
 #       js = self.checked_json(body, [])
 #       time = float(js["elapsed_time"])
 #       return time

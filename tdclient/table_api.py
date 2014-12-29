@@ -22,7 +22,7 @@ class TableAPI(object):
     def list_tables(self, db):
         code, body, res = self.get("/v3/table/list/%s" % (urlquote(str(db))))
         if code != 200:
-            self.raise_error("List tables failed", res)
+            self.raise_error("List tables failed", res, body)
         js = self.checked_json(body, ["tables"])
         result = {}
         for m in js["tables"]:
@@ -44,7 +44,7 @@ class TableAPI(object):
     def _create_log_or_item_table(self, db, table, _type):
         code, body, res = self.post("/v3/table/create/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table)), urlquote(str(_type))))
         if code != 200:
-            self.raise_error("Create #{type} table failed", res)
+            self.raise_error("Create #{type} table failed", res, body)
         return True
 
     # => true
@@ -59,34 +59,34 @@ class TableAPI(object):
     def _create_table(self, db, table, _type, params={}):
         code, body, res = self.post("/v3/table/create/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table)), urlquote(str(_type))), params)
         if code != 200:
-            self.raise_error("Create %s table failed" % (_type), res)
+            self.raise_error("Create %s table failed" % (_type), res, body)
         return True
 
     # => true
     def swap_table(self, db, table1, table2):
         code, body, res = self.post("/v3/table/swap/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table1), urlquote(str(table2)))))
         if code != 200:
-            self.raise_error("Swap tables failed", res)
+            self.raise_error("Swap tables failed", res, body)
         return True
 
     # => true
     def update_schema(self, db, table, schema_json):
         code, body, res = self.post("/v3/table/update-schema/%s/%s" % (urlquote(str(db)), urlquote(str(table))), {"schema": schema_json})
         if code != 200:
-            self.raise_error("Create schema table failed", res)
+            self.raise_error("Create schema table failed", res, body)
         return True
 
     def update_expire(self, db, table, expire_days):
         code, body, res = self.post("/v3/table/update/%s/%s" % (urlquote(str(db)), urlquote(str(table))), {"expire_days": expire_days})
         if code != 200:
-            self.raise_error("Update table expiration failed", res)
+            self.raise_error("Update table expiration failed", res, body)
         return True
 
     # => type:Symbol
     def delete_table(self, db, table):
         code, body, res = self.post("/v3/table/delete/%s/%s" % (urlquote(str(db)), urlquote(str(table))))
         if code != 200:
-            self.raise_error("Delete table failed", res)
+            self.raise_error("Delete table failed", res, body)
         js = self.checked_json(body, [])
         _type = js.get("type", "?")
         return _type

@@ -19,6 +19,6 @@ class ExportAPI(object):
         params["storage_type"] = storage_type
         code, body, res = self.post("/v3/export/run/%s/%s" % (urlquote(str(db)), urlquote(str(table))), params)
         if code != 200:
-            self.raise_error("Export failed", res)
+            self.raise_error("Export failed", res, body)
         js = self.checked_json(body, ["job_id"])
         return str(js["job_id"])

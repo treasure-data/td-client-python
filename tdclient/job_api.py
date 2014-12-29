@@ -28,7 +28,7 @@ class JobAPI(object):
             params.update(conditions)
         code, body, res = self.get("/v3/job/list", params)
         if code != 200:
-            self.raise_error("List jobs failed", res)
+            self.raise_error("List jobs failed", res, body)
         js = self.checked_json(body, ["jobs"])
         result = []
         for m in js["jobs"]:
@@ -53,7 +53,7 @@ class JobAPI(object):
         # use v3/job/status instead of v3/job/show to poll finish of a job
         code, body, res = self.get("/v3/job/show/%s" % (urlquote(str(job_id))))
         if code != 200:
-            self.raise_error("Show job failed", res)
+            self.raise_error("Show job failed", res, body)
         js = self.checked_json(body, ["status"])
         _type = js.get("type", "?")
         database = js.get("database")
@@ -79,7 +79,7 @@ class JobAPI(object):
     def job_status(self, job_id):
         code, body, res = self.get("/v3/job/status/%s" % (urlquote(str(job_id))))
         if code != 200:
-            self.raise_error("Get job status failed", res)
+            self.raise_error("Get job status failed", res, body)
 
         js = self.checked_json(body, ["status"])
         return js["status"]
@@ -87,7 +87,7 @@ class JobAPI(object):
     def job_result(self, job_id):
         code, body, res = self.get("/v3/job/result/%s" % (urlquote(str(job_id))), {"format": "msgpack"})
         if code != 200:
-            self.raise_error("Get job result failed", res)
+            self.raise_error("Get job result failed", res, body)
         result = []
         unpacker = msgpack.Unpacker(body)
         for row in unpacker:
@@ -97,13 +97,13 @@ class JobAPI(object):
     def job_result_raw(self, job_id, _format):
         code, body, res = self.get("/v3/job/result/%s" % (urlquote(str(job_id))), {"format": _format})
         if code != 200:
-            self.raise_error("Get job result failed", res)
+            self.raise_error("Get job result failed", res, body)
         return body
 
     def kill(self, job_id):
         code, body, res = post("/v3/job/kill/%s" % (urlquote(str(job_id))))
         if code != 200:
-            self.raise_error("Kill job failed", res)
+            self.raise_error("Kill job failed", res, body)
         js = self.checked_json(body, [])
         former_status = js.get("former_status")
         return former_status
@@ -128,7 +128,7 @@ class JobAPI(object):
             params["retry_limit"] = retry_limit
         code, body, res = self.post("/v3/job/issue/%s/%s" % (urlquote(str(_type)), urlquote(str(db))), params)
         if code != 200:
-            self.raise_error("Query failed", res)
+            self.raise_error("Query failed", res, body)
         js = self.checked_json(body, ["job_id"])
         return str(js["job_id"])
 

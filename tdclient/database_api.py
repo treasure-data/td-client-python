@@ -18,7 +18,7 @@ class DatabaseAPI(object):
     def list_databases(self):
         code, body, res = self.get("/v3/database/list")
         if code != 200:
-            self.raise_error("List databases failed", res)
+            self.raise_error("List databases failed", res, body)
         js = self.checked_json(body, ["databases"])
         result = {}
         for m in js["databases"]:
@@ -34,12 +34,12 @@ class DatabaseAPI(object):
     def delete_database(self, db):
         code, body, res = self.post("/v3/database/delete/%s" % urlquote(str(db)))
         if code != 200:
-            self.raise_error("Delete database failed", res)
+            self.raise_error("Delete database failed", res, body)
         return True
 
     # => true
     def create_database(self, db, params):
         code, body, res = self.post("/v3/database/create/%s" % urlquote(str(db)), params)
         if code != 200:
-            self.raise_error("Create database failed", res)
+            self.raise_error("Create database failed", res, body)
         return True
