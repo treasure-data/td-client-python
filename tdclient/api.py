@@ -70,7 +70,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
     DEFAULT_ENDPOINT = "https://api.treasuredata.com/"
     DEFAULT_IMPORT_ENDPOINT = "https://api-import.treasuredata.com/"
 
-    def __init__(self, apikey=None, user_agent=None, endpoint=None, **kwargs):
+    def __init__(self, apikey, user_agent=None, endpoint=None, **kwargs):
         if apikey is not None:
             self._apikey = apikey
         elif os.getenv("TD_API_KEY"):
