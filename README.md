@@ -46,7 +46,15 @@ $ python setup.py test
 You can run tests against all supported Python versions. I'd recommend you to install [pyenv](https://github.com/yyuu/pyenv) to manage Pythons.
 
 ```sh
+$ pyenv shell system
 $ for version in $(cat .python-version); do [ -d "$(pyenv root)/versions/${version}" ] || pyenv install "${version}"; done
+$ pyenv shell --unset
+```
+
+Install [tox](https://pypi.python.org/pypi/tox).
+
+```sh
+$ pip install tox
 ```
 
 Then, run `tox`.
