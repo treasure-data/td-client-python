@@ -4,6 +4,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import with_statement
 
+import os
+
 class Response(object):
     def __init__(self, status, body, headers):
         self.status = status
@@ -18,3 +20,17 @@ def get(response, url, params={}):
     response.request_path = url
     response.request_headers = params
     return (response.status, response.body, response)
+
+def unset_environ():
+    try:
+        del os.environ["TD_API_KEY"]
+    except KeyError:
+        pass
+    try:
+        del os.environ["TD_API_SERVER"]
+    except KeyError:
+        pass
+    try:
+        del os.environ["HTTP_PROXY"]
+    except KeyError:
+        pass

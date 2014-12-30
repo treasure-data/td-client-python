@@ -8,16 +8,10 @@ import os
 
 from tdclient import api
 from tdclient import version
+from tdclient.test.test_helper import *
 
 def setup_function(function):
-    try:
-        del os.environ["TD_API_SERVER"]
-    except KeyError:
-        pass
-    try:
-        del os.environ["HTTP_PROXY"]
-    except KeyError:
-        pass
+    unset_environ()
 
 def test_apikey():
     client = api.API("apikey")
