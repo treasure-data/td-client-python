@@ -18,7 +18,7 @@ def setup_function(function):
 
 def test_list_tables_success():
     td = api.API("APIKEY")
-    body = """
+    body = b"""
         {
             "tables":[
                 {"id":210906,"name":"nasdaq","estimated_storage_size":168205061,"counter_updated_at":null,"last_log_timestamp":null,"type":"log","count":8807278,"expire_days":null,"created_at":"2014-10-08 02:57:38 UTC","updated_at":"2014-10-08 03:16:59 UTC","schema":"[[\\"symbol\\",\\"string\\"],[\\"open\\",\\"double\\"],[\\"volume\\",\\"long\\"],[\\"high\\",\\"double\\"],[\\"low\\",\\"double\\"],[\\"close\\",\\"double\\"]]"},
@@ -40,7 +40,7 @@ def test_list_tables_failure():
     td = api.API("APIKEY")
     res = mock.MagicMock()
     res.status = 500
-    td.get = mock.MagicMock(return_value=(res.status, "error", res))
+    td.get = mock.MagicMock(return_value=(res.status, b"error", res))
     with pytest.raises(api.APIError) as error:
         td.list_tables("sample_datasets")
-    assert error.value.message == "500: List tables failed: error"
+    assert error.value.args == ("500: List tables failed: error",)

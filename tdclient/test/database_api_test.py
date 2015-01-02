@@ -18,7 +18,7 @@ def setup_function(function):
 
 def test_list_databases_success():
     td = api.API("APIKEY")
-    body = """
+    body = b"""
         {
             "databases":[
                 {"name":"sample_datasets","count":8812278,"created_at":"2014-10-04 01:13:11 UTC","updated_at":"2014-10-08 18:42:12 UTC","organization":null,"permission":"administrator"},
@@ -40,7 +40,7 @@ def test_list_databases_failure():
     td = api.API("APIKEY")
     res = mock.MagicMock()
     res.status = 500
-    td.get = mock.MagicMock(return_value=(res.status, "error", res))
+    td.get = mock.MagicMock(return_value=(res.status, b"error", res))
     with pytest.raises(api.APIError) as error:
         td.list_databases()
-    assert error.value.message == "500: List databases failed: error"
+    assert error.value.args == ("500: List databases failed: error",)

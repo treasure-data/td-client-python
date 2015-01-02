@@ -18,7 +18,7 @@ def setup_function(function):
 
 def test_server_status_success():
     td = api.API("APIKEY")
-    body = """
+    body = b"""
         {
             "status": "ok"
         }
@@ -33,6 +33,6 @@ def test_server_status_failure():
     td = api.API("APIKEY")
     res = mock.MagicMock()
     res.status = 500
-    td.get = mock.MagicMock(return_value=(res.status, "", res))
+    td.get = mock.MagicMock(return_value=(res.status, b"error", res))
     assert td.server_status() == "Server is down (500)"
     td.get.assert_called_with("/v3/system/server_status")
