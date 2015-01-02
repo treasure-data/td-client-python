@@ -88,11 +88,9 @@ class JobAPI(object):
         code, body, res = self.get("/v3/job/result/%s" % (urlquote(str(job_id))), {"format": "msgpack"})
         if code != 200:
             self.raise_error("Get job result failed", res, body)
-        result = []
         unpacker = msgpack.Unpacker(body)
         for row in unpacker:
-            result.append(row)
-        return result
+            yield row
 
     def job_result_raw(self, job_id, _format):
         code, body, res = self.get("/v3/job/result/%s" % (urlquote(str(job_id))), {"format": _format})
