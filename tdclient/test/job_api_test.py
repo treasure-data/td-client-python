@@ -7,7 +7,6 @@ from __future__ import with_statement
 import functools
 
 from tdclient import api
-from tdclient import version
 from tdclient.test.test_helper import *
 
 def setup_function(function):
