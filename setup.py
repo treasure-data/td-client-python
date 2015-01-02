@@ -33,16 +33,15 @@ class PyTest(TestCommand):
         errno = pytest.main(self.pytest_args)
         sys.exit(errno)
 
-test_require = [
-    "coveralls>=0.5,<0.6",
-    "pytest>=2.6,<2.7",
-    "pytest-cov>=1.8,<1.9",
-    "tox>=1.8,<1.9",
-]
+install_requires = []
+with open("requirements.txt") as fp:
+    for s in fp:
+        install_requires.append(s.strip())
 
-# CPython 3.3+ has bundled `unittest.mock`
-if sys.version_info[0:2] < (3, 3):
-    test_require.append("mock>=1.0,<1.1")
+test_require = []
+with open("test-requirements.txt") as fp:
+    for s in fp:
+        test_require.append(s.strip())
 
 setup(
     name="td-client",
@@ -51,9 +50,7 @@ setup(
     author="Treasure Data, Inc.",
     author_email="support@treasure-data.com",
     url="http://treasuredata.com/",
-    install_requires=[
-        "msgpack-python>=0.4,<0.5",
-    ],
+    install_requires=install_requires,
     tests_require=test_require,
     packages=find_packages(),
     cmdclass = {"test": PyTest},
