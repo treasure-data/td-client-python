@@ -4,7 +4,11 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import with_statement
 
-import functools
+try:
+    import mock
+except ImportError:
+    from unittest import mock
+import pytest
 
 from tdclient import api
 from tdclient.test.test_helper import *
@@ -12,8 +16,8 @@ from tdclient.test.test_helper import *
 def setup_function(function):
     unset_environ()
 
-def test_list_tables():
-    client = api.API("apikey")
+def test_list_tables_success():
+    td = api.API("APIKEY")
     body = """
         {
             "tables":[
@@ -23,11 +27,20 @@ def test_list_tables():
             "database":"sample_datasets"
         }
     """
-    response = Response(200, body, {})
-    client.get = functools.partial(get, response)
-    tables = client.list_tables("sample_datasets")
-    assert response.request_method == "GET"
-    assert response.request_path == "/v3/table/list/sample_datasets"
+    res = mock.MagicMock()
+    res.status = 200
+    td.get = mock.MagicMock(return_value=(res.status, body, res))
+    tables = td.list_tables("sample_datasets")
+    td.get.assert_called_with("/v3/table/list/sample_datasets")
     assert len(tables) == 2
     assert sorted(tables.keys()) == ["nasdaq", "www_access"]
     assert sorted([ v[0] for v in tables.values() ]) == ["log", "log"]
+
+def test_list_tables_failure():
+    td = api.API("APIKEY")
+    res = mock.MagicMock()
+    res.status = 500
+    td.get = mock.MagicMock(return_value=(res.status, "error", res))
+    with pytest.raises(api.APIError) as error:
+        td.list_tables("sample_datasets")
+    assert error.value.message == "500: List tables failed: error"

@@ -4,7 +4,11 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import with_statement
 
-import functools
+try:
+    import mock
+except ImportError:
+    from unittest import mock
+import pytest
 
 from tdclient import api
 from tdclient.test.test_helper import *
@@ -13,24 +17,22 @@ def setup_function(function):
     unset_environ()
 
 def test_server_status_success():
-    client = api.API("apikey")
+    td = api.API("APIKEY")
     body = """
         {
             "status": "ok"
         }
     """
-    response = Response(200, body, {})
-    client.get = functools.partial(get, response)
-    server_status = client.server_status()
-    assert response.request_method == "GET"
-    assert response.request_path == "/v3/system/server_status"
-    assert server_status == "ok"
+    res = mock.MagicMock()
+    res.status = 200
+    td.get = mock.MagicMock(return_value=(res.status, body, res))
+    assert td.server_status() == "ok"
+    td.get.assert_called_with("/v3/system/server_status")
 
 def test_server_status_failure():
-    client = api.API("apikey")
-    response = Response(500, "", {})
-    client.get = functools.partial(get, response)
-    server_status = client.server_status()
-    assert response.request_method == "GET"
-    assert response.request_path == "/v3/system/server_status"
-    assert server_status == "Server is down (500)"
+    td = api.API("APIKEY")
+    res = mock.MagicMock()
+    res.status = 500
+    td.get = mock.MagicMock(return_value=(res.status, "", res))
+    assert td.server_status() == "Server is down (500)"
+    td.get.assert_called_with("/v3/system/server_status")

@@ -308,15 +308,15 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
     def raise_error(self, msg, res, body):
         status_code = res.status
         if status_code == 404:
-            raise NotFoundError("%s: %s", (msg, body))
+            raise NotFoundError("%s: %s" % (msg, body))
         elif status_code == 409:
-            raise AlreadyExistsError("%s: %s", (msg, body))
+            raise AlreadyExistsError("%s: %s" % (msg, body))
         elif status_code == 401:
-            raise AuthError("%s: %s", (msg, body))
+            raise AuthError("%s: %s" % (msg, body))
         elif status_code == 403:
-            raise ForbiddenError("%s: %s", (msg, body))
+            raise ForbiddenError("%s: %s" % (msg, body))
         else:
-            raise APIError("%d: %s: %s", (status_code, msg, body))
+            raise APIError("%d: %s: %s" % (status_code, msg, body))
 
     def checked_json(self, body, required):
         js = None

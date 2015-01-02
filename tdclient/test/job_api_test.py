@@ -4,7 +4,11 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import with_statement
 
-import functools
+try:
+    import mock
+except ImportError:
+    from unittest import mock
+import pytest
 
 from tdclient import api
 from tdclient.test.test_helper import *
@@ -12,8 +16,8 @@ from tdclient.test.test_helper import *
 def setup_function(function):
     unset_environ()
 
-def test_list_jobs():
-    client = api.API("apikey")
+def test_list_jobs_success():
+    td = api.API("APIKEY")
     body = """
         {
             "count":11,"from":0,"to":10,"jobs":[
@@ -23,10 +27,19 @@ def test_list_jobs():
             ]
         }
     """
-    response = Response(200, body, {})
-    client.get = functools.partial(get, response)
-    jobs = client.list_jobs(0, 2)
-    assert response.request_method == "GET"
-    assert response.request_path == "/v3/job/list"
+    res = mock.MagicMock()
+    res.status = 200
+    td.get = mock.MagicMock(return_value=(res.status, body, res))
+    jobs = td.list_jobs(0, 2)
+    td.get.assert_called_with("/v3/job/list", {"from": "0", "to": "2"})
     assert len(jobs) == 3
     assert sorted([ job[0] for job in jobs ]) == ["18879199", "18880612", "18882028"]
+
+def test_list_jobs_failure():
+    td = api.API("APIKEY")
+    res = mock.MagicMock()
+    res.status = 500
+    td.get = mock.MagicMock(return_value=(res.status, "error", res))
+    with pytest.raises(api.APIError) as error:
+        td.list_jobs(0, 2)
+    assert error.value.message == "500: List jobs failed: error"
