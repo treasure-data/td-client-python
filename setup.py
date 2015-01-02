@@ -33,6 +33,17 @@ class PyTest(TestCommand):
         errno = pytest.main(self.pytest_args)
         sys.exit(errno)
 
+test_require = [
+    "coveralls>=0.5,<0.6",
+    "pytest>=2.6,<2.7",
+    "pytest-cov>=1.8,<1.9",
+    "tox>=1.8,<1.9",
+]
+
+# CPython 3.3+ has bundled `unittest.mock`
+if sys.version_info[0:2] < (3, 3):
+    test_require.append("mock>=1.0,<1.1")
+
 setup(
     name="td-client",
     version=version,
@@ -43,12 +54,7 @@ setup(
     install_requires=[
         "msgpack-python>=0.4,<0.5",
     ],
-    tests_require=[
-        "coveralls>=0.5,<0.6",
-        "pytest>=2.6,<2.7",
-        "pytest-cov>=1.8,<1.9",
-        "tox>=1.8,<1.9",
-    ],
+    tests_require=test_require,
     packages=find_packages(),
     cmdclass = {"test": PyTest},
     license="Apache Software License",

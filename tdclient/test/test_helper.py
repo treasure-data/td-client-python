@@ -5,6 +5,11 @@ from __future__ import unicode_literals
 from __future__ import with_statement
 
 import os
+try:
+    import mock
+except ImportError:
+    # Python 3.3+
+    from unittest import mock
 
 class Response(object):
     def __init__(self, status, body, headers):
