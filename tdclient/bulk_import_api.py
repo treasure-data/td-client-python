@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import with_statement
 
+import msgpack
 try:
     from urllib import quote as urlquote
 except ImportError:
@@ -94,5 +95,14 @@ class BulkImportAPI(object):
     def commit_bulk_import(self, name, params={}):
         code, body, res = self.post("/v3/bulk_import/commit/%s" % (urlquote(str(name))), params)
         if code != 200:
-            eslf.raise_error("Commit bulk import failed", res, body)
+            self.raise_error("Commit bulk import failed", res, body)
         return None
+
+    # => data...
+    def bulk_import_error_records(self, name, params={}):
+        code, body, res = self.get("/v3/bulk_import/error_records/%s" % (urlquote(str(name))), params)
+        if code != 200:
+            self.raise_error("Failed to get bulk import error records", res)
+        unpacker = msgpack.Unpacker(body)
+        for row in unpacker:
+            yield row
