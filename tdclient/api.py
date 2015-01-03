@@ -67,7 +67,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
     DEFAULT_ENDPOINT = "https://api.treasuredata.com/"
     DEFAULT_IMPORT_ENDPOINT = "https://api-import.treasuredata.com/"
 
-    def __init__(self, apikey, user_agent=None, endpoint=None, **kwargs):
+    def __init__(self, apikey=None, user_agent=None, endpoint=None, **kwargs):
         if apikey is not None:
             self._apikey = apikey
         elif os.getenv("TD_API_KEY"):
@@ -148,7 +148,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
     def get(self, url, params={}):
         http, header = self.new_http()
 
-        path = self._base_path + url
+        path = os.path.join(self._base_path, url)
         if 0 < len(params):
             path += "?" + urlencode(params)
 
@@ -199,7 +199,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
     def post(self, url, params={}):
         http, header = self.new_http()
 
-        path = self._base_path + url
+        path = os.path.join(self._base_path, url)
         if len(params) < 1:
             header["Content-Length"] = 0
         data = urlencode(params)
@@ -245,7 +245,12 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         header["Content-Type"] = "application/octet-stream"
         header["Content-Length"] = str(size)
 
-        path = self._base_path + url
+        if hasattr(stream, "read"):
+            data = stream.read()
+        else:
+            data = stream
+
+        path = os.path.join(self._base_path, url)
 
         # up to 7 retries with exponential (base 2) back-off starting at 'retry_delay'
         retry_delay = 5
@@ -254,7 +259,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         response = None
         while True:
             try:
-                http.request("PUT", path, headers=header)
+                http.request("PUT", path, data, headers=header)
                 response = http.getresponse()
                 status = response.status
                 if status < 500:
