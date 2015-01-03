@@ -145,12 +145,12 @@ class Client(object):
     # => Job
     def export(self, db_name, table_name, storage_type, opts={}):
         job_id = self.api.export(db_name, table_name, storage_type, opts)
-        return Job(self, job_id, "export", nil)
+        return model.Job(self, job_id, "export", nil)
 
     # => Job
     def partial_delete(self, db_name, table_name, to, _from, opts={}):
         job_id = self.api.partial_delete(db_name, table_name, to, _from, opts)
-        return Job(self, job_id, "partialdelete", None)
+        return model.Job(self, job_id, "partialdelete", None)
 
     # => nil
     def create_bulk_import(self, name, database, table, opts={}):
@@ -171,7 +171,7 @@ class Client(object):
     # => Job
     def perform_bulk_import(self, name):
         job_id = self.api.perform_bulk_import(name)
-        return Job(self, job_id, "bulk_import", None)
+        return model.Job(self, job_id, "bulk_import", None)
 
     # => nil
     def commit_bulk_import(self, name):
@@ -184,11 +184,11 @@ class Client(object):
     # => BulkImport
     def bulk_import(self, name):
         data = self.api.show_bulk_import(name)
-        return BulkImport(self, data)
+        return model.BulkImport(self, data)
 
     # => [BulkImport]
     def bulk_imports(self):
-        return [ BulkImport(self, data) for data in self.api.list_bulk_imports() ]
+        return [ model.BulkImport(self, data) for data in self.api.list_bulk_imports() ]
 
     # => nil
     def bulk_import_upload_part(self, name, part_name, stream, size):

@@ -180,3 +180,160 @@ def test_kill():
     td._api.kill = mock.MagicMock()
     job = td.kill("12345")
     td.api.kill.assert_called_with("12345")
+
+def test_partial_delete():
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.partial_delete = mock.MagicMock(return_value=("12345"))
+    job = td.partial_delete("db_name", "table_name", 0, 2)
+    td.api.partial_delete.assert_called_with("db_name", "table_name", 0, 2, {})
+    assert job.job_id == "12345"
+
+def test_create_bulk_import():
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.create_bulk_import = mock.MagicMock()
+    td.create_bulk_import("name", "database", "table")
+    td.api.create_bulk_import.assert_called_with("name", "database", "table", {})
+
+def test_delete_bulk_import():
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.delete_bulk_import = mock.MagicMock()
+    td.delete_bulk_import("name")
+    td.api.delete_bulk_import.assert_called_with("name")
+
+def test_freeze_bulk_import():
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.freeze_bulk_import = mock.MagicMock()
+    td.freeze_bulk_import("name")
+    td.api.freeze_bulk_import.assert_called_with("name")
+
+def test_unfreeze_bulk_import():
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.unfreeze_bulk_import = mock.MagicMock()
+    td.unfreeze_bulk_import("name")
+    td.api.unfreeze_bulk_import.assert_called_with("name")
+
+def test_perform_bulk_import():
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.perform_bulk_import = mock.MagicMock(return_value=("12345"))
+    job = td.perform_bulk_import("name")
+    td.api.perform_bulk_import.assert_called_with("name")
+    assert job.job_id == "12345"
+
+def test_commit_bulk_import():
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.commit_bulk_import = mock.MagicMock()
+    td.commit_bulk_import("name")
+    td.api.commit_bulk_import.assert_called_with("name")
+
+def test_bulk_import_error_records():
+    pass
+
+def test_bulk_import():
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.show_bulk_import = mock.MagicMock(return_value=({"name":"foo"}))
+    bulk_import = td.bulk_import("name")
+    td.api.show_bulk_import.assert_called_with("name")
+    assert bulk_import.name == "foo"
+
+def test_bulk_imports():
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.list_bulk_imports = mock.MagicMock(return_value=([{"name":"foo"}, {"name":"bar"}]))
+    bulk_imports = list(td.bulk_imports())
+    td.api.list_bulk_imports.assert_called_with()
+    assert sorted([ bulk_import.name for bulk_import in bulk_imports ]) == ["bar", "foo"]
+
+def test_bulk_import_upload_part():
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.bulk_import_upload_part = mock.MagicMock()
+    td.bulk_import_upload_part("name", "part_name", b"foo", 3)
+    td.api.bulk_import_upload_part.assert_called_with("name", "part_name", b"foo", 3)
+
+def test_bulk_import_delete_part():
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.bulk_import_delete_part = mock.MagicMock()
+    td.bulk_import_delete_part("name", "part_name")
+    td.api.bulk_import_delete_part.assert_called_with("name", "part_name")
+
+def test_list_bulk_import_parts():
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.list_bulk_import_parts = mock.MagicMock()
+    td.list_bulk_import_parts("name")
+    td.api.list_bulk_import_parts.assert_called_with("name")
+
+def test_create_schedule():
+    pass
+
+def test_delete_schedule():
+    pass
+
+def test_schedules():
+    pass
+
+def test_update_schedule():
+    pass
+
+def test_history():
+    pass
+
+def test_run_schedule():
+    pass
+
+def test_results():
+    pass
+
+def test_create_result():
+    pass
+
+def test_delete_result():
+    pass
+
+def test_users():
+    pass
+
+def test_add_user():
+    pass
+
+def test_remove_user():
+    pass
+
+def test_change_email():
+    pass
+
+def test_list_apikeys():
+    pass
+
+def test_add_apikey():
+    pass
+
+def test_remove_apikey():
+    pass
+
+def test_change_password():
+    pass
+
+def test_change_my_password():
+    pass
+
+def test_access_controls():
+    pass
+
+def test_grant_access_control():
+    pass
+
+def test_revoke_access_control():
+    pass
+
+def test_test_access_control():
+    pass
