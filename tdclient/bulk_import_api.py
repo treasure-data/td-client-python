@@ -20,7 +20,6 @@ class BulkImportAPI(object):
         code, body, res = self.post("/v3/bulk_import/create/%s/%s/%s" % (urlquote(str(name)), urlquote(str(db)), urlquote(str(table))), params)
         if code != 200:
             self.raise_error("Create bulk import failed", res, body)
-        end
         return None
 
     # => nil
@@ -28,7 +27,6 @@ class BulkImportAPI(object):
         code, body, res = self.post("/v3/bulk_import/delete/%s" % (urlquote(str(name))), params)
         if code != 200:
             self.raise_error("Delete bulk import failed", res, body)
-        end
         return None
 
     # => data:Hash
@@ -36,9 +34,8 @@ class BulkImportAPI(object):
         code, body, res = self.get("/v3/bulk_import/show/%s" % (urlquote(str(name))))
         if code != 200:
             self.raise_error("Show bulk import failed", res, body)
-        end
         js = self.checked_json(body, ["status"])
-        return js
+        return js["status"]
 
     # => result:[data:Hash]
     def list_bulk_imports(self, params={}):
@@ -63,7 +60,7 @@ class BulkImportAPI(object):
         return None
 
     # => nil
-    def bulk_import_delete_part(self, name, part_name, parms={}):
+    def bulk_import_delete_part(self, name, part_name, params={}):
         code, body, res = self.post("/v3/bulk_import/delete_part/%s/%s" % (urlquote(str(name)), urlquote(str(part_name))), params)
         if code / 100 != 2:
             self.raise_error("Delete a part failed", res, body)
