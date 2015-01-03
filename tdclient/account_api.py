@@ -4,6 +4,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import with_statement
 
+import time
+
 class AccountAPI(object):
     ####
     ## Account API
@@ -29,7 +31,7 @@ class AccountAPI(object):
             params["from"] = str(_from)
         if to is not None:
             params["to"] = str(to)
-        code, body, res = get("/v3/account/core_utilization", params)
+        code, body, res = self.get("/v3/account/core_utilization", params)
         if code != 200:
             self.raise_error("Show account failed", res, body)
         js = self.checked_json(body, ["from", "to", "interval", "history"])

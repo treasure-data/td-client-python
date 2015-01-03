@@ -44,3 +44,19 @@ def test_list_databases_failure():
     with pytest.raises(api.APIError) as error:
         td.list_databases()
     assert error.value.args == ("500: List databases failed: error",)
+
+def test_delete_database_success():
+    td = api.API("APIKEY")
+    res = mock.MagicMock()
+    res.status = 200
+    td.post = mock.MagicMock(return_value=(res.status, b"", res))
+    td.delete_database("sample_datasets")
+    td.post.assert_called_with("/v3/database/delete/sample_datasets")
+
+def test_create_database_success():
+    td = api.API("APIKEY")
+    res = mock.MagicMock()
+    res.status = 200
+    td.post = mock.MagicMock(return_value=(res.status, b"", res))
+    td.create_database("sample_datasets")
+    td.post.assert_called_with("/v3/database/create/sample_datasets", {})

@@ -45,3 +45,20 @@ def test_show_account_failure():
     with pytest.raises(api.APIError) as error:
         td.show_account()
     assert error.value.args == ("500: Show account failed: error",)
+
+def test_core_utilization_success():
+    td = api.API("APIKEY")
+    # TODO: should be replaced by wire dump
+    body = b"""
+        {
+            "from": "2015-01-03 10:29:34 JST",
+            "to": "2015-01-03 10:30:29 JST",
+            "interval": "1",
+            "history": ""
+        }
+    """
+    res = mock.MagicMock()
+    res.status = 200
+    td.get = mock.MagicMock(return_value=(res.status, body, res))
+    access_controls = td.account_core_utilization(0, 3)
+    td.get.assert_called_with("/v3/account/core_utilization", {"from": "0", "to": "3"})

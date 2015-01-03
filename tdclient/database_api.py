@@ -38,7 +38,7 @@ class DatabaseAPI(object):
         return True
 
     # => true
-    def create_database(self, db, params):
+    def create_database(self, db, params={}):
         code, body, res = self.post("/v3/database/create/%s" % urlquote(str(db)), params)
         if code != 200:
             self.raise_error("Create database failed", res, body)
