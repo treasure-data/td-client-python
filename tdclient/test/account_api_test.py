@@ -51,8 +51,8 @@ def test_core_utilization_success():
     # TODO: should be replaced by wire dump
     body = b"""
         {
-            "from": "2015-01-03 10:29:34 JST",
-            "to": "2015-01-03 10:30:29 JST",
+            "from": "2015-01-03 10:29:34 UTC",
+            "to": "2015-01-03 10:30:29 UTC",
             "interval": "1",
             "history": ""
         }
