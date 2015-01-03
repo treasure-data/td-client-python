@@ -63,6 +63,14 @@ Then, run `tox`.
 $ tox
 ```
 
+### Release
+
+Release to PyPI.
+
+```sh
+$ python setup.py sdist upload
+```
+
 ## License
 
 Apache Software License, Version 2.0
