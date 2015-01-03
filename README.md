@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/yyuu/td-client-python/badge.png)](https://coveralls.io/r/yyuu/td-client-python)
 [![PyPI version](https://badge.fury.io/py/td-client.svg)](http://badge.fury.io/py/td-client)
 
-*EXPERIMENTAL* Treasure Data API library for Python
+Treasure Data API library for Python
 
 ## Install
 
