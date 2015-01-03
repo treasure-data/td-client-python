@@ -43,3 +43,102 @@ def test_list_jobs_failure():
     with pytest.raises(api.APIError) as error:
         td.list_jobs(0, 2)
     assert error.value.args == ("500: List jobs failed: error",)
+
+def test_show_job_success():
+    td = api.API("APIKEY")
+    # TODO: should be replaced by wire dump
+    body = b"""
+        {
+            "status": {
+                "type": "presto",
+                "database": "sample_datasets",
+                "query": "SELECT COUNT(1) FROM nasdaq;",
+                "status": "finished",
+                "debug": 1,
+                "url": "http://example.com",
+                "start_at": "",
+                "end_at": "",
+                "cpu_time": "",
+                "result_size": "",
+                "result": "",
+                "priority": "HIGH",
+                "retry_liit": 3
+            }
+        }
+    """
+    res = mock.MagicMock()
+    res.status = 200
+    td.get = mock.MagicMock(return_value=(res.status, body, res))
+    jobs = td.show_job(12345)
+    td.get.assert_called_with("/v3/job/show/12345")
+
+def test_job_status_success():
+    td = api.API("APIKEY")
+    # TODO: should be replaced by wire dump
+    body = b"""
+        {
+            "status": "RUNNING"
+        }
+    """
+    res = mock.MagicMock()
+    res.status = 200
+    td.get = mock.MagicMock(return_value=(res.status, body, res))
+    jobs = td.job_status(12345)
+    td.get.assert_called_with("/v3/job/status/12345")
+
+#def test_job_result_success():
+#    td = api.API("APIKEY")
+#    # TODO: should be replaced by wire dump
+#    body = b"""
+#        {
+#            "status": "RUNNING"
+#        }
+#    """
+#    res = mock.MagicMock()
+#    res.status = 200
+#    td.get = mock.MagicMock(return_value=(res.status, body, res))
+#    jobs = td.job_result(12345)
+#    td.get.assert_called_with("/v3/job/result/12345")
+
+def test_job_result_raw_success():
+    td = api.API("APIKEY")
+    # TODO: should be replaced by wire dump
+    body = b"""
+        {
+            "foo": "bar"
+        }
+    """
+    res = mock.MagicMock()
+    res.status = 200
+    td.get = mock.MagicMock(return_value=(res.status, body, res))
+    jobs = td.job_result_raw(12345, "json")
+    td.get.assert_called_with("/v3/job/result/12345", {"format": "json"})
+
+def test_kill_success():
+    td = api.API("APIKEY")
+    # TODO: should be replaced by wire dump
+    body = b"""
+        {
+            "former_status": "foo"
+        }
+    """
+    res = mock.MagicMock()
+    res.status = 200
+    td.post = mock.MagicMock(return_value=(res.status, body, res))
+    jobs = td.kill(12345)
+    td.post.assert_called_with("/v3/job/kill/12345")
+
+def test_query_success():
+    td = api.API("APIKEY")
+    # TODO: should be replaced by wire dump
+    body = b"""
+        {
+            "job_id": "12345"
+        }
+    """
+    res = mock.MagicMock()
+    res.status = 200
+    td.post = mock.MagicMock(return_value=(res.status, body, res))
+    job_id = td.query("SELECT COUNT(1) FROM nasdaq", db="sample_datasets", priority="HIGH")
+    td.post.assert_called_with("/v3/job/issue/hive/sample_datasets", {"query": "SELECT COUNT(1) FROM nasdaq", "priority": "HIGH"})
+    assert job_id == "12345"

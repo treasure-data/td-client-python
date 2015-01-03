@@ -99,7 +99,7 @@ class JobAPI(object):
         return body
 
     def kill(self, job_id):
-        code, body, res = post("/v3/job/kill/%s" % (urlquote(str(job_id))))
+        code, body, res = self.post("/v3/job/kill/%s" % (urlquote(str(job_id))))
         if code != 200:
             self.raise_error("Kill job failed", res, body)
         js = self.checked_json(body, [])
@@ -129,5 +129,3 @@ class JobAPI(object):
             self.raise_error("Query failed", res, body)
         js = self.checked_json(body, ["job_id"])
         return str(js["job_id"])
-
-
