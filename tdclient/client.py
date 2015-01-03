@@ -4,6 +4,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import with_statement
 
+import json
+
 from tdclient import api
 from tdclient import model
 
@@ -15,6 +17,7 @@ class Client(object):
     def api(self):
         return self._api
 
+    @property
     def apikey(self):
         return self._api.apikey
 
@@ -41,7 +44,6 @@ class Client(object):
     # => [Database]
     def databases(self):
         m = self.api.list_databases()
-        print(repr(m))
         return [ model.Database(self, db_name, None, *args) for (db_name, args) in m.items() ]
 
     # => Database
@@ -66,7 +68,7 @@ class Client(object):
 
     # => true
     def update_schema(self, db_name, table_name, schema):
-        return self.api.update_schema(db_name, table_name, schema.to_json)
+        return self.api.update_schema(db_name, table_name, json.dumps(schema))
 
     # => true
     def update_expire(self, db_name, table_name, expire_days):
@@ -84,22 +86,21 @@ class Client(object):
     # => Table
     def table(self, db_name, table_name):
         tables = self.tables(db_name)
-        if table_name in tables:
-            return tables[table_name]
-        else:
-            raise api.NotFoundError("Table '%s.%s' does not exist" % (db_name, table_name))
+        for table in tables:
+            if table.table_name == table_name:
+                return table
+        raise api.NotFoundError("Table '%s.%s' does not exist" % (db_name, table_name))
 
     def tail(self, db_name, table_name, count, to=None, _from=None, block=None):
         return self.api.tail(db_name, table_name, count, to, _from, block)
 
     # => Job
-    def query(self, db_name, q, result_url=None, priority=None, retry_limit=None, **kwargs):
+    def query(self, db_name, q, result_url=None, priority=None, retry_limit=None, type="hive", **kwargs):
         # for compatibility, assume type is hive unless specifically specified
-        _type = kwargs.get("type", "hive")
-        if _type not in ["hive", "pig", "impala", "presto"]:
-            raise ValueError("The specified query type is not supported: %s" % (_type))
-        job_id = self.api.query(q, _type, db_name, result_url, priority, retry_limit, **kwargs)
-        return model.Job(self, job_id, _type, q)
+        if type not in ["hive", "pig", "impala", "presto"]:
+            raise ValueError("The specified query type is not supported: %s" % (type))
+        job_id = self.api.query(q, type, db_name, result_url, priority, retry_limit, **kwargs)
+        return model.Job(self, job_id, type, q)
 
     # => [Job]
     def jobs(self, _from=None, to=None, status=None, conditions=None):
@@ -114,8 +115,8 @@ class Client(object):
     def job(self, job_id):
       job_id = str(job_id)
       _type, query, status, url, debug, start_at, end_at, cpu_time, result_size, result_url, hive_result_schema, priority, retry_limit, org, db = self.api.show_job(job_id)
-      return Job(self, job_id, type, query, status, url, debug, start_at, end_at, cpu_time,
-                 result_size, nil, result_url, hive_result_schema, priority, retry_limit, org, db)
+      return model.Job(self, job_id, type, query, status, url, debug, start_at, end_at, cpu_time,
+                 result_size, None, result_url, hive_result_schema, priority, retry_limit, org, db)
 
     # => status:String
     def job_status(self, job_id):
@@ -129,13 +130,13 @@ class Client(object):
     def job_result_format(self, job_id, _format, io=None, block=None):
         return self.api.job_result_format(job_id, _format, io, block)
 
-    # => nil
-    def job_result_each(self, job_id, block=None):
-        return self.api.job_result_each(job_id, block)
+#   # => nil
+#   def job_result_each(self, job_id, block=None):
+#       return self.api.job_result_each(job_id, block)
 
-    # => nil
-    def job_result_each_with_compr_size(self, job_id, block=None):
-        return self.api.job_result_each_with_compr_size(job_id, block)
+#   # => nil
+#   def job_result_each_with_compr_size(self, job_id, block=None):
+#       return self.api.job_result_each_with_compr_size(job_id, block)
 
     # => former_status:String
     def kill(self, job_id):
