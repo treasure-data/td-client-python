@@ -46,12 +46,12 @@ class TableAPI(object):
 
     # => true
     def create_log_table(self, db, table):
-        return self.create_table(db, table, "log")
+        return self._create_table(db, table, "log")
 
     # => true
     def create_item_table(self, db, table, primary_key, primary_key_type):
         params = {"primary_key": primary_key, "primary_key_type": primary_key_type}
-        return self.create_table(db, table, "item", params)
+        return self._create_table(db, table, "item", params)
 
     def _create_table(self, db, table, _type, params={}):
         code, body, res = self.post("/v3/table/create/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table)), urlquote(str(_type))), params)
@@ -61,7 +61,7 @@ class TableAPI(object):
 
     # => true
     def swap_table(self, db, table1, table2):
-        code, body, res = self.post("/v3/table/swap/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table1), urlquote(str(table2)))))
+        code, body, res = self.post("/v3/table/swap/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table1)), urlquote(str(table2))))
         if code != 200:
             self.raise_error("Swap tables failed", res, body)
         return True
@@ -87,5 +87,3 @@ class TableAPI(object):
         js = self.checked_json(body, [])
         _type = js.get("type", "?")
         return _type
-
-
