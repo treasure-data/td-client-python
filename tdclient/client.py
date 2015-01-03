@@ -219,8 +219,8 @@ class Client(object):
         result = self.api.list_schedules()
         def schedule(m):
             name,cron,query,database,result_url,timezone,delay,next_time,priority,retry_limit,org_name = m
-            return Schedule(self, name, cron, query, database, result_url, timezone, delay, next_time, priority, retry_limit, org_name)
-        return [ Schedule(m) for m in result ]
+            return model.Schedule(self, name, cron, query, database, result_url, timezone, delay, next_time, priority, retry_limit, org_name)
+        return [ schedule(m) for m in result ]
 
     def update_schedule(self, name, params):
         self.api.update_schedule(name, params)
@@ -242,7 +242,7 @@ class Client(object):
                 None, # retry_limit
                 None, # TODO org_name
                 database]
-            return ScheduledJob(self, scheduled_at, *job_param)
+            return model.ScheduledJob(self, scheduled_at, *job_param)
         return [ scheduled_job(m) for m in result ]
 
     # [ScheduledJob]
@@ -250,7 +250,7 @@ class Client(object):
         results = self.api.run_schedule(name, time, num)
         def scheduled_job(m):
             job_id,_type,scheduled_at = m
-            return ScheduledJob(self, scheduled_at, job_id, _type, None)
+            return model.ScheduledJob(self, scheduled_at, job_id, _type, None)
         return [ scheduled_job(m) for m in results ]
 
     # TODO: `import` is not available as Python method name
@@ -263,7 +263,7 @@ class Client(object):
         results = self.api.list_result()
         def result(m):
             name,url,organizations = m
-            return Result(self, name, url, organizations)
+            return model.Result(self, name, url, organizations)
         return [ result(m) for m in results ]
 
     # => true
@@ -279,7 +279,7 @@ class Client(object):
         results = self.api.list_users()
         def user(m):
             name,org,roles,email = m
-            return User(self, name, org, roles, email)
+            return model.User(self, name, org, roles, email)
         return [ user(m) for m in results ]
 
     # => true
@@ -319,7 +319,7 @@ class Client(object):
         results = self.api.list_access_controls()
         def access_control(m):
             subject,action,scope,grant_option = m
-            return AccessControl(self, subject, action, scope, grant_option)
+            return model.AccessControl(self, subject, action, scope, grant_option)
         return [ access_control(m) for m in results ]
 
     # => true
