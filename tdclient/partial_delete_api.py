@@ -5,9 +5,9 @@ from __future__ import unicode_literals
 from __future__ import with_statement
 
 try:
-    from urllib import quote as urlquote
+    from urllib.parse import quote as urlquote # >=3.0
 except ImportError:
-    from urllib.parse import quote as urlquote
+    from urllib import quote as urlquote
 
 class PartialDeleteAPI(object):
     ####

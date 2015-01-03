@@ -4,14 +4,11 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import with_statement
 
+import json
 try:
-    import json
+    from urllib.parse import quote as urlquote # >=3.0
 except ImportError:
-    import simplejson as json
-try:
     from urllib import quote as urlquote
-except ImportError:
-    from urllib.parse import quote as urlquote
 
 class TableAPI(object):
     ####

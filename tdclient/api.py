@@ -6,25 +6,22 @@ from __future__ import with_statement
 
 import email.utils
 try:
+    import http.client as httplib # >=3.0
+except ImportError:
     import httplib
-except ImportError:
-    import http.client as httplib
-try:
-    import json
-except ImportError:
-    import simplejson as json
+import json
 import os
 import socket
 import sys
 import time
 try:
+    from urllib.parse import urlencode # >=3.0
+except ImportError:
     from urllib import urlencode
-except ImportError:
-    from urllib.parse import urlencode
 try:
-    import urlparse
+    import urllib.parse as urlparse # >=3.0
 except ImportError:
-    import urllib.parse as urlparse
+    import urlparse
 import zlib
 
 from tdclient.access_control_api import AccessControlAPI
