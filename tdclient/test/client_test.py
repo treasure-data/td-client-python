@@ -61,7 +61,7 @@ def test_databases():
     td = client.Client("APIKEY")
     td._api = mock.MagicMock()
     td._api.list_databases = mock.MagicMock(return_value=({"sample_datasets": [{"name":"nasdaq"}, {"name":"www_access"}]}))
-    databases = td.databases()
+    databases = list(td.databases())
     td.api.list_databases.assert_called_with()
     assert len(databases) == 1
 
@@ -141,7 +141,7 @@ def test_jobs():
     td = client.Client("APIKEY")
     td._api = mock.MagicMock()
     td._api.list_jobs = mock.MagicMock(return_value=([]))
-    jobs = td.jobs(0, 3)
+    jobs = list(td.jobs(0, 3))
     td.api.list_jobs.assert_called_with(0, 3, None, None)
     assert len(jobs) == 0
 
