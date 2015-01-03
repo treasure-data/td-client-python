@@ -28,7 +28,7 @@ class ScheduleAPI(object):
         code, body, res = self.post("/v3/schedule/delete/%s" % (urlquote(str(name))))
         if code != 200:
             self.raise_error("Delete schedule failed", res, body)
-        js = self.checked_json(body, [])
+        js = self.checked_json(body, ["cron", "query"])
         return (js["cron"], js["query"])
 
     # => [(name:String, cron:String, query:String, database:String, result_url:String)]
@@ -51,8 +51,8 @@ class ScheduleAPI(object):
             return [name, cron, query, database, result_url, timezone, delay, next_time, priority, retry_limit, None] # same as database
         return [ schedule(m) for m in js["schedules"] ]
 
-    def update_schedule(self, name, params):
-      code, body, res = post("/v3/schedule/update/%s" % (urlquote(str(name))), params)
+    def update_schedule(self, name, params={}):
+      code, body, res = self.post("/v3/schedule/update/%s" % (urlquote(str(name))), params)
       if code != 200:
           self.raise_error("Update schedule failed", res, body)
       return None
@@ -81,7 +81,7 @@ class ScheduleAPI(object):
             return [scheduled_at, job_id, _type, status, query, start_at, end_at, result_url, priority, database]
         return [ history(m) for m in js["history"] ]
 
-    def run_schedule(self, name, time, num):
+    def run_schedule(self, name, time, num=None):
         params = {}
         if num is not None:
             params = {"num": num}

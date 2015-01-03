@@ -43,3 +43,19 @@ def test_list_result_success():
     with pytest.raises(api.APIError) as error:
         td.list_result()
     assert error.value.args == ("500: List result table failed: error",)
+
+def test_create_result_success():
+    td = api.API("APIKEY")
+    res = mock.MagicMock()
+    res.status = 200
+    td.post = mock.MagicMock(return_value=(res.status, b"", res))
+    results = td.create_result("foo", "http://example.com")
+    td.post.assert_called_with("/v3/result/create/foo", {"url": "http://example.com"})
+
+def test_delete_result_success():
+    td = api.API("APIKEY")
+    res = mock.MagicMock()
+    res.status = 200
+    td.post = mock.MagicMock(return_value=(res.status, b"", res))
+    results = td.delete_result("foo")
+    td.post.assert_called_with("/v3/result/delete/foo")
