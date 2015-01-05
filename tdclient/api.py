@@ -19,9 +19,9 @@ try:
 except ImportError:
     from urllib import urlencode
 try:
-    import urllib.parse as urlparse # >=3.0
+    from urllib.parse import urlparse # >=3.0
 except ImportError:
-    import urlparse
+    from urlparse import urlparse
 import zlib
 
 from tdclient.access_control_api import AccessControlAPI
@@ -87,7 +87,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         else:
             endpoint = self.DEFAULT_ENDPOINT
 
-        uri = urlparse.urlparse(endpoint)
+        uri = urlparse(endpoint)
 
         self._connect_timeout = kwargs.get("connect_timeout", 60)
         self._read_timeout = kwargs.get("read_timeout", 600)

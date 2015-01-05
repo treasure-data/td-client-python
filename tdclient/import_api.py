@@ -5,6 +5,10 @@ from __future__ import unicode_literals
 from __future__ import with_statement
 
 try:
+    from urllib.parse import urlparse # >=3.0
+except ImportError:
+    from urlparse import urlparse
+try:
     from urllib.parse import quote as urlquote # >=3.0
 except ImportError:
     from urllib import quote as urlquote
@@ -23,7 +27,7 @@ class ImportAPI(object):
 #           path = "/v3/table/import/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table)), urlquote(str(forat)))
 #       opts = {}
 #       if self._host == DEFAULT_ENDPOINT
-#           uri = urlparse.urlparse(DEFAULT_IMPORT_ENDPOINT)
+#           uri = urlparse(DEFAULT_IMPORT_ENDPOINT)
 #           opts["host"] = uri.host
 #           opts["port"] = uri.port
 #       code, body, res = self.put(path, stream, size, opts)
