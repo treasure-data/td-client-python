@@ -15,7 +15,7 @@ class ExportAPI(object):
     ##
 
     # => jobId:String
-    def export(self, db, table, storage_type, params={}):
+    def export_data(self, db, table, storage_type, params={}):
         params["storage_type"] = storage_type
         code, body, res = self.post("/v3/export/run/%s/%s" % (urlquote(str(db)), urlquote(str(table))), params)
         if code != 200:

@@ -143,8 +143,8 @@ class Client(object):
         return self.api.kill(job_id)
 
     # => Job
-    def export(self, db_name, table_name, storage_type, opts={}):
-        job_id = self.api.export(db_name, table_name, storage_type, opts)
+    def export_data(self, db_name, table_name, storage_type, opts={}):
+        job_id = self.api.export_data(db_name, table_name, storage_type, opts)
         return model.Job(self, job_id, "export", nil)
 
     # => Job
@@ -253,10 +253,9 @@ class Client(object):
             return model.ScheduledJob(self, scheduled_at, job_id, _type, None)
         return [ scheduled_job(m) for m in results ]
 
-    # TODO: `import` is not available as Python method name
-#   # => time:Flaot
-#   def import(self, db_name, table_name, _format, stream, size, unique_id=None):
-#       return self.api.import(db_name, table_name, _format, stream, size, unique_id)
+    # => time:Flaot
+    def import_data(self, db_name, table_name, _format, stream, size, unique_id=None):
+        return self.api.import_data(db_name, table_name, _format, stream, size, unique_id)
 
     # => [Result]
     def results(self):

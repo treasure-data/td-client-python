@@ -18,22 +18,30 @@ class ImportAPI(object):
     ## Import API
     ##
 
-    # TODO: `import` is not available as Python method name
-#   # => time:Float
-#   def import(self, db, table, _format, stream, size, unique_id=None):
-#       if unique_id is not None:
-#           path = "/v3/table/import_with_id/%s/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table)), urlquote(str(unique_id)), urlquote(str(format)))
-#       else:
-#           path = "/v3/table/import/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table)), urlquote(str(forat)))
-#       opts = {}
-#       if self._host == DEFAULT_ENDPOINT
-#           uri = urlparse(DEFAULT_IMPORT_ENDPOINT)
-#           opts["host"] = uri.host
-#           opts["port"] = uri.port
-#       code, body, res = self.put(path, stream, size, opts)
-#       if code / 100 != 2:
-#           self.raise_error("Import failed", res, body)
-#       js = self.checked_json(body, [])
-#       time = float(js["elapsed_time"])
-#       return time
-    pass
+    # => time:Float
+    def import_data(self, db, table, format, stream, size, unique_id=None):
+        if unique_id is not None:
+            path = "/v3/table/import_with_id/%s/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table)), urlquote(str(unique_id)), urlquote(str(format)))
+        else:
+            path = "/v3/table/import/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table)), urlquote(str(format)))
+        opts = {}
+
+        default_endpoint = urlparse(self.DEFAULT_ENDPOINT)
+        if self._host == default_endpoint.hostname:
+            import_endpoint = urlparse(self.DEFAULT_IMPORT_ENDPOINT)
+            opts["host"] = import_endpoint.hostname
+            if import_endpoint.port is None:
+                if import_endpoint.scheme == "http":
+                    opts["port"] = 80
+                elif import_endpoint.scheme == "https":
+                    opts["port"] = 443
+                else:
+                    raise ValueError("Invalid endpoint: %s" % (self.DEFAULT_IMPORT_ENDPOINT))
+            else:
+                opts["port"] = import_endpoint.port
+        code, body, res = self.put(path, stream, size, opts)
+        if code / 100 != 2:
+            self.raise_error("Import failed", res, body)
+        js = self.checked_json(body, ["elapsed_time"])
+        time = float(js["elapsed_time"])
+        return time

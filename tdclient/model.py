@@ -204,8 +204,11 @@ class Table(Model):
     def tail(self, count, to=None, _from=None):
         return self._client.tail(self._db_name, self._table_name, count, to, _from)
 
-    def export(self, storage_type, **kwargs):
-        return self._client.export(self._db_name, self._table_name, storage_type, kwargs)
+    def import_data(self, format, stream, size):
+        return self._client.import_data(self._db_name, self._table_name, format, stream, size)
+
+    def export_data(self, storage_type, **kwargs):
+        return self._client.export_data(self._db_name, self._table_name, storage_type, kwargs)
 
     def estimated_storage_size_string(self):
         if self._estimated_storage_size <= 1024*1024:
