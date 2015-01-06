@@ -335,32 +335,32 @@ class Job(Model):
         return self._result
 
     def finished(self):
-        if self._status is None:
+        if self._status not in self.FINISHED_STATUS:
             self._update_progress()
         return self._status in self.FINISHED_STATUS
 
     def success(self):
-        if self._status is None:
+        if self._status not in self.FINISHED_STATUS:
             self._update_progress()
         return self._status == self.STATUS_SUCCESS
 
     def error(self):
-        if self._status is None:
+        if self._status not in self.FINISHED_STATUS:
             self._update_progress()
         return self._status == self.STATUS_ERROR
 
     def killed(self):
-        if self._status is None:
+        if self._status not in self.FINISHED_STATUS:
             self._update_progress()
         return self._status == self.STATUS_KILLED
 
     def queued(self):
-        if self._status is None:
+        if self._status not in self.FINISHED_STATUS:
             self._update_progress()
         return self._status == self.STATUS_QUEUED
 
     def running(self):
-        if self._status is None:
+        if self._status not in self.FINISHED_STATUS:
             self._update_progress()
         return self._status == self.STATUS_RUNNING
 
