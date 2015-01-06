@@ -312,17 +312,17 @@ class Job(Model):
         raise NotImplementedError # TODO
 
     def query(self):
-        if self._query is None or not self.finished():
+        if self._query is not None and not self.finished():
             self._update_status()
         return self._query
 
     def status(self):
-        if self._query is None or not self.finished():
+        if self._query is not None and not self.finished():
             self._update_status()
         return self._status
 
     def url(self):
-        if self._query is None or not self.finished():
+        if self._query is not None and not self.finished():
             self._update_status()
         return self._url
 
