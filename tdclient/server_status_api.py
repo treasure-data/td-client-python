@@ -11,9 +11,10 @@ class ServerStatusAPI(object):
 
     # => status:String
     def server_status(self):
-        code, body, res = self.get("/v3/system/server_status")
-        if code != 200:
-            return "Server is down (%d)" % (code,)
-        js = self.checked_json(body, ["status"])
-        status = js["status"]
-        return status
+        with self.get("/v3/system/server_status") as res:
+            code, body = res.status, res.read()
+            if code != 200:
+                return "Server is down (%d)" % (code,)
+            js = self.checked_json(body, ["status"])
+            status = js["status"]
+            return status

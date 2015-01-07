@@ -27,9 +27,7 @@ def test_list_databases_success():
             ]
         }
     """
-    res = mock.MagicMock()
-    res.status = 200
-    td.get = mock.MagicMock(return_value=(res.status, body, res))
+    td.get = mock.MagicMock(return_value=response(200, body))
     databases = td.list_databases()
     td.get.assert_called_with("/v3/database/list")
     assert len(databases) == 3
@@ -38,25 +36,19 @@ def test_list_databases_success():
 
 def test_list_databases_failure():
     td = api.API("APIKEY")
-    res = mock.MagicMock()
-    res.status = 500
-    td.get = mock.MagicMock(return_value=(res.status, b"error", res))
+    td.get = mock.MagicMock(return_value=response(500, b"error"))
     with pytest.raises(api.APIError) as error:
         td.list_databases()
     assert error.value.args == ("500: List databases failed: error",)
 
 def test_delete_database_success():
     td = api.API("APIKEY")
-    res = mock.MagicMock()
-    res.status = 200
-    td.post = mock.MagicMock(return_value=(res.status, b"", res))
+    td.post = mock.MagicMock(return_value=response(200, b""))
     td.delete_database("sample_datasets")
     td.post.assert_called_with("/v3/database/delete/sample_datasets")
 
 def test_create_database_success():
     td = api.API("APIKEY")
-    res = mock.MagicMock()
-    res.status = 200
-    td.post = mock.MagicMock(return_value=(res.status, b"", res))
+    td.post = mock.MagicMock(return_value=response(200, b""))
     td.create_database("sample_datasets")
     td.post.assert_called_with("/v3/database/create/sample_datasets", {})

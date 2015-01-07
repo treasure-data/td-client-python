@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import with_statement
 
+import contextlib
 import email.utils
 try:
     import http.client as httplib # >=3.0
@@ -180,20 +181,15 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
             else:
                 raise(RuntimeError("Retrying stopped after %d seconds." % (self._max_cumul_retry_delay)))
 
-        body = response.read()
-        ce = response.getheader("content-encoding")
-        if ce is not None:
-            if ce == "gzip":
-                body = zlib.decompress(body, zlib.MAX_WBITS + 16)
-            else:
-                body = zlib.decompress(body)
+#       body = response.read()
+#       ce = response.getheader("content-encoding")
+#       if ce is not None:
+#           if ce == "gzip":
+#               body = zlib.decompress(body, zlib.MAX_WBITS + 16)
+#           else:
+#               body = zlib.decompress(body)
 
-        try:
-            http.close()
-        except:
-            pass
-
-        return (response.status, body, response)
+        return contextlib.closing(response)
 
 
     def post(self, url, params={}):
@@ -230,14 +226,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
             else:
                 raise(RuntimeError("Retrying stopped after %d seconds." % (self._max_cumul_retry_delay)))
 
-        body = response.read()
-
-        try:
-            http.close()
-        except:
-            pass
-
-        return (response.status, body, response)
+        return contextlib.closing(response)
 
     def put(self, url, stream, size):
         http, header = self.new_http()
@@ -278,15 +267,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
             else:
                 raise(RuntimeError("Retrying stopped after %d seconds." % (self._max_cumul_retry_delay)))
 
-        body = response.read()
-
-        try:
-            http.close()
-        except:
-            pass
-
-        return (response.status, body, response)
-
+        return contextlib.closing(response)
 
     def new_http(self, host=None, **kwargs):
         if host is None:

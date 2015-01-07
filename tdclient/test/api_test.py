@@ -113,38 +113,32 @@ def test_http_proxy_with_scheme():
 def test_get_success():
     td = api.API("APIKEY")
     http = mock.MagicMock()
-    http.getresponse().status = 200
-    http.getresponse().read = mock.MagicMock(return_value=(b"body"))
-    http.getresponse().getheader = mock.MagicMock(return_value=(None))
+    http.getresponse = mock.MagicMock(return_value=response(200, b"body"))
     td.new_http = mock.MagicMock(return_value=(http, {}))
-
-    status, body, response = td.get("/foo", {"bar": "baz"})
-    http.request.assert_called_with("GET", "/foo?bar=baz", headers={"Accept-Encoding": "deflate, gzip"})
-    assert status == 200
-    assert body == b"body"
+    with td.get("/foo", {"bar": "baz"}) as res:
+        status, body = res.status, res.read()
+        http.request.assert_called_with("GET", "/foo?bar=baz", headers={"Accept-Encoding": "deflate, gzip"})
+        assert status == 200
+        assert body == b"body"
 
 def test_post_success():
     td = api.API("APIKEY")
     http = mock.MagicMock()
-    http.getresponse().status = 200
-    http.getresponse().read = mock.MagicMock(return_value=(b"body"))
-    http.getresponse().getheader = mock.MagicMock(return_value=(None))
+    http.getresponse = mock.MagicMock(return_value=response(200, b"body"))
     td.new_http = mock.MagicMock(return_value=(http, {}))
-
-    status, body, response = td.post("/foo", {"bar": "baz"})
-    http.request.assert_called_with("POST", "/foo", "bar=baz", headers={})
-    assert status == 200
-    assert body == b"body"
+    with td.post("/foo", {"bar": "baz"}) as res:
+        status, body = res.status, res.read()
+        http.request.assert_called_with("POST", "/foo", "bar=baz", headers={})
+        assert status == 200
+        assert body == b"body"
 
 def test_put_success():
     td = api.API("APIKEY")
     http = mock.MagicMock()
-    http.getresponse().status = 200
-    http.getresponse().read = mock.MagicMock(return_value=(b"body"))
-    http.getresponse().getheader = mock.MagicMock(return_value=(None))
+    http.getresponse = mock.MagicMock(return_value=response(200, b"body"))
     td.new_http = mock.MagicMock(return_value=(http, {}))
-
-    status, body, response = td.put("/foo", b"body", 7)
-    http.request.assert_called_with("PUT", "/foo", b"body", headers={"Content-Length": "7", "Content-Type": "application/octet-stream"})
-    assert status == 200
-    assert body == b"body"
+    with td.put("/foo", b"body", 7) as res:
+        status, body = res.status, res.read()
+        http.request.assert_called_with("PUT", "/foo", b"body", headers={"Content-Length": "7", "Content-Type": "application/octet-stream"})
+        assert status == 200
+        assert body == b"body"

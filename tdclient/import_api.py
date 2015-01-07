@@ -39,9 +39,10 @@ class ImportAPI(object):
                     raise ValueError("Invalid endpoint: %s" % (self.DEFAULT_IMPORT_ENDPOINT))
             else:
                 opts["port"] = import_endpoint.port
-        code, body, res = self.put(path, stream, size, opts)
-        if code / 100 != 2:
-            self.raise_error("Import failed", res, body)
-        js = self.checked_json(body, ["elapsed_time"])
-        time = float(js["elapsed_time"])
-        return time
+        with self.put(path, stream, size, opts) as res:
+            code, body = res.status, res.read()
+            if code / 100 != 2:
+                self.raise_error("Import failed", res, body)
+            js = self.checked_json(body, ["elapsed_time"])
+            time = float(js["elapsed_time"])
+            return time

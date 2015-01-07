@@ -17,8 +17,9 @@ class PartialDeleteAPI(object):
     def partial_delete(self, db, table, to, _from, params={}):
         params["to"] = str(to)
         params["from"] = str(_from)
-        code, body, res = self.post("/v3/table/partialdelete/%s/%s" % (urlquote(str(db)), urlquote(str(table))), params)
-        if code != 200:
-            self.raise_error("Partial delete failed", res, body)
-        js = self.checked_json(body, ["job_id"])
-        return str(js["job_id"])
+        with self.post("/v3/table/partialdelete/%s/%s" % (urlquote(str(db)), urlquote(str(table))), params) as res:
+            code, body = res.status, res.read()
+            if code != 200:
+                self.raise_error("Partial delete failed", res, body)
+            js = self.checked_json(body, ["job_id"])
+            return str(js["job_id"])

@@ -31,17 +31,13 @@ def test_show_account_success():
             }
         }
     """
-    res = mock.MagicMock()
-    res.status = 200
-    td.get = mock.MagicMock(return_value=(res.status, body, res))
+    td.get = mock.MagicMock(return_value=response(200, body))
     access_controls = td.show_account()
     td.get.assert_called_with("/v3/account/show")
 
 def test_show_account_failure():
     td = api.API("APIKEY")
-    res = mock.MagicMock()
-    res.status = 500
-    td.get = mock.MagicMock(return_value=(res.status, b"error", res))
+    td.get = mock.MagicMock(return_value=response(500, b"error"))
     with pytest.raises(api.APIError) as error:
         td.show_account()
     assert error.value.args == ("500: Show account failed: error",)
@@ -57,8 +53,6 @@ def test_core_utilization_success():
             "history": ""
         }
     """
-    res = mock.MagicMock()
-    res.status = 200
-    td.get = mock.MagicMock(return_value=(res.status, body, res))
+    td.get = mock.MagicMock(return_value=response(200, body))
     access_controls = td.account_core_utilization(0, 3)
     td.get.assert_called_with("/v3/account/core_utilization", {"from": "0", "to": "3"})

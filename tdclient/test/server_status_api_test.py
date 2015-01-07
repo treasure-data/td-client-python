@@ -23,16 +23,12 @@ def test_server_status_success():
             "status": "ok"
         }
     """
-    res = mock.MagicMock()
-    res.status = 200
-    td.get = mock.MagicMock(return_value=(res.status, body, res))
+    td.get = mock.MagicMock(return_value=response(200, body))
     assert td.server_status() == "ok"
     td.get.assert_called_with("/v3/system/server_status")
 
 def test_server_status_failure():
     td = api.API("APIKEY")
-    res = mock.MagicMock()
-    res.status = 500
-    td.get = mock.MagicMock(return_value=(res.status, b"error", res))
+    td.get = mock.MagicMock(return_value=response(500, b"error"))
     assert td.server_status() == "Server is down (500)"
     td.get.assert_called_with("/v3/system/server_status")
