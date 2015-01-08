@@ -6,10 +6,6 @@ from __future__ import with_statement
 
 import contextlib
 import email.utils
-try:
-    import http.client as httplib # >=3.0
-except ImportError:
-    import httplib
 import json
 import os
 import socket
@@ -20,9 +16,10 @@ try:
 except ImportError:
     from urllib import urlencode
 try:
-    from urllib.parse import urlparse # >=3.0
+    import urllib.parse as urlparse # >=3.0
 except ImportError:
-    from urlparse import urlparse
+    import urlparse
+import urllib3
 import zlib
 
 from tdclient.access_control_api import AccessControlAPI
@@ -68,7 +65,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
     DEFAULT_ENDPOINT = "https://api.treasuredata.com/"
     DEFAULT_IMPORT_ENDPOINT = "https://api-import.treasuredata.com/"
 
-    def __init__(self, apikey=None, user_agent=None, endpoint=None, **kwargs):
+    def __init__(self, apikey=None, user_agent=None, endpoint=None, headers={}, **kwargs):
         if apikey is not None:
             self._apikey = apikey
         elif os.getenv("TD_API_KEY"):
@@ -82,13 +79,11 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
             self._user_agent = "TD-Client-Python: %s" % (version.__version__)
 
         if endpoint is not None:
-            endpoint = endpoint
+            self._endpoint = urlparse.urlparse(endpoint)
         elif os.getenv("TD_API_SERVER"):
-            endpoint = os.getenv("TD_API_SERVER")
+            self._endpoint = urlparse.urlparse(os.getenv("TD_API_SERVER"))
         else:
-            endpoint = self.DEFAULT_ENDPOINT
-
-        uri = urlparse(endpoint)
+            self._endpoint = urlparse.urlparse(self.DEFAULT_ENDPOINT)
 
         self._connect_timeout = kwargs.get("connect_timeout", 60)
         self._read_timeout = kwargs.get("read_timeout", 600)
@@ -96,64 +91,25 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         self._retry_post_requests = kwargs.get("retry_post_requests", False)
         self._max_cumul_retry_delay = kwargs.get("max_cumul_retry_delay", 600)
 
-        if uri.scheme == "http" or uri.scheme == "https":
-            self._host = uri.hostname
-            if uri.port is not None:
-                self._port = uri.port
-            else:
-                self._port = 443 if uri.scheme == "https" else 80
-            # the opts[:ssl] option is ignored here, it's value
-            #   overridden by the scheme of the endpoint URI
-            self._ssl = (uri.scheme == "https")
-            self._base_path = uri.path
-
+        http_proxy = kwargs.get("http_proxy", os.getenv("HTTP_PROXY"))
+        if http_proxy is None:
+            self.http = urllib3.PoolManager()
         else:
-            if uri.port:
-                # invalid URI
-                raise ValueError("Invalid endpoint: %s" % (endpoint))
-
-            # generic URI
-            port = None
-            if 0 < endpoint.find(":"):
-                host, _port = endpoint.split(":", 2)
-                port = int(_port)
-            else:
-                host = endpoint
-            if "ssl" in kwargs:
-                if port is None:
-                    port = 443
-                self._ssl = True
-            else:
-                if port is None:
-                    port = 80
-                self._ssl = False
-            self._host = host
-            self._port = port
-            self._base_path = ""
-
-        self._http_proxy = kwargs.get("http_proxy", os.getenv("HTTP_PROXY"))
-        if self._http_proxy is not None:
-            http_proxy = self._http_proxy
             if http_proxy.startswith("http://"):
-                http_proxy = http_proxy[7:]
-            if http_proxy.endswith("/"):
-                http_proxy = http_proxy[0:len(http_proxy)-1]
-            self._http_proxy = http_proxy
+                self.http = urllib3.ProxyManager(http_proxy)
+            else:
+                self.http = urllib3.ProxyManager("http://%s" % http_proxy)
 
-        self._headers = kwargs.get("headers", {})
+        self._headers = { key.lower(): value for (key, value) in headers.items() }
 
     @property
     def apikey(self):
         return self._apikey
 
-    def get(self, url, params={}):
-        http, header = self.new_http()
-
-        path = os.path.join(self._base_path, url)
-        if 0 < len(params):
-            path += "?" + urlencode(params)
-
-        header["Accept-Encoding"] = "deflate, gzip"
+    def get(self, request_path, params={}):
+        url = self.request_url(request_path)
+        headers = self.request_headers({})
+        headers["accept-encoding"] = "deflate, gzip"
 
         # up to 7 retries with exponential (base 2) back-off starting at 'retry_delay'
         retry_delay = 5
@@ -162,15 +118,12 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         response = None
         while True:
             try:
-                http.request("GET", path, headers=header)
-                response = http.getresponse()
-                status = response.status
-                if status < 500:
+                response = self.http.request("GET", url, fields=params, headers=headers)
+                if response.status < 500:
                     break
                 else:
-                    print("Error %d: %s. Retrying after %d seconds..." % (status, response.reason, retry_delay), file=sys.stderr)
-            except ( httplib.NotConnected, httplib.IncompleteRead, httplib.CannotSendRequest, httplib.CannotSendHeader,
-                     httplib.ResponseNotReady, socket.error ):
+                    print("Error %d: %s. Retrying after %d seconds..." % (response.status, response.data, retry_delay), file=sys.stderr)
+            except ( urllib3.TimeoutStateError, urllib3.TimeoutError, urllib3.PoolError, socket.error ):
                 pass
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
@@ -181,24 +134,15 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
             else:
                 raise(RuntimeError("Retrying stopped after %d seconds." % (self._max_cumul_retry_delay)))
 
-#       body = response.read()
-#       ce = response.getheader("content-encoding")
-#       if ce is not None:
-#           if ce == "gzip":
-#               body = zlib.decompress(body, zlib.MAX_WBITS + 16)
-#           else:
-#               body = zlib.decompress(body)
-
         return contextlib.closing(response)
 
 
-    def post(self, url, params={}):
-        http, header = self.new_http()
+    def post(self, request_path, params={}):
+        url = self.request_url(request_path)
+        headers = self.request_headers({})
 
-        path = os.path.join(self._base_path, url)
         if len(params) < 1:
-            header["Content-Length"] = 0
-        data = urlencode(params)
+            headers["content-length"] = 0
 
         # up to 7 retries with exponential (base 2) back-off starting at 'retry_delay'
         retry_delay = 5
@@ -207,15 +151,12 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         response = None
         while True:
             try:
-                http.request("POST", path, data, headers=header)
-                response = http.getresponse()
-                status = response.status
-                if status < 500:
+                response = self.http.request("POST", url, fields=params, headers=headers)
+                if response.status < 500:
                     break
                 else:
-                    print("Error %d: %s. Retrying after %d seconds..." % (status, response.reason, retry_delay), file=sys.stderr)
-            except ( httplib.NotConnected, httplib.IncompleteRead, httplib.CannotSendRequest, httplib.CannotSendHeader,
-                     httplib.ResponseNotReady, socket.error ):
+                    print("Error %d: %s. Retrying after %d seconds..." % (response.status, response.data, retry_delay), file=sys.stderr)
+            except ( urllib3.TimeoutStateError, urllib3.TimeoutError, urllib3.PoolError, socket.error ):
                 pass
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
@@ -228,18 +169,14 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
 
         return contextlib.closing(response)
 
-    def put(self, url, stream, size):
-        http, header = self.new_http()
+    def put(self, request_path, stream, size):
+        url = self.request_url(request_path)
+        headers = self.request_headers({})
 
-        header["Content-Type"] = "application/octet-stream"
-        header["Content-Length"] = str(size)
+        header["content-type"] = "application/octet-stream"
+        header["content-length"] = str(size)
 
-        if hasattr(stream, "read"):
-            data = stream.read()
-        else:
-            data = stream
-
-        path = os.path.join(self._base_path, url)
+        body = stream.read() if hasattr(stream, "read") else stream
 
         # up to 7 retries with exponential (base 2) back-off starting at 'retry_delay'
         retry_delay = 5
@@ -248,15 +185,12 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         response = None
         while True:
             try:
-                http.request("PUT", path, data, headers=header)
-                response = http.getresponse()
-                status = response.status
-                if status < 500:
+                response = self.http.urlopen("PUT", url, body=body, headers=headers)
+                if response.status < 500:
                     break
                 else:
-                    print("Error %d: %s. Retrying after %d seconds..." % (status, response.reason, retry_delay), file=sys.stderr)
-            except ( httplib.NotConnected, httplib.IncompleteRead, httplib.CannotSendRequest, httplib.CannotSendHeader,
-                     httplib.ResponseNotReady, socket.error ):
+                    print("Error %d: %s. Retrying after %d seconds..." % (response.status, response.data, retry_delay), file=sys.stderr)
+            except ( urllib3.TimeoutStateError, urllib3.TimeoutError, urllib3.PoolError, socket.error ):
                 pass
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
@@ -269,24 +203,21 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
 
         return contextlib.closing(response)
 
-    def new_http(self, host=None, **kwargs):
-        if host is None:
-            host = self._host
-        if self._ssl:
-            http = httplib.HTTPSConnection(host, self._port, timeout=60)
-        else:
-            http = httplib.HTTPConnection(host, self._port, timeout=60)
-            if self._http_proxy is not None:
-                proxy_host, _proxy_port = self._http_proxy.split(":", 2)
-                proxy_port = int(_proxy_port) if _proxy_port is not None else 80
-                http.set_tunnel(proxy_host, proxy_port)
-        headers = {}
-        if self._apikey is not None:
-            headers["Authorization"] = "TD1 %s" % (self._apikey,)
-        headers["Date"] = email.utils.formatdate(time.time())
-        headers["User-Agent"] = self._user_agent
-        headers.update(self._headers)
-        return (http, headers)
+    def request_url(self, path=""):
+        url = urlparse.ParseResult(self._endpoint.scheme, self._endpoint.netloc, os.path.join(self._endpoint.path, path),
+                                   self._endpoint.params, self._endpoint.query, self._endpoint.fragment)
+        return urlparse.urlunparse(url)
+
+    def request_headers(self, headers={}):
+        # use default headers first
+        hs = dict(self._headers)
+        # add default headers
+        hs["authorization"] = "TD1 %s" % (self._apikey,)
+        hs["date"] = email.utils.formatdate(time.time())
+        hs["user-agent"] = self._user_agent
+        # override given headers
+        hs.update({ key.lower(): value for (key, value) in headers.items() })
+        return hs
 
     def raise_error(self, msg, res, body):
         status_code = res.status
