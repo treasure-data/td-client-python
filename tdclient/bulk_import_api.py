@@ -4,10 +4,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import with_statement
 
-try:
-    from io import BytesIO
-except ImportError:
-    from StringIO import StringIO as BytesIO
 import msgpack
 try:
     from urllib.parse import quote as urlquote # >=3.0
@@ -113,9 +109,9 @@ class BulkImportAPI(object):
     # => data...
     def bulk_import_error_records(self, name, params={}):
         with self.get("/v3/bulk_import/error_records/%s" % (urlquote(str(name))), params) as res:
-            code, body = res.status, res.read()
+            code = res.status
             if code != 200:
                 self.raise_error("Failed to get bulk import error records", res)
-            unpacker = msgpack.Unpacker(BytesIO(body))
+            unpacker = msgpack.Unpacker(res)
             for row in unpacker:
                 yield row

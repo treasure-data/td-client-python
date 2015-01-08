@@ -4,10 +4,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import with_statement
 
-try:
-    from io import BytesIO
-except ImportError:
-    from StringIO import StringIO as BytesIO
 import json
 import msgpack
 try:
@@ -94,10 +90,10 @@ class JobAPI(object):
 
     def job_result(self, job_id):
         with self.get("/v3/job/result/%s" % (urlquote(str(job_id))), {"format": "msgpack"}) as res:
-            code, body = res.status, res.read()
+            code = res.status
             if code != 200:
                 self.raise_error("Get job result failed", res, body)
-            unpacker = msgpack.Unpacker(BytesIO(body))
+            unpacker = msgpack.Unpacker(res)
             for row in unpacker:
                 yield row
 
