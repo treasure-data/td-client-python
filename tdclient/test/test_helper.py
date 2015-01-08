@@ -4,6 +4,11 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import with_statement
 
+import contextlib
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 import os
 
 def unset_environ():
@@ -20,33 +25,12 @@ def unset_environ():
     except KeyError:
         pass
 
-class response(object):
-    def __init__(self, code, body, headers={}):
-        self.status = code
-        self.body = body
-        self.headers = { key.lower(): value for (key, value) in headers.items() }
-        self.pos = 0
+def make_raw_response(status, body, headers={}):
+    response = mock.MagicMock()
+    response.status = status
+    response.read = mock.MagicMock(return_value=body)
+    return response
 
-    def read(self, amt=None):
-        if amt is None:
-            self.pos = len(self.body)
-            return self.body
-        else:
-            body = self.body[self.pos:self.pos+amt]
-            self.pos += amt
-            return body
-
-    def getheader(self, header):
-        return self.headers.get(header.lower())
-
-    def getheaders(self):
-        return self.headers
-
-    def close(self):
-        pass
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, type, value, traceback):
-        pass
+def make_response(*args, **kwargs):
+    response = make_raw_response(*args, **kwargs)
+    return contextlib.closing(response)

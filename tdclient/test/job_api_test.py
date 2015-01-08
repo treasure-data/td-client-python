@@ -27,7 +27,7 @@ def test_list_jobs_success():
             ]
         }
     """
-    td.get = mock.MagicMock(return_value=response(200, body))
+    td.get = mock.MagicMock(return_value=make_response(200, body))
     jobs = td.list_jobs(0, 2)
     td.get.assert_called_with("/v3/job/list", {"from": "0", "to": "2"})
     assert len(jobs) == 3
@@ -35,7 +35,7 @@ def test_list_jobs_success():
 
 def test_list_jobs_failure():
     td = api.API("APIKEY")
-    td.get = mock.MagicMock(return_value=response(500, b"error"))
+    td.get = mock.MagicMock(return_value=make_response(500, b"error"))
     with pytest.raises(api.APIError) as error:
         td.list_jobs(0, 2)
     assert error.value.args == ("500: List jobs failed: error",)
@@ -62,7 +62,7 @@ def test_show_job_success():
             }
         }
     """
-    td.get = mock.MagicMock(return_value=response(200, body))
+    td.get = mock.MagicMock(return_value=make_response(200, body))
     jobs = td.show_job(12345)
     td.get.assert_called_with("/v3/job/show/12345")
 
@@ -74,7 +74,7 @@ def test_job_status_success():
             "status": "RUNNING"
         }
     """
-    td.get = mock.MagicMock(return_value=response(200, body))
+    td.get = mock.MagicMock(return_value=make_response(200, body))
     jobs = td.job_status(12345)
     td.get.assert_called_with("/v3/job/status/12345")
 
@@ -86,7 +86,7 @@ def test_job_status_success():
 #            "status": "RUNNING"
 #        }
 #    """
-#    td.get = mock.MagicMock(return_value=response(200, body))
+#    td.get = mock.MagicMock(return_value=make_response(200, body))
 #    jobs = td.job_result(12345)
 #    td.get.assert_called_with("/v3/job/result/12345")
 
@@ -98,7 +98,7 @@ def test_job_result_raw_success():
             "foo": "bar"
         }
     """
-    td.get = mock.MagicMock(return_value=response(200, body))
+    td.get = mock.MagicMock(return_value=make_response(200, body))
     jobs = td.job_result_raw(12345, "json")
     td.get.assert_called_with("/v3/job/result/12345", {"format": "json"})
 
@@ -110,7 +110,7 @@ def test_kill_success():
             "former_status": "foo"
         }
     """
-    td.post = mock.MagicMock(return_value=response(200, body))
+    td.post = mock.MagicMock(return_value=make_response(200, body))
     jobs = td.kill(12345)
     td.post.assert_called_with("/v3/job/kill/12345")
 
@@ -122,7 +122,7 @@ def test_query_success():
             "job_id": "12345"
         }
     """
-    td.post = mock.MagicMock(return_value=response(200, body))
+    td.post = mock.MagicMock(return_value=make_response(200, body))
     job_id = td.query("SELECT COUNT(1) FROM nasdaq", db="sample_datasets", priority="HIGH")
     td.post.assert_called_with("/v3/job/issue/hive/sample_datasets", {"query": "SELECT COUNT(1) FROM nasdaq", "priority": "HIGH"})
     assert job_id == "12345"

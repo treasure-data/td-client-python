@@ -27,7 +27,7 @@ def test_list_tables_success():
             "database":"sample_datasets"
         }
     """
-    td.get = mock.MagicMock(return_value=response(200, body))
+    td.get = mock.MagicMock(return_value=make_response(200, body))
     tables = td.list_tables("sample_datasets")
     td.get.assert_called_with("/v3/table/list/sample_datasets")
     assert len(tables) == 2
@@ -36,38 +36,38 @@ def test_list_tables_success():
 
 def test_list_tables_failure():
     td = api.API("APIKEY")
-    td.get = mock.MagicMock(return_value=response(500, b"error"))
+    td.get = mock.MagicMock(return_value=make_response(500, b"error"))
     with pytest.raises(api.APIError) as error:
         td.list_tables("sample_datasets")
     assert error.value.args == ("500: List tables failed: error",)
 
 def test_create_log_table_success():
     td = api.API("APIKEY")
-    td.post = mock.MagicMock(return_value=response(200, b""))
+    td.post = mock.MagicMock(return_value=make_response(200, b""))
     td.create_log_table("sample_datasets", "nasdaq")
     td.post.assert_called_with("/v3/table/create/sample_datasets/nasdaq/log", {})
 
 def test_create_item_table_success():
     td = api.API("APIKEY")
-    td.post = mock.MagicMock(return_value=response(200, b""))
+    td.post = mock.MagicMock(return_value=make_response(200, b""))
     td.create_item_table("sample_datasets", "nasdaq", "id", "INT")
     td.post.assert_called_with("/v3/table/create/sample_datasets/nasdaq/item", {"primary_key": "id", "primary_key_type": "INT"})
 
 def test_swap_table_success():
     td = api.API("APIKEY")
-    td.post = mock.MagicMock(return_value=response(200, b""))
+    td.post = mock.MagicMock(return_value=make_response(200, b""))
     td.swap_table("sample_datasets", "foo", "bar")
     td.post.assert_called_with("/v3/table/swap/sample_datasets/foo/bar")
 
 def test_update_schema_success():
     td = api.API("APIKEY")
-    td.post = mock.MagicMock(return_value=response(200, b""))
+    td.post = mock.MagicMock(return_value=make_response(200, b""))
     td.update_schema("sample_datasets", "foo", "{}")
     td.post.assert_called_with("/v3/table/update-schema/sample_datasets/foo", {"schema": "{}"})
 
 def test_update_expire_success():
     td = api.API("APIKEY")
-    td.post = mock.MagicMock(return_value=response(200, b""))
+    td.post = mock.MagicMock(return_value=make_response(200, b""))
     td.update_expire("sample_datasets", "foo", 7)
     td.post.assert_called_with("/v3/table/update/sample_datasets/foo", {"expire_days": 7})
 
@@ -79,6 +79,6 @@ def test_delete_table_success():
             "type": "item"
         }
     """
-    td.post = mock.MagicMock(return_value=response(200, body))
+    td.post = mock.MagicMock(return_value=make_response(200, body))
     td.delete_table("sample_datasets", "foo")
     td.post.assert_called_with("/v3/table/delete/sample_datasets/foo")

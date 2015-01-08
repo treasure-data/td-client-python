@@ -24,14 +24,14 @@ def test_export_success():
             "job_id": "12345"
         }
     """
-    td.post = mock.MagicMock(return_value=response(200, body))
+    td.post = mock.MagicMock(return_value=make_response(200, body))
     job = td.export_data("db", "table", "s3")
     td.post.assert_called_with("/v3/export/run/db/table", {"storage_type": "s3"})
     assert job == "12345"
 
 def test_export_failure():
     td = api.API("APIKEY")
-    td.post = mock.MagicMock(return_value=response(500, b"error"))
+    td.post = mock.MagicMock(return_value=make_response(500, b"error"))
     with pytest.raises(api.APIError) as error:
         td.export_data("db", "table", "s3")
     assert error.value.args == ("500: Export failed: error",)

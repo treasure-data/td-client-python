@@ -18,13 +18,13 @@ def setup_function(function):
 
 def test_grant_access_control_success():
     td = api.API("APIKEY")
-    td.post = mock.MagicMock(return_value=response(200, b""))
+    td.post = mock.MagicMock(return_value=make_response(200, b""))
     access_controls = td.grant_access_control("foo", "bar", "baz", "hoge")
     td.post.assert_called_with("/v3/acl/grant", {"subject": "foo", "action": "bar", "scope": "baz", "grant_option": "hoge"})
 
 def test_revoke_access_control_success():
     td = api.API("APIKEY")
-    td.post = mock.MagicMock(return_value=response(200, b""))
+    td.post = mock.MagicMock(return_value=make_response(200, b""))
     access_controls = td.revoke_access_control("foo", "bar", "baz")
     td.post.assert_called_with("/v3/acl/revoke", {"subject": "foo", "action": "bar", "scope": "baz"})
 
@@ -41,7 +41,7 @@ def test_test_access_control_success():
             ]
         }
     """
-    td.get = mock.MagicMock(return_value=response(200, body))
+    td.get = mock.MagicMock(return_value=make_response(200, body))
     access_controls = td.test_access_control("foo", "bar", "baz")
     td.get.assert_called_with("/v3/acl/test", {"user": "foo", "action": "bar", "scope": "baz"})
 
@@ -57,14 +57,14 @@ def test_list_access_controls_success():
             ]
         }
     """
-    td.get = mock.MagicMock(return_value=response(200, body))
+    td.get = mock.MagicMock(return_value=make_response(200, body))
     access_controls = td.list_access_controls()
     td.get.assert_called_with("/v3/acl/list")
     assert len(access_controls) == 3
 
 def test_list_access_controls_failure():
     td = api.API("APIKEY")
-    td.get = mock.MagicMock(return_value=response(500, b"error"))
+    td.get = mock.MagicMock(return_value=make_response(500, b"error"))
     with pytest.raises(api.APIError) as error:
         td.list_access_controls()
     assert error.value.args == ("500: Listing access control failed: error",)

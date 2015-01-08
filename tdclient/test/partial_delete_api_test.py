@@ -24,13 +24,13 @@ def test_partial_delete_success():
             "job_id":"12345"
         }
     """
-    td.post = mock.MagicMock(return_value=response(200, body))
+    td.post = mock.MagicMock(return_value=make_response(200, body))
     partial_delete = td.partial_delete("sample_datasets", "nasdaq", 0, 10)
     td.post.assert_called_with("/v3/table/partialdelete/sample_datasets/nasdaq", {"from": "10", "to": "0"})
 
 def test_partial_delete_failure():
     td = api.API("APIKEY")
-    td.post = mock.MagicMock(return_value=response(500, b"error"))
+    td.post = mock.MagicMock(return_value=make_response(500, b"error"))
     with pytest.raises(api.APIError) as error:
         td.partial_delete("sample_datasets", "nasdaq", 0, 10)
     assert error.value.args == ("500: Partial delete failed: error",)

@@ -101,5 +101,3 @@ class ScheduleAPI(object):
             _type = m.get("type", "?")
             return [job_id, _type, scheduled_at]
         return [ job(m) for m in js["jobs"] ]
-
-
