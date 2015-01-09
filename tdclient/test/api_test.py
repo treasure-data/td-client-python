@@ -313,3 +313,36 @@ def test_put_failure():
     assert td.sleep.called
     sleeps = [ args[0] for (args, kwargs) in td.sleep.call_args_list ]
     assert td._max_cumul_retry_delay < sum(sleeps)
+
+def test_raise_error_401():
+    td = api.API("APIKEY")
+    with pytest.raises(api.AuthError) as error:
+        td.raise_error("msg", make_raw_response(401, b"unauthorized"), b"body")
+
+def test_raise_error_403():
+    td = api.API("APIKEY")
+    with pytest.raises(api.ForbiddenError) as error:
+        td.raise_error("msg", make_raw_response(403, b"forbidden"), b"body")
+
+def test_raise_error_404():
+    td = api.API("APIKEY")
+    with pytest.raises(api.NotFoundError) as error:
+        td.raise_error("msg", make_raw_response(404, b"not found"), b"body")
+
+def test_raise_error_409():
+    td = api.API("APIKEY")
+    with pytest.raises(api.AlreadyExistsError) as error:
+        td.raise_error("msg", make_raw_response(409, b"conflict"), b"body")
+
+def test_raise_error_4xx():
+    td = api.API("APIKEY")
+    with pytest.raises(api.APIError) as error:
+        td.raise_error("msg", make_raw_response(402, b"payment required"), b"body")
+
+def test_sleep():
+    with mock.patch("tdclient.api.time") as time:
+        td = api.API("apikey")
+        td.sleep(600)
+        assert time.sleep.called
+        args, kwargs = time.sleep.call_args
+        assert args == (600,)
