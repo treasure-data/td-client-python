@@ -103,6 +103,8 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
             else:
                 self.http = urllib3.ProxyManager("http://%s" % http_proxy, **pool_options)
 
+        self._retry_post_requests = retry_post_requests
+        self._max_cumul_retry_delay = max_cumul_retry_delay
         self._headers = { key.lower(): value for (key, value) in headers.items() }
 
     @property
@@ -135,19 +137,15 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
                 log.warn("Retrying after %d seconds..." % (retry_delay))
-                time.sleep(retry_delay)
+                self.sleep(retry_delay)
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
             else:
                 raise(APIError("Retrying stopped after %d seconds." % (self._max_cumul_retry_delay)))
         return contextlib.closing(response)
 
-
     def post(self, path, params={}, **kwargs):
         url, headers = self.build_request(path=path, headers={}, **kwargs)
-
-        if len(params) < 1:
-            headers["content-length"] = 0
 
         # up to 7 retries with exponential (base 2) back-off starting at 'retry_delay'
         retry_delay = 5
@@ -165,16 +163,16 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
                 if response.status < 500:
                     break
                 else:
-                    if not self._retry_post_request:
-                        raise(APIError("Retrying stopped by retry_post_request == False"))
+                    if not self._retry_post_requests:
+                        raise(APIError("Retrying stopped by retry_post_requests == False"))
                     log.warn("Error %d: %s. Retrying after %d seconds..." % (response.status, response.data, retry_delay))
             except ( urllib3.exceptions.TimeoutStateError, urllib3.exceptions.TimeoutError, urllib3.exceptions.PoolError, socket.error ):
-                if self._retry_post_request:
-                    raise(APIError("Retrying stopped by retry_post_request == False"))
+                if self._retry_post_requests:
+                    raise(APIError("Retrying stopped by retry_post_requests == False"))
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
                 log.warn("Retrying after %d seconds..." % (retry_delay))
-                time.sleep(retry_delay)
+                self.sleep(retry_delay)
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
             else:
@@ -206,7 +204,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
                 log.warn("Retrying after %d seconds..." % (retry_delay))
-                time.sleep(retry_delay)
+                self.sleep(retry_delay)
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
             else:
@@ -255,3 +253,6 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         if 0 < [ k in js for k in required ].count(False):
             raise APIError("Unexpected API response: %s: %s" % (error, repr(body)))
         return js
+
+    def sleep(self, secs):
+        time.sleep(secs)
