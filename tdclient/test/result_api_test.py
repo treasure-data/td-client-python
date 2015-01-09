@@ -28,34 +28,26 @@ def test_list_result_success():
             ]
         }
     """
-    res = mock.MagicMock()
-    res.status = 200
-    td.get = mock.MagicMock(return_value=(res.status, body, res))
+    td.get = mock.MagicMock(return_value=make_response(200, body))
     results = td.list_result()
     td.get.assert_called_with("/v3/result/list")
     assert len(results) == 3
 
 def test_list_result_success():
     td = api.API("APIKEY")
-    res = mock.MagicMock()
-    res.status = 500
-    td.get = mock.MagicMock(return_value=(res.status, b"error", res))
+    td.get = mock.MagicMock(return_value=make_response(500, b"error"))
     with pytest.raises(api.APIError) as error:
         td.list_result()
     assert error.value.args == ("500: List result table failed: error",)
 
 def test_create_result_success():
     td = api.API("APIKEY")
-    res = mock.MagicMock()
-    res.status = 200
-    td.post = mock.MagicMock(return_value=(res.status, b"", res))
+    td.post = mock.MagicMock(return_value=make_response(200, b""))
     results = td.create_result("foo", "http://example.com")
     td.post.assert_called_with("/v3/result/create/foo", {"url": "http://example.com"})
 
 def test_delete_result_success():
     td = api.API("APIKEY")
-    res = mock.MagicMock()
-    res.status = 200
-    td.post = mock.MagicMock(return_value=(res.status, b"", res))
+    td.post = mock.MagicMock(return_value=make_response(200, b""))
     results = td.delete_result("foo")
     td.post.assert_called_with("/v3/result/delete/foo")

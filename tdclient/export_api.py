@@ -17,8 +17,9 @@ class ExportAPI(object):
     # => jobId:String
     def export_data(self, db, table, storage_type, params={}):
         params["storage_type"] = storage_type
-        code, body, res = self.post("/v3/export/run/%s/%s" % (urlquote(str(db)), urlquote(str(table))), params)
-        if code != 200:
-            self.raise_error("Export failed", res, body)
-        js = self.checked_json(body, ["job_id"])
-        return str(js["job_id"])
+        with self.post("/v3/export/run/%s/%s" % (urlquote(str(db)), urlquote(str(table))), params) as res:
+            code, body = res.status, res.read()
+            if code != 200:
+                self.raise_error("Export failed", res, body)
+            js = self.checked_json(body, ["job_id"])
+            return str(js["job_id"])

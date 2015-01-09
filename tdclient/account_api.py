@@ -12,18 +12,19 @@ class AccountAPI(object):
     ##
 
     def show_account(self):
-        code, body, res = self.get("/v3/account/show")
-        if code != 200:
-            self.raise_error("Show account failed", res, body)
-        js = self.checked_json(body, ["account"])
-        a = js["account"]
-        account_id = int(a["id"])
-        plan = int(a["plan"])
-        storage_size = int(a["storage_size"])
-        guaranteed_cores = int(a["guaranteed_cores"])
-        maximum_cores = int(a["maximum_cores"])
-        created_at = a["created_at"]
-        return [account_id, plan, storage_size, guaranteed_cores, maximum_cores, created_at]
+        with self.get("/v3/account/show") as res:
+            code, body = res.status, res.read()
+            if code != 200:
+                self.raise_error("Show account failed", res, body)
+            js = self.checked_json(body, ["account"])
+            a = js["account"]
+            account_id = int(a["id"])
+            plan = int(a["plan"])
+            storage_size = int(a["storage_size"])
+            guaranteed_cores = int(a["guaranteed_cores"])
+            maximum_cores = int(a["maximum_cores"])
+            created_at = a["created_at"]
+            return [account_id, plan, storage_size, guaranteed_cores, maximum_cores, created_at]
 
     def account_core_utilization(self, _from, to):
         params = {}
@@ -31,12 +32,13 @@ class AccountAPI(object):
             params["from"] = str(_from)
         if to is not None:
             params["to"] = str(to)
-        code, body, res = self.get("/v3/account/core_utilization", params)
-        if code != 200:
-            self.raise_error("Show account failed", res, body)
-        js = self.checked_json(body, ["from", "to", "interval", "history"])
-        _from = time.strptime(js["from"], "%Y-%m-%d %H:%M:%S %Z")
-        to = time.strptime(js["to"], "%Y-%m-%d %H:%M:%S %Z")
-        interval = int(js["interval"])
-        history = js["history"]
-        return [_from, to, interval, history]
+        with self.get("/v3/account/core_utilization", params) as res:
+            code, body = res.status, res.read()
+            if code != 200:
+                self.raise_error("Show account failed", res, body)
+            js = self.checked_json(body, ["from", "to", "interval", "history"])
+            _from = time.strptime(js["from"], "%Y-%m-%d %H:%M:%S %Z")
+            to = time.strptime(js["to"], "%Y-%m-%d %H:%M:%S %Z")
+            interval = int(js["interval"])
+            history = js["history"]
+            return [_from, to, interval, history]

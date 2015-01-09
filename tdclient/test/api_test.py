@@ -10,6 +10,11 @@ except ImportError:
     import mock
 import os
 import pytest
+try:
+    import urllib.parse as urlparse
+except ImportError:
+    import urlparse
+import urllib3
 
 from tdclient import api
 from tdclient import version
@@ -28,7 +33,7 @@ def test_apikey_from_environ():
     assert td.apikey == "APIKEY"
 
 def test_apikey_failure():
-    with pytest.raises(RuntimeError) as error:
+    with pytest.raises(ValueError) as error:
         api.API()
     assert error.value.args == ("no API key given",)
 
@@ -42,109 +47,302 @@ def test_user_agent_from_keyword():
 
 def test_default_endpoint():
     td = api.API("apikey")
-    assert td._ssl == True
-    assert td._host == "api.treasuredata.com"
-    assert td._port == 443
-    assert td._base_path == "/"
+    assert isinstance(td.http, urllib3.PoolManager)
+    url, headers = td.build_request()
+    assert "https://api.treasuredata.com/" == url
 
 def test_endpoint_from_environ():
     os.environ["TD_API_SERVER"] = "http://api1.example.com"
     td = api.API("apikey")
-    assert td._ssl == False
-    assert td._host == "api1.example.com"
-    assert td._port == 80
-    assert td._base_path == ""
+    assert isinstance(td.http, urllib3.PoolManager)
+    url, headers = td.build_request()
+    assert "http://api1.example.com" == url
 
 def test_endpoint_from_keyword():
     td = api.API("apikey", endpoint="http://api2.example.com")
-    assert td._ssl == False
-    assert td._host == "api2.example.com"
-    assert td._port == 80
-    assert td._base_path == ""
+    assert isinstance(td.http, urllib3.PoolManager)
+    url, headers = td.build_request()
+    assert "http://api2.example.com" == url
 
 def test_endpoint_prefer_keyword():
     os.environ["TD_API_SERVER"] = "http://api1.example.com"
     td = api.API("apikey", endpoint="http://api2.example.com")
-    assert td._ssl == False
-    assert td._host == "api2.example.com"
-    assert td._port == 80
-    assert td._base_path == ""
+    assert isinstance(td.http, urllib3.PoolManager)
+    url, headers = td.build_request()
+    assert "http://api2.example.com" == url
 
 def test_http_endpoint_with_custom_port():
     td = api.API("apikey", endpoint="http://api.example.com:8080/")
-    assert td._ssl == False
-    assert td._host == "api.example.com"
-    assert td._port == 8080
-    assert td._base_path == "/"
+    assert isinstance(td.http, urllib3.PoolManager)
+    url, headers = td.build_request()
+    assert "http://api.example.com:8080/" == url
 
 def test_https_endpoint():
     td = api.API("apikey", endpoint="https://api.example.com/")
-    assert td._ssl == True
-    assert td._host == "api.example.com"
-    assert td._port == 443
-    assert td._base_path == "/"
+    assert isinstance(td.http, urllib3.PoolManager)
+    url, headers = td.build_request()
+    assert "https://api.example.com/" == url
 
 def test_https_endpoint_with_custom_path():
     td = api.API("apikey", endpoint="https://api.example.com/v1/")
-    assert td._ssl == True
-    assert td._host == "api.example.com"
-    assert td._port == 443
-    assert td._base_path == "/v1/"
+    assert isinstance(td.http, urllib3.PoolManager)
+    url, headers = td.build_request()
+    assert "https://api.example.com/v1/" == url
 
 def test_http_proxy_from_environ():
     os.environ["HTTP_PROXY"] = "proxy1.example.com:8080"
     td = api.API("apikey")
-    assert td._http_proxy == "proxy1.example.com:8080"
+    assert isinstance(td.http, urllib3.ProxyManager)
+    assert td.http.proxy.url == "http://proxy1.example.com:8080"
 
 def test_http_proxy_from_keyword():
     td = api.API("apikey", http_proxy="proxy2.example.com:8080")
-    assert td._http_proxy == "proxy2.example.com:8080"
+    assert isinstance(td.http, urllib3.ProxyManager)
+    assert td.http.proxy.url == "http://proxy2.example.com:8080"
 
 def test_http_proxy_prefer_keyword():
     os.environ["HTTP_PROXY"] = "proxy1.example.com:8080"
     td = api.API("apikey", http_proxy="proxy2.example.com:8080")
-    assert td._http_proxy == "proxy2.example.com:8080"
+    assert isinstance(td.http, urllib3.ProxyManager)
+    assert td.http.proxy.url == "http://proxy2.example.com:8080"
 
 def test_http_proxy_with_scheme():
     os.environ["HTTP_PROXY"] = "http://proxy1.example.com:8080/"
     td = api.API("apikey")
-    assert td._http_proxy == "proxy1.example.com:8080"
+    assert isinstance(td.http, urllib3.ProxyManager)
+    assert td.http.proxy.url == "http://proxy1.example.com:8080/"
+
+def test_timeout():
+    with mock.patch("tdclient.api.urllib3") as urllib3:
+        td = api.API("apikey", timeout=12345)
+        assert urllib3.PoolManager.called
+        args, kwargs = urllib3.PoolManager.call_args
+        assert kwargs["timeout"] == 12345
+
+def test_connect_timeout():
+    with mock.patch("tdclient.api.urllib3") as urllib3:
+        td = api.API("apikey", connect_timeout=1, read_timeout=2, send_timeout=4)
+        assert urllib3.PoolManager.called
+        args, kwargs = urllib3.PoolManager.call_args
+        assert kwargs["timeout"] == 7
 
 def test_get_success():
     td = api.API("APIKEY")
-    http = mock.MagicMock()
-    http.getresponse().status = 200
-    http.getresponse().read = mock.MagicMock(return_value=(b"body"))
-    http.getresponse().getheader = mock.MagicMock(return_value=(None))
-    td.new_http = mock.MagicMock(return_value=(http, {}))
+    td.sleep = mock.MagicMock()
+    td.http.request = mock.MagicMock()
+    responses = [
+        make_raw_response(200, b"body"),
+    ]
+    td.http.request.side_effect = responses
+    with td.get("/foo", {"bar": "baz"}) as response:
+        args, kwargs = td.http.request.call_args
+        assert args == ("GET", "https://api.treasuredata.com/foo")
+        assert kwargs["fields"] == {"bar": "baz"}
+        assert sorted(kwargs["headers"].keys()) == ["accept-encoding", "authorization", "date", "user-agent"]
+        status, body = response.status, response.read()
+        assert status == 200
+        assert body == b"body"
+    assert not td.sleep.called
 
-    status, body, response = td.get("/foo", {"bar": "baz"})
-    http.request.assert_called_with("GET", "/foo?bar=baz", headers={"Accept-Encoding": "deflate, gzip"})
-    assert status == 200
-    assert body == b"body"
+def test_get_error():
+    td = api.API("APIKEY")
+    td.sleep = mock.MagicMock()
+    td.http.request = mock.MagicMock()
+    responses = [
+        make_raw_response(404, b"not found"),
+    ]
+    td.http.request.side_effect = responses
+    with td.get("/foo", {"bar": "baz"}) as response:
+        args, kwargs = td.http.request.call_args
+        assert args == ("GET", "https://api.treasuredata.com/foo")
+        assert kwargs["fields"] == {"bar": "baz"}
+        assert sorted(kwargs["headers"].keys()) == ["accept-encoding", "authorization", "date", "user-agent"]
+        status, body = response.status, response.read()
+        assert status == 404
+        assert body == b"not found"
+    assert not td.sleep.called
+
+def test_get_retry_success():
+    td = api.API("APIKEY")
+    td.sleep = mock.MagicMock()
+    td.http.request = mock.MagicMock()
+    responses = [
+        make_raw_response(500, b"failure1"),
+        make_raw_response(503, b"failure2"),
+        make_raw_response(200, b"success1"),
+    ]
+    td.http.request.side_effect = responses
+    with td.get("/foo", {"bar": "baz"}) as response:
+        args, kwargs = td.http.request.call_args
+        assert args == ("GET", "https://api.treasuredata.com/foo")
+        assert kwargs["fields"] == {"bar": "baz"}
+        assert sorted(kwargs["headers"].keys()) == ["accept-encoding", "authorization", "date", "user-agent"]
+        status, body = response.status, response.read()
+        assert status == 200
+        assert body == b"success1"
+        assert td.sleep.called
+        sleeps = [ args[0] for (args, kwargs) in td.sleep.call_args_list ]
+        assert len(sleeps) == len(responses) - 1
+        assert sum(sleeps) < td._max_cumul_retry_delay
+
+def test_get_failure():
+    td = api.API("APIKEY")
+    td.sleep = mock.MagicMock()
+    td.http.request = mock.MagicMock()
+    td.http.request.return_value = make_raw_response(500, b"failure")
+    with pytest.raises(api.APIError) as error:
+        with td.get("/foo", {"bar": "baz"}) as response:
+            pass
+    assert td.sleep.called
+    sleeps = [ args[0] for (args, kwargs) in td.sleep.call_args_list ]
+    assert td._max_cumul_retry_delay < sum(sleeps)
 
 def test_post_success():
     td = api.API("APIKEY")
-    http = mock.MagicMock()
-    http.getresponse().status = 200
-    http.getresponse().read = mock.MagicMock(return_value=(b"body"))
-    http.getresponse().getheader = mock.MagicMock(return_value=(None))
-    td.new_http = mock.MagicMock(return_value=(http, {}))
+    td.sleep = mock.MagicMock()
+    td.http.request = mock.MagicMock()
+    responses = [
+        make_raw_response(200, b"body"),
+    ]
+    td.http.request.side_effect = responses
+    with td.post("/foo", {"bar": "baz"}) as response:
+        args, kwargs = td.http.request.call_args
+        assert args == ("POST", "https://api.treasuredata.com/foo")
+        assert kwargs["fields"] == {"bar": "baz"}
+        assert sorted(kwargs["headers"].keys()) == ["authorization", "date", "user-agent"]
+        status, body = response.status, response.read()
+        assert status == 200
+        assert body == b"body"
+    assert not td.sleep.called
 
-    status, body, response = td.post("/foo", {"bar": "baz"})
-    http.request.assert_called_with("POST", "/foo", "bar=baz", headers={})
-    assert status == 200
-    assert body == b"body"
+def test_post_retry_success():
+    td = api.API("APIKEY", retry_post_requests=True)
+    td.sleep = mock.MagicMock()
+    td.http.request = mock.MagicMock()
+    responses = [
+        make_raw_response(500, b"failure1"),
+        make_raw_response(503, b"failure2"),
+        make_raw_response(200, b"success1"),
+    ]
+    td.http.request.side_effect = responses
+    with td.post("/foo", {"bar": "baz"}) as response:
+        args, kwargs = td.http.request.call_args
+        assert args == ("POST", "https://api.treasuredata.com/foo")
+        assert kwargs["fields"] == {"bar": "baz"}
+        assert sorted(kwargs["headers"].keys()) == ["authorization", "date", "user-agent"]
+        status, body = response.status, response.read()
+        assert status == 200
+        assert body == b"success1"
+        assert td.sleep.called
+        sleeps = [ args[0] for (args, kwargs) in td.sleep.call_args_list ]
+        assert len(sleeps) == len(responses) - 1
+        assert sum(sleeps) < td._max_cumul_retry_delay
+
+def test_post_never_retry():
+    td = api.API("APIKEY", retry_post_requests=False)
+    td.sleep = mock.MagicMock()
+    td.http.request = mock.MagicMock()
+    responses = [
+        make_raw_response(500, b"failure"),
+    ]
+    td.http.request.side_effect = responses
+    with pytest.raises(api.APIError) as error:
+        with td.post("/foo", {"bar": "baz"}) as response:
+            pass
+    assert not td.sleep.called
+
+def test_post_failure():
+    td = api.API("APIKEY", retry_post_requests=True)
+    td.sleep = mock.MagicMock()
+    td.http.request = mock.MagicMock()
+    td.http.request.return_value = make_raw_response(500, b"failure")
+    with pytest.raises(api.APIError) as error:
+        with td.post("/foo", {"bar": "baz"}) as response:
+            pass
+    assert td.sleep.called
+    sleeps = [ args[0] for (args, kwargs) in td.sleep.call_args_list ]
+    assert td._max_cumul_retry_delay < sum(sleeps)
 
 def test_put_success():
     td = api.API("APIKEY")
-    http = mock.MagicMock()
-    http.getresponse().status = 200
-    http.getresponse().read = mock.MagicMock(return_value=(b"body"))
-    http.getresponse().getheader = mock.MagicMock(return_value=(None))
-    td.new_http = mock.MagicMock(return_value=(http, {}))
+    td.sleep = mock.MagicMock()
+    td.http.urlopen = mock.MagicMock()
+    responses = [
+        make_raw_response(200, b"body"),
+    ]
+    td.http.urlopen.side_effect = responses
+    with td.put("/foo", b"body", 7) as response:
+        args, kwargs = td.http.urlopen.call_args
+        assert args == ("PUT", "https://api.treasuredata.com/foo")
+        assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
+        status, body = response.status, response.read()
+        assert status == 200
+        assert body == b"body"
+    assert not td.sleep.called
 
-    status, body, response = td.put("/foo", b"body", 7)
-    http.request.assert_called_with("PUT", "/foo", b"body", headers={"Content-Length": "7", "Content-Type": "application/octet-stream"})
-    assert status == 200
-    assert body == b"body"
+def test_put_retry_success():
+    td = api.API("APIKEY")
+    td.sleep = mock.MagicMock()
+    td.http.urlopen = mock.MagicMock()
+    responses = [
+        make_raw_response(500, b"failure1"),
+        make_raw_response(503, b"failure2"),
+        make_raw_response(200, b"success1"),
+    ]
+    td.http.urlopen.side_effect = responses
+    with td.put("/foo", b"body", 7) as response:
+        args, kwargs = td.http.urlopen.call_args
+        assert args == ("PUT", "https://api.treasuredata.com/foo")
+        assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
+        status, body = response.status, response.read()
+        assert status == 200
+        assert body == b"success1"
+        assert td.sleep.called
+        sleeps = [ args[0] for (args, kwargs) in td.sleep.call_args_list ]
+        assert len(sleeps) == len(responses) - 1
+        assert sum(sleeps) < td._max_cumul_retry_delay
+
+def test_put_failure():
+    td = api.API("APIKEY")
+    td.sleep = mock.MagicMock()
+    td.http.urlopen = mock.MagicMock()
+    td.http.urlopen.return_value = make_raw_response(500, b"error")
+    with pytest.raises(api.APIError) as error:
+        with td.put("/foo", b"body", 7) as response:
+            pass
+    assert td.sleep.called
+    sleeps = [ args[0] for (args, kwargs) in td.sleep.call_args_list ]
+    assert td._max_cumul_retry_delay < sum(sleeps)
+
+def test_raise_error_401():
+    td = api.API("APIKEY")
+    with pytest.raises(api.AuthError) as error:
+        td.raise_error("msg", make_raw_response(401, b"unauthorized"), b"body")
+
+def test_raise_error_403():
+    td = api.API("APIKEY")
+    with pytest.raises(api.ForbiddenError) as error:
+        td.raise_error("msg", make_raw_response(403, b"forbidden"), b"body")
+
+def test_raise_error_404():
+    td = api.API("APIKEY")
+    with pytest.raises(api.NotFoundError) as error:
+        td.raise_error("msg", make_raw_response(404, b"not found"), b"body")
+
+def test_raise_error_409():
+    td = api.API("APIKEY")
+    with pytest.raises(api.AlreadyExistsError) as error:
+        td.raise_error("msg", make_raw_response(409, b"conflict"), b"body")
+
+def test_raise_error_4xx():
+    td = api.API("APIKEY")
+    with pytest.raises(api.APIError) as error:
+        td.raise_error("msg", make_raw_response(402, b"payment required"), b"body")
+
+def test_sleep():
+    with mock.patch("tdclient.api.time") as time:
+        td = api.API("apikey")
+        td.sleep(600)
+        assert time.sleep.called
+        args, kwargs = time.sleep.call_args
+        assert args == (600,)
