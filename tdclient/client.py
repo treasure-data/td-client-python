@@ -178,8 +178,9 @@ class Client(object):
         return self.api.commit_bulk_import(name)
 
     # => records:[row:Hash]
-    def bulk_import_error_records(self, name, block=None):
-        return self.api.bulk_import_error_records(name, block)
+    def bulk_import_error_records(self, name):
+        for record in self.api.bulk_import_error_records(name):
+            yield record
 
     # => BulkImport
     def bulk_import(self, name):
@@ -202,12 +203,12 @@ class Client(object):
         return self.api.list_bulk_import_parts(name)
 
     # => first_time:Time
-    def create_schedule(self, name, opts):
-        if "cron" not in opts:
+    def create_schedule(self, name, params={}):
+        if "cron" not in params:
             raise ValueError("'cron' option is required")
-        if "query" not in opts:
+        if "query" not in params:
             raise ValueError("'query' option is required")
-        start = self.api.create_schedule(name, opts)
+        start = self.api.create_schedule(name, params)
         return start # TODO: parse datetime string
 
     # => true
@@ -222,7 +223,7 @@ class Client(object):
             return model.Schedule(self, name, cron, query, database, result_url, timezone, delay, next_time, priority, retry_limit, org_name)
         return [ schedule(m) for m in result ]
 
-    def update_schedule(self, name, params):
+    def update_schedule(self, name, params={}):
         self.api.update_schedule(name, params)
 
     # [ScheduledJob]
@@ -253,8 +254,8 @@ class Client(object):
         return [ scheduled_job(m) for m in results ]
 
     # => time:Flaot
-    def import_data(self, db_name, table_name, _format, stream, size, unique_id=None):
-        return self.api.import_data(db_name, table_name, _format, stream, size, unique_id)
+    def import_data(self, db_name, table_name, format, stream, size, unique_id=None):
+        return self.api.import_data(db_name, table_name, format, stream, size, unique_id)
 
     # => [Result]
     def results(self):
@@ -265,8 +266,8 @@ class Client(object):
         return [ result(m) for m in results ]
 
     # => true
-    def create_result(self, name, url, opts={}):
-        return self.api.create_result(name, url, opts)
+    def create_result(self, name, url, params={}):
+        return self.api.create_result(name, url, params)
 
     # => true
     def delete_result(self, name):

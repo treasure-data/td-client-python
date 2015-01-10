@@ -61,7 +61,7 @@ def test_databases():
     td = client.Client("APIKEY")
     td._api = mock.MagicMock()
     td._api.list_databases = mock.MagicMock(return_value=({"sample_datasets": [{"name":"nasdaq"}, {"name":"www_access"}]}))
-    databases = list(td.databases())
+    databases = td.databases()
     td.api.list_databases.assert_called_with()
     assert len(databases) == 1
 
@@ -140,8 +140,8 @@ def test_query():
 def test_jobs():
     td = client.Client("APIKEY")
     td._api = mock.MagicMock()
-    td._api.list_jobs = mock.MagicMock(return_value=([]))
-    jobs = list(td.jobs(0, 3))
+    td._api.list_jobs = mock.MagicMock(return_value=[])
+    jobs = td.jobs(0, 3)
     td.api.list_jobs.assert_called_with(0, 3, None, None)
     assert len(jobs) == 0
 
@@ -259,7 +259,14 @@ def test_commit_bulk_import():
     td.api.commit_bulk_import.assert_called_with("name")
 
 def test_bulk_import_error_records():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.bulk_import_error_records = mock.MagicMock(return_value=[["foo"], ["bar"]])
+    records = []
+    for record in td.bulk_import_error_records("name"):
+        records.append(record)
+    td.api.bulk_import_error_records.assert_called_with("name")
+    assert [["foo"], ["bar"]] == records
 
 def test_bulk_import():
     td = client.Client("APIKEY")
@@ -273,7 +280,7 @@ def test_bulk_imports():
     td = client.Client("APIKEY")
     td._api = mock.MagicMock()
     td._api.list_bulk_imports = mock.MagicMock(return_value=([{"name":"foo"}, {"name":"bar"}]))
-    bulk_imports = list(td.bulk_imports())
+    bulk_imports = td.bulk_imports()
     td.api.list_bulk_imports.assert_called_with()
     assert sorted([ bulk_import.name for bulk_import in bulk_imports ]) == ["bar", "foo"]
 
@@ -299,67 +306,168 @@ def test_list_bulk_import_parts():
     td.api.list_bulk_import_parts.assert_called_with("name")
 
 def test_create_schedule():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.create_schedule = mock.MagicMock()
+    td.create_schedule("name", {"cron": "0 * * * *", "query": "SELECT 1"})
+    td.api.create_schedule.assert_called_with("name", {"cron": "0 * * * *", "query": "SELECT 1"})
 
 def test_delete_schedule():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.delete_schedule = mock.MagicMock()
+    td.delete_schedule("name")
+    td.api.delete_schedule("name")
 
 def test_schedules():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.list_schedules = mock.MagicMock(return_value=[])
+    schedules = td.schedules()
+    td.api.list_schedules.assert_called_with()
+    assert len(schedules) == 0
 
 def test_update_schedule():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.update_schedule = mock.MagicMock()
+    td.update_schedule("name", {"foo": "bar"})
+    td.api.update_schedule("name", {"foo": "bar"})
 
 def test_history():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.history = mock.MagicMock(return_value=[])
+    history = td.history("name", 0, 2)
+    td.api.history.assert_called_with("name", 0, 2)
+    assert len(history) == 0
 
 def test_run_schedule():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.run_schedule = mock.MagicMock(return_value=[])
+    scheduled_jobs = td.run_schedule("name", "time", "num")
+    td.api.run_schedule.assert_called_with("name", "time", "num")
+    assert len(scheduled_jobs) == 0
+
+def test_import_data():
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.import_data = mock.MagicMock()
+    td.import_data("db_name", "table_name", "format", "stream", 123, "unique_id")
+    td.api.import_data("db_name", "table_name", "format", "stream", 123, "unique_id")
 
 def test_results():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.list_result = mock.MagicMock()
+    results = td.results()
+    td.api.list_result.assert_called_with()
+    assert len(results) == 0
 
 def test_create_result():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.create_result = mock.MagicMock()
+    td.create_result("name", "url", {"foo": "bar"})
+    td.api.create_result("name", "url", {"foo": "bar"})
 
 def test_delete_result():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.delete_result = mock.MagicMock()
+    td.delete_result("name")
+    td.api.delete_result("name")
 
 def test_users():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.list_users = mock.MagicMock()
+    users = td.users()
+    td.api.list_users.assert_called_with()
+    assert len(users) == 0
 
 def test_add_user():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.add_user = mock.MagicMock()
+    td.add_user("name", "org", "email", "password")
+    td.api.add_user("name", "org", "email", "password")
 
 def test_remove_user():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.remove_user = mock.MagicMock()
+    td.remove_user("name")
+    td.api.remove_user("name")
 
 def test_change_email():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.change_email = mock.MagicMock()
+    td.change_email("user", "email")
+    td.api.change_email("user", "email")
 
 def test_list_apikeys():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.list_apikeys = mock.MagicMock()
+    td.list_apikeys("user")
+    td.api.list_apikeys("user")
 
 def test_add_apikey():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.add_apikey = mock.MagicMock()
+    td.add_apikey("user")
+    td.api.add_apikey("user")
 
 def test_remove_apikey():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.remove_apikey = mock.MagicMock()
+    td.remove_apikey("user", "apikey")
+    td.api.remove_apikey("user", "apikey")
 
 def test_change_password():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.change_password = mock.MagicMock()
+    td.change_password("user", "password")
+    td.api.change_password("user", "password")
 
 def test_change_my_password():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.change_my_password = mock.MagicMock()
+    td.change_my_password("old_password", "password")
+    td.api.change_my_password("old_password", "password")
 
 def test_access_controls():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.list_access_controls = mock.MagicMock(return_value=[])
+    access_controls = td.access_controls()
+    td.api.list_access_controls.assert_called_with()
+    assert len(access_controls) == 0
 
 def test_grant_access_control():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.grant_access_control = mock.MagicMock()
+    td.grant_access_control("subject", "action", "scope", "grant_option")
+    td.api.grant_access_control("subject", "action", "scope", "grant_option")
 
 def test_revoke_access_control():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.revoke_access_control = mock.MagicMock()
+    td.revoke_access_control("subject", "action", "scope")
+    td.api.revoke_access_control("subject", "action", "scope")
 
 def test_test_access_control():
-    pass
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.test_access_control = mock.MagicMock()
+    td.test_access_control("subject", "action", "scope")
+    td.api.test_access_control("subject", "action", "scope")
