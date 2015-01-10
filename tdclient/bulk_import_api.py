@@ -105,6 +105,6 @@ class BulkImportAPI(object):
             code = res.status
             if code != 200:
                 self.raise_error("Failed to get bulk import error records", res)
-            unpacker = msgpack.Unpacker(res)
+            unpacker = msgpack.Unpacker(res, encoding=str("utf-8"))
             for row in unpacker:
                 yield row
