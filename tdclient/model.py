@@ -330,8 +330,7 @@ class Job(Model):
         if self._result is None:
             if not self.finished():
                 return None
-            else:
-                self._result = self._client.job_result(self._job_id)
+            self._result = self._client.job_result(self._job_id)
         return self._result
 
     def finished(self):

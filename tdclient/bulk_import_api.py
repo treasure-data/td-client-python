@@ -21,7 +21,6 @@ class BulkImportAPI(object):
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Create bulk import failed", res, body)
-            return None
 
     # => nil
     def delete_bulk_import(self, name, params={}):
@@ -29,7 +28,6 @@ class BulkImportAPI(object):
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Delete bulk import failed", res, body)
-            return None
 
     # => data:Hash
     def show_bulk_import(self, name):
@@ -63,7 +61,6 @@ class BulkImportAPI(object):
             code, body = res.status, res.read()
             if code / 100 != 2:
                 self.raise_error("Upload a part failed", res, body)
-            return None
 
     # => nil
     def bulk_import_delete_part(self, name, part_name, params={}):
@@ -71,7 +68,6 @@ class BulkImportAPI(object):
             code, body = res.status, res.read()
             if code / 100 != 2:
                 self.raise_error("Delete a part failed", res, body)
-            return None
 
     # => nil
     def freeze_bulk_import(self, name, params={}):
@@ -79,7 +75,6 @@ class BulkImportAPI(object):
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Freeze bulk import failed", res, body)
-            return None
 
     # => nil
     def unfreeze_bulk_import(self, name, params={}):
@@ -87,7 +82,6 @@ class BulkImportAPI(object):
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Unfreeze bulk import failed", res, body)
-            return None
 
     # => jobId:String
     def perform_bulk_import(self, name, params={}):
@@ -104,7 +98,6 @@ class BulkImportAPI(object):
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Commit bulk import failed", res, body)
-            return None
 
     # => data...
     def bulk_import_error_records(self, name, params={}):

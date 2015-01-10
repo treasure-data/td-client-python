@@ -46,8 +46,8 @@ class JobAPI(object):
                 result_url = m.get("result")
                 priority = m.get("priority")
                 retry_limit = m.get("retry_limit")
-                result.append([job_id, _type, status, query, start_at, end_at, cpu_time,
-                     result_size, result_url, priority, retry_limit, None, database])
+                result.append((job_id, _type, status, query, start_at, end_at, cpu_time,
+                     result_size, result_url, priority, retry_limit, None, database))
             return result
 
     # => (type:Symbol, status:String, result:String, url:String, result:String)
@@ -76,8 +76,8 @@ class JobAPI(object):
                 hive_result_schema = json.loads(hive_result_schema)
             priority = js.get("priority")
             retry_limit = js.get("retry_limit")
-            return [_type, query, status, url, debug, start_at, end_at, cpu_time,
-                    result_size, result, hive_result_schema, priority, retry_limit, None, database]
+            return (_type, query, status, url, debug, start_at, end_at, cpu_time,
+                    result_size, result, hive_result_schema, priority, retry_limit, None, database)
 
     def job_status(self, job_id):
         with self.get("/v3/job/status/%s" % (urlquote(str(job_id)))) as res:

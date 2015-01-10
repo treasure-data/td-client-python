@@ -224,7 +224,6 @@ class Client(object):
 
     def update_schedule(self, name, params):
         self.api.update_schedule(name, params)
-        return None
 
     # [ScheduledJob]
     def history(self, name, _from=None, to=None):

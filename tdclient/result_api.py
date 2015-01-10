@@ -20,7 +20,7 @@ class ResultAPI(object):
             if code != 200:
                 self.raise_error("List result table failed", res, body)
             js = self.checked_json(body, ["results"])
-            return [ [m["name"], m["url"], None] for m in js["result"] ] # same as database
+            return [ (m["name"], m["url"], None) for m in js["result"] ] # same as database
 
     # => true
     def create_result(self, name, url, params={}):

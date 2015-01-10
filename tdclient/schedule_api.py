@@ -51,7 +51,7 @@ class ScheduleAPI(object):
                 next_time = m.get("next_time")
                 priority = m.get("priority")
                 retry_limit = m.get("retry_limit")
-                return [name, cron, query, database, result_url, timezone, delay, next_time, priority, retry_limit, None] # same as database
+                return (name, cron, query, database, result_url, timezone, delay, next_time, priority, retry_limit, None) # same as database
             return [ schedule(m) for m in js["schedules"] ]
 
     def update_schedule(self, name, params={}):
@@ -59,7 +59,6 @@ class ScheduleAPI(object):
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Update schedule failed", res, body)
-            return None
 
     def history(self, name, _from=0, to=None):
         params = {}
@@ -83,7 +82,7 @@ class ScheduleAPI(object):
                 scheduled_at = m.get("scheduled_at")
                 result_url = m.get("result")
                 priority = m.get("priority")
-                return [scheduled_at, job_id, _type, status, query, start_at, end_at, result_url, priority, database]
+                return (scheduled_at, job_id, _type, status, query, start_at, end_at, result_url, priority, database)
             return [ history(m) for m in js["history"] ]
 
     def run_schedule(self, name, time, num=None):
@@ -99,5 +98,5 @@ class ScheduleAPI(object):
             job_id = m.get("job_id")
             scheduled_at = m.get("scheduled_at")
             _type = m.get("type", "?")
-            return [job_id, _type, scheduled_at]
+            return (job_id, _type, scheduled_at)
         return [ job(m) for m in js["jobs"] ]

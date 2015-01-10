@@ -36,7 +36,7 @@ class TableAPI(object):
                 expire_days = m.get("expire_days")
                 primary_key = m.get("primary_key")
                 primary_key_type = m.get("primary_key_type")
-                result[name] = [_type, schema, count, created_at, updated_at, estimated_storage_size, last_import, last_log_timestamp, expire_days, primary_key, primary_key_type]
+                result[name] = (_type, schema, count, created_at, updated_at, estimated_storage_size, last_import, last_log_timestamp, expire_days, primary_key, primary_key_type)
             return result
 
     def _create_log_or_item_table(self, db, table, _type):

@@ -34,7 +34,7 @@ class UserAPI(object):
             def user(roleinfo):
                 name = roleinfo["name"]
                 email = roleinfo["email"]
-                return [name, None, None, email] # set nil to org and role for API compatibility
+                return (name, None, None, email) # set nil to org and role for API compatibility
             return [ user(roleinfo) for roleinfo in js["users"] ]
 
     # => true
