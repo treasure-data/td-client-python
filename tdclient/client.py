@@ -108,15 +108,15 @@ class Client(object):
         def job(lis):
             job_id, _type, status, query, start_at, end_at, cpu_time, result_size, result_url, priority, retry_limit, org, db = lis
             return model.Job(self, job_id, _type, query, status, None, None, start_at, end_at, cpu_time,
-                       result_size, None, result_url, None, priority, retry_limit, org, db)
-        return map(job, results)
+                             result_size, None, result_url, None, priority, retry_limit, org, db)
+        return [ job(result) for result in results ]
 
     # => Job
     def job(self, job_id):
       job_id = str(job_id)
       _type, query, status, url, debug, start_at, end_at, cpu_time, result_size, result_url, hive_result_schema, priority, retry_limit, org, db = self.api.show_job(job_id)
       return model.Job(self, job_id, type, query, status, url, debug, start_at, end_at, cpu_time,
-                 result_size, None, result_url, hive_result_schema, priority, retry_limit, org, db)
+                       result_size, None, result_url, hive_result_schema, priority, retry_limit, org, db)
 
     # => status:String
     def job_status(self, job_id):
@@ -126,17 +126,17 @@ class Client(object):
     def job_result(self, job_id):
         return self.api.job_result(job_id)
 
-    # => result:String
-    def job_result_format(self, job_id, _format, io=None, block=None):
-        return self.api.job_result_format(job_id, _format, io, block)
+    # => nil
+    def job_result_each(self, job_id):
+        for row in self.api.job_result_each(job_id):
+            yield row
 
-#   # => nil
-#   def job_result_each(self, job_id, block=None):
-#       return self.api.job_result_each(job_id, block)
+    def job_result_format(self, job_id, format):
+        return self.api.job_result_format(job_id, format)
 
-#   # => nil
-#   def job_result_each_with_compr_size(self, job_id, block=None):
-#       return self.api.job_result_each_with_compr_size(job_id, block)
+    def job_result_format_each(self, job_id, format):
+        for row in self.api.job_result_format_each(job_id, format):
+            yield row
 
     # => former_status:String
     def kill(self, job_id):

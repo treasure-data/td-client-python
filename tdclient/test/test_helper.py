@@ -28,7 +28,20 @@ def unset_environ():
 def make_raw_response(status, body, headers={}):
     response = mock.MagicMock()
     response.status = status
-    response.read = mock.MagicMock(return_value=body)
+    response.pos = 0
+    response.body = body
+    def read(size=None):
+        if response.pos < len(response.body):
+            if size is None:
+                s = body[response.pos:]
+                response.pos = len(response.body)
+            else:
+                s = response.body[response.pos:response.pos+size]
+                response.pos += size
+            return s
+        else:
+            return b""
+    response.read.side_effect = read
     return response
 
 def make_response(*args, **kwargs):

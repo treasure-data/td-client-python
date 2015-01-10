@@ -333,6 +333,35 @@ class Job(Model):
             self._result = self._client.job_result(self._job_id)
         return self._result
 
+    def result_each(self):
+        if not self.finished():
+            pass
+        else:
+            if self._result is None:
+                for row in self._client.job_result_each(self._job_id):
+                    yield row
+            else:
+                for row in self._result:
+                    yield row
+
+    def result_format(self, format):
+        if self._result is None:
+            if not self.finished():
+                return None
+            self._result = self._client.job_result_format(self._job_id, format)
+        return self._result
+
+    def result_format(self, format):
+        if not self.finished():
+            pass
+        else:
+            if self._result is None:
+                for row in self._client.job_result_format_each(self._job_id, format):
+                    yield row
+            else:
+                for row in self._result:
+                    yield row
+
     def finished(self):
         if self._status not in self.FINISHED_STATUS:
             self._update_progress()

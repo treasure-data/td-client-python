@@ -163,16 +163,42 @@ def test_job_status():
 def test_job_result():
     td = client.Client("APIKEY")
     td._api = mock.MagicMock()
-    td._api.job_result = mock.MagicMock()
-    job = td.job_result("12345")
+    rows = [[123], [456]]
+    td._api.job_result = mock.MagicMock(return_value=rows)
+    result = td.job_result("12345")
     td.api.job_result.assert_called_with("12345")
+    assert result == rows
+
+def test_job_result_each():
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    rows = [[123], [456]]
+    td._api.job_result_each = mock.MagicMock(return_value=rows)
+    result = []
+    for row in td.job_result_each("12345"):
+        result.append(row)
+    td.api.job_result_each.assert_called_with("12345")
+    assert result == rows
 
 def test_job_result_format():
     td = client.Client("APIKEY")
     td._api = mock.MagicMock()
-    td._api.job_result_format = mock.MagicMock()
-    job = td.job_result_format("12345", "json")
-    td.api.job_result_format.assert_called_with("12345", "json", None, None)
+    rows = [[123], [456]]
+    td._api.job_result_format = mock.MagicMock(return_value=rows)
+    result = td.job_result_format("12345", "json")
+    td.api.job_result_format.assert_called_with("12345", "json")
+    assert result == rows
+
+def test_job_result_format_each():
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    rows = [[123], [456]]
+    td._api.job_result_format_each = mock.MagicMock(return_value=rows)
+    result = []
+    for row in td.job_result_format_each("12345", "json"):
+        result.append(row)
+    td.api.job_result_format_each.assert_called_with("12345", "json")
+    assert result == rows
 
 def test_kill():
     td = client.Client("APIKEY")

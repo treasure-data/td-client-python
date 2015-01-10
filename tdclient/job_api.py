@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import with_statement
 
+import codecs
 import json
 import msgpack
 try:
@@ -89,20 +90,36 @@ class JobAPI(object):
             return js["status"]
 
     def job_result(self, job_id):
-        with self.get("/v3/job/result/%s" % (urlquote(str(job_id))), {"format": "msgpack"}) as res:
+        result = []
+        for row in self.job_result_format_each(job_id, "msgpack"):
+            result.append(row)
+        return result
+
+    def job_result_each(self, job_id):
+        for row in self.job_result_format_each(job_id, "msgpack"):
+            yield row
+
+    def job_result_format(self, job_id, format):
+        result = []
+        for row in self.job_result_format_each(job_id, format):
+            result.append(row)
+        return result
+
+    def job_result_format_each(self, job_id, format):
+        with self.get("/v3/job/result/%s" % (urlquote(str(job_id))), {"format": format}) as res:
             code = res.status
             if code != 200:
-                self.raise_error("Get job result failed", res, body)
-            unpacker = msgpack.Unpacker(res)
-            for row in unpacker:
-                yield row
-
-    def job_result_raw(self, job_id, _format):
-        with self.get("/v3/job/result/%s" % (urlquote(str(job_id))), {"format": _format}) as res:
-            code, body = res.status, res.read()
-            if code != 200:
-                self.raise_error("Get job result failed", res, body)
-            return body
+                self.raise_error("Get job result failed", res)
+            if format == "msgpack":
+                unpacker = msgpack.Unpacker(res, encoding=str("utf-8"))
+                for row in unpacker:
+                    yield row
+            elif format == "json":
+                dumper = json.load(codecs.getreader("utf-8")(res))
+                for row in dumper:
+                    yield row
+            else:
+                yield res.read()
 
     def kill(self, job_id):
         with self.post("/v3/job/kill/%s" % (urlquote(str(job_id)))) as res:

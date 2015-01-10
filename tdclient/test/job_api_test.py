@@ -4,10 +4,12 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import with_statement
 
+import json
 try:
     from unittest import mock
 except ImportError:
     import mock
+import msgpack
 import pytest
 
 from tdclient import api
@@ -78,29 +80,67 @@ def test_job_status_success():
     jobs = td.job_status(12345)
     td.get.assert_called_with("/v3/job/status/12345")
 
-#def test_job_result_success():
-#    td = api.API("APIKEY")
-#    # TODO: should be replaced by wire dump
-#    body = b"""
-#        {
-#            "status": "RUNNING"
-#        }
-#    """
-#    td.get = mock.MagicMock(return_value=make_response(200, body))
-#    jobs = td.job_result(12345)
-#    td.get.assert_called_with("/v3/job/result/12345")
-
-def test_job_result_raw_success():
+def test_job_result_success():
     td = api.API("APIKEY")
-    # TODO: should be replaced by wire dump
-    body = b"""
-        {
-            "foo": "bar"
-        }
-    """
+    packer = msgpack.Packer()
+    rows = [
+        ["foo", 123],
+        ["bar", 456],
+        ["baz", 789],
+    ]
+    body = b""
+    for row in rows:
+        body += packer.pack(row)
     td.get = mock.MagicMock(return_value=make_response(200, body))
-    jobs = td.job_result_raw(12345, "json")
+    result = td.job_result(12345)
+    td.get.assert_called_with("/v3/job/result/12345", {"format": "msgpack"})
+    assert result == rows
+
+def test_job_result_each_success():
+    td = api.API("APIKEY")
+    packer = msgpack.Packer()
+    rows = [
+        ["foo", 123],
+        ["bar", 456],
+        ["baz", 789],
+    ]
+    body = b""
+    for row in rows:
+        body += packer.pack(row)
+    td.get = mock.MagicMock(return_value=make_response(200, body))
+    result = []
+    for row in td.job_result_each(12345):
+        result.append(row)
+    td.get.assert_called_with("/v3/job/result/12345", {"format": "msgpack"})
+    assert result == rows
+
+def test_job_result_json_success():
+    td = api.API("APIKEY")
+    rows = [
+        ["foo", 123],
+        ["bar", 456],
+        ["baz", 789],
+    ]
+    body = json.dumps(rows).encode("utf-8")
+    td.get = mock.MagicMock(return_value=make_response(200, body))
+    result = td.job_result_format(12345, "json")
     td.get.assert_called_with("/v3/job/result/12345", {"format": "json"})
+    assert result == rows
+
+def test_job_result_json_each_success():
+    td = api.API("APIKEY")
+    rows = [
+        ["foo", 123],
+        ["bar", 456],
+        ["baz", 789],
+    ]
+    body = json.dumps(rows).encode("utf-8")
+    td.get = mock.MagicMock(return_value=make_response(200, body))
+    result = []
+    for row in td.job_result_format_each(12345, "json"):
+        result.append(row)
+    td.get.assert_called_with("/v3/job/result/12345", {"format": "json"})
+    assert result == rows
 
 def test_kill_success():
     td = api.API("APIKEY")
