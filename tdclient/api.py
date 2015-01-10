@@ -251,7 +251,8 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
             raise APIError("Unexpected API response: %s: %s" % (error, repr(body)))
         js = dict(js)
         if 0 < [ k in js for k in required ].count(False):
-            raise APIError("Unexpected API response: %s: %s" % (error, repr(body)))
+            missing = [ k for k in required if k not in js ]
+            raise APIError("Unexpected API response: %s: %s" % (repr(missing), repr(body)))
         return js
 
     def sleep(self, secs):

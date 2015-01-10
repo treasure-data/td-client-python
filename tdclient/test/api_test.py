@@ -339,6 +339,22 @@ def test_raise_error_4xx():
     with pytest.raises(api.APIError) as error:
         td.raise_error("msg", make_raw_response(402, b"payment required"), b"body")
 
+def test_checked_json_success():
+    td = api.API("APIKEY")
+    assert td.checked_json(b'{"foo": "FOO"}', ["foo"])
+    assert td.checked_json(b'{"foo": "FOO", "bar": "BAR", "baz": "BAZ"}', ["foo"])
+    assert td.checked_json(b'{"foo": "FOO", "bar": "BAR", "baz": "BAZ"}', ["foo", "bar"])
+
+def test_checked_json_load_error():
+    td = api.API("APIKEY")
+    with pytest.raises(api.APIError) as error:
+        td.checked_json(b'{invalid}', [])
+
+def test_checked_json_field_error():
+    td = api.API("APIKEY")
+    with pytest.raises(api.APIError) as error:
+        td.checked_json(b'{}', ["foo"])
+
 def test_sleep():
     with mock.patch("tdclient.api.time") as time:
         td = api.API("apikey")
