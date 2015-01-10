@@ -275,6 +275,7 @@ class Job(Model):
         self._hive_result_schema = hive_result_schema
         self._priority = priority
         self._retry_limit = retry_limit
+        self._org_name = org_name
         self._db_name = db_name
 
     @property
@@ -432,6 +433,7 @@ class Schedule(Model):
         self._next_time = next_time
         self._priority = priority
         self._retry_limit = retry_limit
+        self._org_name = org_name
 
     @property
     def name(self):
@@ -484,6 +486,7 @@ class Result(Model):
         super(Result, self).__init__(client)
         self._name = name
         self._url = url
+        self._org_name = org_name
 
     @property
     def name(self):
@@ -498,18 +501,18 @@ class Result(Model):
         return self._org_name
 
 class BulkImport(Model):
-    def __init__(self, client, data={}):
+    def __init__(self, client, name=None, database=None, table=None, status=None, upload_frozen=None, job_id=None, valid_records=None, error_records=None, valid_parts=None, error_parts=None, **kwargs):
         super(BulkImport, self).__init__(client)
-        self._name = data.get("name")
-        self._database = data.get("database")
-        self._table = data.get("table")
-        self._status = data.get("status")
-        self._upload_frozen = data.get("upload_frozen")
-        self._job_id = data.get("job_id")
-        self._valid_records = data.get("valid_records")
-        self._error_records = data.get("error_records")
-        self._valid_parts = data.get("valid_parts")
-        self._error_parts = data.get("error_parts")
+        self._name = name
+        self._database = database
+        self._table = table
+        self._status = status
+        self._upload_frozen = upload_frozen
+        self._job_id = job_id
+        self._valid_records = valid_records
+        self._error_records = error_records
+        self._valid_parts = valid_parts
+        self._error_parts = error_parts
 
     @property
     def name(self):
@@ -547,10 +550,6 @@ class BulkImport(Model):
     def error_parts(self):
         return self._error_parts
 
-    @property
-    def org_name(self):
-        return self._org_name
-
     def upload_frozen(self):
         return self._upload_frozen
 
@@ -561,10 +560,6 @@ class User(Model):
         self._org_name = org_name
         self._role_names = role_names
         self._email = email
-
-    @property
-    def client(self):
-        return self._client
 
     @property
     def name(self):
@@ -584,7 +579,7 @@ class User(Model):
 
 class AccessControl(Model):
     def __init__(self, client, subject, action, scope, grant_option):
-        super(AccessControl).__init__(client)
+        super(AccessControl, self).__init__(client)
         self._subject = subject
         self._action = action
         self._scope = scope

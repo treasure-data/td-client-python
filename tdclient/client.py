@@ -185,11 +185,11 @@ class Client(object):
     # => BulkImport
     def bulk_import(self, name):
         data = self.api.show_bulk_import(name)
-        return model.BulkImport(self, data)
+        return model.BulkImport(self, **data)
 
     # => [BulkImport]
     def bulk_imports(self):
-        return [ model.BulkImport(self, data) for data in self.api.list_bulk_imports() ]
+        return [ model.BulkImport(self, **data) for data in self.api.list_bulk_imports() ]
 
     # => nil
     def bulk_import_upload_part(self, name, part_name, stream, size):
