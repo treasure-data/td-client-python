@@ -46,9 +46,9 @@ class ScheduleAPI(object):
                 query = m.get("query")
                 database = m.get("database")
                 result_url = m.get("result")
-                timezone = m.get("timezone")
+                timezone = m.get("timezone", "UTC")
                 delay = m.get("delay")
-                next_time = m.get("next_time")
+                next_time = self.parsedate(self.get_or_else(m, "next_time", "1970-01-01T00:00:00Z"))
                 priority = m.get("priority")
                 retry_limit = m.get("retry_limit")
                 return (name, cron, query, database, result_url, timezone, delay, next_time, priority, retry_limit, None) # same as database
@@ -77,9 +77,9 @@ class ScheduleAPI(object):
                 database = m.get("database")
                 status = m.get("status")
                 query = m.get("query")
-                start_at = m.get("start_at")
-                end_at = m.get("end_at")
-                scheduled_at = m.get("scheduled_at")
+                start_at = self.parsedate(self.get_or_else(m, "start_at", "1970-01-01T00:00:00Z"))
+                end_at = self.parsedate(self.get_or_else(m, "end_at", "1970-01-01T00:00:00Z"))
+                scheduled_at = self.parsedate(self.get_or_else(m, "scheduled_at", "1970-01-01T00:00:00Z"))
                 result_url = m.get("result")
                 priority = m.get("priority")
                 return (scheduled_at, job_id, _type, status, query, start_at, end_at, result_url, priority, database)
@@ -96,7 +96,7 @@ class ScheduleAPI(object):
         js = self.checked_json(body, ["jobs"])
         def job(m):
             job_id = m.get("job_id")
-            scheduled_at = m.get("scheduled_at")
+            scheduled_at = self.parsedate(self.get_or_else(m, "scheduled_at", "1970-01-01T00:00:00Z"))
             _type = m.get("type", "?")
             return (job_id, _type, scheduled_at)
         return [ job(m) for m in js["jobs"] ]

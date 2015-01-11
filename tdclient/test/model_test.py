@@ -24,7 +24,7 @@ def test_account():
     assert account.storage_size == 3456
     assert account.guaranteed_cores == 7
     assert account.maximum_cores == 8
-    assert account.created_at() == "created_at"
+    assert account.created_at == "created_at"
 
 def test_account_storage_size_string():
     client = mock.MagicMock()
@@ -45,8 +45,8 @@ def test_database():
     assert database.count == 12345
     assert database.name == "sample_datasets"
     assert database.tables() == ["nasdaq", "www_access"]
-    assert database.created_at() == "created_at"
-    assert database.updated_at() == "updated_at"
+    assert database.created_at == "created_at"
+    assert database.updated_at == "updated_at"
 
 def test_table():
     client = mock.MagicMock()
@@ -61,11 +61,11 @@ def test_table():
     assert table.primary_key_type == "primary_key_type"
     assert table.database_name == "db_name"
     assert table.name == "table_name"
-    assert table.created_at() == "created_at"
-    assert table.updated_at() == "updated_at"
-    assert table.last_import() == "last_import"
-    assert table.last_log_timestamp() == "last_log_timestamp"
-    assert table.expire_days() == "expire_days"
+    assert table.created_at == "created_at"
+    assert table.updated_at == "updated_at"
+    assert table.last_import == "last_import"
+    assert table.last_log_timestamp == "last_log_timestamp"
+    assert table.expire_days == "expire_days"
     assert table.identifier() == "db_name.table_name"
 
 def test_schema():
