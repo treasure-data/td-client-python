@@ -362,3 +362,44 @@ def test_sleep():
         assert time.sleep.called
         args, kwargs = time.sleep.call_args
         assert args == (600,)
+
+def test_parsedate1():
+    td = api.API("APIKEY")
+    dt = td.parsedate("2013-11-01 16:48:41 -0700") # ???
+    assert dt.year == 2013
+    assert dt.month == 11
+    assert dt.day == 1
+    assert dt.hour == 16
+    assert dt.minute == 48
+    assert dt.second == 41
+    assert dt.utcoffset().total_seconds() == -7.0 * 3600
+
+def test_parsedate2():
+    td = api.API("APIKEY")
+    dt = td.parsedate("2013-11-13 19:39:19 UTC") # ???
+    assert dt.year == 2013
+    assert dt.month == 11
+    assert dt.day == 13
+    assert dt.hour == 19
+    assert dt.minute == 39
+    assert dt.second == 19
+    assert dt.utcoffset().total_seconds() == 0.0 * 3600
+
+def test_parsedate3():
+    td = api.API("APIKEY")
+    dt = td.parsedate("Sun Jun 26 17:39:18 -0400 2011") # rfc2882
+    assert dt.year == 2011
+    assert dt.month == 6
+    assert dt.day == 26
+    assert dt.hour == 17
+    assert dt.minute == 39
+    assert dt.second == 18
+    assert dt.utcoffset().total_seconds() == -4.0 * 3600
+
+def test_get_or_else():
+    td = api.API("APIKEY")
+    hashmap = {"foo": "FOO"}
+    assert td.get_or_else(hashmap, "foo") == "FOO"
+    assert td.get_or_else(hashmap, "foo", "abracadabra") == "FOO"
+    assert td.get_or_else(hashmap, "bar") == None
+    assert td.get_or_else(hashmap, "bar", "BAR") == "BAR"
