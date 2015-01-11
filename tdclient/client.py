@@ -332,3 +332,6 @@ class Client(object):
     # => true
     def test_access_control(self, user, action, scope):
         return self.api.test_access_control(user, action, scope)
+
+    def close(self):
+        return self._api.close()

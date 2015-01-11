@@ -283,3 +283,6 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
     def get_or_else(self, hashmap, key, default_value=None):
         value = hashmap.get(key)
         return default_value if value is None else value
+
+    def close(self):
+        self.http.close()
