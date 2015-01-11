@@ -16,19 +16,22 @@ $ pip install td-client
 
 ## Examples
 
+TreasureData API key will be read from environment variable `TD_API_KEY`, if none is given via arguments to `tdclient.Client`.
+
 ### Listing jobs
 
 ```python
 #!/usr/bin/env python
 
+from __future__ import with_statement
+from contextlib import closing
 import os
 import sys
 import tdclient
 
-td = tdclient.Client(os.getenv("TD_API_KEY"))
-# list jobs
-for job in td.jobs():
-    print(job.job_id)
+with closing(tdclient.Client()) as td:
+    for job in td.jobs():
+        print(job.job_id)
 ```
 
 ## Development

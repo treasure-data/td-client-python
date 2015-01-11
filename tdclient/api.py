@@ -289,4 +289,6 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         return default_value if value is None else value
 
     def close(self):
-        self.http.close()
+        # urllib3 doesn't allow to close all connections immediately.
+        # all connections in pool will be closed eventually during gc.
+        self.http.clear()
