@@ -4,6 +4,16 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import with_statement
 
+try:
+    import certifi
+    ca_certs = certifi.where
+except ImportError:
+    def ca_certs():
+        debian_ca_certs = "/etc/ssl/certs/ca-certificates.crt" # Or wherever it lives.
+        if os.path.exists(debian_ca_certs):
+            return debian_ca_certs
+        else:
+            return None
 import contextlib
 import dateutil.parser
 import email.utils
@@ -11,6 +21,7 @@ import json
 import logging
 import os
 import socket
+import ssl
 import sys
 import time
 try:
@@ -87,6 +98,11 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
             self._endpoint = self.DEFAULT_ENDPOINT
 
         pool_options = dict(kwargs)
+        certs = pool_options.get("ca_certs", ca_certs())
+        if certs is not None:
+            pool_options["ca_certs"] = certs
+            pool_options["cert_reqs"] = ssl.CERT_REQUIRED
+
         if "connect_timeout" in pool_options or "read_timeout" in pool_options or "send_timeout" in pool_options:
             connect_timeout = pool_options.pop("connect_timeout") if "connect_timeout" in pool_options else 0
             read_timeout = pool_options.pop("read_timeout") if "read_timeout" in pool_options else 0
