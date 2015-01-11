@@ -17,8 +17,11 @@ class JobAPI(object):
     ## Job API
     ##
 
-    # => [(jobId:String, type:Symbol, status:String, start_at:String, end_at:String, result_url:String)]
     def list_jobs(self, _from=0, to=None, status=None, conditions=None):
+        """
+        TODO: add docstring
+        => [(jobId:str, type:str, status:str, start_at:str, end_at:str, result_url:str)]
+        """
         params = {}
         if _from is not None:
             params["from"] = str(_from)
@@ -51,8 +54,11 @@ class JobAPI(object):
                      result_size, result_url, priority, retry_limit, None, database))
             return result
 
-    # => (type:Symbol, status:String, result:String, url:String, result:String)
     def show_job(self, job_id):
+        """
+        TODO: add docstring
+        => (type:str, status:str, result:str, url:str, result:str)
+        """
         # use v3/job/status instead of v3/job/show to poll finish of a job
         with self.get("/v3/job/show/%s" % (urlquote(str(job_id)))) as res:
             code, body = res.status, res.read()
@@ -81,6 +87,9 @@ class JobAPI(object):
                     result_size, result, hive_result_schema, priority, retry_limit, None, database)
 
     def job_status(self, job_id):
+        """
+        TODO: add docstring
+        """
         with self.get("/v3/job/status/%s" % (urlquote(str(job_id)))) as res:
             code, body = res.status, res.read()
             if code != 200:
@@ -90,22 +99,34 @@ class JobAPI(object):
             return js["status"]
 
     def job_result(self, job_id):
+        """
+        TODO: add docstring
+        """
         result = []
         for row in self.job_result_format_each(job_id, "msgpack"):
             result.append(row)
         return result
 
     def job_result_each(self, job_id):
+        """
+        TODO: add docstring
+        """
         for row in self.job_result_format_each(job_id, "msgpack"):
             yield row
 
     def job_result_format(self, job_id, format):
+        """
+        TODO: add docstring
+        """
         result = []
         for row in self.job_result_format_each(job_id, format):
             result.append(row)
         return result
 
     def job_result_format_each(self, job_id, format):
+        """
+        TODO: add docstring
+        """
         with self.get("/v3/job/result/%s" % (urlquote(str(job_id))), {"format": format}) as res:
             code = res.status
             if code != 200:
@@ -122,6 +143,9 @@ class JobAPI(object):
                 yield res.read()
 
     def kill(self, job_id):
+        """
+        TODO: add docstring
+        """
         with self.post("/v3/job/kill/%s" % (urlquote(str(job_id)))) as res:
             code, body = res.status, res.read()
             if code != 200:
@@ -130,16 +154,25 @@ class JobAPI(object):
             former_status = js.get("former_status")
             return former_status
 
-    # => jobId:String
     def hive_query(self, q, db=None, result_url=None, priority=None, retry_limit=None, **kwargs):
+        """
+        TODO: add docstring
+        => jobId:str
+        """
         return self.query(q, "hive", db, result_url, priority, retry_limit, **kwargs)
 
-    # => jobId:String
     def pig_query(self, q, db=None, result_url=None, priority=None, retry_limit=None, **kwargs):
+        """
+        TODO: add docstring
+        => jobId:str
+        """
         return self.query(q, "pig", db, result_url, priority, retry_limit, **kwargs)
 
-    # => jobId:String
     def query(self, q, _type="hive", db=None, result_url=None, priority=None, retry_limit=None, **kwargs):
+        """
+        TODO: add docstring
+        => jobId:str
+        """
         params = {"query": q}
         params.update(kwargs)
         if result_url is not None:

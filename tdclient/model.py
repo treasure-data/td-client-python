@@ -10,9 +10,16 @@ class Model(object):
 
     @property
     def client(self):
+        """
+        TODO: add docstring
+        """
         return self._client
 
 class Account(Model):
+    """
+    TODO: add docstring
+    """
+
     def __init__(self, client, account_id, plan, storage_size=None, guaranteed_cores=None, maximum_cores=None, created_at=None):
         super(Account, self).__init__(client)
         self._account_id = account_id
@@ -24,29 +31,50 @@ class Account(Model):
 
     @property
     def account_id(self):
+        """
+        TODO: add docstring
+        """
         return self._account_id
 
     @property
     def plan(self):
+        """
+        TODO: add docstring
+        """
         return self._plan
 
     @property
     def storage_size(self):
+        """
+        TODO: add docstring
+        """
         return self._storage_size
 
     @property
     def guaranteed_cores(self):
+        """
+        TODO: add docstring
+        """
         return self._guaranteed_cores
 
     @property
     def maximum_cores(self):
+        """
+        TODO: add docstring
+        """
         return self._maximum_cores
 
     @property
     def created_at(self):
+        """
+        TODO: add docstring
+        """
         return self._created_at
 
     def storage_size_string(self):
+        """
+        TODO: add docstring
+        """
         if self._storage_size <= 1024 * 1024:
             return "0.0 GB"
         elif self._storage_size <= 60 * 1024 * 1024:
@@ -57,6 +85,10 @@ class Account(Model):
             return "%d GB" % int(float(self._storage_size) / (1024 * 1024 * 1024))
 
 class Database(Model):
+    """
+    TODO: add docstring
+    """
+
     PERMISSIONS = ["administrator", "full_access", "import_only", "query_only"]
     PERMISSION_LIST_TABLES = ["administrator", "full_access"]
 
@@ -72,46 +104,82 @@ class Database(Model):
 
     @property
     def org_name(self):
+        """
+        TODO: add docstring
+        """
         return self._org_name
 
     @property
     def permission(self):
+        """
+        TODO: add docstring
+        """
         return self._permission
 
     @property
     def count(self):
+        """
+        TODO: add docstring
+        """
         return self._count
 
     @property
     def name(self):
+        """
+        TODO: add docstring
+        """
         return self._db_name
 
     def tables(self):
+        """
+        TODO: add docstring
+        """
         if self._tables is None:
             self._update_tables
         return self._tables
 
     def create_log_table(self, name):
+        """
+        TODO: add docstring
+        """
         return self._client.create_log_table(self._db_name, name)
 
     def create_item_table(self, name):
+        """
+        TODO: add docstring
+        """
         return self._client.create_item_table(self._db_name, name)
 
     def table(self, table_name):
+        """
+        TODO: add docstring
+        """
         return self._client.table(self._db_name, table_name)
 
     def delete(self):
+        """
+        TODO: add docstring
+        """
         return self._client.delete_database(self._db_name)
 
     def query(self, q):
+        """
+        TODO: add docstring
+        """
         return self._client.query(self._db_name, q)
 
     @property
     def created_at(self):
+        """
+        TODO: add docstring
+        """
         return self._created_at
 
     @property
     def updated_at(self):
+        """
+        TODO: add docstring
+        """
         return self._updated_at
 
     def _update_tables(self):
@@ -120,6 +188,10 @@ class Database(Model):
             table.database = self
 
 class Table(Model):
+    """
+    TODO: add docstring
+    """
+
     def __init__(self, client, db_name, table_name, _type, schema, count, created_at=None, updated_at=None, estimated_storage_size=None,
                  last_import=None, last_log_timestamp=None, expire_days=None, primary_key=None, primary_key_type=None):
         super(Table, self).__init__(client)
@@ -140,85 +212,151 @@ class Table(Model):
 
     @property
     def type(self):
+        """
+        TODO: add docstring
+        """
         return self._type
 
     @property
     def db_name(self):
+        """
+        TODO: add docstring
+        """
         return self._db_name
 
     @property
     def table_name(self):
+        """
+        TODO: add docstring
+        """
         return self._table_name
 
     @property
     def schema(self):
+        """
+        TODO: add docstring
+        """
         return self._schema
 
     @property
     def count(self):
+        """
+        TODO: add docstring
+        """
         return self._count
 
     @property
     def estimated_storage_size(self):
+        """
+        TODO: add docstring
+        """
         return self._estimated_storage_size
 
     @property
     def primary_key(self):
+        """
+        TODO: add docstring
+        """
         return self._primary_key
 
     @property
     def primary_key_type(self):
+        """
+        TODO: add docstring
+        """
         return self._primary_key_type
 
     @property
     def database_name(self):
+        """
+        TODO: add docstring
+        """
         return self._db_name
 
     @property
     def name(self):
+        """
+        TODO: add docstring
+        """
         return self._table_name
 
     @property
     def created_at(self):
+        """
+        TODO: add docstring
+        """
         return self._created_at
 
     @property
     def updated_at(self):
+        """
+        TODO: add docstring
+        """
         return self._updated_at
 
     @property
     def last_import(self):
+        """
+        TODO: add docstring
+        """
         return self._last_import
 
     @property
     def last_log_timestamp(self):
+        """
+        TODO: add docstring
+        """
         return self._last_log_timestamp
 
     @property
     def expire_days(self):
+        """
+        TODO: add docstring
+        """
         return self._expire_days
 
     def permission(self):
+        """
+        TODO: add docstring
+        """
         if self.database is None:
             self._update_database()
         return self.database.permission
 
     def identifier(self):
+        """
+        TODO: add docstring
+        """
         return "%s.%s" % (self._db_name, self._table_name)
 
     def delete(self):
+        """
+        TODO: add docstring
+        """
         return self._client.delete_table(self._db_name, self._table_name)
 
     def tail(self, count, to=None, _from=None):
+        """
+        TODO: add docstring
+        """
         return self._client.tail(self._db_name, self._table_name, count, to, _from)
 
     def import_data(self, format, stream, size):
+        """
+        TODO: add docstring
+        """
         return self._client.import_data(self._db_name, self._table_name, format, stream, size)
 
     def export_data(self, storage_type, **kwargs):
+        """
+        TODO: add docstring
+        """
         return self._client.export_data(self._db_name, self._table_name, storage_type, kwargs)
 
     def estimated_storage_size_string(self):
+        """
+        TODO: add docstring
+        """
         if self._estimated_storage_size <= 1024*1024:
             return "0.0 GB"
         elif self._estimated_storage_size <= 60*1024*1024:
@@ -232,6 +370,10 @@ class Table(Model):
         self.database = self._client.database(self._db_name)
 
 class Schema(object):
+    """
+    TODO: add docstring
+    """
+
     class Field(object):
         def __init__(self, name, _type):
             self._name = name
@@ -239,10 +381,16 @@ class Schema(object):
 
         @property
         def name(self):
+            """
+            TODO: add docstring
+            """
             return self._name
 
         @property
         def type(self):
+            """
+            TODO: add docstring
+            """
             return self._type
 
     def __init__(self, fields=[]):
@@ -250,12 +398,22 @@ class Schema(object):
 
     @property
     def fields(self):
+        """
+        TODO: add docstring
+        """
         return self._fields
 
     def add_field(self, name, _type):
+        """
+        TODO: add docstring
+        """
         self._fields.append(Field(name, _type))
 
 class Job(Model):
+    """
+    TODO: add docstring
+    """
+
     STATUS_QUEUED = "queued"
     STATUS_BOOTING = "booting"
     STATUS_RUNNING = "running"
@@ -288,54 +446,93 @@ class Job(Model):
 
     @property
     def job_id(self):
+        """
+        TODO: add docstring
+        """
         return self._job_id
 
     @property
     def type(self):
+        """
+        TODO: add docstring
+        """
         return self._type
 
     @property
     def result_url(self):
+        """
+        TODO: add docstring
+        """
         return self._result_url
 
     @property
     def priority(self):
+        """
+        TODO: add docstring
+        """
         return self._priority
 
     @property
     def retry_limit(self):
+        """
+        TODO: add docstring
+        """
         return self._retry_limit
 
     @property
     def org_name(self):
+        """
+        TODO: add docstring
+        """
         return self._org_name
 
     @property
     def db_name(self):
+        """
+        TODO: add docstring
+        """
         return self._db_name
 
     def wait(self, timeout=None):
+        """
+        TODO: add docstring
+        """
         raise NotImplementedError # TODO
 
     def kill(self):
+        """
+        TODO: add docstring
+        """
         raise NotImplementedError # TODO
 
     def query(self):
+        """
+        TODO: add docstring
+        """
         if self._query is not None and not self.finished():
             self._update_status()
         return self._query
 
     def status(self):
+        """
+        TODO: add docstring
+        """
         if self._query is not None and not self.finished():
             self._update_status()
         return self._status
 
     def url(self):
+        """
+        TODO: add docstring
+        """
         if self._query is not None and not self.finished():
             self._update_status()
         return self._url
 
     def result(self):
+        """
+        TODO: add docstring
+        """
         if self._result is None:
             if not self.finished():
                 return None
@@ -343,6 +540,9 @@ class Job(Model):
         return self._result
 
     def result_each(self):
+        """
+        TODO: add docstring
+        """
         if not self.finished():
             pass
         else:
@@ -354,6 +554,9 @@ class Job(Model):
                     yield row
 
     def result_format(self, format):
+        """
+        TODO: add docstring
+        """
         if self._result is None:
             if not self.finished():
                 return None
@@ -361,6 +564,9 @@ class Job(Model):
         return self._result
 
     def result_format(self, format):
+        """
+        TODO: add docstring
+        """
         if not self.finished():
             pass
         else:
@@ -372,31 +578,49 @@ class Job(Model):
                     yield row
 
     def finished(self):
+        """
+        TODO: add docstring
+        """
         if self._status not in self.FINISHED_STATUS:
             self._update_progress()
         return self._status in self.FINISHED_STATUS
 
     def success(self):
+        """
+        TODO: add docstring
+        """
         if self._status not in self.FINISHED_STATUS:
             self._update_progress()
         return self._status == self.STATUS_SUCCESS
 
     def error(self):
+        """
+        TODO: add docstring
+        """
         if self._status not in self.FINISHED_STATUS:
             self._update_progress()
         return self._status == self.STATUS_ERROR
 
     def killed(self):
+        """
+        TODO: add docstring
+        """
         if self._status not in self.FINISHED_STATUS:
             self._update_progress()
         return self._status == self.STATUS_KILLED
 
     def queued(self):
+        """
+        TODO: add docstring
+        """
         if self._status not in self.FINISHED_STATUS:
             self._update_progress()
         return self._status == self.STATUS_QUEUED
 
     def running(self):
+        """
+        TODO: add docstring
+        """
         if self._status not in self.FINISHED_STATUS:
             self._update_progress()
         return self._status == self.STATUS_RUNNING
@@ -427,9 +651,16 @@ class ScheduledJob(Job):
 
     @property
     def scheduled_at(self):
+        """
+        TODO: add docstring
+        """
         return self._created_at
 
 class Schedule(Model):
+    """
+    TODO: add docstring
+    """
+
     def __init__(self, client, name, cron, query, database=None, result_url=None, timezone=None, delay=None, next_time=None, priority=None, retry_limit=None, org_name=None):
         super(Schedule, self).__init__(client)
         self._name = name
@@ -446,52 +677,92 @@ class Schedule(Model):
 
     @property
     def name(self):
+        """
+        TODO: add docstring
+        """
         return self._name
 
     @property
     def cron(self):
+        """
+        TODO: add docstring
+        """
         return self._cron
 
     @property
     def query(self):
+        """
+        TODO: add docstring
+        """
         return self._query
 
     @property
     def database(self):
+        """
+        TODO: add docstring
+        """
         return self._database
 
     @property
     def result_url(self):
+        """
+        TODO: add docstring
+        """
         return self._result_url
 
     @property
     def timezone(self):
+        """
+        TODO: add docstring
+        """
         return self._timezone
 
     @property
     def delay(self):
+        """
+        TODO: add docstring
+        """
         return self._delay
 
     @property
     def priority(self):
+        """
+        TODO: add docstring
+        """
         return self._priority
 
     @property
     def retry_limit(self):
+        """
+        TODO: add docstring
+        """
         return self._retry_limit
 
     @property
     def org_name(self):
+        """
+        TODO: add docstring
+        """
         return self._org_name
 
     @property
     def next_time(self):
+        """
+        TODO: add docstring
+        """
         return self._next_time
 
     def run(self, time, num):
+        """
+        TODO: add docstring
+        """
         return self._client.run_schedule(time, num)
 
 class Result(Model):
+    """
+    TODO: add docstring
+    """
+
     def __init__(self, client, name, url, org_name):
         super(Result, self).__init__(client)
         self._name = name
@@ -500,17 +771,30 @@ class Result(Model):
 
     @property
     def name(self):
+        """
+        TODO: add docstring
+        """
         return self._name
 
     @property
     def url(self):
+        """
+        TODO: add docstring
+        """
         return self._url
 
     @property
     def org_name(self):
+        """
+        TODO: add docstring
+        """
         return self._org_name
 
 class BulkImport(Model):
+    """
+    TODO: add docstring
+    """
+
     def __init__(self, client, name=None, database=None, table=None, status=None, upload_frozen=None, job_id=None, valid_records=None, error_records=None, valid_parts=None, error_parts=None, **kwargs):
         super(BulkImport, self).__init__(client)
         self._name = name
@@ -526,44 +810,78 @@ class BulkImport(Model):
 
     @property
     def name(self):
+        """
+        TODO: add docstring
+        """
         return self._name
 
     @property
     def database(self):
+        """
+        TODO: add docstring
+        """
         return self._database
 
     @property
     def table(self):
+        """
+        TODO: add docstring
+        """
         return self._table
 
     @property
     def status(self):
+        """
+        TODO: add docstring
+        """
         return self._status
 
     @property
     def job_id(self):
+        """
+        TODO: add docstring
+        """
         return self._job_id
 
     @property
     def valid_records(self):
+        """
+        TODO: add docstring
+        """
         return self._valid_records
 
     @property
     def error_records(self):
+        """
+        TODO: add docstring
+        """
         return self._error_records
 
     @property
     def valid_parts(self):
+        """
+        TODO: add docstring
+        """
         return self._valid_parts
 
     @property
     def error_parts(self):
+        """
+        TODO: add docstring
+        """
         return self._error_parts
 
     def upload_frozen(self):
+        """
+        TODO: add docstring
+        """
         return self._upload_frozen
 
 class User(Model):
+    """
+    TODO: add docstring
+    """
+
     def __init__(self, client, name, org_name, role_names, email):
         super(User, self).__init__(client)
         self._name = name
@@ -573,21 +891,37 @@ class User(Model):
 
     @property
     def name(self):
+        """
+        TODO: add docstring
+        """
         return self._name
 
     @property
     def org_name(self):
+        """
+        TODO: add docstring
+        """
         return self._org_name
 
     @property
     def role_names(self):
+        """
+        TODO: add docstring
+        """
         return self._role_names
 
     @property
     def email(self):
+        """
+        TODO: add docstring
+        """
         return self._email
 
 class AccessControl(Model):
+    """
+    TODO: add docstring
+    """
+
     def __init__(self, client, subject, action, scope, grant_option):
         super(AccessControl, self).__init__(client)
         self._subject = subject
@@ -597,16 +931,28 @@ class AccessControl(Model):
 
     @property
     def subject(self):
+        """
+        TODO: add docstring
+        """
         return self._subject
 
     @property
     def action(self):
+        """
+        TODO: add docstring
+        """
         return self._action
 
     @property
     def scope(self):
+        """
+        TODO: add docstring
+        """
         return self._scope
 
     @property
     def grant_option(self):
+        """
+        TODO: add docstring
+        """
         return self._grant_option

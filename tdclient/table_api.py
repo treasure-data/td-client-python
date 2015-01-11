@@ -15,8 +15,11 @@ class TableAPI(object):
     ## Table API
     ##
 
-    # => {name:String => [type:Symbol, count:Integer]}
     def list_tables(self, db):
+        """
+        TODO: add docstring
+        => {name:str => [type:str, count:int]}
+        """
         with self.get("/v3/table/list/%s" % (urlquote(str(db)))) as res:
             code, body = res.status, res.read()
             if code != 200:
@@ -46,12 +49,18 @@ class TableAPI(object):
                 self.raise_error("Create #{type} table failed", res, body)
             return True
 
-    # => true
     def create_log_table(self, db, table):
+        """
+        TODO: add docstring
+        => True
+        """
         return self._create_table(db, table, "log")
 
-    # => true
     def create_item_table(self, db, table, primary_key, primary_key_type):
+        """
+        TODO: add docstring
+        => True
+        """
         params = {"primary_key": primary_key, "primary_key_type": primary_key_type}
         return self._create_table(db, table, "item", params)
 
@@ -62,16 +71,22 @@ class TableAPI(object):
                 self.raise_error("Create %s table failed" % (_type), res, body)
             return True
 
-    # => true
     def swap_table(self, db, table1, table2):
+        """
+        TODO: add docstring
+        => True
+        """
         with self.post("/v3/table/swap/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table1)), urlquote(str(table2)))) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Swap tables failed", res, body)
             return True
 
-    # => true
     def update_schema(self, db, table, schema_json):
+        """
+        TODO: add docstring
+        => True
+        """
         with self.post("/v3/table/update-schema/%s/%s" % (urlquote(str(db)), urlquote(str(table))), {"schema": schema_json}) as res:
             code, body = res.status, res.read()
             if code != 200:
@@ -79,14 +94,20 @@ class TableAPI(object):
             return True
 
     def update_expire(self, db, table, expire_days):
+        """
+        TODO: add docstring
+        """
         with self.post("/v3/table/update/%s/%s" % (urlquote(str(db)), urlquote(str(table))), {"expire_days": expire_days}) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Update table expiration failed", res, body)
             return True
 
-    # => type:Symbol
     def delete_table(self, db, table):
+        """
+        TODO: add docstring
+        => type:str
+        """
         with self.post("/v3/table/delete/%s/%s" % (urlquote(str(db)), urlquote(str(table)))) as res:
             code, body = res.status, res.read()
             if code != 200:

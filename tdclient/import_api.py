@@ -18,8 +18,11 @@ class ImportAPI(object):
     ## Import API
     ##
 
-    # => time:Float
     def import_data(self, db, table, format, stream, size, unique_id=None):
+        """
+        TODO: add docstring
+        => time:float
+        """
         if unique_id is not None:
             path = "/v3/table/import_with_id/%s/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table)), urlquote(str(unique_id)), urlquote(str(format)))
         else:

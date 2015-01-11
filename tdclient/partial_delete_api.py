@@ -15,6 +15,9 @@ class PartialDeleteAPI(object):
     ##
 
     def partial_delete(self, db, table, to, _from, params={}):
+        """
+        TODO: add docstring
+        """
         params["to"] = str(to)
         params["from"] = str(_from)
         with self.post("/v3/table/partialdelete/%s/%s" % (urlquote(str(db)), urlquote(str(table))), params) as res:

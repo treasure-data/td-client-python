@@ -9,8 +9,11 @@ class ServerStatusAPI(object):
     ## Server Status API
     ##
 
-    # => status:String
     def server_status(self):
+        """
+        TODO: add docstring
+        => status:str
+        """
         with self.get("/v3/system/server_status") as res:
             code, body = res.status, res.read()
             if code != 200:

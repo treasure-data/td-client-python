@@ -12,6 +12,9 @@ class AccountAPI(object):
     ##
 
     def show_account(self):
+        """
+        TODO: add docstring
+        """
         with self.get("/v3/account/show") as res:
             code, body = res.status, res.read()
             if code != 200:
@@ -27,6 +30,9 @@ class AccountAPI(object):
             return [account_id, plan, storage_size, guaranteed_cores, maximum_cores, created_at]
 
     def account_core_utilization(self, _from, to):
+        """
+        TODO: add docstring
+        """
         params = {}
         if _from is not None:
             params["from"] = str(_from)

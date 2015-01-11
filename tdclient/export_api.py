@@ -14,8 +14,11 @@ class ExportAPI(object):
     ## Export API
     ##
 
-    # => jobId:String
     def export_data(self, db, table, storage_type, params={}):
+        """
+        TODO: add docstring
+        => jobId:str
+        """
         params["storage_type"] = storage_type
         with self.post("/v3/export/run/%s/%s" % (urlquote(str(db)), urlquote(str(table))), params) as res:
             code, body = res.status, res.read()

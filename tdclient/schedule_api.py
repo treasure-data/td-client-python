@@ -14,8 +14,11 @@ class ScheduleAPI(object):
     ## Schedule API
     ##
 
-    # => start:String
     def create_schedule(self, name, params={}):
+        """
+        TODO: add docstring
+        => start:str
+        """
         params.update({"type": params.get("type", "hive")})
         with self.post("/v3/schedule/create/%s" % (urlquote(str(name))), params) as res:
             code, body = res.status, res.read()
@@ -24,8 +27,11 @@ class ScheduleAPI(object):
             js = self.checked_json(body, ["start"])
             return js["start"]
 
-    # => cron:String, query:String
     def delete_schedule(self, name):
+        """
+        TODO: add docstring
+        => cron:str, query:str
+        """
         with self.post("/v3/schedule/delete/%s" % (urlquote(str(name)))) as res:
             code, body = res.status, res.read()
             if code != 200:
@@ -33,8 +39,11 @@ class ScheduleAPI(object):
             js = self.checked_json(body, ["cron", "query"])
             return (js["cron"], js["query"])
 
-    # => [(name:String, cron:String, query:String, database:String, result_url:String)]
     def list_schedules(self):
+        """
+        TODO: add docstring
+        => [(name:str, cron:str, query:str, database:str, result_url:str)]
+        """
         with self.get("/v3/schedule/list") as res:
             code, body = res.status, res.read()
             if code != 200:
@@ -55,12 +64,18 @@ class ScheduleAPI(object):
             return [ schedule(m) for m in js["schedules"] ]
 
     def update_schedule(self, name, params={}):
+        """
+        TODO: add docstring
+        """
         with self.post("/v3/schedule/update/%s" % (urlquote(str(name))), params) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Update schedule failed", res, body)
 
     def history(self, name, _from=0, to=None):
+        """
+        TODO: add docstring
+        """
         params = {}
         if _from is not None:
             params["from"] = str(_from)
@@ -86,6 +101,9 @@ class ScheduleAPI(object):
             return [ history(m) for m in js["history"] ]
 
     def run_schedule(self, name, time, num=None):
+        """
+        TODO: add docstring
+        """
         params = {}
         if num is not None:
             params = {"num": num}
