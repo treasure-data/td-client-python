@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 from __future__ import with_statement
 
 import contextlib
+import dateutil.parser
 import email.utils
 import json
 import logging
@@ -257,3 +258,12 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
 
     def sleep(self, secs):
         time.sleep(secs)
+
+    def parsedate(self, s):
+        # TODO: parse datetime with specific format
+        # for now, this parses string without format since API may return ambiguous value :(
+        return dateutil.parser.parse(s)
+
+    def get_or_else(self, hashmap, key, default_value=None):
+        value = hashmap.get(key)
+        return default_value if value is None else value

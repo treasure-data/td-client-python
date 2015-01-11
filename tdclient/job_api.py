@@ -40,8 +40,8 @@ class JobAPI(object):
                 database = m.get("database")
                 status = m.get("status")
                 query = m.get("query")
-                start_at = m.get("start_at")
-                end_at = m.get("end_at")
+                start_at = self.parsedate(self.get_or_else(m, "start_at", "1970-01-01T00:00:00Z"))
+                end_at = self.parsedate(self.get_or_else(m, "end_at", "1970-01-01T00:00:00Z"))
                 cpu_time = m.get("cpu_time")
                 result_size = m.get("result_size") # compressed result size in msgpack.gz format
                 result_url = m.get("result")
@@ -65,8 +65,8 @@ class JobAPI(object):
             status = js.get("status")
             debug = js.get("debug")
             url = js.get("url")
-            start_at = js.get("start_at")
-            end_at = js.get("end_at")
+            start_at = self.parsedate(self.get_or_else(js, "start_at", "1970-01-01T00:00:00Z"))
+            end_at = self.parsedate(self.get_or_else(js, "end_at", "1970-01-01T00:00:00Z"))
             cpu_time = js.get("cpu_time")
             result_size = js.get("result_size") # compressed result size in msgpack.gz format
             result = js.get("result") # result target URL
@@ -115,8 +115,8 @@ class JobAPI(object):
                 for row in unpacker:
                     yield row
             elif format == "json":
-                dumper = json.load(codecs.getreader("utf-8")(res))
-                for row in dumper:
+                unpacker = json.load(codecs.getreader("utf-8")(res))
+                for row in unpacker:
                     yield row
             else:
                 yield res.read()

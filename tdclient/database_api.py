@@ -25,8 +25,8 @@ class DatabaseAPI(object):
             for m in js["databases"]:
                 name = m.get("name")
                 count = m.get("count")
-                created_at = m.get("created_at")
-                updated_at = m.get("updated_at")
+                created_at = self.parsedate(self.get_or_else(m, "created_at", "1970-01-01T00:00:00Z"))
+                updated_at = self.parsedate(self.get_or_else(m, "updated_at", "1970-01-01T00:00:00Z"))
                 permission = m.get("permission")
                 result[name] = [count, created_at, updated_at, None, permission] # set nil to org for API copatibility
             return result

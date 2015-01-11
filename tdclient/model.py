@@ -42,8 +42,9 @@ class Account(Model):
     def maximum_cores(self):
         return self._maximum_cores
 
+    @property
     def created_at(self):
-        return self._created_at # TODO: parse datetime string
+        return self._created_at
 
     def storage_size_string(self):
         if self._storage_size <= 1024 * 1024:
@@ -105,11 +106,13 @@ class Database(Model):
     def query(self, q):
         return self._client.query(self._db_name, q)
 
+    @property
     def created_at(self):
-        return self._created_at # TODO: parse datetime string
+        return self._created_at
 
+    @property
     def updated_at(self):
-        return self._updated_at # TODO: parse datetime string
+        return self._updated_at
 
     def _update_tables(self):
         self._tables = self._client.tables(self._db_name)
@@ -175,20 +178,25 @@ class Table(Model):
     def name(self):
         return self._table_name
 
+    @property
     def created_at(self):
-        return self._created_at # TODO: parse datetime string
+        return self._created_at
 
+    @property
     def updated_at(self):
-        return self._updated_at # TODO: parse datetime string
+        return self._updated_at
 
+    @property
     def last_import(self):
-        return self._last_import # TODO: parse datetime string
+        return self._last_import
 
+    @property
     def last_log_timestamp(self):
-        return self._last_log_timestamp # TODO: parse datetime string
+        return self._last_log_timestamp
 
+    @property
     def expire_days(self):
-        return self._expire_days # TODO: parse datetime string
+        return self._expire_days
 
     def permission(self):
         if self.database is None:
@@ -417,8 +425,9 @@ class ScheduledJob(Job):
         super(ScheduledJob, self).__init__(client, *args, **kwargs)
         self._scheduled_at = scheduled_at
 
+    @property
     def scheduled_at(self):
-        return self._created_at # TODO: parse datetime string
+        return self._created_at
 
 class Schedule(Model):
     def __init__(self, client, name, cron, query, database=None, result_url=None, timezone=None, delay=None, next_time=None, priority=None, retry_limit=None, org_name=None):
@@ -475,8 +484,9 @@ class Schedule(Model):
     def org_name(self):
         return self._org_name
 
+    @property
     def next_time(self):
-        return self._next_time # TODO: parse datetime string
+        return self._next_time
 
     def run(self, time, num):
         return self._client.run_schedule(time, num)
