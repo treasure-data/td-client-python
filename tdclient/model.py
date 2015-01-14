@@ -135,7 +135,7 @@ class Database(Model):
         TODO: add docstring
         """
         if self._tables is None:
-            self._update_tables
+            self._update_tables()
         return self._tables
 
     def create_log_table(self, name):
