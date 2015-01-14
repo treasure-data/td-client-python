@@ -533,16 +533,6 @@ class Job(Model):
         """
         TODO: add docstring
         """
-        if self._result is None:
-            if not self.finished():
-                return None
-            self._result = self._client.job_result(self._job_id)
-        return self._result
-
-    def result_each(self):
-        """
-        TODO: add docstring
-        """
         if not self.finished():
             pass
         else:
@@ -552,16 +542,6 @@ class Job(Model):
             else:
                 for row in self._result:
                     yield row
-
-    def result_format(self, format):
-        """
-        TODO: add docstring
-        """
-        if self._result is None:
-            if not self.finished():
-                return None
-            self._result = self._client.job_result_format(self._job_id, format)
-        return self._result
 
     def result_format(self, format):
         """
