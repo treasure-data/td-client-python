@@ -39,7 +39,7 @@ class JobAPI(object):
             result = []
             for m in js["jobs"]:
                 job_id = m.get("job_id")
-                _type = m.get("type", "?")
+                type = m.get("type", "?")
                 database = m.get("database")
                 status = m.get("status")
                 query = m.get("query")
@@ -50,7 +50,7 @@ class JobAPI(object):
                 result_url = m.get("result")
                 priority = m.get("priority")
                 retry_limit = m.get("retry_limit")
-                result.append((job_id, _type, status, query, start_at, end_at, cpu_time,
+                result.append((job_id, type, status, query, start_at, end_at, cpu_time,
                      result_size, result_url, priority, retry_limit, None, database))
             return result
 
@@ -65,7 +65,7 @@ class JobAPI(object):
             if code != 200:
                 self.raise_error("Show job failed", res, body)
             js = self.checked_json(body, ["status"])
-            _type = js.get("type", "?")
+            type = js.get("type", "?")
             database = js.get("database")
             query = js.get("query")
             status = js.get("status")
@@ -83,7 +83,7 @@ class JobAPI(object):
                 hive_result_schema = json.loads(hive_result_schema)
             priority = js.get("priority")
             retry_limit = js.get("retry_limit")
-            return (_type, query, status, url, debug, start_at, end_at, cpu_time,
+            return (type, query, status, url, debug, start_at, end_at, cpu_time,
                     result_size, result, hive_result_schema, priority, retry_limit, None, database)
 
     def job_status(self, job_id):
@@ -168,7 +168,7 @@ class JobAPI(object):
         """
         return self.query(q, "pig", db, result_url, priority, retry_limit, **kwargs)
 
-    def query(self, q, _type="hive", db=None, result_url=None, priority=None, retry_limit=None, **kwargs):
+    def query(self, q, type="hive", db=None, result_url=None, priority=None, retry_limit=None, **kwargs):
         """
         TODO: add docstring
         => jobId:str
@@ -181,7 +181,7 @@ class JobAPI(object):
             params["priority"] = priority
         if retry_limit is not None:
             params["retry_limit"] = retry_limit
-        with self.post("/v3/job/issue/%s/%s" % (urlquote(str(_type)), urlquote(str(db))), params) as res:
+        with self.post("/v3/job/issue/%s/%s" % (urlquote(str(type)), urlquote(str(db))), params) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Query failed", res, body)

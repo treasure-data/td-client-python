@@ -28,7 +28,7 @@ class TableAPI(object):
             result = {}
             for m in js["tables"]:
                 name = m.get("name")
-                _type = m.get("type", "?")
+                type = m.get("type", "?")
                 count = int(m.get("count", 0))
                 created_at = self.parsedate(self.get_or_else(m, "created_at", "1970-01-01T00:00:00Z"))
                 updated_at = self.parsedate(self.get_or_else(m, "updated_at", "1970-01-01T00:00:00Z"))
@@ -39,11 +39,11 @@ class TableAPI(object):
                 expire_days = m.get("expire_days")
                 primary_key = m.get("primary_key")
                 primary_key_type = m.get("primary_key_type")
-                result[name] = (_type, schema, count, created_at, updated_at, estimated_storage_size, last_import, last_log_timestamp, expire_days, primary_key, primary_key_type)
+                result[name] = (type, schema, count, created_at, updated_at, estimated_storage_size, last_import, last_log_timestamp, expire_days, primary_key, primary_key_type)
             return result
 
-    def _create_log_or_item_table(self, db, table, _type):
-        with self.post("/v3/table/create/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table)), urlquote(str(_type)))) as res:
+    def _create_log_or_item_table(self, db, table, type):
+        with self.post("/v3/table/create/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table)), urlquote(str(type)))) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Create #{type} table failed", res, body)
@@ -64,11 +64,11 @@ class TableAPI(object):
         params = {"primary_key": primary_key, "primary_key_type": primary_key_type}
         return self._create_table(db, table, "item", params)
 
-    def _create_table(self, db, table, _type, params={}):
-        with self.post("/v3/table/create/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table)), urlquote(str(_type))), params) as res:
+    def _create_table(self, db, table, type, params={}):
+        with self.post("/v3/table/create/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table)), urlquote(str(type))), params) as res:
             code, body = res.status, res.read()
             if code != 200:
-                self.raise_error("Create %s table failed" % (_type), res, body)
+                self.raise_error("Create %s table failed" % (type), res, body)
             return True
 
     def swap_table(self, db, table1, table2):
@@ -113,5 +113,5 @@ class TableAPI(object):
             if code != 200:
                 self.raise_error("Delete table failed", res, body)
             js = self.checked_json(body, [])
-            _type = js.get("type", "?")
-            return _type
+            type = js.get("type", "?")
+            return type

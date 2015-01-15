@@ -10,8 +10,7 @@ from tdclient import api
 from tdclient import model
 
 class Client(object):
-    """
-    TODO: add docstring
+    """API Client for Treasure Data Service
     """
 
     def __init__(self, *args, **kwargs):
@@ -20,41 +19,44 @@ class Client(object):
     @property
     def api(self):
         """
-        TODO: add docstring
+        Returns: an instance of :class:`tdclient.api.API`
         """
         return self._api
 
     @property
     def apikey(self):
         """
-        TODO: add docstring
+        Returns: API key string.
         """
         return self._api.apikey
 
     def server_status(self):
         """
-        TODO: add docstring
+        Returns: a string represents current server status.
         """
         return self.api.server_status()
 
     def create_database(self, db_name, **kwargs):
         """
-        TODO: add docstring
-        => True
+        Params:
+            db_name (str): name of a database to create
+
+        Returns: `True` if success
         """
         return self.api.create_database(db_name, **kwargs)
 
     def delete_database(self, db_name):
         """
-        TODO: add docstring
-        => True
+        Params:
+            db_name (str): name of database to delete
+
+        Returns: `True` if success
         """
         return self.api.delete_database(db_name)
 
     def account(self):
         """
-        TODO: add docstring
-        => :class:`tdclient.model.Account`
+        Returns: :class:`tdclient.model.Acount`
         """
         account_id, plan, storage, guaranteed_cores, maximum_cores, created_at = self.api.show_account()
         return model.Account(self, account_id, plan, storage, guaranteed_cores, maximum_cores, created_at)
@@ -68,16 +70,17 @@ class Client(object):
 
     def databases(self):
         """
-        TODO: add docstring
-        => [:class:`tdclient.model.Database`]
+        Returns: a list of :class:`tdclient.model.Database`
         """
         m = self.api.list_databases()
         return [ model.Database(self, db_name, None, *args) for (db_name, args) in m.items() ]
 
     def database(self, db_name):
         """
-        TODO: add docstring
-        => :class:`tdclient.model.Database`
+        Params:
+            db_name (str): name of a database
+
+        Returns: :class:`tdclient.model.Database`
         """
         m = self.api.list_databases()
         if db_name in m:
@@ -87,22 +90,34 @@ class Client(object):
 
     def create_log_table(self, db_name, table_name):
         """
-        TODO: add docstring
-        => True
+        Params:
+            db_name (str): name of a database
+            table_name (str): name of a table to create
+
+        Returns: `True` if success
         """
         return self.api.create_log_table(db_name, table_name)
 
     def create_item_table(self, db_name, table_name, primary_key, primary_key_type):
         """
-        TODO: add docstring
-        => True
+        Params:
+            db_name (str): name of a database
+            table_name (str): name of a table to create
+            primary_key (str): name of primary key column
+            primary_key_type (str): type of primary key column
+
+        Returns: `True` if success
         """
         return self.api.create_item_table(db_name, table_name, primary_key, primary_key_type)
 
     def swap_table(self, db_name, table_name1, table_name2):
         """
-        TODO: add docstring
-        => True
+        Params:
+            db_name (str): name of a database
+            table_name1 (str): original table name
+            table_name2 (str): table name you want to rename to
+
+        Returns: `True` if success
         """
         return self.api.swap_table(db_name, table_name1, table_name2)
 
@@ -122,23 +137,34 @@ class Client(object):
 
     def delete_table(self, db_name, table_name):
         """
-        TODO: add docstring
-        => type:str
+        Params:
+            db_name (str): name of a database
+            table_name (str): name of a table
+
+        Returns: a string represents the type of deleted table
         """
         return self.api.delete_table(db_name, table_name)
 
     def tables(self, db_name):
         """
-        TODO: add docstring
-        => [:class:`tdclient.model.Table`]
+        Params:
+            db_name (str): name of a database
+
+        Returns: a list of :class:`tdclient.model.Table`
         """
         m = self.api.list_tables(db_name)
         return [ model.Table(self, db_name, table_name, *args) for (table_name, args) in m.items() ]
 
     def table(self, db_name, table_name):
         """
-        TODO: add docstring
-        => :class:`tdclient.model.Table`
+        Params:
+            db_name (str): name of a database
+            table_name (str): name of a table
+
+        Returns: :class:`tdclient.model.Table`
+
+        Raises:
+            tdclient.api.NotFoundError: if the table doesn't exist
         """
         tables = self.tables(db_name)
         for table in tables:
@@ -154,8 +180,18 @@ class Client(object):
 
     def query(self, db_name, q, result_url=None, priority=None, retry_limit=None, type="hive", **kwargs):
         """
-        TODO: add docstring
-        => :class:`tdclient.model.Job`
+        Params:
+            db_name (str): name of a database
+            q (str): a query string
+            result_url (str): result output URL
+            priority (str): priority
+            retry_limit (int): retry limit
+            type (str): name of a query engine
+
+        Returns: :class:`tdclient.model.Job`
+
+        Raises:
+            ValueError: if unknown query type has been specified
         """
         # for compatibility, assume type is hive unless specifically specified
         if type not in ["hive", "pig", "impala", "presto"]:
@@ -165,23 +201,30 @@ class Client(object):
 
     def jobs(self, _from=None, to=None, status=None, conditions=None):
         """
-        TODO: add docstring
-        => [:class:`tdclient.model.Job`]
+        Params:
+            _from (int):
+            to (int):
+            status (str):
+            conditions (str)
+
+        Returns: a list of :class:`tdclient.model.Job`
         """
         results = self.api.list_jobs(_from, to, status, conditions)
         def job(lis):
-            job_id, _type, status, query, start_at, end_at, cpu_time, result_size, result_url, priority, retry_limit, org, db = lis
-            return model.Job(self, job_id, _type, query, status, None, None, start_at, end_at, cpu_time,
+            job_id, type, status, query, start_at, end_at, cpu_time, result_size, result_url, priority, retry_limit, org, db = lis
+            return model.Job(self, job_id, type, query, status, None, None, start_at, end_at, cpu_time,
                              result_size, None, result_url, None, priority, retry_limit, org, db)
         return [ job(result) for result in results ]
 
     def job(self, job_id):
         """
-        TODO: add docstring
-        => :class:`tdclient.model.Job`
+        Params:
+            job_id (int): job id
+
+        Returns: :class:`tdclient.model.Job`
         """
         job_id = str(job_id)
-        _type, query, status, url, debug, start_at, end_at, cpu_time, result_size, result_url, hive_result_schema, priority, retry_limit, org, db = self.api.show_job(job_id)
+        type, query, status, url, debug, start_at, end_at, cpu_time, result_size, result_url, hive_result_schema, priority, retry_limit, org, db = self.api.show_job(job_id)
         return model.Job(self, job_id, type, query, status, url, debug, start_at, end_at, cpu_time,
                          result_size, None, result_url, hive_result_schema, priority, retry_limit, org, db)
 
@@ -373,8 +416,8 @@ class Client(object):
         """
         result = self.api.history(name, _from, to)
         def scheduled_job(m):
-            scheduled_at,job_id,_type,status,query,start_at,end_at,result_url,priority,database = m
-            job_param = [job_id, _type, query, status,
+            scheduled_at,job_id,type,status,query,start_at,end_at,result_url,priority,database = m
+            job_param = [job_id, type, query, status,
                 None, None, # url, debug
                 start_at, end_at,
                 None, # cpu_time
@@ -395,8 +438,8 @@ class Client(object):
         """
         results = self.api.run_schedule(name, time, num)
         def scheduled_job(m):
-            job_id,_type,scheduled_at = m
-            return model.ScheduledJob(self, scheduled_at, job_id, _type, None)
+            job_id,type,scheduled_at = m
+            return model.ScheduledJob(self, scheduled_at, job_id, type, None)
         return [ scheduled_job(m) for m in results ]
 
     def import_data(self, db_name, table_name, format, stream, size, unique_id=None):

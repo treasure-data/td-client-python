@@ -193,13 +193,13 @@ class Table(Model):
     TODO: add docstring
     """
 
-    def __init__(self, client, db_name, table_name, _type, schema, count, created_at=None, updated_at=None, estimated_storage_size=None,
+    def __init__(self, client, db_name, table_name, type, schema, count, created_at=None, updated_at=None, estimated_storage_size=None,
                  last_import=None, last_log_timestamp=None, expire_days=None, primary_key=None, primary_key_type=None):
         super(Table, self).__init__(client)
         self.database = None
         self._db_name = db_name
         self._table_name = table_name
-        self._type = _type
+        self._type = type
         self._schema = schema
         self._count = count
         self._created_at = created_at
@@ -379,9 +379,9 @@ class Schema(object):
     """
 
     class Field(object):
-        def __init__(self, name, _type):
+        def __init__(self, name, type):
             self._name = name
-            self._type = _type
+            self._type = type
 
         @property
         def name(self):
@@ -407,11 +407,11 @@ class Schema(object):
         """
         return self._fields
 
-    def add_field(self, name, _type):
+    def add_field(self, name, type):
         """
         TODO: add docstring
         """
-        self._fields.append(Field(name, _type))
+        self._fields.append(Field(name, type))
 
 class Job(Model):
     """
@@ -426,12 +426,12 @@ class Job(Model):
     STATUS_KILLED = "killed"
     FINISHED_STATUS = [STATUS_SUCCESS, STATUS_ERROR, STATUS_KILLED]
 
-    def __init__(self, client, job_id, _type, query, status=None, url=None, debug=None, start_at=None, end_at=None, cpu_time=None,
+    def __init__(self, client, job_id, type, query, status=None, url=None, debug=None, start_at=None, end_at=None, cpu_time=None,
                  result_size=None, result=None, result_url=None, hive_result_schema=None, priority=None, retry_limit=None,
                  org_name=None, db_name=None):
         super(Job, self).__init__(client)
         self._job_id = job_id
-        self._type = _type
+        self._type = type
         self._url = url
         self._query = query
         self._status = status
@@ -612,7 +612,7 @@ class Job(Model):
         self._status = self._client.job_status(self._job_id)
 
     def _update_status(self):
-        _type, query, status, url, debug, start_at, end_at, cpu_time, result_size, result_url, hive_result_schema, priority, retry_limit, org_name, db_name = self._client.api.show_job(self._job_id)
+        type, query, status, url, debug, start_at, end_at, cpu_time, result_size, result_url, hive_result_schema, priority, retry_limit, org_name, db_name = self._client.api.show_job(self._job_id)
         self._query = query
         self._status = status
         self._url = url

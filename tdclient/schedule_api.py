@@ -88,7 +88,7 @@ class ScheduleAPI(object):
             js = self.checked_json(body, ["history"])
             def history(m):
                 job_id = m.get("job_id")
-                _type = m.get("type", "?")
+                type = m.get("type", "?")
                 database = m.get("database")
                 status = m.get("status")
                 query = m.get("query")
@@ -97,7 +97,7 @@ class ScheduleAPI(object):
                 scheduled_at = self.parsedate(self.get_or_else(m, "scheduled_at", "1970-01-01T00:00:00Z"))
                 result_url = m.get("result")
                 priority = m.get("priority")
-                return (scheduled_at, job_id, _type, status, query, start_at, end_at, result_url, priority, database)
+                return (scheduled_at, job_id, type, status, query, start_at, end_at, result_url, priority, database)
             return [ history(m) for m in js["history"] ]
 
     def run_schedule(self, name, time, num=None):
@@ -115,6 +115,6 @@ class ScheduleAPI(object):
         def job(m):
             job_id = m.get("job_id")
             scheduled_at = self.parsedate(self.get_or_else(m, "scheduled_at", "1970-01-01T00:00:00Z"))
-            _type = m.get("type", "?")
-            return (job_id, _type, scheduled_at)
+            type = m.get("type", "?")
+            return (job_id, type, scheduled_at)
         return [ job(m) for m in js["jobs"] ]

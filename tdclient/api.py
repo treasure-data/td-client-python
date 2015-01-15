@@ -73,8 +73,16 @@ class NotFoundError(APIError):
 
 class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, ImportAPI,
           JobAPI, PartialDeleteAPI, ResultAPI, ScheduleAPI, ServerStatusAPI, TableAPI, UserAPI):
-    """
-    TODO: add docstring
+    """Internal API class
+
+    Args:
+        apikey (str): the API key of Treasure Data Service. If `None` is given, `TD_API_KEY` will be used if available.
+        user_agent (str): custom User-Agent.
+        endpoint (str): custom endpoint URL. If `None` is given, `TD_API_SERVER` will be used if available.
+        headers (dict): custom HTTP headers.
+        retry_post_requests (bool): Specify whether allowing API client to retry POST requests. `False` by default.
+        max_cumul_retry_delay (int): maximum retry limit in seconds. 600 seconds by default.
+        http_proxy (str): HTTP proxy setting. if `None` is given, `HTTP_PROXY` will be used if available.
     """
 
     DEFAULT_ENDPOINT = "https://api.treasuredata.com/"
