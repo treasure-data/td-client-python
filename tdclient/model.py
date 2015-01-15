@@ -71,6 +71,7 @@ class Account(Model):
         """
         return self._created_at
 
+    @property
     def storage_size_string(self):
         """
         TODO: add docstring
@@ -315,6 +316,7 @@ class Table(Model):
         """
         return self._expire_days
 
+    @property
     def permission(self):
         """
         TODO: add docstring
@@ -323,6 +325,7 @@ class Table(Model):
             self._update_database()
         return self.database.permission
 
+    @property
     def identifier(self):
         """
         TODO: add docstring
@@ -353,6 +356,7 @@ class Table(Model):
         """
         return self._client.export_data(self._db_name, self._table_name, storage_type, kwargs)
 
+    @property
     def estimated_storage_size_string(self):
         """
         TODO: add docstring

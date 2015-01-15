@@ -29,13 +29,13 @@ def test_account():
 def test_account_storage_size_string():
     client = mock.MagicMock()
     account1 = model.Account(client, 1, 1, storage_size=0)
-    assert account1.storage_size_string() == "0.0 GB"
+    assert account1.storage_size_string == "0.0 GB"
     account2 = model.Account(client, 1, 1, storage_size=50*1024*1024)
-    assert account2.storage_size_string() == "0.01 GB"
+    assert account2.storage_size_string == "0.01 GB"
     account3 = model.Account(client, 1, 1, storage_size=50*1024*1024*1024)
-    assert account3.storage_size_string() == "50.0 GB"
+    assert account3.storage_size_string == "50.0 GB"
     account4 = model.Account(client, 1, 1, storage_size=300*1024*1024*1024)
-    assert account4.storage_size_string() == "300 GB"
+    assert account4.storage_size_string == "300 GB"
 
 def test_database():
     client = mock.MagicMock()
@@ -66,7 +66,7 @@ def test_table():
     assert table.last_import == "last_import"
     assert table.last_log_timestamp == "last_log_timestamp"
     assert table.expire_days == "expire_days"
-    assert table.identifier() == "db_name.table_name"
+    assert table.identifier == "db_name.table_name"
 
 def test_schema():
     client = mock.MagicMock()
