@@ -6,6 +6,14 @@
 
 Treasure Data API library for Python
 
+## Requirements
+
+`td-client` supports the following versions of Python.
+
+* Python 2.7+
+* Python 3.3+
+* PyPy
+
 ## Install
 
 You can install the releases from [PyPI](https://pypi.python.org/).
@@ -23,7 +31,6 @@ TreasureData API key will be read from environment variable `TD_API_KEY`, if non
 ```python
 #!/usr/bin/env python
 
-from __future__ import with_statement
 from contextlib import closing
 import os
 import sys

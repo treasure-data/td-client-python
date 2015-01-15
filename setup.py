@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import with_statement
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 import re
@@ -57,11 +56,14 @@ setup(
     license="Apache Software License",
     platforms="Posix; MacOS X; Windows",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Environment :: Web Environment",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
         "Topic :: Internet",
+        "Programing Language :: Python 2.7",
+        "Programing Language :: Python 3.3",
+        "Programing Language :: Python 3.4",
     ],
 )
