@@ -525,12 +525,11 @@ class Job(Model):
             self._update_status()
         return self._status
 
+    @property
     def url(self):
         """
         TODO: add docstring
         """
-        if self._query is not None and not self.finished():
-            self._update_status()
         return self._url
 
     def result(self):
