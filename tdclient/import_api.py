@@ -2,7 +2,6 @@
 
 from __future__ import print_function
 from __future__ import unicode_literals
-from __future__ import with_statement
 
 try:
     import urllib.parse as urlparse # >=3.0
