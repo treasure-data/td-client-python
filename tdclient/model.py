@@ -851,6 +851,7 @@ class BulkImport(Model):
         """
         return self._error_parts
 
+    @property
     def upload_frozen(self):
         """
         TODO: add docstring

@@ -112,7 +112,7 @@ def test_bulk_import():
     assert bulk_import.error_records == "error_records"
     assert bulk_import.valid_parts == "valid_parts"
     assert bulk_import.error_parts == "error_parts"
-    assert bulk_import.upload_frozen() == "upload_frozen"
+    assert bulk_import.upload_frozen == "upload_frozen"
 
 def test_user():
     client = mock.MagicMock()
