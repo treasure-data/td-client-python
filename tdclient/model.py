@@ -857,6 +857,13 @@ class BulkImport(Model):
         """
         return self._upload_frozen
 
+    def error_record_items(self):
+        """
+        TODO: add docstring
+        """
+        for record in self._client.bulk_import_error_records(self.name):
+            yield record
+
 class User(Model):
     """
     TODO: add docstring
