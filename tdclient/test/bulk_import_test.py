@@ -37,9 +37,9 @@ def test_show_bulk_import_success():
         }
     """
     td.get = mock.MagicMock(return_value=make_response(200, body))
-    status = td.show_bulk_import("name")
+    bulk_import = td.show_bulk_import("name")
     td.get.assert_called_with("/v3/bulk_import/show/name")
-    assert status == "SUCCESS"
+    assert bulk_import == {"status": "SUCCESS"}
 
 def test_list_bulk_imports_success():
     td = api.API("APIKEY")

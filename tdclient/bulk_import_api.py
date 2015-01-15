@@ -45,7 +45,7 @@ class BulkImportAPI(object):
             if code != 200:
                 self.raise_error("Show bulk import failed", res, body)
             js = self.checked_json(body, ["status"])
-            return js["status"]
+            return js
 
     def list_bulk_imports(self, params={}):
         """
