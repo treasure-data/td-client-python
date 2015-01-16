@@ -65,5 +65,7 @@ setup(
         "Programing Language :: Python 2.7",
         "Programing Language :: Python 3.3",
         "Programing Language :: Python 3.4",
+        "Programing Language :: Implementation :: CPython",
+        "Programing Language :: Implementation :: PyPy",
     ],
 )
