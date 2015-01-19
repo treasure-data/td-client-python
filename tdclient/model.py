@@ -500,13 +500,18 @@ class Job(Model):
         """
         TODO: add docstring
         """
-        raise NotImplementedError # TODO
+        started_at = time.time()
+        while not self.finished():
+            if timeout is None or timeout < time.time() - started_at:
+                time.sleep(5) # TODO: configurable
+            else:
+                raise RuntimeError("timeout") # TODO: throw proper error
 
     def kill(self):
         """
         TODO: add docstring
         """
-        raise NotImplementedError # TODO
+        return self._client.kill(self.job_id)
 
     def query(self):
         """
