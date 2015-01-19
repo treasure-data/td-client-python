@@ -536,7 +536,7 @@ class Job(Model):
         TODO: add docstring
         """
         if not self.finished():
-            pass
+            raise ValueError("result is not ready")
         else:
             if self._result is None:
                 for row in self._client.job_result_each(self._job_id):
@@ -550,7 +550,7 @@ class Job(Model):
         TODO: add docstring
         """
         if not self.finished():
-            pass
+            raise ValueError("result is not ready")
         else:
             if self._result is None:
                 for row in self._client.job_result_format_each(self._job_id, format):
