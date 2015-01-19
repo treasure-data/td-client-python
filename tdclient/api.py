@@ -8,11 +8,14 @@ try:
     ca_certs = certifi.where
 except ImportError:
     def ca_certs():
-        debian_ca_certs = "/etc/ssl/certs/ca-certificates.crt" # Or wherever it lives.
-        if os.path.exists(debian_ca_certs):
-            return debian_ca_certs
-        else:
-            return None
+        certs = [
+            "/etc/ssl/certs/ca-certificates.crt", # debian
+            "/etc/ssl/certs/ca-bundle.crt", # redhat
+        ]
+        for cert in certs:
+            if os.path.exists(cert):
+                return cert
+        return None
 import contextlib
 import dateutil.parser
 import email.utils
