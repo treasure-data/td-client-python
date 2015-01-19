@@ -22,6 +22,12 @@ You can install the releases from [PyPI](https://pypi.python.org/).
 $ pip install td-client
 ```
 
+It'd be better to install [certifi](https://pypi.python.org/pypi/certifi) to enable SSL certificate verification.
+
+```sh
+$ pip install certifi
+```
+
 ## Examples
 
 TreasureData API key will be read from environment variable `TD_API_KEY`, if none is given via arguments to `tdclient.Client`.
