@@ -30,9 +30,11 @@ $ pip install certifi
 
 ## Examples
 
-TreasureData API key will be read from environment variable `TD_API_KEY`, if none is given via arguments to `tdclient.Client`.
+Please see also the examples at [Treasure Data Documentation](http://docs.treasuredata.com/articles/rest-api-python-client).
 
 ### Listing jobs
+
+TreasureData API key will be read from environment variable `TD_API_KEY`, if none is given via arguments to `tdclient.Client`.
 
 ```python
 #!/usr/bin/env python
