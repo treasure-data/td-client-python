@@ -39,12 +39,11 @@ TreasureData API key will be read from environment variable `TD_API_KEY`, if non
 ```python
 #!/usr/bin/env python
 
-from contextlib import closing
 import os
 import sys
 import tdclient
 
-with closing(tdclient.Client()) as td:
+with tdclient.Client() as td:
     for job in td.jobs():
         print(job.job_id)
 ```

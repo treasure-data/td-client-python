@@ -15,6 +15,12 @@ class Client(object):
     def __init__(self, *args, **kwargs):
         self._api = api.API(*args, **kwargs)
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.close()
+
     @property
     def api(self):
         """
