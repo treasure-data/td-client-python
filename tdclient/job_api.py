@@ -10,6 +10,7 @@ try:
     from urllib.parse import quote as urlquote # >=3.0
 except ImportError:
     from urllib import quote as urlquote
+import warnings
 
 class JobAPI(object):
     ####
@@ -153,19 +154,17 @@ class JobAPI(object):
             former_status = js.get("former_status")
             return former_status
 
-    def hive_query(self, q, db=None, result_url=None, priority=None, retry_limit=None, **kwargs):
-        """
-        TODO: add docstring
-        => jobId:str
-        """
-        return self.query(q, "hive", db, result_url, priority, retry_limit, **kwargs)
+    def hive_query(self, q, **kwargs):
+        warnings.warn("hive_query(q, ...) will be removed from future release. Please use query(q, type=\"hive\", ...)", category=DeprecationWarning)
+        kwargs = dict(kwargs)
+        kwargs["type"] = "hive"
+        return self.query(q, **kwargs)
 
-    def pig_query(self, q, db=None, result_url=None, priority=None, retry_limit=None, **kwargs):
-        """
-        TODO: add docstring
-        => jobId:str
-        """
-        return self.query(q, "pig", db, result_url, priority, retry_limit, **kwargs)
+    def pig_query(self, q, **kwargs):
+        warnings.warn("pig_query(q, ...) will be removed from future release. Please use query(q, type=\"pig\", ...)", category=DeprecationWarning)
+        kwargs = dict(kwargs)
+        kwargs["type"] = "pig"
+        return self.query(q, **kwargs)
 
     def query(self, q, type="hive", db=None, result_url=None, priority=None, retry_limit=None, **kwargs):
         """
