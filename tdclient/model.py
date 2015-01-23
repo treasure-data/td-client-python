@@ -10,13 +10,12 @@ class Model(object):
     @property
     def client(self):
         """
-        TODO: add docstring
+        Returns: a :class:`tdclient.Client` instance
         """
         return self._client
 
 class Account(Model):
-    """
-    TODO: add docstring
+    """Account on Treasure Data Service
     """
 
     def __init__(self, client, account_id, plan, storage_size=None, guaranteed_cores=None, maximum_cores=None, created_at=None):
@@ -85,8 +84,7 @@ class Account(Model):
             return "%d GB" % int(float(self._storage_size) / (1024 * 1024 * 1024))
 
 class Database(Model):
-    """
-    TODO: add docstring
+    """Database on Treasure Data Service
     """
 
     PERMISSIONS = ["administrator", "full_access", "import_only", "query_only"]
@@ -188,8 +186,7 @@ class Database(Model):
             table.database = self
 
 class Table(Model):
-    """
-    TODO: add docstring
+    """Database table on Treasure Data Service
     """
 
     def __init__(self, client, db_name, table_name, type, schema, count, created_at=None, updated_at=None, estimated_storage_size=None,
@@ -373,8 +370,7 @@ class Table(Model):
         self.database = self._client.database(self._db_name)
 
 class Schema(object):
-    """
-    TODO: add docstring
+    """Schema of a database table on Treasure Data Service
     """
 
     class Field(object):
@@ -413,8 +409,7 @@ class Schema(object):
         self._fields.append(Field(name, type))
 
 class Job(Model):
-    """
-    TODO: add docstring
+    """Job on Treasure Data Service
     """
 
     STATUS_QUEUED = "queued"
@@ -464,7 +459,7 @@ class Job(Model):
     @property
     def type(self):
         """
-        TODO: add docstring
+        Returns: a string represents the engine type of the job (e.g. "hive", "presto", etc.)
         """
         return self._type
 
@@ -478,7 +473,7 @@ class Job(Model):
     @property
     def priority(self):
         """
-        TODO: add docstring
+        Returns: a string represents the priority of the job (e.g. "NORMAL", "HIGH", etc.)
         """
         return self._priority
 
@@ -504,19 +499,22 @@ class Job(Model):
         return self._db_name
 
     def wait(self, timeout=None):
-        """
-        TODO: add docstring
+        """Sleep until the job has been finished
+
+        Params:
+            timeout (int): Timeout in seconds. No timeout by default.
         """
         started_at = time.time()
         while not self.finished():
             if timeout is None or timeout < time.time() - started_at:
-                time.sleep(5) # TODO: configurable
+                time.sleep(1) # TODO: configurable
             else:
                 raise RuntimeError("timeout") # TODO: throw proper error
 
     def kill(self):
-        """
-        TODO: add docstring
+        """Kill the job
+
+        Returns: a string represents the status of killed job ("queued", "running")
         """
         return self._client.kill(self.job_id)
 
@@ -530,7 +528,7 @@ class Job(Model):
 
     def status(self):
         """
-        TODO: add docstring
+        Returns: a string represents the status of the job ("success", "error", "killed", "queued", "running")
         """
         if self._query is not None and not self.finished():
             self._update_status()
@@ -639,6 +637,8 @@ class Job(Model):
         self._db_name = db_name
 
 class ScheduledJob(Job):
+    """Scheduled job on Treasure Data Service
+    """
     def __init__(self, client, scheduled_at, *args, **kwargs):
         super(ScheduledJob, self).__init__(client, *args, **kwargs)
         self._scheduled_at = scheduled_at
@@ -651,8 +651,7 @@ class ScheduledJob(Job):
         return self._created_at
 
 class Schedule(Model):
-    """
-    TODO: add docstring
+    """Schedule on Treasure Data Service
     """
 
     def __init__(self, client, name, cron, query, database=None, result_url=None, timezone=None, delay=None, next_time=None, priority=None, retry_limit=None, org_name=None):
@@ -753,8 +752,7 @@ class Schedule(Model):
         return self._client.run_schedule(time, num)
 
 class Result(Model):
-    """
-    TODO: add docstring
+    """Result on Treasure Data Service
     """
 
     def __init__(self, client, name, url, org_name):
@@ -785,8 +783,7 @@ class Result(Model):
         return self._org_name
 
 class BulkImport(Model):
-    """
-    TODO: add docstring
+    """Bulk-import session on Treasure Data Service
     """
 
     def __init__(self, client, name=None, database=None, table=None, status=None, upload_frozen=None, job_id=None, valid_records=None, error_records=None, valid_parts=None, error_parts=None, **kwargs):
@@ -880,8 +877,7 @@ class BulkImport(Model):
             yield record
 
 class User(Model):
-    """
-    TODO: add docstring
+    """User on Treasure Data Service
     """
 
     def __init__(self, client, name, org_name, role_names, email):
@@ -920,8 +916,7 @@ class User(Model):
         return self._email
 
 class AccessControl(Model):
-    """
-    TODO: add docstring
+    """Access control settings of a user on Treasure Data Service
     """
 
     def __init__(self, client, subject, action, scope, grant_option):
