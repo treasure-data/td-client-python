@@ -70,6 +70,7 @@ def test_table():
 def test_schema():
     client = mock.MagicMock()
     job = model.Job(client, "job_id", "type", "query", status="status", url="url", debug="debug", start_at="start_at", end_at="end_at", cpu_time="cpu_time", result_size="result_size", result="result", result_url="result_url", hive_result_schema="hive_result_schema", priority="priority", retry_limit="retry_limit", org_name="org_name", db_name="db_name")
+    assert job.id == "job_id"
     assert job.job_id == "job_id"
     assert job.type == "type"
     assert job.result_url == "result_url"

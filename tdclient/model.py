@@ -448,9 +448,16 @@ class Job(Model):
         self._db_name = db_name
 
     @property
+    def id(self):
+        """
+        Returns: a string represents the identifier of the job
+        """
+        return self._job_id
+
+    @property
     def job_id(self):
         """
-        TODO: add docstring
+        Returns: a string represents the identifier of the job
         """
         return self._job_id
 
