@@ -224,7 +224,7 @@ class Client(object):
     def job(self, job_id):
         """
         Params:
-            job_id (int): job id
+            job_id (str): job id
 
         Returns: :class:`tdclient.model.Job`
         """
@@ -235,43 +235,59 @@ class Client(object):
 
     def job_status(self, job_id):
         """
-        TODO: add docstring
-        => status:str
+        Params:
+            job_id (str): job id
+
+        Returns: a string represents the status of the job ("success", "error", "killed", "queued", "running")
         """
         return self.api.job_status(job_id)
 
     def job_result(self, job_id):
         """
-        TODO: add docstring
-        => result:[{column:str=>value:object]
+        Params:
+            job_id (str): job id
+
+        Returns: a list of each rows in result set
         """
         return self.api.job_result(job_id)
 
     def job_result_each(self, job_id):
         """
-        TODO: add docstring
-        => None
+        Params:
+            job_id (str): job id
+
+        Returns: an iterator of result set
         """
         for row in self.api.job_result_each(job_id):
             yield row
 
     def job_result_format(self, job_id, format):
         """
-        TODO: add docstring
+        Params:
+            job_id (str): job id
+            format (str): output format of result set
+
+        Returns: a list of each rows in result set
         """
         return self.api.job_result_format(job_id, format)
 
     def job_result_format_each(self, job_id, format):
         """
-        TODO: add docstring
+        Params:
+            job_id (str): job id
+            format (str): output format of result set
+
+        Returns: an iterator of result set
         """
         for row in self.api.job_result_format_each(job_id, format):
             yield row
 
     def kill(self, job_id):
         """
-        TODO: add docstring
-        => former_status:str
+        Params:
+            job_id (str): job id
+
+        Returns: a string represents the status of killed job ("queued", "running")
         """
         return self.api.kill(job_id)
 
