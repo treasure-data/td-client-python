@@ -466,7 +466,7 @@ class Job(Model):
     @property
     def result_url(self):
         """
-        TODO: add docstring
+        Returns: a string of URL of the result on Treasure Data Service
         """
         return self._result_url
 
@@ -494,7 +494,7 @@ class Job(Model):
     @property
     def db_name(self):
         """
-        TODO: add docstring
+        Returns: a string represents the name of a database that job is running on
         """
         return self._db_name
 
@@ -520,7 +520,7 @@ class Job(Model):
 
     def query(self):
         """
-        TODO: add docstring
+        Returns: a string represents the query
         """
         if self._query is not None and not self.finished():
             self._update_status()
@@ -537,13 +537,13 @@ class Job(Model):
     @property
     def url(self):
         """
-        TODO: add docstring
+        Returns: a string of URL of the job on Treasure Data Service
         """
         return self._url
 
     def result(self):
         """
-        TODO: add docstring
+        Returns: an iterator of rows in result set
         """
         if not self.finished():
             raise ValueError("result is not ready")
@@ -557,7 +557,10 @@ class Job(Model):
 
     def result_format(self, format):
         """
-        TODO: add docstring
+        Params:
+            format (str): output format of result set
+
+        Returns: an iterator of rows in result set
         """
         if not self.finished():
             raise ValueError("result is not ready")
@@ -571,7 +574,7 @@ class Job(Model):
 
     def finished(self):
         """
-        TODO: add docstring
+        Returns: `True` if the job has been finished in success, error or killed
         """
         if self._status not in self.FINISHED_STATUS:
             self._update_progress()
@@ -579,7 +582,7 @@ class Job(Model):
 
     def success(self):
         """
-        TODO: add docstring
+        Returns: `True` if the job has been finished in success
         """
         if self._status not in self.FINISHED_STATUS:
             self._update_progress()
@@ -587,7 +590,7 @@ class Job(Model):
 
     def error(self):
         """
-        TODO: add docstring
+        Returns: `True` if the job has been finished in error
         """
         if self._status not in self.FINISHED_STATUS:
             self._update_progress()
@@ -595,7 +598,7 @@ class Job(Model):
 
     def killed(self):
         """
-        TODO: add docstring
+        Returns: `True` if the job has been finished in killed
         """
         if self._status not in self.FINISHED_STATUS:
             self._update_progress()
@@ -603,7 +606,7 @@ class Job(Model):
 
     def queued(self):
         """
-        TODO: add docstring
+        Returns: `True` if the job is queued
         """
         if self._status not in self.FINISHED_STATUS:
             self._update_progress()
@@ -611,7 +614,7 @@ class Job(Model):
 
     def running(self):
         """
-        TODO: add docstring
+        Returns: `True` if the job is running
         """
         if self._status not in self.FINISHED_STATUS:
             self._update_progress()
@@ -646,7 +649,7 @@ class ScheduledJob(Job):
     @property
     def scheduled_at(self):
         """
-        TODO: add docstring
+        Returns: a :class:`datetime.datetime` represents the schedule of next invocation of the job
         """
         return self._created_at
 

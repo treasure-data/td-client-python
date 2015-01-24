@@ -292,7 +292,7 @@ class Client(object):
             job_id (str): job id
             format (str): output format of result set
 
-        Returns: an iterator of result set
+        Returns: an iterator of rows in result set
         """
         for row in self.api.job_result_format_each(job_id, format):
             yield row
