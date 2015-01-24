@@ -103,14 +103,14 @@ class Database(Model):
     @property
     def org_name(self):
         """
-        TODO: add docstring
+        Returns: organization name
         """
         return self._org_name
 
     @property
     def permission(self):
         """
-        TODO: add docstring
+        Returns: a string represents permission for the database (e.g. "administrator", "full_access", etc.)
         """
         return self._permission
 
@@ -224,21 +224,21 @@ class Table(Model):
     @property
     def type(self):
         """
-        TODO: add docstring
+        Returns: a string represents the type of the table
         """
         return self._type
 
     @property
     def db_name(self):
         """
-        TODO: add docstring
+        Returns: a string represents the name of the database
         """
         return self._db_name
 
     @property
     def table_name(self):
         """
-        TODO: add docstring
+        Returns: a string represents the name of the table
         """
         return self._table_name
 
@@ -280,49 +280,49 @@ class Table(Model):
     @property
     def database_name(self):
         """
-        TODO: add docstring
+        Returns: a string represents the name of the database
         """
         return self._db_name
 
     @property
     def name(self):
         """
-        TODO: add docstring
+        Returns: a string represents the name of the table
         """
         return self._table_name
 
     @property
     def created_at(self):
         """
-        TODO: add docstring
+        Returns: :class:`datetime.datetime`
         """
         return self._created_at
 
     @property
     def updated_at(self):
         """
-        TODO: add docstring
+        Returns: :class:`datetime.datetime`
         """
         return self._updated_at
 
     @property
     def last_import(self):
         """
-        TODO: add docstring
+        Returns: :class:`datetime.datetime`
         """
         return self._last_import
 
     @property
     def last_log_timestamp(self):
         """
-        TODO: add docstring
+        Returns: :class:`datetime.datetime`
         """
         return self._last_log_timestamp
 
     @property
     def expire_days(self):
         """
-        TODO: add docstring
+        Returns: an int represents the days until expiration
         """
         return self._expire_days
 
@@ -338,13 +338,13 @@ class Table(Model):
     @property
     def identifier(self):
         """
-        TODO: add docstring
+        Returns: a string identifier of the table
         """
         return "%s.%s" % (self._db_name, self._table_name)
 
     def delete(self):
         """
-        TODO: add docstring
+        Returns: a string represents the type of deleted table
         """
         return self._client.delete_table(self._db_name, self._table_name)
 
@@ -369,7 +369,7 @@ class Table(Model):
     @property
     def estimated_storage_size_string(self):
         """
-        TODO: add docstring
+        Returns: a string represents estimated size of the table in human-readable format
         """
         if self._estimated_storage_size <= 1024*1024:
             return "0.0 GB"
@@ -501,7 +501,7 @@ class Job(Model):
     @property
     def org_name(self):
         """
-        TODO: add docstring
+        Returns: organization name
         """
         return self._org_name
 
@@ -818,28 +818,28 @@ class BulkImport(Model):
     @property
     def name(self):
         """
-        TODO: add docstring
+        Returns: name of the bulk import session
         """
         return self._name
 
     @property
     def database(self):
         """
-        TODO: add docstring
+        Returns: database name in a string which the bulk import session is working on
         """
         return self._database
 
     @property
     def table(self):
         """
-        TODO: add docstring
+        Returns: table name in a string which the bulk import session is working on
         """
         return self._table
 
     @property
     def status(self):
         """
-        TODO: add docstring
+        Returns: status of the bulk import session in a string
         """
         return self._status
 
@@ -906,14 +906,14 @@ class User(Model):
     @property
     def name(self):
         """
-        TODO: add docstring
+        Returns: name of the user
         """
         return self._name
 
     @property
     def org_name(self):
         """
-        TODO: add docstring
+        Returns: organization name
         """
         return self._org_name
 
@@ -927,7 +927,7 @@ class User(Model):
     @property
     def email(self):
         """
-        TODO: add docstring
+        Returns: e-mail address
         """
         return self._email
 

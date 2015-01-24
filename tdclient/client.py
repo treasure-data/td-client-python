@@ -307,9 +307,15 @@ class Client(object):
         return self.api.kill(job_id)
 
     def export_data(self, db_name, table_name, storage_type, params={}):
-        """
-        TODO: add docstring
-        => :class:`tdclient.model.Job`
+        """Export data from Treasure Data Service
+
+        Params:
+            db_name (str): name of a database
+            table_name (str): name of a table
+            storage_type (str): type of the storage
+            params (dict): optional parameters
+
+        Returns: :class:`tdclient.model.Job`
         """
         job_id = self.api.export_data(db_name, table_name, storage_type, params)
         return model.Job(self, job_id, "export", None)
@@ -503,16 +509,23 @@ class Client(object):
         return [ scheduled_job(m) for m in results ]
 
     def import_data(self, db_name, table_name, format, stream, size, unique_id=None):
-        """
-        TODO: add docstring
-        => time:flaot
+        """Import data into Treasure Data Service
+
+        Params:
+            db_name (str): name of a database
+            table_name (str): name of a table
+            format (str): format of data type (e.g. "msgpack.gz")
+            stream (file-like): a file-like object contains the data
+            size (int): the size of the part
+            unique_id (str): a unique identifier of the data
+
+        Returns: a second in float represents elapsed time of the importing
         """
         return self.api.import_data(db_name, table_name, format, stream, size, unique_id)
 
     def results(self):
         """
-        TODO: add docstring
-        => [:class:`tdclient.model.Result`]
+        Returns: a list of :class:`tdclient.model.Result`
         """
         results = self.api.list_result()
         def result(m):
@@ -535,9 +548,9 @@ class Client(object):
         return self.api.delete_result(name)
 
     def users(self):
-        """
-        TODO: add docstring
-        => [:class:`tdclient.model.User`]
+        """List users
+
+        Returns: a liast of :class:`tdclient.model.User`
         """
         results = self.api.list_users()
         def user(m):
@@ -546,65 +559,89 @@ class Client(object):
         return [ user(m) for m in results ]
 
     def add_user(self, name, org, email, password):
-        """
-        TODO: add docstring
-        => True
+        """Add a new user
+
+        Params:
+            name (str): name of the user
+            org (str): organization
+            email: (str): e-mail address
+            password (str): password
+
+        Returns: `True` if success
         """
         return self.api.add_user(name, org, email, password)
 
-    def remove_user(self, user):
-        """
-        TODO: add docstring
-        => True
-        """
-        return self.api.remove_user(user)
+    def remove_user(self, name):
+        """Remove a user
 
-    def change_email(self, user, email):
-        """
-        TODO: add docstring
-        => True
-        """
-        return self.api.change_email(user, email)
+        Params:
+            name (str): name of the user
 
-    def list_apikeys(self, user):
+        Returns: `True` if success
         """
-        TODO: add docstring
-        => [apikey:str]
-        """
-        return self.api.list_apikeys(user)
+        return self.api.remove_user(name)
 
-    def add_apikey(self, user):
+    def change_email(self, name, email):
         """
-        TODO: add docstring
-        => True
-        """
-        return self.api.add_apikey(user)
+        Params:
+            name (str): name of the user
+            email (str) new e-mail address
 
-    def remove_apikey(self, user, apikey):
+        Returns: `True` if success
         """
-        TODO: add docstring
-        => True
-        """
-        return self.api.remove_apikey(user, apikey)
+        return self.api.change_email(name, email)
 
-    def change_password(self, user, password):
+    def list_apikeys(self, name):
         """
-        TODO: add docstring
-        => True
+        Params:
+            name (str): name of the user
+
+        Returns: a list of string of API key
         """
-        return self.api.change_password(user, password)
+        return self.api.list_apikeys(name)
+
+    def add_apikey(self, name):
+        """
+        Params:
+            name (str): name of the user
+
+        Returns: `True` if success
+        """
+        return self.api.add_apikey(name)
+
+    def remove_apikey(self, name, apikey):
+        """
+        Params:
+            name (str): name of the user
+            apikey (str): an API key to remove
+
+        Returns: `True` if success
+        """
+        return self.api.remove_apikey(name, apikey)
+
+    def change_password(self, name, password):
+        """
+        Params:
+            name (str): name of the user
+            password (str): new password
+
+        Returns: `True` if success
+        """
+        return self.api.change_password(name, password)
 
     def change_my_password(self, old_password, password):
         """
-        TODO: add docstring
-        => True
+        Params:
+            old_password (str): old password
+            password (str): new password
+
+        Returns: `True` if success
         """
         return self.api.change_my_password(old_password, password)
 
     def access_controls(self):
         """
-        TODO: add docstring
-        => [:class:`tdclient.model.User`]
+        Returns: a list of :class:`tdclient.model.AccessControl`
         """
         results = self.api.list_access_controls()
         def access_control(m):

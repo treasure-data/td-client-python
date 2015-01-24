@@ -54,71 +54,71 @@ class UserAPI(object):
                 self.raise_error("Adding user failed", res, body)
             return True
 
-    def remove_user(self, user):
+    def remove_user(self, name):
         """
         TODO: add docstring
         => True
         """
-        with self.post("/v3/user/remove/%s" % (urlquote(str(user)))) as res:
+        with self.post("/v3/user/remove/%s" % (urlquote(str(name)))) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Removing user failed", res, body)
             return True
 
-    def change_email(self, user, email):
+    def change_email(self, name, email):
         """
         TODO: add docstring
         => True
         """
         params = {"email": email}
-        with self.post("/v3/user/email/change/%s" % (urlquote(str(user))), params) as res:
+        with self.post("/v3/user/email/change/%s" % (urlquote(str(name))), params) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Changing email failed", res, body)
             return True
 
-    def list_apikeys(self, user):
+    def list_apikeys(self, name):
         """
         TODO: add docstring
         => [apikey:str]
         """
-        with self.get("/v3/user/apikey/list/%s" % (urlquote(str(user)))) as res:
+        with self.get("/v3/user/apikey/list/%s" % (urlquote(str(name)))) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("List API keys failed", res, body)
             js = self.checked_json(body, ["apikeys"])
             return js["apikeys"]
 
-    def add_apikey(self, user):
+    def add_apikey(self, name):
         """
         TODO: add docstring
         => True
         """
-        with self.post("/v3/user/apikey/add/%s" % (urlquote(str(user)))) as res:
+        with self.post("/v3/user/apikey/add/%s" % (urlquote(str(name)))) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Adding API key failed", res, body)
             return True
 
-    def remove_apikey(self, user, apikey):
+    def remove_apikey(self, name, apikey):
         """
         TODO: add docstring
         => True
         """
         params = {"apikey": apikey}
-        with self.post("/v3/user/apikey/remove/%s" % (urlquote(str(user))), params) as res:
+        with self.post("/v3/user/apikey/remove/%s" % (urlquote(str(name))), params) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Removing API key failed", res, body)
             return True
 
-    def change_password(self, user, password):
+    def change_password(self, name, password):
         """
         TODO: add docstring
         => True
         """
         params = {"password": password}
-        with self.post("/v3/user/password/change/%s" % (urlquote(str(user))), params) as res:
+        with self.post("/v3/user/password/change/%s" % (urlquote(str(name))), params) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Changing password failed", res, body)
