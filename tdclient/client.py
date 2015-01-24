@@ -127,21 +127,32 @@ class Client(object):
         return self.api.swap_table(db_name, table_name1, table_name2)
 
     def update_schema(self, db_name, table_name, schema):
-        """
-        TODO: add docstring
-        => True
+        """Updates the schema of a table
+
+        Params:
+            db_name (str): name of a database
+            table_name (str): name of a table
+            schema (dict): a dictionary object represents the schema definition (will convert to JSON)
+
+        Returns: `True` if success
         """
         return self.api.update_schema(db_name, table_name, json.dumps(schema))
 
     def update_expire(self, db_name, table_name, expire_days):
-        """
-        TODO: add docstring
-        => True
+        """Set expiration date to a table
+
+        Params:
+            db_name (str): name of a database
+            table_name (str): name of a table
+            epire_days (int): expiration date in days from today
+
+        Returns: `True` if success
         """
         return self.api.update_expire(db_name, table_name, expire_days)
 
     def delete_table(self, db_name, table_name):
-        """
+        """Delete a table
+
         Params:
             db_name (str): name of a database
             table_name (str): name of a table
@@ -151,7 +162,8 @@ class Client(object):
         return self.api.delete_table(db_name, table_name)
 
     def tables(self, db_name):
-        """
+        """List existing tables
+
         Params:
             db_name (str): name of a database
 
@@ -184,7 +196,8 @@ class Client(object):
         return self.api.tail(db_name, table_name, count, to, _from, block)
 
     def query(self, db_name, q, result_url=None, priority=None, retry_limit=None, type="hive", **kwargs):
-        """
+        """Run a query on specified database table.
+
         Params:
             db_name (str): name of a database
             q (str): a query string
@@ -205,7 +218,8 @@ class Client(object):
         return model.Job(self, job_id, type, q)
 
     def jobs(self, _from=None, to=None, status=None, conditions=None):
-        """
+        """List jobs
+
         Params:
             _from (int):
             to (int):
@@ -222,7 +236,8 @@ class Client(object):
         return [ job(result) for result in results ]
 
     def job(self, job_id):
-        """
+        """Get a job from `job_id`
+
         Params:
             job_id (str): job id
 
@@ -291,105 +306,130 @@ class Client(object):
         """
         return self.api.kill(job_id)
 
-    def export_data(self, db_name, table_name, storage_type, opts={}):
+    def export_data(self, db_name, table_name, storage_type, params={}):
         """
         TODO: add docstring
         => :class:`tdclient.model.Job`
         """
-        job_id = self.api.export_data(db_name, table_name, storage_type, opts)
+        job_id = self.api.export_data(db_name, table_name, storage_type, params)
         return model.Job(self, job_id, "export", None)
 
-    def partial_delete(self, db_name, table_name, to, _from, opts={}):
+    def partial_delete(self, db_name, table_name, to, _from, params={}):
         """
         TODO: add docstring
         => :class:`tdclient.model.Job`
         """
-        job_id = self.api.partial_delete(db_name, table_name, to, _from, opts)
+        job_id = self.api.partial_delete(db_name, table_name, to, _from, params)
         return model.Job(self, job_id, "partialdelete", None)
 
-    def create_bulk_import(self, name, database, table, opts={}):
+    def create_bulk_import(self, name, database, table, params={}):
+        """Create new bulk import session
+
+        Params:
+            name (str): name of new bulk import session
+            database (str): name of a database
+            table (str): name of a table
         """
-        TODO: add docstring
-        => None
-        """
-        return self.api.create_bulk_import(name, database, table, opts)
+        return self.api.create_bulk_import(name, database, table, params)
 
     def delete_bulk_import(self, name):
-        """
-        TODO: add docstring
-        => None
+        """Delete a bulk import session
+
+        Params:
+            name (str): name of a bulk import session
         """
         return self.api.delete_bulk_import(name)
 
     def freeze_bulk_import(self, name):
-        """
-        TODO: add docstring
-        => None
+        """Freeze a bulk import session
+
+        Params:
+            name (str): name of a bulk import session
         """
         return self.api.freeze_bulk_import(name)
 
     def unfreeze_bulk_import(self, name):
-        """
-        TODO: add docstring
-        => None
+        """Unfreeze a bulk import session
+
+        Params:
+            name (str): name of a bulk import session
         """
         return self.api.unfreeze_bulk_import(name)
 
     def perform_bulk_import(self, name):
-        """
-        TODO: add docstring
-        => :class:`tdclient.model.Job`
+        """Perform a bulk import session
+
+        Params:
+            name (str): name of a bulk import session
+
+        Returns: :class:`tdclient.model.Job`
         """
         job_id = self.api.perform_bulk_import(name)
         return model.Job(self, job_id, "bulk_import", None)
 
     def commit_bulk_import(self, name):
-        """
-        TODO: add docstring
-        => None
+        """Commit a bulk import session
+
+        Params:
+            name (str): name of a bulk import session
         """
         return self.api.commit_bulk_import(name)
 
     def bulk_import_error_records(self, name):
         """
-        TODO: add docstring
-        => records:[row:dict]
+        Params:
+            name (str): name of a bulk import session
+
+        Returns: an iterator of error records
         """
         for record in self.api.bulk_import_error_records(name):
             yield record
 
     def bulk_import(self, name):
-        """
-        TODO: add docstring
-        => :class:`tdclient.model.BulkImport`
+        """Get a bulk import session
+
+        Params:
+            name (str): name of a bulk import session
+
+        Returns: :class:`tdclient.model.BulkImport`
         """
         data = self.api.show_bulk_import(name)
         return model.BulkImport(self, **data)
 
     def bulk_imports(self):
-        """
-        TODO: add docstring
-        => [:class:`tdclient.model.BulkImport`]
+        """List bulk import sessions
+
+        Returns: a list of :class:`tdclient.model.BulkImport`
         """
         return [ model.BulkImport(self, **data) for data in self.api.list_bulk_imports() ]
 
     def bulk_import_upload_part(self, name, part_name, stream, size):
-        """
-        TODO: add docstring
-        => None
+        """Upload a part to a bulk import session
+
+        Params:
+            name (str): name of a bulk import session
+            part_name (str): name of a part of the bulk import session
+            stream (file-like): a file-like object contains the part
+            size (int): the size of the part
         """
         return self.api.bulk_import_upload_part(name, part_name, stream, size)
 
     def bulk_import_delete_part(self, name, part_name):
-        """
-        TODO: add docstring
-        => None
+        """Delete a part from a bulk import session
+
+        Params:
+            name (str): name of a bulk import session
+            part_name (str): name of a part of the bulk import session
         """
         return self.api.bulk_import_delete_part(name, part_name)
 
     def list_bulk_import_parts(self, name):
-        """
-        TODO: add docstring
+        """List parts of a bulk import session
+
+        Params:
+            name (str): name of a bulk import session
+
+        Returns: a list of string represents the name of parts
         """
         return self.api.list_bulk_import_parts(name)
 
@@ -595,7 +635,6 @@ class Client(object):
         return self.api.test_access_control(user, action, scope)
 
     def close(self):
-        """
-        TODO: add docstring
+        """Close opened API connections.
         """
         return self._api.close()
