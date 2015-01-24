@@ -20,13 +20,19 @@ def test_create_schedule_success():
     # TODO: should be replaced by wire dump
     body = b"""
         {
-            "start": "foo"
+            "start": "2015-01-24 04:34:51 UTC"
         }
     """
     td.post = mock.MagicMock(return_value=make_response(200, body))
     start = td.create_schedule("bar", {"type": "presto"})
     td.post.assert_called_with("/v3/schedule/create/bar", {"type": "presto"})
-    assert start == "foo"
+    assert start.year == 2015
+    assert start.month == 1
+    assert start.day == 24
+    assert start.hour == 4
+    assert start.minute == 34
+    assert start.second == 51
+    assert start.utcoffset().seconds == 0 # UTC
 
 def test_delete_schedule_success():
     td = api.API("APIKEY")

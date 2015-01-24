@@ -442,8 +442,7 @@ class Client(object):
             raise ValueError("'cron' option is required")
         if "query" not in params:
             raise ValueError("'query' option is required")
-        start = self.api.create_schedule(name, params)
-        return start # TODO: parse datetime string
+        return self.api.create_schedule(name, params)
 
     def delete_schedule(self, name):
         """
