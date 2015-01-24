@@ -518,12 +518,11 @@ class Job(Model):
         """
         return self._client.kill(self.job_id)
 
+    @property
     def query(self):
         """
-        Returns: a string represents the query
+        Returns: a string represents the query string of the job
         """
-        if self._query is not None and not self.finished():
-            self._update_status()
         return self._query
 
     def status(self):
