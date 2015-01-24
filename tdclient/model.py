@@ -124,13 +124,13 @@ class Database(Model):
     @property
     def name(self):
         """
-        TODO: add docstring
+        Returns: a name of the database in string
         """
         return self._db_name
 
     def tables(self):
         """
-        TODO: add docstring
+        Returns: a list of :class:`tdclient.model.Table`
         """
         if self._tables is None:
             self._update_tables()
@@ -138,45 +138,59 @@ class Database(Model):
 
     def create_log_table(self, name):
         """
-        TODO: add docstring
+        Params:
+            name (str): name of new log table
+
+        Returns: :class:`tdclient.model.Table`
         """
         return self._client.create_log_table(self._db_name, name)
 
     def create_item_table(self, name):
         """
-        TODO: add docstring
+        Params:
+            name (str): name of new item table
+
+        Returns: :class:`tdclient.model.Table`
         """
         return self._client.create_item_table(self._db_name, name)
 
     def table(self, table_name):
         """
-        TODO: add docstring
+        Params:
+            table_name (str): name of a table
+
+        Returns: :class:`tdclient.model.Table`
         """
         return self._client.table(self._db_name, table_name)
 
     def delete(self):
-        """
-        TODO: add docstring
+        """Delete the database
+
+        Returns: `True` if success
         """
         return self._client.delete_database(self._db_name)
 
-    def query(self, q):
+    def query(self, q, **kwargs):
+        """Run a query on the database
+
+        Params:
+            q (str): a query string
+
+        Returns: :class:`tdclient.model.Job`
         """
-        TODO: add docstring
-        """
-        return self._client.query(self._db_name, q)
+        return self._client.query(self._db_name, q, **kwargs)
 
     @property
     def created_at(self):
         """
-        TODO: add docstring
+        Returns: :class:`datetime.datetime`
         """
         return self._created_at
 
     @property
     def updated_at(self):
         """
-        TODO: add docstring
+        Returns: :class:`datetime.datetime`
         """
         return self._updated_at
 
