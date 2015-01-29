@@ -519,7 +519,7 @@ class Client(object):
             size (int): the size of the part
             unique_id (str): a unique identifier of the data
 
-        Returns: a second in float represents elapsed time of the importing
+        Returns: second in float represents elapsed time of the importing
         """
         return self.api.import_data(db_name, table_name, format, stream, size, unique_id)
 
