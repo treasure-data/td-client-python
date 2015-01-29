@@ -150,6 +150,8 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         }
         url, headers = self.build_request(path=path, headers=headers, **kwargs)
 
+        log.debug("REST GET call:\n  headers: %s\n  path: %s\n  params: %s" % (repr(header), repr(path), repr(params)))
+
         # up to 7 retries with exponential (base 2) back-off starting at 'retry_delay'
         retry_delay = 5
         cumul_retry_delay = 0
@@ -175,10 +177,15 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
                 retry_delay *= 2
             else:
                 raise(APIError("Retrying stopped after %d seconds." % (self._max_cumul_retry_delay)))
+
+        log.debug("REST GET response:\n  headers: %s\n  status: %d\n  body: <omitted>" % (repr(dict(response.getheaders())), response.status))
+
         return contextlib.closing(response)
 
     def post(self, path, params={}, **kwargs):
         url, headers = self.build_request(path=path, headers={}, **kwargs)
+
+        log.debug("REST POST call:\n  headers: %s\n  path: %s\n  params: %s" % (repr(header), repr(path), repr(params)))
 
         # up to 7 retries with exponential (base 2) back-off starting at 'retry_delay'
         retry_delay = 5
@@ -210,6 +217,9 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
                 retry_delay *= 2
             else:
                 raise(APIError("Retrying stopped after %d seconds." % (self._max_cumul_retry_delay)))
+
+        log.debug("REST POST response:\n  headers: %s\n  status: %d\n  body: <omitted>" % (repr(dict(response.getheaders())), response.status))
+
         return contextlib.closing(response)
 
     def put(self, path, bytes_or_stream, size, **kwargs):
@@ -217,6 +227,8 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         headers["content-length"] = str(size)
         headers["content-type"] = "application/octet-stream"
         url, headers = self.build_request(path=path, headers=headers, **kwargs)
+
+        log.debug("REST PUT call:\n  headers: %s\n  path: %s\n  body: <omitted>" % (repr(headers), repr(path)))
 
         if isinstance(bytes_or_stream, io.BytesIO):
             # `httplib` requires file-like object to support `fileno()`.
@@ -252,6 +264,9 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
                 retry_delay *= 2
             else:
                 raise(APIError("Retrying stopped after %d seconds." % (self._max_cumul_retry_delay)))
+
+        log.debug("REST PUT response:\n  headers: %s\n  status: %d\n  body: <omitted>" % (repr(dict(response.getheaders())), response.status))
+
         return contextlib.closing(response)
 
     def build_request(self, path=None, headers={}, endpoint=None):
