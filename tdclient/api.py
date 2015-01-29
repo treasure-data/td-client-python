@@ -3,6 +3,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from array import array
 try:
     import certifi
     ca_certs = certifi.where
@@ -19,6 +20,7 @@ except ImportError:
 import contextlib
 import dateutil.parser
 import email.utils
+import io
 import json
 import logging
 import os
@@ -210,13 +212,23 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
                 raise(APIError("Retrying stopped after %d seconds." % (self._max_cumul_retry_delay)))
         return contextlib.closing(response)
 
-    def put(self, path, stream, size, **kwargs):
+    def put(self, path, bytes_or_stream, size, **kwargs):
         headers = {}
         headers["content-length"] = str(size)
         headers["content-type"] = "application/octet-stream"
         url, headers = self.build_request(path=path, headers=headers, **kwargs)
 
-        body = stream.read() if hasattr(stream, "read") else stream
+        if isinstance(bytes_or_stream, io.BytesIO):
+            # `httplib` requires file-like object to support `fileno()`.
+            # `io.BytesIO` doesn't support it, though.
+            stream = array(str("b"), bytes_or_stream.getvalue())
+        else:
+            # file-like object supported by httplib
+            if hasattr(bytes_or_stream, "read") and hasattr(bytes_or_stream, "fileno"):
+                stream = bytes_or_stream
+            else:
+                # send request body as an `array.array` since `httplib` requires the request body to be a unicode string
+                stream = array(str("b"), bytes_or_stream)
 
         # up to 7 retries with exponential (base 2) back-off starting at 'retry_delay'
         retry_delay = 5
@@ -225,7 +237,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         response = None
         while True:
             try:
-                response = self.http.urlopen("PUT", url, body=body, headers=headers, decode_content=True, preload_content=False)
+                response = self.http.urlopen("PUT", url, body=stream, headers=headers, decode_content=True, preload_content=False)
                 if response.status < 500:
                     break
                 else:

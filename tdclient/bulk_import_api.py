@@ -5,10 +5,7 @@ from __future__ import unicode_literals
 
 import gzip
 import msgpack
-try:
-    from io import BytesIO
-except ImportError:
-    from StringIO import StringIO as BytesIO
+import io
 try:
     from urllib.parse import quote as urlquote # >=3.0
 except ImportError:
@@ -146,7 +143,7 @@ class BulkImportAPI(object):
             if code != 200:
                 self.raise_error("Failed to get bulk import error records", res)
 
-            body = BytesIO(res.read())
+            body = io.BytesIO(res.read())
             decompressor = gzip.GzipFile(fileobj=body)
 
             content_type = res.getheader("content-type", "application/x-msgpack; charset=utf-8")
