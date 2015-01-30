@@ -150,7 +150,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         }
         url, headers = self.build_request(path=path, headers=headers, **kwargs)
 
-        log.debug("REST GET call:\n  headers: %s\n  path: %s\n  params: %s" % (repr(header), repr(path), repr(params)))
+        log.debug("REST GET call:\n  headers: %s\n  path: %s\n  params: %s" % (repr(headers), repr(path), repr(params)))
 
         # up to 7 retries with exponential (base 2) back-off starting at 'retry_delay'
         retry_delay = 5
@@ -185,7 +185,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
     def post(self, path, params={}, **kwargs):
         url, headers = self.build_request(path=path, headers={}, **kwargs)
 
-        log.debug("REST POST call:\n  headers: %s\n  path: %s\n  params: %s" % (repr(header), repr(path), repr(params)))
+        log.debug("REST POST call:\n  headers: %s\n  path: %s\n  params: %s" % (repr(headers), repr(path), repr(params)))
 
         # up to 7 retries with exponential (base 2) back-off starting at 'retry_delay'
         retry_delay = 5
