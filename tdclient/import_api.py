@@ -90,7 +90,7 @@ class ImportAPI(object):
 
     def _import_items(self, db, table, items, unique_id=None):
         with tempfile.TemporaryFile() as fp:
-            with gzip.GzipFile(fileobj=fp) as gz:
+            with gzip.GzipFile(mode="wb", fileobj=fp) as gz:
                 packer = msgpack.Packer()
                 for record in items:
                     gz.write(packer.pack(record))
@@ -107,5 +107,5 @@ class ImportAPI(object):
     def _parse_json_file(self, file):
         # current impl doesn't torelate any JSON parse error
         for s in file:
-            record = json.loads(s)
+            record = json.loads(s.decode("utf-8"))
             yield record

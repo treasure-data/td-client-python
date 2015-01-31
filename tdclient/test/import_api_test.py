@@ -62,14 +62,14 @@ def msgpackb(list):
 
 def msgunpackb(bytes):
     """bytes -> list"""
-    unpacker = msgpack.Unpacker(io.BytesIO(bytes))
+    unpacker = msgpack.Unpacker(io.BytesIO(bytes), encoding=str("utf-8"))
     return list(unpacker)
 
 def jsonb(list):
     """list -> bytes"""
     stream = io.BytesIO()
     for item in list:
-        stream.write(json.dumps(item))
+        stream.write(json.dumps(item).encode("utf-8"))
         stream.write(b"\n")
     return stream.getvalue()
 
