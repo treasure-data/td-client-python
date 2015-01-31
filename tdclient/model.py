@@ -355,8 +355,14 @@ class Table(Model):
         return self._client.tail(self._db_name, self._table_name, count, to, _from)
 
     def import_data(self, format, stream, size):
-        """
-        TODO: add docstring
+        """Import data into Treasure Data Service
+
+        Params:
+            format (str): format of data type (e.g. "msgpack.gz")
+            stream (file-like): a file-like object contains the data
+            size (int): the length of the data
+
+        Returns: second in float represents elapsed time to import data
         """
         return self._client.import_data(self._db_name, self._table_name, format, stream, size)
 

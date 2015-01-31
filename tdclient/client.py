@@ -516,10 +516,10 @@ class Client(object):
             table_name (str): name of a table
             format (str): format of data type (e.g. "msgpack.gz")
             stream (file-like): a file-like object contains the data
-            size (int): the size of the part
+            size (int): the length of the data
             unique_id (str): a unique identifier of the data
 
-        Returns: second in float represents elapsed time of the importing
+        Returns: second in float represents elapsed time to import data
         """
         return self.api.import_data(db_name, table_name, format, stream, size, unique_id)
 

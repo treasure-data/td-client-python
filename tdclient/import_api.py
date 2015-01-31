@@ -33,7 +33,7 @@ class ImportAPI(object):
             table (str): name of a table
             format (str): format of data type (e.g. "msgpack.gz")
             stream (file-like): a file-like object contains the data
-            size (int): the size of the part
+            size (int): the length of the data
             unique_id (str): a unique identifier of the data
 
         Returns: float represents the elapsed time to import data
