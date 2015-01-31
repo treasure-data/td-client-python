@@ -22,7 +22,7 @@ class ImportAPI(object):
     ## Import API
     ##
 
-    def import_data(self, db, table, format, stream, size, unique_id=None):
+    def import_data(self, db, table, format, bytes_or_stream, size, unique_id=None):
         """Import data into Treasure Data Service
 
         This method expects data from a file-like object formatted with "msgpack.gz".
@@ -31,7 +31,7 @@ class ImportAPI(object):
             db (str): name of a database
             table (str): name of a table
             format (str): format of data type (e.g. "msgpack.gz")
-            stream (file-like): a file-like object contains the data
+            bytes_or_stream (str or file-like): a byte string or a file-like object contains the data
             size (int): the length of the data
             unique_id (str): a unique identifier of the data
 
@@ -45,7 +45,7 @@ class ImportAPI(object):
         kwargs = {}
         if self._endpoint == self.DEFAULT_ENDPOINT:
             kwargs["endpoint"] = self.DEFAULT_IMPORT_ENDPOINT
-        with self.put(path, stream, size, **kwargs) as res:
+        with self.put(path, bytes_or_stream, size, **kwargs) as res:
             code, body = res.status, res.read()
             if code / 100 != 2:
                 self.raise_error("Import failed", res, body)
