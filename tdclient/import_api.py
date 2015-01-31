@@ -16,7 +16,6 @@ try:
     from urllib.parse import quote as urlquote # >=3.0
 except ImportError:
     from urllib import quote as urlquote
-import warnings
 
 class ImportAPI(object):
     ####
@@ -100,14 +99,13 @@ class ImportAPI(object):
             return self.import_data(db, table, "msgpack.gz", fp, size, unique_id=unique_id)
 
     def _parse_msgpack_file(self, file):
+        # current impl doesn't torelate any unpack error
         unpacker = msgpack.Unpacker(file)
         for record in unpacker:
             yield record
 
     def _parse_json_file(self, file):
+        # current impl doesn't torelate any JSON parse error
         for s in file:
-            try:
-                record = json.loads(s)
-                yield record
-            except ValueError as error:
-                warnings.warn("skipped: %s: %s" % (error, repr(s)))
+            record = json.loads(s)
+            yield record
