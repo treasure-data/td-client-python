@@ -353,8 +353,15 @@ def test_import_data():
     td = client.Client("APIKEY")
     td._api = mock.MagicMock()
     td._api.import_data = mock.MagicMock()
-    td.import_data("db_name", "table_name", "format", "stream", 123, "unique_id")
-    td.api.import_data("db_name", "table_name", "format", "stream", 123, "unique_id")
+    td.import_data("db_name", "table_name", "format", "stream", 123, unique_id="unique_id")
+    td.api.import_data("db_name", "table_name", "format", "stream", 123, unique_id="unique_id")
+
+def test_import_file():
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.import_file = mock.MagicMock()
+    td.import_file("db_name", "table_name", "format", "file", unique_id="unique_id")
+    td.api.import_file("db_name", "table_name", "format", "file", unique_id="unique_id")
 
 def test_results():
     td = client.Client("APIKEY")
