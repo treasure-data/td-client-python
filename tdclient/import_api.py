@@ -57,6 +57,9 @@ class ImportAPI(object):
     def import_file(self, db, table, format, file, unique_id=None):
         """Import data into Treasure Data Service, from an existing file on filesystem.
 
+        This method will decompress/deserialize records from given file, and then
+        convert it into format acceptable from Treasure Data Service ("msgpack.gz").
+
         Params:
             db (str): name of a database
             table (str): name of a table
@@ -74,7 +77,7 @@ class ImportAPI(object):
         else:
             with open(file) as fp:
                 if format.endswith(".gz"):
-                    return self._import_file(db, table, format, gzip.GzipFile(fileobj=fp), unique_id=unique_id)
+                    return self._import_file(db, table, format[0:len(format)-len(".gz")], gzip.GzipFile(fileobj=fp), unique_id=unique_id)
                 else:
                     return self._import_file(db, table, format, fp, unique_id=unique_id)
 
