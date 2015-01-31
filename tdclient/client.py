@@ -521,7 +521,24 @@ class Client(object):
 
         Returns: second in float represents elapsed time to import data
         """
-        return self.api.import_data(db_name, table_name, format, stream, size, unique_id)
+        return self.api.import_data(db_name, table_name, format, stream, size, unique_id=unique_id)
+
+    def import_file(self, db_name, table_name, format, file, unique_id=None):
+        """Import data into Treasure Data Service, from an existing file on filesystem.
+
+        This method will decompress/deserialize records from given file, and then
+        convert it into format acceptable from Treasure Data Service ("msgpack.gz").
+
+        Params:
+            db (str): name of a database
+            table (str): name of a table
+            format (str): format of data type (e.g. "msgpack", "json")
+            file (str or file-like): a name of a file, or a file-like object contains the data
+            unique_id (str): a unique identifier of the data
+
+        Returns: float represents the elapsed time to import data
+        """
+        return self.api.import_file(db_name, table_name, format, file, unique_id=unique_id)
 
     def results(self):
         """
