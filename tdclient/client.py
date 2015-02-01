@@ -508,20 +508,37 @@ class Client(object):
             return model.ScheduledJob(self, scheduled_at, job_id, type, None)
         return [ scheduled_job(m) for m in results ]
 
-    def import_data(self, db_name, table_name, format, stream, size, unique_id=None):
+    def import_data(self, db_name, table_name, format, bytes_or_stream, size, unique_id=None):
         """Import data into Treasure Data Service
 
         Params:
             db_name (str): name of a database
             table_name (str): name of a table
             format (str): format of data type (e.g. "msgpack.gz")
-            stream (file-like): a file-like object contains the data
-            size (int): the size of the part
+            bytes_or_stream (str or file-like): a byte string or a file-like object contains the data
+            size (int): the length of the data
             unique_id (str): a unique identifier of the data
 
-        Returns: a second in float represents elapsed time of the importing
+        Returns: second in float represents elapsed time to import data
         """
-        return self.api.import_data(db_name, table_name, format, stream, size, unique_id)
+        return self.api.import_data(db_name, table_name, format, bytes_or_stream, size, unique_id=unique_id)
+
+    def import_file(self, db_name, table_name, format, file, unique_id=None):
+        """Import data into Treasure Data Service, from an existing file on filesystem.
+
+        This method will decompress/deserialize records from given file, and then
+        convert it into format acceptable from Treasure Data Service ("msgpack.gz").
+
+        Params:
+            db (str): name of a database
+            table (str): name of a table
+            format (str): format of data type (e.g. "msgpack", "json")
+            file (str or file-like): a name of a file, or a file-like object contains the data
+            unique_id (str): a unique identifier of the data
+
+        Returns: float represents the elapsed time to import data
+        """
+        return self.api.import_file(db_name, table_name, format, file, unique_id=unique_id)
 
     def results(self):
         """

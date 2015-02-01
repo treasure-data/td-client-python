@@ -354,11 +354,32 @@ class Table(Model):
         """
         return self._client.tail(self._db_name, self._table_name, count, to, _from)
 
-    def import_data(self, format, stream, size):
+    def import_data(self, format, bytes_or_stream, size, unique_id=None):
+        """Import data into Treasure Data Service
+
+        Params:
+            format (str): format of data type (e.g. "msgpack.gz")
+            bytes_or_stream (str or file-like): a byte string or a file-like object contains the data
+            size (int): the length of the data
+            unique_id (str): a unique identifier of the data
+
+        Returns: second in float represents elapsed time to import data
         """
-        TODO: add docstring
+        return self._client.import_data(self._db_name, self._table_name, format, bytes_or_stream, size, unique_id=unique_id)
+
+    def import_file(self, format, file, unique_id=None):
+        """Import data into Treasure Data Service, from an existing file on filesystem.
+
+        This method will decompress/deserialize records from given file, and then
+        convert it into format acceptable from Treasure Data Service ("msgpack.gz").
+
+        Params:
+            file (str or file-like): a name of a file, or a file-like object contains the data
+            unique_id (str): a unique identifier of the data
+
+        Returns: float represents the elapsed time to import data
         """
-        return self._client.import_data(self._db_name, self._table_name, format, stream, size)
+        return self._client.import_file(self._db_name, self._table_name, format, file, unique_id=unique_id)
 
     def export_data(self, storage_type, **kwargs):
         """

@@ -3,12 +3,15 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from array import array
+import io
 try:
     from unittest import mock
 except ImportError:
     import mock
 import os
 import pytest
+import tempfile
 try:
     import urllib.parse as urlparse
 except ImportError:
@@ -262,21 +265,63 @@ def test_post_failure():
     sleeps = [ args[0] for (args, kwargs) in td.sleep.call_args_list ]
     assert td._max_cumul_retry_delay < sum(sleeps)
 
-def test_put_success():
+def test_put_bytes_success():
     td = api.API("APIKEY")
     td.sleep = mock.MagicMock()
     td.http.urlopen = mock.MagicMock()
     responses = [
-        make_raw_response(200, b"body"),
+        make_raw_response(200, b"response body"),
     ]
+    bytes_or_stream = b"request body"
     td.http.urlopen.side_effect = responses
-    with td.put("/foo", b"body", 7) as response:
+    with td.put("/foo", bytes_or_stream, 12) as response:
         args, kwargs = td.http.urlopen.call_args
         assert args == ("PUT", "https://api.treasuredata.com/foo")
+        assert kwargs["body"] == array(str("b"), bytes_or_stream)
         assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
         status, body = response.status, response.read()
         assert status == 200
-        assert body == b"body"
+        assert body == b"response body"
+    assert not td.sleep.called
+
+def test_put_file_with_fileno_success():
+    td = api.API("APIKEY")
+    td.sleep = mock.MagicMock()
+    td.http.urlopen = mock.MagicMock()
+    responses = [
+        make_raw_response(200, b"response body"),
+    ]
+    td.http.urlopen.side_effect = responses
+    bytes_or_stream = tempfile.TemporaryFile()
+    bytes_or_stream.write(b"request body")
+    bytes_or_stream.seek(0)
+    with td.put("/foo", bytes_or_stream, 12) as response:
+        args, kwargs = td.http.urlopen.call_args
+        assert args == ("PUT", "https://api.treasuredata.com/foo")
+        assert kwargs["body"] == bytes_or_stream
+        assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
+        status, body = response.status, response.read()
+        assert status == 200
+        assert body == b"response body"
+    assert not td.sleep.called
+
+def test_put_file_without_fileno_success():
+    td = api.API("APIKEY")
+    td.sleep = mock.MagicMock()
+    td.http.urlopen = mock.MagicMock()
+    responses = [
+        make_raw_response(200, b"response body"),
+    ]
+    td.http.urlopen.side_effect = responses
+    bytes_or_stream = io.BytesIO(b"request body")
+    with td.put("/foo", bytes_or_stream, 12) as response:
+        args, kwargs = td.http.urlopen.call_args
+        assert args == ("PUT", "https://api.treasuredata.com/foo")
+        assert kwargs["body"] == array(str("b"), bytes_or_stream.getvalue())
+        assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
+        status, body = response.status, response.read()
+        assert status == 200
+        assert body == b"response body"
     assert not td.sleep.called
 
 def test_put_retry_success():

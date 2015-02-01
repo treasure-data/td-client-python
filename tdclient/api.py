@@ -230,17 +230,23 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
 
         log.debug("REST PUT call:\n  headers: %s\n  path: %s\n  body: <omitted>" % (repr(headers), repr(path)))
 
-        if isinstance(bytes_or_stream, io.BytesIO):
-            # `httplib` requires file-like object to support `fileno()`.
-            # `io.BytesIO` doesn't support it, though.
-            stream = array(str("b"), bytes_or_stream.getvalue())
-        else:
-            # file-like object supported by httplib
-            if hasattr(bytes_or_stream, "read") and hasattr(bytes_or_stream, "fileno"):
+        if hasattr(bytes_or_stream, "read"):
+            # file-like must support `read` and `fileno` to work with `httplib`
+            fileno_supported = hasattr(bytes_or_stream, "fileno")
+            if fileno_supported:
+                try:
+                    bytes_or_stream.fileno()
+                except io.UnsupportedOperation:
+                    # `io.BytesIO` doesn't support `fileno`
+                    fileno_supported = False
+            if fileno_supported:
                 stream = bytes_or_stream
             else:
-                # send request body as an `array.array` since `httplib` requires the request body to be a unicode string
-                stream = array(str("b"), bytes_or_stream)
+                stream = array(str("b"), bytes_or_stream.read())
+            
+        else:
+            # send request body as an `array.array` since `httplib` requires the request body to be a unicode string
+            stream = array(str("b"), bytes_or_stream)
 
         # up to 7 retries with exponential (base 2) back-off starting at 'retry_delay'
         retry_delay = 5
