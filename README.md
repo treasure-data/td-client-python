@@ -88,6 +88,10 @@ Release to PyPI.
 $ python setup.py sdist upload
 ```
 
+## Version History
+
+See [CHANGELOG.md](CHANGELOG.md).
+
 ## License
 
 Apache Software License, Version 2.0
