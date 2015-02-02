@@ -1,5 +1,11 @@
 # Version History
 
+## 0.1.4.dev0
+
+* Add new data import function of `tdclient.api.import_file` to allow importing data from
+  file-like object or an existing file on filesystem.
+* Fix an encoding error in `tdclient.api.import_data` on Python 2.x
+
 ## 0.1.3
 
 * Support PEP 343 in `tdclient.Client` and remove `contextlib` from example
