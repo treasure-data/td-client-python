@@ -43,11 +43,11 @@ class JobAPI(object):
             js = self.checked_json(body, ["jobs"])
             jobs = []
             for m in js["jobs"]:
-                if "result" in m and 0 < len(str(m["result"])):
+                if m.get("result") is not None and 0 < len(str(m["result"])):
                     result = m["result"]
                 else:
                     result = None
-                if "hive_result_schema" in m and 0 < len(str(m["hive_result_schema"])):
+                if m.get("hive_result_schema") is not None and 0 < len(str(m["hive_result_schema"])):
                     hive_result_schema = json.loads(m["hive_result_schema"])
                 else:
                     hive_result_schema = None
@@ -86,11 +86,11 @@ class JobAPI(object):
             if code != 200:
                 self.raise_error("Show job failed", res, body)
             js = self.checked_json(body, ["status"])
-            if "result" in js and 0 < len(str(result)):
+            if js.get("result") is not None and 0 < len(str(result)):
                 result = js["result"]
             else:
                 result = None
-            if "hive_result_schema" in js and 0 < len(str(js["hive_result_schema"])):
+            if js.get("hive_result_schema") is not None and 0 < len(str(js["hive_result_schema"])):
                 hive_result_schema = json.loads(js["hive_result_schema"])
             else:
                 hive_result_schema = None
