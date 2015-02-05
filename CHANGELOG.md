@@ -1,10 +1,12 @@
 # Version History
 
-## 0.1.4.dev0
+## 0.1.4.dev2
 
 * Add new data import function of `tdclient.api.import_file` to allow importing data from
   file-like object or an existing file on filesystem.
 * Fix an encoding error in `tdclient.api.import_data` on Python 2.x
+* Add missing import to fix broken `tdclient.model.Job#wait`
+* Use `td.api.DEFAULT_ENDPOINT` for all requests
 
 ## 0.1.3
 
