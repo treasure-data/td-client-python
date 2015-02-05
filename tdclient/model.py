@@ -3,6 +3,8 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import time
+
 class Model(object):
     def __init__(self, client):
         self._client = client
