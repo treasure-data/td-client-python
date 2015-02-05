@@ -144,6 +144,10 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
     def apikey(self):
         return self._apikey
 
+    @property
+    def endpoint(self):
+        return self._endpoint
+
     def get(self, path, params={}, **kwargs):
         headers = {
             "accept-encoding": "deflate, gzip",
