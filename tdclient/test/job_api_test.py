@@ -38,7 +38,7 @@ def test_list_jobs_success():
         "http://console.treasuredata.com/jobs/18880612",
         "http://console.treasuredata.com/jobs/18882028",
     ]
-    assert sorted([ job["debug"] for job in jobs ]) == [None, None, None]
+    assert [ job["debug"] for job in jobs ] == [None, None, None]
     assert sorted([ job["hive_result_schema"] for job in jobs ]) == [
         [["_c0", "bigint"]],
         [["_c0", "bigint"]],
