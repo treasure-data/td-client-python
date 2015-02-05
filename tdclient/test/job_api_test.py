@@ -32,7 +32,18 @@ def test_list_jobs_success():
     jobs = td.list_jobs(0, 2)
     td.get.assert_called_with("/v3/job/list", {"from": "0", "to": "2"})
     assert len(jobs) == 3
-    assert sorted([ job[0] for job in jobs ]) == ["18879199", "18880612", "18882028"]
+    assert sorted([ job["job_id"] for job in jobs ]) == ["18879199", "18880612", "18882028"]
+    assert sorted([ job["url"] for job in jobs ]) == [
+        "http://console.treasuredata.com/jobs/18879199",
+        "http://console.treasuredata.com/jobs/18880612",
+        "http://console.treasuredata.com/jobs/18882028",
+    ]
+    assert sorted([ job["debug"] for job in jobs ]) == [None, None, None]
+    assert sorted([ job["hive_result_schema"] for job in jobs ]) == [
+        [["_c0", "bigint"]],
+        [["_c0", "bigint"]],
+        [["_c0", "bigint"]],
+    ]
 
 def test_list_jobs_failure():
     td = api.API("APIKEY")

@@ -229,11 +229,28 @@ class Client(object):
         Returns: a list of :class:`tdclient.model.Job`
         """
         results = self.api.list_jobs(_from, to, status, conditions)
-        def job(lis):
-            job_id, type, status, query, start_at, end_at, cpu_time, result_size, result_url, priority, retry_limit, org, db = lis
-            return model.Job(self, job_id, type, query, status, None, None, start_at, end_at, cpu_time,
-                             result_size, None, result_url, None, priority, retry_limit, org, db)
-        return [ job(result) for result in results ]
+        def job(d):
+            return model.Job(
+                self,
+                d["job_id"],
+                d["type"],
+                d["query"],
+                status=d.get("status"),
+                url=d.get("url"),
+                debug=d.get("debug"),
+                start_at=d.get("start_at"),
+                end_at=d.get("end_at"),
+                cpu_time=d.get("cpu_time"),
+                result_size=d.get("result_size"),
+                result=d.get("result"),
+                result_url=d.get("result_url"),
+                hive_result_schema=d.get("hive_result_schema"),
+                priority=d.get("priority"),
+                retry_limit=d.get("retry_limit"),
+                org_name=d.get("org_name"),
+                db_name=d.get("db_name"),
+            )
+        return [ job(d) for d in results ]
 
     def job(self, job_id):
         """Get a job from `job_id`
@@ -243,10 +260,27 @@ class Client(object):
 
         Returns: :class:`tdclient.model.Job`
         """
-        job_id = str(job_id)
-        type, query, status, url, debug, start_at, end_at, cpu_time, result_size, result_url, hive_result_schema, priority, retry_limit, org, db = self.api.show_job(job_id)
-        return model.Job(self, job_id, type, query, status, url, debug, start_at, end_at, cpu_time,
-                         result_size, None, result_url, hive_result_schema, priority, retry_limit, org, db)
+        d = self.api.show_job(str(job_id))
+        return model.Job(
+            self,
+            job_id,
+            d["type"],
+            d["query"],
+            status=d.get("status"),
+            url=d.get("url"),
+            debug=d.get("debug"),
+            start_at=d.get("start_at"),
+            end_at=d.get("end_at"),
+            cpu_time=d.get("cpu_time"),
+            result_size=d.get("result_size"),
+            result=d.get("result"),
+            result_url=d.get("result_url"),
+            hive_result_schema=d.get("hive_result_schema"),
+            priority=d.get("priority"),
+            retry_limit=d.get("retry_limit"),
+            org_name=d.get("org_name"),
+            db_name=d.get("db_name"),
+        )
 
     def job_status(self, job_id):
         """

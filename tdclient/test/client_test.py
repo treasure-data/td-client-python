@@ -147,10 +147,29 @@ def test_jobs():
 def test_job():
     td = client.Client("APIKEY")
     td._api = mock.MagicMock()
-    td._api.show_job = mock.MagicMock(return_value=(["type", "query", "status", "url", "debug", "start_at", "end_at", "cpu_time", "result_size", "result_url", "hive_result_schema", "priority", "retry_limit", "org", "db"]))
+    td._api.show_job = mock.MagicMock(return_value={
+        "job_id": "12345",
+        "type": "presto",
+        "url": "http://www.example.com/",
+        "query": "SELECT COUNT(1) FROM nasdaq",
+        "status": "success",
+        "debug": "0",
+        "start_at": "1970-01-01T00:00:00Z",
+        "end_at": "1970-01-01T00:00:00Z",
+        "cpu_time": "123.45",
+        "result_size": 12345,
+        "result": None,
+        "result_url": None,
+        "hive_result_schema": "",
+        "priority": "NORMAL",
+        "retry_limit": "retry_limit",
+        "org_name": None,
+        "database": "sample_datasets",
+    })
     job = td.job("12345")
     td.api.show_job.assert_called_with("12345")
     assert job.job_id == "12345"
+    assert job.url == "http://www.example.com/"
 
 def test_job_status():
     td = client.Client("APIKEY")

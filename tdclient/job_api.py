@@ -19,8 +19,13 @@ class JobAPI(object):
 
     def list_jobs(self, _from=0, to=None, status=None, conditions=None):
         """
-        TODO: add docstring
-        => [(jobId:str, type:str, status:str, start_at:str, end_at:str, result_url:str)]
+        Params:
+            _from (int):
+            to (int):
+            status (str):
+            conditions (str):
+
+        Returns: a list of :class:`dict` which represents a job
         """
         params = {}
         if _from is not None:
@@ -36,28 +41,44 @@ class JobAPI(object):
             if code != 200:
                 self.raise_error("List jobs failed", res, body)
             js = self.checked_json(body, ["jobs"])
-            result = []
+            jobs = []
             for m in js["jobs"]:
-                job_id = m.get("job_id")
-                type = m.get("type", "?")
-                database = m.get("database")
-                status = m.get("status")
-                query = m.get("query")
-                start_at = self.parsedate(self.get_or_else(m, "start_at", "1970-01-01T00:00:00Z"))
-                end_at = self.parsedate(self.get_or_else(m, "end_at", "1970-01-01T00:00:00Z"))
-                cpu_time = m.get("cpu_time")
-                result_size = m.get("result_size") # compressed result size in msgpack.gz format
-                result_url = m.get("result")
-                priority = m.get("priority")
-                retry_limit = m.get("retry_limit")
-                result.append((job_id, type, status, query, start_at, end_at, cpu_time,
-                     result_size, result_url, priority, retry_limit, None, database))
-            return result
+                if "result" in m and 0 < len(str(m["result"])):
+                    result = m["result"]
+                else:
+                    result = None
+                if "hive_result_schema" in m and 0 < len(str(m["hive_result_schema"])):
+                    hive_result_schema = json.loads(m["hive_result_schema"])
+                else:
+                    hive_result_schema = None
+                job = {
+                    "job_id": m.get("job_id"),
+                    "type": m.get("type", "?"),
+                    "url": m.get("url"),
+                    "query": m.get("query"),
+                    "status": m.get("status"),
+                    "debug": m.get("debug"),
+                    "start_at": self.parsedate(self.get_or_else(m, "start_at", "1970-01-01T00:00:00Z")),
+                    "end_at": self.parsedate(self.get_or_else(m, "end_at", "1970-01-01T00:00:00Z")),
+                    "cpu_time": m.get("cpu_time"),
+                    "result_size": m.get("result_size"), # compressed result size in msgpack.gz format
+                    "result": result,
+                    "result_url": m.get("result_url"),
+                    "hive_result_schema": hive_result_schema,
+                    "priority": m.get("priority"),
+                    "retry_limit": m.get("retry_limit"),
+                    "org_name": None,
+                    "database": m.get("database"),
+                }
+                jobs.append(job)
+            return jobs
 
     def show_job(self, job_id):
         """
-        TODO: add docstring
-        => (type:str, status:str, result:str, url:str, result:str)
+        Params:
+            job_id (str): job ID
+
+        Returns: :class:`dict`
         """
         # use v3/job/status instead of v3/job/show to poll finish of a job
         with self.get("/v3/job/show/%s" % (urlquote(str(job_id)))) as res:
@@ -65,26 +86,34 @@ class JobAPI(object):
             if code != 200:
                 self.raise_error("Show job failed", res, body)
             js = self.checked_json(body, ["status"])
-            type = js.get("type", "?")
-            database = js.get("database")
-            query = js.get("query")
-            status = js.get("status")
-            debug = js.get("debug")
-            url = js.get("url")
-            start_at = self.parsedate(self.get_or_else(js, "start_at", "1970-01-01T00:00:00Z"))
-            end_at = self.parsedate(self.get_or_else(js, "end_at", "1970-01-01T00:00:00Z"))
-            cpu_time = js.get("cpu_time")
-            result_size = js.get("result_size") # compressed result size in msgpack.gz format
-            result = js.get("result") # result target URL
-            hive_result_schema = js.get("hive_result_schema", "")
-            if hive_result_schema is None or len(str(hive_result_schema)) < 1:
-                hive_result_schema = None
+            if "result" in js and 0 < len(str(result)):
+                result = js["result"]
             else:
-                hive_result_schema = json.loads(hive_result_schema)
-            priority = js.get("priority")
-            retry_limit = js.get("retry_limit")
-            return (type, query, status, url, debug, start_at, end_at, cpu_time,
-                    result_size, result, hive_result_schema, priority, retry_limit, None, database)
+                result = None
+            if "hive_result_schema" in js and 0 < len(str(js["hive_result_schema"])):
+                hive_result_schema = json.loads(js["hive_result_schema"])
+            else:
+                hive_result_schema = None
+            job = {
+                "job_id": job_id,
+                "type": js.get("type", "?"),
+                "url": js.get("url"),
+                "query": js.get("query"),
+                "status": js.get("status"),
+                "debug": js.get("debug"),
+                "start_at": self.parsedate(self.get_or_else(js, "start_at", "1970-01-01T00:00:00Z")),
+                "end_at": self.parsedate(self.get_or_else(js, "end_at", "1970-01-01T00:00:00Z")),
+                "cpu_time": js.get("cpu_time"),
+                "result_size": js.get("result_size"), # compressed result size in msgpack.gz format
+                "result": result,
+                "result_url": js.get("result_url"),
+                "hive_result_schema": hive_result_schema,
+                "priority": js.get("priority"),
+                "retry_limit": js.get("retry_limit"),
+                "org_name": None,
+                "database": js.get("database"),
+            }
+            return job
 
     def job_status(self, job_id):
         """
