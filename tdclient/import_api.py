@@ -43,8 +43,6 @@ class ImportAPI(object):
             path = "/v3/table/import/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table)), urlquote(str(format)))
 
         kwargs = {}
-        if self._endpoint == self.DEFAULT_ENDPOINT:
-            kwargs["endpoint"] = self.DEFAULT_IMPORT_ENDPOINT
         with self.put(path, bytes_or_stream, size, **kwargs) as res:
             code, body = res.status, res.read()
             if code / 100 != 2:
