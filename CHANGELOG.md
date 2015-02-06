@@ -1,6 +1,6 @@
 # Version History
 
-## 0.1.4.dev2
+## 0.1.4
 
 * Add new data import function of `tdclient.api.import_file` to allow importing data from
   file-like object or an existing file on filesystem.
