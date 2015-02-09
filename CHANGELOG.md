@@ -1,8 +1,9 @@
 # Version History
 
-## 0.1.5.dev0
+## 0.1.5.dev1
 
-* Fix `UnboundLocalError` in `tdclient.api.show_job` (#2)
+* Fix local variable scope problem in `tdclient.api.show_job` (#2)
+* Fix broken multiple assignment in `tdclient.model.Job#_update_status` (#3)
 
 ## 0.1.4
 
