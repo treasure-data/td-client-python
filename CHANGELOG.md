@@ -1,5 +1,9 @@
 # Version History
 
+## 0.1.5.dev0
+
+* Fix `UnboundLocalError` in `tdclient.api.show_job` (#2)
+
 ## 0.1.4
 
 * Add new data import function of `tdclient.api.import_file` to allow importing data from
