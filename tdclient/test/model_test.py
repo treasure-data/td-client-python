@@ -3,6 +3,8 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import datetime
+import dateutil.tz
 try:
     from unittest import mock
 except ImportError:
@@ -78,6 +80,49 @@ def test_schema():
     assert job.retry_limit == "retry_limit"
     assert job.org_name == "org_name"
     assert job.db_name == "db_name"
+
+def test_job_update_progress():
+    client = mock.MagicMock()
+    responses = [
+        "queued",
+        "booting",
+        "running",
+        "success",
+    ]
+    client.job_status = mock.MagicMock()
+    client.job_status.side_effect = responses
+    job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
+    assert not job.finished()
+    assert not job.finished()
+    assert not job.finished()
+    assert job.finished()
+    client.job_status.assert_called_with("12345")
+
+def test_job_update_status():
+    client = mock.MagicMock()
+    client.api.show_job = mock.MagicMock(return_value={
+        "job_id": "67890",
+        "type": "hive",
+        "url": "http://console.example.com/jobs/67890",
+        "query": "SELECT COUNT(1) FROM nasdaq",
+        "status": "success",
+        "debug": None,
+        "start_at": datetime.datetime(2015, 2, 10, 0, 2, 14, tzinfo=dateutil.tz.tzutc()),
+        "end_at": datetime.datetime(2015, 2, 10, 0, 2, 27, tzinfo=dateutil.tz.tzutc()),
+        "cpu_time": None,
+        "result_size": 22,
+        "result": None,
+        "result_url": None,
+        "hive_result_schema": [["cnt", "bigint"]],
+        "priority": 1,
+        "retry_limit": 0,
+        "org_name": None,
+        "database": "sample_datasets",
+    })
+    job = model.Job(client, "67890", "hive", "SELECT COUNT(1) FROM nasdaq")
+    job.finished = mock.MagicMock(return_value=False)
+    assert job.status() == "success"
+    client.api.show_job.assert_called_with("67890")
 
 def test_scheduled_job():
     client = mock.MagicMock()

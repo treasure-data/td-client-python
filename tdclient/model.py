@@ -660,20 +660,20 @@ class Job(Model):
         self._status = self._client.job_status(self._job_id)
 
     def _update_status(self):
-        type, query, status, url, debug, start_at, end_at, cpu_time, result_size, result_url, hive_result_schema, priority, retry_limit, org_name, db_name = self._client.api.show_job(self._job_id)
-        self._query = query
-        self._status = status
-        self._url = url
-        self._debug = debug
-        self._start_at = start_at
-        self._end_at = end_at
-        self._cpu_time = cpu_time
-        self._result_size = result_size
-        self._result_url = result_url
-        self._hive_result_schema = hive_result_schema
-        self._priority = priority
-        self._retry_limit = retry_limit
-        self._db_name = db_name
+        job = self._client.api.show_job(self._job_id)
+        self._query = job.get("query")
+        self._status = job.get("status")
+        self._url = job.get("url")
+        self._debug = job.get("debug")
+        self._start_at = job.get("start_at")
+        self._end_at = job.get("end_at")
+        self._cpu_time = job.get("cpu_time")
+        self._result_size = job.get("result_size")
+        self._result_url = job.get("result_url")
+        self._hive_result_schema = job.get("hive_result_schema")
+        self._priority = job.get("priority")
+        self._retry_limit = job.get("retry_limit")
+        self._db_name = job.get("db_name")
 
 class ScheduledJob(Job):
     """Scheduled job on Treasure Data Service
