@@ -86,7 +86,7 @@ class JobAPI(object):
             if code != 200:
                 self.raise_error("Show job failed", res, body)
             js = self.checked_json(body, ["status"])
-            if js.get("result") is not None and 0 < len(str(result)):
+            if js.get("result") is not None and 0 < len(str(js["result"])):
                 result = js["result"]
             else:
                 result = None

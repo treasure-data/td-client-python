@@ -3,6 +3,8 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import datetime
+import dateutil.tz
 import json
 try:
     from unittest import mock
@@ -83,8 +85,28 @@ def test_show_job_success():
         }
     """
     td.get = mock.MagicMock(return_value=make_response(200, body))
-    jobs = td.show_job(12345)
+    job = td.show_job(12345)
     td.get.assert_called_with("/v3/job/show/12345")
+    assert job["job_id"] == 12345
+    assert job["type"] == "presto"
+    assert job["url"] == "http://console.example.com/jobs/12345"
+    assert job["query"] == "SELECT COUNT(1) FROM nasdaq"
+    assert job["status"] == "success"
+    assert job["debug"] == {
+        "cmdout": "started at 2015-02-09T11:44:27Z\nexecuting query: SELECT COUNT(1) FROM nasdaq\n",
+        "stderr": None,
+    }
+    assert job["start_at"] == datetime.datetime(2015, 2, 9, 11, 44, 27, tzinfo=dateutil.tz.tzutc())
+    assert job["end_at"] == datetime.datetime(2015, 2, 9, 11, 44, 28, tzinfo=dateutil.tz.tzutc())
+    assert job["cpu_time"] is None
+    assert job["result_size"] == 22
+    assert job["result"] is None
+    assert job["result_url"] is None
+    assert job["hive_result_schema"] == [["cnt", "bigint"]]
+    assert job["priority"] == 1
+    assert job["retry_limit"] == 0
+    assert job["org_name"] is None
+    assert job["database"] == "sample_datasets"
 
 def test_job_status_success():
     td = api.API("APIKEY")
