@@ -57,21 +57,29 @@ def test_show_job_success():
     # TODO: should be replaced by wire dump
     body = b"""
         {
-            "status": {
-                "type": "presto",
-                "database": "sample_datasets",
-                "query": "SELECT COUNT(1) FROM nasdaq;",
-                "status": "finished",
-                "debug": 1,
-                "url": "http://example.com",
-                "start_at": "",
-                "end_at": "",
-                "cpu_time": "",
-                "result_size": "",
-                "result": "",
-                "priority": "HIGH",
-                "retry_liit": 3
-            }
+            "cpu_time": null,
+            "created_at": "2015-02-09 11:44:25 UTC",
+            "database": "sample_datasets",
+            "debug": {
+                "cmdout": "started at 2015-02-09T11:44:27Z\\nexecuting query: SELECT COUNT(1) FROM nasdaq\\n",
+                "stderr": null
+            },
+            "duration": 1,
+            "end_at": "2015-02-09 11:44:28 UTC",
+            "hive_result_schema": "[[\\"cnt\\", \\"bigint\\"]]",
+            "job_id": "12345",
+            "organization": null,
+            "priority": 1,
+            "query": "SELECT COUNT(1) FROM nasdaq",
+            "result": "",
+            "result_size": 22,
+            "retry_limit": 0,
+            "start_at": "2015-02-09 11:44:27 UTC",
+            "status": "success",
+            "type": "presto",
+            "updated_at": "2015-02-09 11:44:28 UTC",
+            "url": "http://console.example.com/jobs/12345",
+            "user_name": "nobody@example.com"
         }
     """
     td.get = mock.MagicMock(return_value=make_response(200, body))
