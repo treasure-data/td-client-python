@@ -355,10 +355,14 @@ def test_update_schedule():
 def test_history():
     td = client.Client("APIKEY")
     td._api = mock.MagicMock()
-    td._api.history = mock.MagicMock(return_value=[])
-    history = td.history("name", 0, 2)
-    td.api.history.assert_called_with("name", 0, 2)
-    assert len(history) == 0
+    td._api.history = mock.MagicMock(return_value=[
+        ("scheduled_at1", "job_id1", "type1", "status1", "query1", "start_at1", "end_at1", "result_url1", "priority1", "database1"),
+        ("scheduled_at2", "job_id2", "type2", "status2", "query2", "start_at2", "end_at2", "result_url2", "priority2", "database2"),
+        ("scheduled_at3", "job_id3", "type3", "status3", "query3", "start_at3", "end_at3", "result_url3", "priority3", "database3"),
+    ])
+    history = td.history("name", 0, 3)
+    td.api.history.assert_called_with("name", 0, 3)
+    assert len(history) == 3
 
 def test_run_schedule():
     td = client.Client("APIKEY")
