@@ -149,6 +149,12 @@ def test_job_wait_failure():
         assert t_time.called
     assert job.finished.called
 
+def test_job_kill():
+    client = mock.MagicMock()
+    job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
+    job.kill()
+    client.kill.assert_called_with("12345")
+
 def test_job_update_progress():
     client = mock.MagicMock()
     responses = [
