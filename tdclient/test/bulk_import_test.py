@@ -3,11 +3,14 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import io
+import msgpack
 try:
     from unittest import mock
 except ImportError:
     import mock
 import pytest
+import zlib
 
 from tdclient import api
 from tdclient.test.test_helper import *
@@ -119,9 +122,36 @@ def test_commit_bulk_import_success():
     td.commit_bulk_import("name")
     td.post.assert_called_with("/v3/bulk_import/commit/name", {})
 
-#def test_bulk_import_error_records_success():
-#    td = api.API("APIKEY")
-#    # TODO: should be replaced by wire dump
-#    td.post = mock.MagicMock(return_value=make_response(200, b""))
-#    td.bulk_import_error_records("name")
-#    td.post.assert_called_with("/v3/bulk_import/error_records/name", {})
+def msgpackb(list):
+    """list -> bytes"""
+    stream = io.BytesIO()
+    packer = msgpack.Packer()
+    for item in list:
+        stream.write(packer.pack(item))
+    return stream.getvalue()
+
+def gzipb(bytes):
+    """bytes -> bytes"""
+    compress = zlib.compressobj(9, zlib.DEFLATED, zlib.MAX_WBITS | 16)
+    return compress.compress(bytes) + compress.flush()
+
+def test_bulk_import_error_records_success():
+    td = api.API("APIKEY")
+    data = [
+        {"str": "value1", "int": 1, "float": 2.3},
+        {"str": "value4", "int": 5, "float": 6.7},
+    ]
+    body = gzipb(msgpackb(data))
+    td.get = mock.MagicMock(return_value=make_response(200, body))
+    rows = []
+    for row in td.bulk_import_error_records("name"):
+        rows.append(row)
+    td.get.assert_called_with("/v3/bulk_import/error_records/name", {})
+
+def test_bulk_import_error_records_false():
+    td = api.API("APIKEY")
+    td.get = mock.MagicMock(return_value=make_response(500, b"error"))
+    with pytest.raises(api.APIError) as error:
+        for row in td.bulk_import_error_records("name"):
+            pass
+    td.get.assert_called_with("/v3/bulk_import/error_records/name", {})

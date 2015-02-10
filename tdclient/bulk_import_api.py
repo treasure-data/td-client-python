@@ -141,7 +141,8 @@ class BulkImportAPI(object):
         with self.get("/v3/bulk_import/error_records/%s" % (urlquote(str(name))), params) as res:
             code = res.status
             if code != 200:
-                self.raise_error("Failed to get bulk import error records", res)
+                body = res.read()
+                self.raise_error("Failed to get bulk import error records", res, body)
 
             body = io.BytesIO(res.read())
             decompressor = gzip.GzipFile(fileobj=body)
