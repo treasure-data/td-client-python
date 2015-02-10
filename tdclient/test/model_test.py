@@ -155,7 +155,82 @@ def test_job_kill():
     job.kill()
     client.kill.assert_called_with("12345")
 
-def test_job_update_progress():
+def test_job_result_generator():
+    client = mock.MagicMock()
+    def job_result_each(job_id):
+        assert job_id == "12345"
+        yield ["foo", 123]
+        yield ["bar", 456]
+        yield ["baz", 789]
+    client.job_result_each = job_result_each
+    job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
+    job.finished = mock.MagicMock(return_value=True)
+    rows = []
+    for row in job.result():
+        rows.append(row)
+    assert rows == [["foo", 123], ["bar", 456], ["baz", 789]]
+
+def test_job_result_list():
+    client = mock.MagicMock()
+    result = [
+        ["foo", 123],
+        ["bar", 456],
+        ["baz", 789],
+    ]
+    job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq", result=result)
+    job.finished = mock.MagicMock(return_value=True)
+    rows = []
+    for row in job.result():
+        rows.append(row)
+    assert rows == [["foo", 123], ["bar", 456], ["baz", 789]]
+
+def test_job_result_failure():
+    client = mock.MagicMock()
+    job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
+    job.finished = mock.MagicMock(return_value=False)
+    with pytest.raises(ValueError) as error:
+        for row in job.result():
+            pass
+
+def test_job_result_format_generator():
+    client = mock.MagicMock()
+    def job_result_format_each(job_id, format):
+        assert job_id == "12345"
+        assert format == "msgpack.gz"
+        yield ["foo", 123]
+        yield ["bar", 456]
+        yield ["baz", 789]
+    client.job_result_format_each = job_result_format_each
+    job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
+    job.finished = mock.MagicMock(return_value=True)
+    rows = []
+    for row in job.result_format("msgpack.gz"):
+        rows.append(row)
+    assert rows == [["foo", 123], ["bar", 456], ["baz", 789]]
+
+def test_job_result_format_list():
+    client = mock.MagicMock()
+    result = [
+        ["foo", 123],
+        ["bar", 456],
+        ["baz", 789],
+    ]
+    job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq", result=result)
+    job.finished = mock.MagicMock(return_value=True)
+    rows = []
+    for row in job.result_format("msgpack.gz"):
+        rows.append(row)
+    assert rows == [["foo", 123], ["bar", 456], ["baz", 789]]
+
+def test_job_result_format_failure():
+    client = mock.MagicMock()
+    job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
+    job.finished = mock.MagicMock(return_value=False)
+    with pytest.raises(ValueError) as error:
+        for row in job.result_format("msgpack.gz"):
+            pass
+
+def test_job_finished():
     client = mock.MagicMock()
     responses = [
         "queued",
@@ -171,6 +246,33 @@ def test_job_update_progress():
     assert not job.finished()
     assert job.finished()
     client.job_status.assert_called_with("12345")
+
+def test_job_update_progress():
+    def run(client, job_id, status):
+        job = model.Job(client, job_id, "hive", "SELECT COUNT(1) FROM nasdaq", status=status)
+        client.job_status.reset_mock()
+        job._update_progress()
+
+    client = mock.MagicMock()
+    client.job_status(return_value="testing")
+
+    run(client, "1", "queued")
+    client.job_status.assert_called_with("1")
+
+    run(client, "2", "booting")
+    client.job_status.assert_called_with("2")
+
+    run(client, "3", "running")
+    client.job_status.assert_called_with("3")
+
+    run(client, "4", "success")
+    assert not client.job_status.called
+
+    run(client, "5", "error")
+    assert not client.job_status.called
+
+    run(client, "6", "killed")
+    assert not client.job_status.called
 
 def test_job_update_status():
     client = mock.MagicMock()

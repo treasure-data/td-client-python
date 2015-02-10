@@ -612,51 +612,49 @@ class Job(Model):
         """
         Returns: `True` if the job has been finished in success, error or killed
         """
-        if self._status not in self.FINISHED_STATUS:
-            self._update_progress()
+        self._update_progress()
         return self._status in self.FINISHED_STATUS
 
     def success(self):
         """
         Returns: `True` if the job has been finished in success
         """
-        if self._status not in self.FINISHED_STATUS:
-            self._update_progress()
+        self._update_progress()
         return self._status == self.STATUS_SUCCESS
 
     def error(self):
         """
         Returns: `True` if the job has been finished in error
         """
-        if self._status not in self.FINISHED_STATUS:
-            self._update_progress()
+        self._update_progress()
         return self._status == self.STATUS_ERROR
 
     def killed(self):
         """
         Returns: `True` if the job has been finished in killed
         """
-        if self._status not in self.FINISHED_STATUS:
-            self._update_progress()
+        self._update_progress()
         return self._status == self.STATUS_KILLED
 
     def queued(self):
         """
         Returns: `True` if the job is queued
         """
-        if self._status not in self.FINISHED_STATUS:
-            self._update_progress()
+        self._update_progress()
         return self._status == self.STATUS_QUEUED
 
     def running(self):
         """
         Returns: `True` if the job is running
         """
-        if self._status not in self.FINISHED_STATUS:
-            self._update_progress()
+        self._update_progress()
         return self._status == self.STATUS_RUNNING
 
     def _update_progress(self):
+        if self._status not in self.FINISHED_STATUS:
+            self.__update_progress()
+
+    def __update_progress(self):
         self._status = self._client.job_status(self._job_id)
 
     def _update_status(self):
