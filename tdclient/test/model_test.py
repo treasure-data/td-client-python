@@ -81,6 +81,24 @@ def test_table():
     assert table.expire_days == "expire_days"
     assert table.identifier == "db_name.table_name"
 
+def test_table_permission():
+    client = mock.MagicMock()
+    table = model.Table(client, "sample_datasets", "nasdaq", "log", "schema", 12345)
+    client.database().permission = "permission"
+    assert table.permission == "permission"
+    client.database.assert_called_with("sample_datasets")
+
+def test_table_estimated_storage_size_string():
+    client = mock.MagicMock()
+    table1 = model.Table(client, "db_name", "table_name", "type", "schema", 12345, estimated_storage_size=1)
+    assert table1.estimated_storage_size_string == "0.0 GB"
+    table2 = model.Table(client, "db_name", "table_name", "type", "schema", 12345, estimated_storage_size=50*1024*1024)
+    assert table2.estimated_storage_size_string == "0.01 GB"
+    table3 = model.Table(client, "db_name", "table_name", "type", "schema", 12345, estimated_storage_size=50*1024*1024*1024)
+    assert table3.estimated_storage_size_string == "50.0 GB"
+    table4 = model.Table(client, "db_name", "table_name", "type", "schema", 12345, estimated_storage_size=300*1024*1024*1024)
+    assert table4.estimated_storage_size_string == "300 GB"
+
 def test_schema():
     client = mock.MagicMock()
     job = model.Job(client, "job_id", "type", "query", status="status", url="url", debug="debug", start_at="start_at", end_at="end_at", cpu_time="cpu_time", result_size="result_size", result="result", result_url="result_url", hive_result_schema="hive_result_schema", priority="priority", retry_limit="retry_limit", org_name="org_name", db_name="db_name")
