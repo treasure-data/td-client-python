@@ -231,21 +231,94 @@ def test_job_result_format_failure():
             pass
 
 def test_job_finished():
+    def job(client, status):
+        stub = model.Job(client, "1", "hive", "SELECT COUNT(1) FROM nasdaq", status=status)
+        stub._update_progress = mock.MagicMock()
+        return stub
     client = mock.MagicMock()
-    responses = [
-        "queued",
-        "booting",
-        "running",
-        "success",
-    ]
-    client.job_status = mock.MagicMock()
-    client.job_status.side_effect = responses
-    job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
-    assert not job.finished()
-    assert not job.finished()
-    assert not job.finished()
-    assert job.finished()
-    client.job_status.assert_called_with("12345")
+    client.job_status(return_value="testing")
+
+    assert not job(client, "queued").finished()
+    assert not job(client, "booting").finished()
+    assert not job(client, "running").finished()
+    assert job(client, "success").finished()
+    assert job(client, "error").finished()
+    assert job(client, "killed").finished()
+
+def test_job_success():
+    def job(client, status):
+        stub = model.Job(client, "1", "hive", "SELECT COUNT(1) FROM nasdaq", status=status)
+        stub._update_progress = mock.MagicMock()
+        return stub
+    client = mock.MagicMock()
+    client.job_status(return_value="testing")
+
+    assert not job(client, "queued").success()
+    assert not job(client, "booting").success()
+    assert not job(client, "running").success()
+    assert job(client, "success").success()
+    assert not job(client, "error").success()
+    assert not job(client, "killed").success()
+
+def test_job_error():
+    def job(client, status):
+        stub = model.Job(client, "1", "hive", "SELECT COUNT(1) FROM nasdaq", status=status)
+        stub._update_progress = mock.MagicMock()
+        return stub
+    client = mock.MagicMock()
+    client.job_status(return_value="testing")
+
+    assert not job(client, "queued").error()
+    assert not job(client, "booting").error()
+    assert not job(client, "running").error()
+    assert not job(client, "success").error()
+    assert job(client, "error").error()
+    assert not job(client, "killed").error()
+
+def test_job_killed():
+    def job(client, status):
+        stub = model.Job(client, "1", "hive", "SELECT COUNT(1) FROM nasdaq", status=status)
+        stub._update_progress = mock.MagicMock()
+        return stub
+    client = mock.MagicMock()
+    client.job_status(return_value="testing")
+
+    assert not job(client, "queued").killed()
+    assert not job(client, "booting").killed()
+    assert not job(client, "running").killed()
+    assert not job(client, "success").killed()
+    assert not job(client, "error").killed()
+    assert job(client, "killed").killed()
+
+def test_job_queued():
+    def job(client, status):
+        stub = model.Job(client, "1", "hive", "SELECT COUNT(1) FROM nasdaq", status=status)
+        stub._update_progress = mock.MagicMock()
+        return stub
+    client = mock.MagicMock()
+    client.job_status(return_value="testing")
+
+    assert job(client, "queued").queued()
+    assert not job(client, "booting").queued()
+    assert not job(client, "running").queued()
+    assert not job(client, "success").queued()
+    assert not job(client, "error").queued()
+    assert not job(client, "killed").queued()
+
+def test_job_running():
+    def job(client, status):
+        stub = model.Job(client, "1", "hive", "SELECT COUNT(1) FROM nasdaq", status=status)
+        stub._update_progress = mock.MagicMock()
+        return stub
+    client = mock.MagicMock()
+    client.job_status(return_value="testing")
+
+    assert not job(client, "queued").running()
+    assert not job(client, "booting").running()
+    assert job(client, "running").running()
+    assert not job(client, "success").running()
+    assert not job(client, "error").running()
+    assert not job(client, "killed").running()
 
 def test_job_update_progress():
     def run(client, job_id, status):
