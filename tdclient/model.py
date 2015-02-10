@@ -543,7 +543,7 @@ class Job(Model):
         """
         started_at = time.time()
         while not self.finished():
-            if timeout is None or timeout < time.time() - started_at:
+            if timeout is None or abs(time.time() - started_at) < timeout:
                 time.sleep(1) # TODO: configurable
             else:
                 raise RuntimeError("timeout") # TODO: throw proper error

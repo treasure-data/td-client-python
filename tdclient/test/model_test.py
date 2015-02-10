@@ -111,6 +111,44 @@ def test_schema():
     assert job.org_name == "org_name"
     assert job.db_name == "db_name"
 
+def test_job_wait_success():
+    client = mock.MagicMock()
+    job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
+    job.finished = mock.MagicMock(side_effect=[
+        False,
+        True,
+    ])
+    with mock.patch("time.time") as t_time:
+        t_time.side_effect = [
+            1423570800.0,
+            1423570860.0,
+            1423570920.0,
+            1423570980.0,
+        ]
+        with mock.patch("time.sleep") as t_sleep:
+            job.wait(timeout=120)
+            assert t_sleep.called
+        assert t_time.called
+    assert job.finished.called
+
+def test_job_wait_failure():
+    client = mock.MagicMock()
+    job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
+    job.finished = mock.MagicMock(return_value=False)
+    with mock.patch("time.time") as t_time:
+        t_time.side_effect = [
+            1423570800.0,
+            1423570860.0,
+            1423570920.0,
+            1423570980.0,
+        ]
+        with mock.patch("time.sleep") as t_sleep:
+            with pytest.raises(RuntimeError) as error:
+                job.wait(timeout=120)
+                assert t_sleep.called
+        assert t_time.called
+    assert job.finished.called
+
 def test_job_update_progress():
     client = mock.MagicMock()
     responses = [
