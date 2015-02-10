@@ -56,7 +56,6 @@ def test_list_jobs_failure():
 
 def test_show_job_success():
     td = api.API("APIKEY")
-    # TODO: should be replaced by wire dump
     body = b"""
         {
             "cpu_time": null,
