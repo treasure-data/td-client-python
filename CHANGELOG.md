@@ -1,6 +1,6 @@
 # Version History
 
-## 0.1.5.dev1
+## 0.1.5
 
 * Fix local variable scope problem in `tdclient.api.show_job` (#2)
 * Fix broken multiple assignment in `tdclient.model.Job#_update_status` (#3)
