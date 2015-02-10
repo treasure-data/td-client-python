@@ -49,6 +49,18 @@ def test_database():
     assert database.created_at == "created_at"
     assert database.updated_at == "updated_at"
 
+def test_database_update_tables():
+    client = mock.MagicMock()
+    client.tables = mock.MagicMock(return_value=[
+        model.Table(client, "sample_datasets", "foo", "type", "schema", "count"),
+        model.Table(client, "sample_datasets", "bar", "type", "schema", "count"),
+        model.Table(client, "sample_datasets", "baz", "type", "schema", "count"),
+    ])
+    database = model.Database(client, "sample_datasets", tables=None, count=12345, created_at="created_at", updated_at="updated_at", org_name="org_name", permission="administrator")
+    tables = database.tables()
+    assert [ table.name for table in tables ] == ["foo", "bar", "baz"]
+    client.tables.assert_called_with("sample_datasets")
+
 def test_table():
     client = mock.MagicMock()
     table = model.Table(client, "db_name", "table_name", "type", "schema", 12345, created_at="created_at", updated_at="updated_at", estimated_storage_size=67890, last_import="last_import", last_log_timestamp="last_log_timestamp", expire_days="expire_days", primary_key="primary_key", primary_key_type="primary_key_type")
