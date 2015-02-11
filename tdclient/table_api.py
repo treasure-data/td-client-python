@@ -41,13 +41,6 @@ class TableAPI(object):
                 result[name] = (type, schema, count, created_at, updated_at, estimated_storage_size, last_import, last_log_timestamp, expire_days, primary_key, primary_key_type)
             return result
 
-    def _create_log_or_item_table(self, db, table, type):
-        with self.post("/v3/table/create/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table)), urlquote(str(type)))) as res:
-            code, body = res.status, res.read()
-            if code != 200:
-                self.raise_error("Create #{type} table failed", res, body)
-            return True
-
     def create_log_table(self, db, table):
         """
         TODO: add docstring
