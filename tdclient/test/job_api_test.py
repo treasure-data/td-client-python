@@ -193,15 +193,58 @@ def test_kill_success():
     jobs = td.kill(12345)
     td.post.assert_called_with("/v3/job/kill/12345")
 
-def test_query_success():
+def test_hive_query_success():
     td = api.API("APIKEY")
-    # TODO: should be replaced by wire dump
     body = b"""
         {
+            "job": "12345",
+            "database": "sample_datasets",
+            "job_id": "12345"
+        }
+    """
+    td.post = mock.MagicMock(return_value=make_response(200, body))
+    job_id = td.hive_query("SELECT COUNT(1) FROM nasdaq", db="sample_datasets")
+    td.post.assert_called_with("/v3/job/issue/hive/sample_datasets", {"query": "SELECT COUNT(1) FROM nasdaq"})
+    assert job_id == "12345"
+
+def test_pig_query_success():
+    td = api.API("APIKEY")
+    body = b"""
+        {
+            "job": "12345",
+            "database": "sample_datasets",
+            "job_id": "12345"
+        }
+    """
+    td.post = mock.MagicMock(return_value=make_response(200, body))
+    job_id = td.pig_query("A=LOAD 'nasdaq';B=GROUP A ALL;C=FOREACH B GENERATE COUNT(A);", db="sample_datasets")
+    td.post.assert_called_with("/v3/job/issue/pig/sample_datasets", {"query": "A=LOAD 'nasdaq';B=GROUP A ALL;C=FOREACH B GENERATE COUNT(A);"})
+    assert job_id == "12345"
+
+def test_presto_query_success():
+    td = api.API("APIKEY")
+    body = b"""
+        {
+            "job": "12345",
+            "database": "sample_datasets",
+            "job_id": "12345"
+        }
+    """
+    td.post = mock.MagicMock(return_value=make_response(200, body))
+    job_id = td.query("SELECT COUNT(1) FROM nasdaq", db="sample_datasets", type="presto")
+    td.post.assert_called_with("/v3/job/issue/presto/sample_datasets", {"query": "SELECT COUNT(1) FROM nasdaq"})
+    assert job_id == "12345"
+
+def test_query_success():
+    td = api.API("APIKEY")
+    body = b"""
+        {
+            "job": "12345",
+            "database": "sample_datasets",
             "job_id": "12345"
         }
     """
     td.post = mock.MagicMock(return_value=make_response(200, body))
     job_id = td.query("SELECT COUNT(1) FROM nasdaq", db="sample_datasets", priority="HIGH")
-    td.post.assert_called_with("/v3/job/issue/hive/sample_datasets", {"query": "SELECT COUNT(1) FROM nasdaq", "priority": "HIGH"})
+    td.post.assert_called_with("/v3/job/issue/hive/sample_datasets", {"query": "SELECT COUNT(1) FROM nasdaq", "priority": 1})
     assert job_id == "12345"
