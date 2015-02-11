@@ -202,7 +202,7 @@ class Client(object):
             db_name (str): name of a database
             q (str): a query string
             result_url (str): result output URL
-            priority (str): priority
+            priority (int or str): priority (e.g. "NORMAL", "HIGH", etc.)
             retry_limit (int): retry limit
             type (str): name of a query engine
 
@@ -214,7 +214,7 @@ class Client(object):
         # for compatibility, assume type is hive unless specifically specified
         if type not in ["hive", "pig", "impala", "presto"]:
             raise ValueError("The specified query type is not supported: %s" % (type))
-        job_id = self.api.query(q, type, db_name, result_url, priority, retry_limit, **kwargs)
+        job_id = self.api.query(q, type=type, db=db_name, result_url=result_url, priority=priority, retry_limit=retry_limit, **kwargs)
         return model.Job(self, job_id, type, q)
 
     def jobs(self, _from=None, to=None, status=None, conditions=None):

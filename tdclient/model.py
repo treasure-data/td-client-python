@@ -457,6 +457,14 @@ class Job(Model):
     STATUS_KILLED = "killed"
     FINISHED_STATUS = [STATUS_SUCCESS, STATUS_ERROR, STATUS_KILLED]
 
+    JOB_PRIORITY = {
+        -2: "VERY LOW",
+        -1: "LOW",
+        0: "NORMAL",
+        1: "HIGH",
+        2: "VERY HIGH",
+    }
+
     def __init__(self, client, job_id, type, query, status=None, url=None, debug=None, start_at=None, end_at=None, cpu_time=None,
                  result_size=None, result=None, result_url=None, hive_result_schema=None, priority=None, retry_limit=None,
                  org_name=None, db_name=None):
@@ -512,7 +520,11 @@ class Job(Model):
         """
         Returns: a string represents the priority of the job (e.g. "NORMAL", "HIGH", etc.)
         """
-        return self._priority
+        if self._priority in self.JOB_PRIORITY:
+            return self.JOB_PRIORITY[self._priority]
+        else:
+            # just convert the value in string
+            return str(self._priority)
 
     @property
     def retry_limit(self):

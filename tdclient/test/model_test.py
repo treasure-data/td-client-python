@@ -101,15 +101,24 @@ def test_table_estimated_storage_size_string():
 
 def test_schema():
     client = mock.MagicMock()
-    job = model.Job(client, "job_id", "type", "query", status="status", url="url", debug="debug", start_at="start_at", end_at="end_at", cpu_time="cpu_time", result_size="result_size", result="result", result_url="result_url", hive_result_schema="hive_result_schema", priority="priority", retry_limit="retry_limit", org_name="org_name", db_name="db_name")
+    job = model.Job(client, "job_id", "type", "query", status="status", url="url", debug="debug", start_at="start_at", end_at="end_at", cpu_time="cpu_time", result_size="result_size", result="result", result_url="result_url", hive_result_schema="hive_result_schema", priority="UNKNOWN", retry_limit="retry_limit", org_name="org_name", db_name="db_name")
     assert job.id == "job_id"
     assert job.job_id == "job_id"
     assert job.type == "type"
     assert job.result_url == "result_url"
-    assert job.priority == "priority"
+    assert job.priority == "UNKNOWN"
     assert job.retry_limit == "retry_limit"
     assert job.org_name == "org_name"
     assert job.db_name == "db_name"
+
+def test_job_priority():
+    client = mock.MagicMock()
+    assert model.Job(client, "1", "hive", "SELECT COUNT(1) FROM nasdaq", priority=-2).priority == "VERY LOW"
+    assert model.Job(client, "2", "hive", "SELECT COUNT(1) FROM nasdaq", priority=-1).priority == "LOW"
+    assert model.Job(client, "3", "hive", "SELECT COUNT(1) FROM nasdaq", priority=0).priority == "NORMAL"
+    assert model.Job(client, "4", "hive", "SELECT COUNT(1) FROM nasdaq", priority=1).priority == "HIGH"
+    assert model.Job(client, "5", "hive", "SELECT COUNT(1) FROM nasdaq", priority=2).priority == "VERY HIGH"
+    assert model.Job(client, "42", "hive", "SELECT COUNT(1) FROM nasdaq", priority=42).priority == "42"
 
 def test_job_wait_success():
     client = mock.MagicMock()
