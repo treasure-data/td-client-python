@@ -17,13 +17,24 @@ def setup_function(function):
 
 def test_list_result_success():
     td = api.API("APIKEY")
-    # TODO: should be replaced by wire dump
     body = b"""
         {
-            "results":[
-              {"name":"foo","url":"http://example.com/1"},
-              {"name":"bar","url":"http://example.com/2"},
-              {"name":"baz","url":"http://example.com/3"}
+            "results": [
+                {
+                    "name": "foo",
+                    "organization": null,
+                    "url": "mysql://example.com/db/foo"
+                },
+                {
+                    "name": "bar",
+                    "organization": null,
+                    "url": "postgresql://example.com/db/bar"
+                },
+                {
+                    "name": "baz",
+                    "organization": null,
+                    "url": "s3://s3.example.com/baz.csv"
+                }
             ]
         }
     """
@@ -31,8 +42,11 @@ def test_list_result_success():
     results = td.list_result()
     td.get.assert_called_with("/v3/result/list")
     assert len(results) == 3
+    assert results[0] == ("foo", "mysql://example.com/db/foo", None)
+    assert results[1] == ("bar", "postgresql://example.com/db/bar", None)
+    assert results[2] == ("baz", "s3://s3.example.com/baz.csv", None)
 
-def test_list_result_success():
+def test_list_result_failure():
     td = api.API("APIKEY")
     td.get = mock.MagicMock(return_value=make_response(500, b"error"))
     with pytest.raises(api.APIError) as error:
