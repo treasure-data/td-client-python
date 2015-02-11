@@ -1,11 +1,12 @@
 # Version History
 
-## 0.1.6.dev0
+## 0.1.6.dev1
 
 * Support specifying job priority in its name (e.g. "NORMAL", "HIGH", etc.)
 * Convert job priority number to its name (e.g. 0 => "NORMAL", 1 => "HIGH", etc.)
 * Fix a broken behavior in `tdclient.model.Job#wait` when specifying timeout
-* Fix a broken `tdclient.client.Client#database()` which is used from `tdclient.model.Table#permission()`
+* Fix broken `tdclient.client.Client#database()` which is used from `tdclient.model.Table#permission()`
+* Fix broken `tdclient.Client.Client#results()`
 
 ## 0.1.5
 
