@@ -9,6 +9,7 @@ except ImportError:
     import mock
 import pytest
 
+from tdclient import api
 from tdclient import client
 from tdclient.test.test_helper import *
 
@@ -63,6 +64,21 @@ def test_databases():
     databases = td.databases()
     td.api.list_databases.assert_called_with()
     assert len(databases) == 1
+
+def test_database_success():
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.list_databases = mock.MagicMock(return_value=({"sample_datasets": [{"name":"nasdaq"}, {"name":"www_access"}]}))
+    database = td.database("sample_datasets")
+    td.api.list_databases.assert_called_with()
+    assert database.name == "sample_datasets"
+
+def test_database_failure():
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.list_databases = mock.MagicMock(return_value=({"sample_datasets": [{"name":"nasdaq"}, {"name":"www_access"}]}))
+    with pytest.raises(api.NotFoundError) as error:
+        td.database("not_exist")
 
 def test_create_log_table():
     td = client.Client("APIKEY")

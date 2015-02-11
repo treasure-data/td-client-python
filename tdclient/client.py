@@ -77,8 +77,8 @@ class Client(object):
         """
         Returns: a list of :class:`tdclient.model.Database`
         """
-        m = self.api.list_databases()
-        return [ model.Database(self, db_name, None, *args) for (db_name, args) in m.items() ]
+        databases = self.api.list_databases()
+        return [ model.Database(self, db_name, None, *args) for (db_name, args) in databases.items() ]
 
     def database(self, db_name):
         """
@@ -87,11 +87,11 @@ class Client(object):
 
         Returns: :class:`tdclient.model.Database`
         """
-        m = self.api.list_databases()
-        if db_name in m:
-            return model.Database(self, db_name, None, *m[db_name])
-        else:
-            raise api.NotFoundError("Database '%s' does not exist" % (db_name))
+        databases = self.api.list_databases()
+        for (name, args) in databases.items():
+            if name == db_name:
+                return model.Database(self, name, None, *args)
+        raise api.NotFoundError("Database '%s' does not exist" % (db_name))
 
     def create_log_table(self, db_name, table_name):
         """
