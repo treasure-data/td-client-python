@@ -17,6 +17,19 @@ class JobAPI(object):
     ## Job API
     ##
 
+    JOB_PRIORITY = {
+        "VERY LOW": -2,
+        "VERY-LOW": -2,
+        "VERY_LOW": -2,
+        "LOW": -1,
+        "NORM": 0,
+        "NORMAL": 0,
+        "HIGH": 1,
+        "VERY HIGH": 2,
+        "VERY-HIGH": 2,
+        "VERY_HIGH": 2,
+    }
+
     def list_jobs(self, _from=0, to=None, status=None, conditions=None):
         """
         Params:
@@ -205,6 +218,12 @@ class JobAPI(object):
         if result_url is not None:
             params["result"] = result_url
         if priority is not None:
+            if not isinstance(priority, int):
+                priority_name = str(priority).upper()
+                if priority_name in self.JOB_PRIORITY:
+                    priority = self.JOB_PRIORITY[priority_name]
+                else:
+                    raise(ValueError("unknown job priority: %s" % (priority_name,)))
             params["priority"] = priority
         if retry_limit is not None:
             params["retry_limit"] = retry_limit

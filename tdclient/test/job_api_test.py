@@ -231,8 +231,8 @@ def test_presto_query_success():
         }
     """
     td.post = mock.MagicMock(return_value=make_response(200, body))
-    job_id = td.query("SELECT COUNT(1) FROM nasdaq", db="sample_datasets", type="presto")
-    td.post.assert_called_with("/v3/job/issue/presto/sample_datasets", {"query": "SELECT COUNT(1) FROM nasdaq"})
+    job_id = td.query("SELECT COUNT(1) FROM nasdaq", db="sample_datasets", type="presto", priority=0)
+    td.post.assert_called_with("/v3/job/issue/presto/sample_datasets", {"query": "SELECT COUNT(1) FROM nasdaq", "priority": 0})
     assert job_id == "12345"
 
 def test_query_success():
@@ -248,3 +248,9 @@ def test_query_success():
     job_id = td.query("SELECT COUNT(1) FROM nasdaq", db="sample_datasets", priority="HIGH")
     td.post.assert_called_with("/v3/job/issue/hive/sample_datasets", {"query": "SELECT COUNT(1) FROM nasdaq", "priority": 1})
     assert job_id == "12345"
+
+def test_query_priority_unknown():
+    td = api.API("APIKEY")
+    td.post = mock.MagicMock(return_value=make_response(200, b""))
+    with pytest.raises(ValueError) as error:
+        td.query("SELECT COUNT(1) FROM nasdaq", db="sample_datasets", priority="unknown")
