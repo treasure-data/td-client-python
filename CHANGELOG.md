@@ -1,6 +1,6 @@
 # Version History
 
-## 0.1.6.dev1
+## 0.1.6
 
 * Support specifying job priority in its name (e.g. "NORMAL", "HIGH", etc.)
 * Convert job priority number to its name (e.g. 0 => "NORMAL", 1 => "HIGH", etc.)
