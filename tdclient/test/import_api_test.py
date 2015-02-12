@@ -11,6 +11,7 @@ try:
 except ImportError:
     import mock
 import pytest
+import tempfile
 import zlib
 
 from tdclient import api
@@ -104,6 +105,24 @@ def test_import_file_msgpack_success():
     stream = io.BytesIO(msgpackb(data))
     td.import_file("db", "table", "msgpack", stream)
 
+def test_import_file_msgpack_file_success():
+    td = api.API("APIKEY")
+    data = [
+        {"str": "value1", "int": 1, "float": 2.3},
+        {"str": "value4", "int": 5, "float": 6.7},
+    ]
+    def import_data(db, table, format, stream, size, unique_id=None):
+        assert db == "db"
+        assert table == "table"
+        assert format == "msgpack.gz"
+        assert msgunpackb(gunzipb(stream.read(size))) == data
+        assert unique_id is None
+    td.import_data = import_data
+    with tempfile.NamedTemporaryFile() as fp:
+        fp.write(msgpackb(data))
+        fp.seek(0)
+        td.import_file("db", "table", "msgpack", fp.name)
+
 def test_import_file_msgpack_failure():
     td = api.API("APIKEY")
     td.import_data = mock.MagicMock()
@@ -126,6 +145,24 @@ def test_import_file_msgpack_gz_success():
     td.import_data = import_data
     stream = io.BytesIO(gzipb(msgpackb(data)))
     td.import_file("db", "table", "msgpack.gz", stream)
+
+def test_import_file_msgpack_gz_file_success():
+    td = api.API("APIKEY")
+    data = [
+        {"str": "value1", "int": 1, "float": 2.3},
+        {"str": "value4", "int": 5, "float": 6.7},
+    ]
+    def import_data(db, table, format, stream, size, unique_id=None):
+        assert db == "db"
+        assert table == "table"
+        assert format == "msgpack.gz"
+        assert msgunpackb(gunzipb(stream.read(size))) == data
+        assert unique_id is None
+    td.import_data = import_data
+    with tempfile.NamedTemporaryFile() as fp:
+        fp.write(gzipb(msgpackb(data)))
+        fp.seek(0)
+        td.import_file("db", "table", "msgpack.gz", fp.name)
 
 def test_import_file_msgpack_gz_failure():
     td = api.API("APIKEY")

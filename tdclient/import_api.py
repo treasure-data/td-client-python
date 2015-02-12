@@ -72,7 +72,7 @@ class ImportAPI(object):
             else:
                 return self._import_file(db, table, format, file, unique_id=unique_id)
         else:
-            with open(file) as fp:
+            with open(file, "rb") as fp:
                 if format.endswith(".gz"):
                     return self._import_file(db, table, format[0:len(format)-len(".gz")], gzip.GzipFile(fileobj=fp), unique_id=unique_id)
                 else:
