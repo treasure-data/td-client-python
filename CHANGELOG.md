@@ -1,5 +1,9 @@
 # Version History
 
+## 0.1.7.dev0
+
+* Fix byte encoding problem in `tdclient.api.API#import_file` on Python 3.x
+
 ## 0.1.6
 
 * Support specifying job priority in its name (e.g. "NORMAL", "HIGH", etc.)
