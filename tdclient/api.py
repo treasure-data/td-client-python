@@ -6,17 +6,8 @@ from __future__ import unicode_literals
 from array import array
 try:
     import certifi
-    ca_certs = certifi.where
 except ImportError:
-    def ca_certs():
-        certs = [
-            "/etc/ssl/certs/ca-certificates.crt", # debian
-            "/etc/ssl/certs/ca-bundle.crt", # redhat
-        ]
-        for cert in certs:
-            if os.path.exists(cert):
-                return cert
-        return None
+    from tdclient import certifi
 import contextlib
 import dateutil.parser
 import email.utils
@@ -114,7 +105,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
             self._endpoint = self.DEFAULT_ENDPOINT
 
         pool_options = dict(kwargs)
-        certs = pool_options.get("ca_certs", ca_certs())
+        certs = pool_options.get("ca_certs", certifi.where())
         if certs is not None:
             pool_options["ca_certs"] = certs
             pool_options["cert_reqs"] = ssl.CERT_REQUIRED
