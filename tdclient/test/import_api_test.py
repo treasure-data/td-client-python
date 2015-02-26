@@ -118,10 +118,18 @@ def test_import_file_msgpack_file_success():
         assert msgunpackb(gunzipb(stream.read(size))) == data
         assert unique_id is None
     td.import_data = import_data
-    with tempfile.NamedTemporaryFile() as fp:
+    # should not use `tempfile.NamedTemporaryFile` to fix tests working on Windows
+    # http://bugs.python.org/issue14243
+    name = None
+    try:
+        fd, name = tempfile.mkstemp("wb")
+        fp = os.fdopen(fd, "wb")
         fp.write(msgpackb(data))
-        fp.seek(0)
-        td.import_file("db", "table", "msgpack", fp.name)
+        fp.close()
+        td.import_file("db", "table", "msgpack", name)
+    finally:
+        if name is not None:
+            os.unlink(name)
 
 def test_import_file_msgpack_failure():
     td = api.API("APIKEY")
@@ -159,10 +167,18 @@ def test_import_file_msgpack_gz_file_success():
         assert msgunpackb(gunzipb(stream.read(size))) == data
         assert unique_id is None
     td.import_data = import_data
-    with tempfile.NamedTemporaryFile() as fp:
+    # should not use `tempfile.NamedTemporaryFile` to fix tests working on Windows
+    # http://bugs.python.org/issue14243
+    name = None
+    try:
+        fd, name = tempfile.mkstemp("wb")
+        fp = os.fdopen(fd, "wb")
         fp.write(gzipb(msgpackb(data)))
-        fp.seek(0)
-        td.import_file("db", "table", "msgpack.gz", fp.name)
+        fp.close()
+        td.import_file("db", "table", "msgpack.gz", name)
+    finally:
+        if name is not None:
+            os.unlink(name)
 
 def test_import_file_msgpack_gz_failure():
     td = api.API("APIKEY")
