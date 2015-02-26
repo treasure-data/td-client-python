@@ -7,7 +7,9 @@ from array import array
 try:
     import certifi
 except ImportError:
-    from tdclient import certifi
+    # on py27 on windows, it tries to import pseudo "certifi" module instead of original one.
+    # to avoid the weird behavior, the pseudo "certifi" module should be named differently.
+    from tdclient import pseudo_certifi as certifi
 import contextlib
 import dateutil.parser
 import email.utils

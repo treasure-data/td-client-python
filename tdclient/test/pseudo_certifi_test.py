@@ -9,7 +9,7 @@ except ImportError:
     import mock
 import functools
 
-from tdclient import certifi
+from tdclient import pseudo_certifi as certifi
 
 def exists(platform, path):
     if platform == "debian":
