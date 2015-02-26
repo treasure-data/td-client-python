@@ -131,7 +131,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
 
         self._retry_post_requests = retry_post_requests
         self._max_cumul_retry_delay = max_cumul_retry_delay
-        self._headers = { key.lower(): value for (key, value) in headers.items() }
+        self._headers = dict([ (key.lower(), value) for (key, value) in headers.items() ])
 
     @property
     def apikey(self):
@@ -289,7 +289,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         _headers["date"] = email.utils.formatdate(time.time())
         _headers["user-agent"] = self._user_agent
         # override given headers
-        _headers.update({ key.lower(): value for (key, value) in headers.items() })
+        _headers.update(dict([ (key.lower(), value) for (key, value) in headers.items() ]))
         return (url, _headers)
 
     def raise_error(self, msg, res, body):

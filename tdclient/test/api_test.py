@@ -416,7 +416,9 @@ def test_parsedate1():
     assert dt.hour == 16
     assert dt.minute == 48
     assert dt.second == 41
-    assert dt.utcoffset().total_seconds() == -7.0 * 3600
+    offset = dt.utcoffset()
+    total_seconds = (offset.seconds + offset.days * 24 * 3600) * 10**6 / 10**6
+    assert total_seconds  == -7 * 3600
 
 def test_parsedate2():
     td = api.API("APIKEY")
@@ -427,7 +429,9 @@ def test_parsedate2():
     assert dt.hour == 19
     assert dt.minute == 39
     assert dt.second == 19
-    assert dt.utcoffset().total_seconds() == 0.0 * 3600
+    offset = dt.utcoffset()
+    total_seconds = (offset.seconds + offset.days * 24 * 3600) * 10**6 / 10**6
+    assert total_seconds == 0 * 3600
 
 def test_parsedate3():
     td = api.API("APIKEY")
@@ -438,7 +442,9 @@ def test_parsedate3():
     assert dt.hour == 17
     assert dt.minute == 39
     assert dt.second == 18
-    assert dt.utcoffset().total_seconds() == -4.0 * 3600
+    offset = dt.utcoffset()
+    total_seconds = (offset.seconds + offset.days * 24 * 3600) * 10**6 / 10**6
+    assert total_seconds == -4 * 3600
 
 def test_get_or_else():
     td = api.API("APIKEY")

@@ -3,6 +3,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import contextlib
 import gzip
 import json
 import msgpack
@@ -88,7 +89,7 @@ class ImportAPI(object):
 
     def _import_items(self, db, table, items, unique_id=None):
         with tempfile.TemporaryFile() as fp:
-            with gzip.GzipFile(mode="wb", fileobj=fp) as gz:
+            with contextlib.closing(gzip.GzipFile(mode="wb", fileobj=fp)) as gz:
                 packer = msgpack.Packer()
                 for record in items:
                     gz.write(packer.pack(record))
