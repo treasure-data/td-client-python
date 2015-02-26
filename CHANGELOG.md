@@ -1,6 +1,6 @@
 # Version History
 
-## 0.1.9.dev0
+## 0.1.9
 
 * Stopped using syntax added in recent Python releases
 
