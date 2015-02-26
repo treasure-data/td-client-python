@@ -1,5 +1,9 @@
 # Version History
 
+## 0.1.9.dev0
+
+* Stopped using syntax added in recent Python releases
+
 ## 0.1.8
 
 * Fix SSL verification errors on Python 2.7 on Windows environment.
