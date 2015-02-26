@@ -3,6 +3,7 @@
 ## 0.1.7.dev0
 
 * Fix byte encoding problem in `tdclient.api.API#import_file` on Python 3.x
+* Fix `AttributeError` on building API endpoint URL on Windows environments
 
 ## 0.1.6
 
