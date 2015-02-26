@@ -277,7 +277,9 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
             url = endpoint
         else:
             p = urlparse.urlparse(endpoint)
-            url = urlparse.urlunparse(urlparse.ParseResult(p.scheme, p.netloc, os.path.join(p, path), p.params, p.query, p.fragment))
+            # should not use `os.path.join` since it returns path string like "/foo\\bar"
+            request_path = path if p.path == "/" else "/".join([p.path, path])
+            url = urlparse.urlunparse(urlparse.ParseResult(p.scheme, p.netloc, request_path, p.params, p.query, p.fragment))
         # use default headers first
         _headers = dict(self._headers)
         # add default headers
