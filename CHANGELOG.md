@@ -1,6 +1,6 @@
 # Version History
 
-## 0.1.8.dev0
+## 0.1.8
 
 * Fix SSL verification errors on Python 2.7 on Windows environment.
   Now it uses `certifi` to verify SSL certificates if it is available.
