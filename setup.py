@@ -37,10 +37,10 @@ with open("requirements.txt") as fp:
     for s in fp:
         install_requires.append(s.strip())
 
-test_require = []
+tests_require = []
 with open("test-requirements.txt") as fp:
     for s in fp:
-        test_require.append(s.strip())
+        tests_require.append(s.strip())
 
 setup(
     name="td-client",
@@ -50,7 +50,7 @@ setup(
     author_email="support@treasure-data.com",
     url="http://treasuredata.com/",
     install_requires=install_requires,
-    tests_require=test_require,
+    tests_require=tests_require,
     packages=find_packages(),
     cmdclass = {"test": PyTest},
     license="Apache Software License",
