@@ -178,9 +178,8 @@ class JobAPI(object):
                 for row in unpacker:
                     yield row
             elif format == "json":
-                unpacker = json.load(codecs.getreader("utf-8")(res))
-                for row in unpacker:
-                    yield row
+                for row in codecs.getreader("utf-8")(res):
+                    yield json.loads(row)
             else:
                 yield res.read()
 

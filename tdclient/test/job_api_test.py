@@ -160,7 +160,8 @@ def test_job_result_json_success():
         ["bar", 456],
         ["baz", 789],
     ]
-    body = json.dumps(rows).encode("utf-8")
+    # result will be a JSON record per line (#4)
+    body = "\n".join([ json.dumps(row) for row in rows ]).encode("utf-8")
     td.get = mock.MagicMock(return_value=make_response(200, body))
     result = td.job_result_format(12345, "json")
     td.get.assert_called_with("/v3/job/result/12345", {"format": "json"})
@@ -173,7 +174,8 @@ def test_job_result_json_each_success():
         ["bar", 456],
         ["baz", 789],
     ]
-    body = json.dumps(rows).encode("utf-8")
+    # result will be a JSON record per line (#4)
+    body = "\n".join([ json.dumps(row) for row in rows ]).encode("utf-8")
     td.get = mock.MagicMock(return_value=make_response(200, body))
     result = []
     for row in td.job_result_format_each(12345, "json"):
