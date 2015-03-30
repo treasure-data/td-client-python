@@ -26,6 +26,7 @@ try:
 except ImportError:
     import urlparse
 import urllib3
+import warnings
 import zlib
 
 from tdclient.access_control_api import AccessControlAPI
@@ -169,7 +170,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
                 log.warn("Retrying after %d seconds..." % (retry_delay))
-                self.sleep(retry_delay)
+                time.sleep(retry_delay)
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
             else:
@@ -209,7 +210,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
                 log.warn("Retrying after %d seconds..." % (retry_delay))
-                self.sleep(retry_delay)
+                time.sleep(retry_delay)
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
             else:
@@ -262,7 +263,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
                 log.warn("Retrying after %d seconds..." % (retry_delay))
-                self.sleep(retry_delay)
+                time.sleep(retry_delay)
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
             else:
@@ -319,6 +320,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         return js
 
     def sleep(self, secs):
+        warnings.warn("sleep(secs) will be removed from future release. Please use time.sleep(secs)", category=DeprecationWarning)
         time.sleep(secs)
 
     def parsedate(self, s):

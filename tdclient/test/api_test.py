@@ -12,6 +12,7 @@ except ImportError:
 import os
 import pytest
 import tempfile
+import time
 try:
     import urllib.parse as urlparse
 except ImportError:
@@ -130,233 +131,233 @@ def test_connect_timeout():
 
 def test_get_success():
     td = api.API("APIKEY")
-    td.sleep = mock.MagicMock()
-    td.http.request = mock.MagicMock()
-    responses = [
-        make_raw_response(200, b"body"),
-    ]
-    td.http.request.side_effect = responses
-    with td.get("/foo", {"bar": "baz"}) as response:
-        args, kwargs = td.http.request.call_args
-        assert args == ("GET", "https://api.treasuredata.com/foo")
-        assert kwargs["fields"] == {"bar": "baz"}
-        assert sorted(kwargs["headers"].keys()) == ["accept-encoding", "authorization", "date", "user-agent"]
-        status, body = response.status, response.read()
-        assert status == 200
-        assert body == b"body"
-    assert not td.sleep.called
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.request = mock.MagicMock()
+        responses = [
+            make_raw_response(200, b"body"),
+        ]
+        td.http.request.side_effect = responses
+        with td.get("/foo", {"bar": "baz"}) as response:
+            args, kwargs = td.http.request.call_args
+            assert args == ("GET", "https://api.treasuredata.com/foo")
+            assert kwargs["fields"] == {"bar": "baz"}
+            assert sorted(kwargs["headers"].keys()) == ["accept-encoding", "authorization", "date", "user-agent"]
+            status, body = response.status, response.read()
+            assert status == 200
+            assert body == b"body"
+        assert not t_sleep.called
 
 def test_get_error():
     td = api.API("APIKEY")
-    td.sleep = mock.MagicMock()
-    td.http.request = mock.MagicMock()
-    responses = [
-        make_raw_response(404, b"not found"),
-    ]
-    td.http.request.side_effect = responses
-    with td.get("/foo", {"bar": "baz"}) as response:
-        args, kwargs = td.http.request.call_args
-        assert args == ("GET", "https://api.treasuredata.com/foo")
-        assert kwargs["fields"] == {"bar": "baz"}
-        assert sorted(kwargs["headers"].keys()) == ["accept-encoding", "authorization", "date", "user-agent"]
-        status, body = response.status, response.read()
-        assert status == 404
-        assert body == b"not found"
-    assert not td.sleep.called
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.request = mock.MagicMock()
+        responses = [
+            make_raw_response(404, b"not found"),
+        ]
+        td.http.request.side_effect = responses
+        with td.get("/foo", {"bar": "baz"}) as response:
+            args, kwargs = td.http.request.call_args
+            assert args == ("GET", "https://api.treasuredata.com/foo")
+            assert kwargs["fields"] == {"bar": "baz"}
+            assert sorted(kwargs["headers"].keys()) == ["accept-encoding", "authorization", "date", "user-agent"]
+            status, body = response.status, response.read()
+            assert status == 404
+            assert body == b"not found"
+        assert not t_sleep.called
 
 def test_get_retry_success():
     td = api.API("APIKEY")
-    td.sleep = mock.MagicMock()
-    td.http.request = mock.MagicMock()
-    responses = [
-        make_raw_response(500, b"failure1"),
-        make_raw_response(503, b"failure2"),
-        make_raw_response(200, b"success1"),
-    ]
-    td.http.request.side_effect = responses
-    with td.get("/foo", {"bar": "baz"}) as response:
-        args, kwargs = td.http.request.call_args
-        assert args == ("GET", "https://api.treasuredata.com/foo")
-        assert kwargs["fields"] == {"bar": "baz"}
-        assert sorted(kwargs["headers"].keys()) == ["accept-encoding", "authorization", "date", "user-agent"]
-        status, body = response.status, response.read()
-        assert status == 200
-        assert body == b"success1"
-        assert td.sleep.called
-        sleeps = [ args[0] for (args, kwargs) in td.sleep.call_args_list ]
-        assert len(sleeps) == len(responses) - 1
-        assert sum(sleeps) < td._max_cumul_retry_delay
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.request = mock.MagicMock()
+        responses = [
+            make_raw_response(500, b"failure1"),
+            make_raw_response(503, b"failure2"),
+            make_raw_response(200, b"success1"),
+        ]
+        td.http.request.side_effect = responses
+        with td.get("/foo", {"bar": "baz"}) as response:
+            args, kwargs = td.http.request.call_args
+            assert args == ("GET", "https://api.treasuredata.com/foo")
+            assert kwargs["fields"] == {"bar": "baz"}
+            assert sorted(kwargs["headers"].keys()) == ["accept-encoding", "authorization", "date", "user-agent"]
+            status, body = response.status, response.read()
+            assert status == 200
+            assert body == b"success1"
+            assert t_sleep.called
+            sleeps = [ args[0] for (args, kwargs) in t_sleep.call_args_list ]
+            assert len(sleeps) == len(responses) - 1
+            assert sum(sleeps) < td._max_cumul_retry_delay
 
 def test_get_failure():
     td = api.API("APIKEY")
-    td.sleep = mock.MagicMock()
-    td.http.request = mock.MagicMock()
-    td.http.request.return_value = make_raw_response(500, b"failure")
-    with pytest.raises(api.APIError) as error:
-        with td.get("/foo", {"bar": "baz"}) as response:
-            pass
-    assert td.sleep.called
-    sleeps = [ args[0] for (args, kwargs) in td.sleep.call_args_list ]
-    assert td._max_cumul_retry_delay < sum(sleeps)
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.request = mock.MagicMock()
+        td.http.request.return_value = make_raw_response(500, b"failure")
+        with pytest.raises(api.APIError) as error:
+            with td.get("/foo", {"bar": "baz"}) as response:
+                pass
+        assert t_sleep.called
+        sleeps = [ args[0] for (args, kwargs) in t_sleep.call_args_list ]
+        assert td._max_cumul_retry_delay < sum(sleeps)
 
 def test_post_success():
     td = api.API("APIKEY")
-    td.sleep = mock.MagicMock()
-    td.http.request = mock.MagicMock()
-    responses = [
-        make_raw_response(200, b"body"),
-    ]
-    td.http.request.side_effect = responses
-    with td.post("/foo", {"bar": "baz"}) as response:
-        args, kwargs = td.http.request.call_args
-        assert args == ("POST", "https://api.treasuredata.com/foo")
-        assert kwargs["fields"] == {"bar": "baz"}
-        assert sorted(kwargs["headers"].keys()) == ["authorization", "date", "user-agent"]
-        status, body = response.status, response.read()
-        assert status == 200
-        assert body == b"body"
-    assert not td.sleep.called
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.request = mock.MagicMock()
+        responses = [
+            make_raw_response(200, b"body"),
+        ]
+        td.http.request.side_effect = responses
+        with td.post("/foo", {"bar": "baz"}) as response:
+            args, kwargs = td.http.request.call_args
+            assert args == ("POST", "https://api.treasuredata.com/foo")
+            assert kwargs["fields"] == {"bar": "baz"}
+            assert sorted(kwargs["headers"].keys()) == ["authorization", "date", "user-agent"]
+            status, body = response.status, response.read()
+            assert status == 200
+            assert body == b"body"
+        assert not t_sleep.called
 
 def test_post_retry_success():
     td = api.API("APIKEY", retry_post_requests=True)
-    td.sleep = mock.MagicMock()
-    td.http.request = mock.MagicMock()
-    responses = [
-        make_raw_response(500, b"failure1"),
-        make_raw_response(503, b"failure2"),
-        make_raw_response(200, b"success1"),
-    ]
-    td.http.request.side_effect = responses
-    with td.post("/foo", {"bar": "baz"}) as response:
-        args, kwargs = td.http.request.call_args
-        assert args == ("POST", "https://api.treasuredata.com/foo")
-        assert kwargs["fields"] == {"bar": "baz"}
-        assert sorted(kwargs["headers"].keys()) == ["authorization", "date", "user-agent"]
-        status, body = response.status, response.read()
-        assert status == 200
-        assert body == b"success1"
-        assert td.sleep.called
-        sleeps = [ args[0] for (args, kwargs) in td.sleep.call_args_list ]
-        assert len(sleeps) == len(responses) - 1
-        assert sum(sleeps) < td._max_cumul_retry_delay
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.request = mock.MagicMock()
+        responses = [
+            make_raw_response(500, b"failure1"),
+            make_raw_response(503, b"failure2"),
+            make_raw_response(200, b"success1"),
+        ]
+        td.http.request.side_effect = responses
+        with td.post("/foo", {"bar": "baz"}) as response:
+            args, kwargs = td.http.request.call_args
+            assert args == ("POST", "https://api.treasuredata.com/foo")
+            assert kwargs["fields"] == {"bar": "baz"}
+            assert sorted(kwargs["headers"].keys()) == ["authorization", "date", "user-agent"]
+            status, body = response.status, response.read()
+            assert status == 200
+            assert body == b"success1"
+            assert t_sleep.called
+            sleeps = [ args[0] for (args, kwargs) in t_sleep.call_args_list ]
+            assert len(sleeps) == len(responses) - 1
+            assert sum(sleeps) < td._max_cumul_retry_delay
 
 def test_post_never_retry():
     td = api.API("APIKEY", retry_post_requests=False)
-    td.sleep = mock.MagicMock()
-    td.http.request = mock.MagicMock()
-    responses = [
-        make_raw_response(500, b"failure"),
-    ]
-    td.http.request.side_effect = responses
-    with pytest.raises(api.APIError) as error:
-        with td.post("/foo", {"bar": "baz"}) as response:
-            pass
-    assert not td.sleep.called
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.request = mock.MagicMock()
+        responses = [
+            make_raw_response(500, b"failure"),
+        ]
+        td.http.request.side_effect = responses
+        with pytest.raises(api.APIError) as error:
+            with td.post("/foo", {"bar": "baz"}) as response:
+                pass
+        assert not t_sleep.called
 
 def test_post_failure():
     td = api.API("APIKEY", retry_post_requests=True)
-    td.sleep = mock.MagicMock()
-    td.http.request = mock.MagicMock()
-    td.http.request.return_value = make_raw_response(500, b"failure")
-    with pytest.raises(api.APIError) as error:
-        with td.post("/foo", {"bar": "baz"}) as response:
-            pass
-    assert td.sleep.called
-    sleeps = [ args[0] for (args, kwargs) in td.sleep.call_args_list ]
-    assert td._max_cumul_retry_delay < sum(sleeps)
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.request = mock.MagicMock()
+        td.http.request.return_value = make_raw_response(500, b"failure")
+        with pytest.raises(api.APIError) as error:
+            with td.post("/foo", {"bar": "baz"}) as response:
+                pass
+        assert t_sleep.called
+        sleeps = [ args[0] for (args, kwargs) in t_sleep.call_args_list ]
+        assert td._max_cumul_retry_delay < sum(sleeps)
 
 def test_put_bytes_success():
     td = api.API("APIKEY")
-    td.sleep = mock.MagicMock()
-    td.http.urlopen = mock.MagicMock()
-    responses = [
-        make_raw_response(200, b"response body"),
-    ]
-    bytes_or_stream = b"request body"
-    td.http.urlopen.side_effect = responses
-    with td.put("/foo", bytes_or_stream, 12) as response:
-        args, kwargs = td.http.urlopen.call_args
-        assert args == ("PUT", "https://api.treasuredata.com/foo")
-        assert kwargs["body"] == array(str("b"), bytes_or_stream)
-        assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
-        status, body = response.status, response.read()
-        assert status == 200
-        assert body == b"response body"
-    assert not td.sleep.called
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.urlopen = mock.MagicMock()
+        responses = [
+            make_raw_response(200, b"response body"),
+        ]
+        bytes_or_stream = b"request body"
+        td.http.urlopen.side_effect = responses
+        with td.put("/foo", bytes_or_stream, 12) as response:
+            args, kwargs = td.http.urlopen.call_args
+            assert args == ("PUT", "https://api.treasuredata.com/foo")
+            assert kwargs["body"] == array(str("b"), bytes_or_stream)
+            assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
+            status, body = response.status, response.read()
+            assert status == 200
+            assert body == b"response body"
+        assert not t_sleep.called
 
 def test_put_file_with_fileno_success():
     td = api.API("APIKEY")
-    td.sleep = mock.MagicMock()
-    td.http.urlopen = mock.MagicMock()
-    responses = [
-        make_raw_response(200, b"response body"),
-    ]
-    td.http.urlopen.side_effect = responses
-    bytes_or_stream = tempfile.TemporaryFile()
-    bytes_or_stream.write(b"request body")
-    bytes_or_stream.seek(0)
-    with td.put("/foo", bytes_or_stream, 12) as response:
-        args, kwargs = td.http.urlopen.call_args
-        assert args == ("PUT", "https://api.treasuredata.com/foo")
-        assert kwargs["body"] == bytes_or_stream
-        assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
-        status, body = response.status, response.read()
-        assert status == 200
-        assert body == b"response body"
-    assert not td.sleep.called
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.urlopen = mock.MagicMock()
+        responses = [
+            make_raw_response(200, b"response body"),
+        ]
+        td.http.urlopen.side_effect = responses
+        bytes_or_stream = tempfile.TemporaryFile()
+        bytes_or_stream.write(b"request body")
+        bytes_or_stream.seek(0)
+        with td.put("/foo", bytes_or_stream, 12) as response:
+            args, kwargs = td.http.urlopen.call_args
+            assert args == ("PUT", "https://api.treasuredata.com/foo")
+            assert kwargs["body"] == bytes_or_stream
+            assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
+            status, body = response.status, response.read()
+            assert status == 200
+            assert body == b"response body"
+        assert not t_sleep.called
 
 def test_put_file_without_fileno_success():
     td = api.API("APIKEY")
-    td.sleep = mock.MagicMock()
-    td.http.urlopen = mock.MagicMock()
-    responses = [
-        make_raw_response(200, b"response body"),
-    ]
-    td.http.urlopen.side_effect = responses
-    bytes_or_stream = io.BytesIO(b"request body")
-    with td.put("/foo", bytes_or_stream, 12) as response:
-        args, kwargs = td.http.urlopen.call_args
-        assert args == ("PUT", "https://api.treasuredata.com/foo")
-        assert kwargs["body"] == array(str("b"), bytes_or_stream.getvalue())
-        assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
-        status, body = response.status, response.read()
-        assert status == 200
-        assert body == b"response body"
-    assert not td.sleep.called
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.urlopen = mock.MagicMock()
+        responses = [
+            make_raw_response(200, b"response body"),
+        ]
+        td.http.urlopen.side_effect = responses
+        bytes_or_stream = io.BytesIO(b"request body")
+        with td.put("/foo", bytes_or_stream, 12) as response:
+            args, kwargs = td.http.urlopen.call_args
+            assert args == ("PUT", "https://api.treasuredata.com/foo")
+            assert kwargs["body"] == array(str("b"), bytes_or_stream.getvalue())
+            assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
+            status, body = response.status, response.read()
+            assert status == 200
+            assert body == b"response body"
+        assert not t_sleep.called
 
 def test_put_retry_success():
     td = api.API("APIKEY")
-    td.sleep = mock.MagicMock()
-    td.http.urlopen = mock.MagicMock()
-    responses = [
-        make_raw_response(500, b"failure1"),
-        make_raw_response(503, b"failure2"),
-        make_raw_response(200, b"success1"),
-    ]
-    td.http.urlopen.side_effect = responses
-    with td.put("/foo", b"body", 7) as response:
-        args, kwargs = td.http.urlopen.call_args
-        assert args == ("PUT", "https://api.treasuredata.com/foo")
-        assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
-        status, body = response.status, response.read()
-        assert status == 200
-        assert body == b"success1"
-        assert td.sleep.called
-        sleeps = [ args[0] for (args, kwargs) in td.sleep.call_args_list ]
-        assert len(sleeps) == len(responses) - 1
-        assert sum(sleeps) < td._max_cumul_retry_delay
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.urlopen = mock.MagicMock()
+        responses = [
+            make_raw_response(500, b"failure1"),
+            make_raw_response(503, b"failure2"),
+            make_raw_response(200, b"success1"),
+        ]
+        td.http.urlopen.side_effect = responses
+        with td.put("/foo", b"body", 7) as response:
+            args, kwargs = td.http.urlopen.call_args
+            assert args == ("PUT", "https://api.treasuredata.com/foo")
+            assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
+            status, body = response.status, response.read()
+            assert status == 200
+            assert body == b"success1"
+            assert t_sleep.called
+            sleeps = [ args[0] for (args, kwargs) in t_sleep.call_args_list ]
+            assert len(sleeps) == len(responses) - 1
+            assert sum(sleeps) < td._max_cumul_retry_delay
 
 def test_put_failure():
     td = api.API("APIKEY")
-    td.sleep = mock.MagicMock()
-    td.http.urlopen = mock.MagicMock()
-    td.http.urlopen.return_value = make_raw_response(500, b"error")
-    with pytest.raises(api.APIError) as error:
-        with td.put("/foo", b"body", 7) as response:
-            pass
-    assert td.sleep.called
-    sleeps = [ args[0] for (args, kwargs) in td.sleep.call_args_list ]
-    assert td._max_cumul_retry_delay < sum(sleeps)
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.urlopen = mock.MagicMock()
+        td.http.urlopen.return_value = make_raw_response(500, b"error")
+        with pytest.raises(api.APIError) as error:
+            with td.put("/foo", b"body", 7) as response:
+                pass
+        assert t_sleep.called
+        sleeps = [ args[0] for (args, kwargs) in t_sleep.call_args_list ]
+        assert td._max_cumul_retry_delay < sum(sleeps)
 
 def test_raise_error_401():
     td = api.API("APIKEY")
