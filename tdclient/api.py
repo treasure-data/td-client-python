@@ -324,8 +324,12 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         time.sleep(secs)
 
     def parsedate(self, s):
-        # TODO: parse datetime with specific format
-        # for now, this parses string without format since API may return ambiguous value :(
+        warnings.warn("parsedate(secs) will be removed from future release. Please use datetime.strptime(date_string, format) or other.", category=DeprecationWarning)
+        return self._parsedate(s, None)
+
+    def _parsedate(self, s, format):
+        # TODO: parse datetime with using format string
+        # for now, this ignores given format string since API may return date in ambiguous format :(
         return dateutil.parser.parse(s)
 
     def get_or_else(self, hashmap, key, default_value=None):

@@ -25,7 +25,7 @@ class AccountAPI(object):
             storage_size = int(a["storage_size"])
             guaranteed_cores = int(a["guaranteed_cores"])
             maximum_cores = int(a["maximum_cores"])
-            created_at = self.parsedate(a["created_at"])
+            created_at = self._parsedate(a["created_at"], "%Y-%m-%d")
             return [account_id, plan, storage_size, guaranteed_cores, maximum_cores, created_at]
 
     def account_core_utilization(self, _from, to):
@@ -42,8 +42,8 @@ class AccountAPI(object):
             if code != 200:
                 self.raise_error("Show account failed", res, body)
             js = self.checked_json(body, ["from", "to", "interval", "history"])
-            _from = self.parsedate(js["from"])
-            to = self.parsedate(js["to"])
+            _from = self._parsedate(js["from"], "%Y-%m-%d %H:%M:%S %Z")
+            to = self._parsedate(js["to"], "%Y-%m-%d %H:%M:%S %Z")
             interval = int(js["interval"])
             history = js["history"]
             return [_from, to, interval, history]

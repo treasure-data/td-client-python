@@ -400,7 +400,7 @@ def test_checked_json_field_error():
     with pytest.raises(api.APIError) as error:
         td.checked_json(b'{}', ["foo"])
 
-def test_sleep():
+def test_sleep_compat():
     with mock.patch("tdclient.api.time") as time:
         td = api.API("apikey")
         td.sleep(600)
@@ -408,7 +408,7 @@ def test_sleep():
         args, kwargs = time.sleep.call_args
         assert args == (600,)
 
-def test_parsedate1():
+def test_parsedate_compat():
     td = api.API("APIKEY")
     dt = td.parsedate("2013-11-01 16:48:41 -0700") # ???
     assert dt.year == 2013
@@ -421,9 +421,22 @@ def test_parsedate1():
     total_seconds = (offset.seconds + offset.days * 24 * 3600) * 10**6 / 10**6
     assert total_seconds  == -7 * 3600
 
+def test_parsedate1():
+    td = api.API("APIKEY")
+    dt = td._parsedate("2013-11-01 16:48:41 -0700", "%Y-%m-%d %H:%M:%S %z") # ???
+    assert dt.year == 2013
+    assert dt.month == 11
+    assert dt.day == 1
+    assert dt.hour == 16
+    assert dt.minute == 48
+    assert dt.second == 41
+    offset = dt.utcoffset()
+    total_seconds = (offset.seconds + offset.days * 24 * 3600) * 10**6 / 10**6
+    assert total_seconds  == -7 * 3600
+
 def test_parsedate2():
     td = api.API("APIKEY")
-    dt = td.parsedate("2013-11-13 19:39:19 UTC") # ???
+    dt = td._parsedate("2013-11-13 19:39:19 UTC", "%Y-%m-%d %H:%M:%S %Z") # ???
     assert dt.year == 2013
     assert dt.month == 11
     assert dt.day == 13
@@ -436,7 +449,7 @@ def test_parsedate2():
 
 def test_parsedate3():
     td = api.API("APIKEY")
-    dt = td.parsedate("Sun Jun 26 17:39:18 -0400 2011") # rfc2882
+    dt = td._parsedate("Sun Jun 26 17:39:18 -0400 2011", "%a %b %d %H:%M:%S %z %Y") # rfc2882
     assert dt.year == 2011
     assert dt.month == 6
     assert dt.day == 26

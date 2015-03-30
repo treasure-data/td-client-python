@@ -24,7 +24,7 @@ class ScheduleAPI(object):
             if code != 200:
                 self.raise_error("Create schedule failed", res, body)
             js = self.checked_json(body, ["start"])
-            return self.parsedate(js["start"])
+            return self._parsedate(js["start"], "%Y-%m-%d %H:%M:%S %Z")
 
     def delete_schedule(self, name):
         """
@@ -56,7 +56,7 @@ class ScheduleAPI(object):
                 result_url = m.get("result")
                 timezone = m.get("timezone", "UTC")
                 delay = m.get("delay")
-                next_time = self.parsedate(self.get_or_else(m, "next_time", "1970-01-01T00:00:00Z"))
+                next_time = self._parsedate(self.get_or_else(m, "next_time", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
                 priority = m.get("priority")
                 retry_limit = m.get("retry_limit")
                 return (name, cron, query, database, result_url, timezone, delay, next_time, priority, retry_limit, None) # same as database
@@ -91,9 +91,9 @@ class ScheduleAPI(object):
                 database = m.get("database")
                 status = m.get("status")
                 query = m.get("query")
-                start_at = self.parsedate(self.get_or_else(m, "start_at", "1970-01-01T00:00:00Z"))
-                end_at = self.parsedate(self.get_or_else(m, "end_at", "1970-01-01T00:00:00Z"))
-                scheduled_at = self.parsedate(self.get_or_else(m, "scheduled_at", "1970-01-01T00:00:00Z"))
+                start_at = self._parsedate(self.get_or_else(m, "start_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
+                end_at = self._parsedate(self.get_or_else(m, "end_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
+                scheduled_at = self._parsedate(self.get_or_else(m, "scheduled_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
                 result_url = m.get("result")
                 priority = m.get("priority")
                 return (scheduled_at, job_id, type, status, query, start_at, end_at, result_url, priority, database)
@@ -113,7 +113,7 @@ class ScheduleAPI(object):
         js = self.checked_json(body, ["jobs"])
         def job(m):
             job_id = m.get("job_id")
-            scheduled_at = self.parsedate(self.get_or_else(m, "scheduled_at", "1970-01-01T00:00:00Z"))
+            scheduled_at = self._parsedate(self.get_or_else(m, "scheduled_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
             type = m.get("type", "?")
             return (job_id, type, scheduled_at)
         return [ job(m) for m in js["jobs"] ]

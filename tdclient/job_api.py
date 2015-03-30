@@ -71,8 +71,8 @@ class JobAPI(object):
                     "query": m.get("query"),
                     "status": m.get("status"),
                     "debug": m.get("debug"),
-                    "start_at": self.parsedate(self.get_or_else(m, "start_at", "1970-01-01T00:00:00Z")),
-                    "end_at": self.parsedate(self.get_or_else(m, "end_at", "1970-01-01T00:00:00Z")),
+                    "start_at": self._parsedate(self.get_or_else(m, "start_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ"),
+                    "end_at": self._parsedate(self.get_or_else(m, "end_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ"),
                     "cpu_time": m.get("cpu_time"),
                     "result_size": m.get("result_size"), # compressed result size in msgpack.gz format
                     "result": result,
@@ -114,8 +114,8 @@ class JobAPI(object):
                 "query": js.get("query"),
                 "status": js.get("status"),
                 "debug": js.get("debug"),
-                "start_at": self.parsedate(self.get_or_else(js, "start_at", "1970-01-01T00:00:00Z")),
-                "end_at": self.parsedate(self.get_or_else(js, "end_at", "1970-01-01T00:00:00Z")),
+                "start_at": self._parsedate(self.get_or_else(js, "start_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ"),
+                "end_at": self._parsedate(self.get_or_else(js, "end_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ"),
                 "cpu_time": js.get("cpu_time"),
                 "result_size": js.get("result_size"), # compressed result size in msgpack.gz format
                 "result": result,
