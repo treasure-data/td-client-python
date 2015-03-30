@@ -1,5 +1,10 @@
 # Version History
 
+## 0.1.10
+
+* Fixed a JSON parse error in `job.result_format("json")` with multipe result rows (#4)
+* Refactored model classes and tests
+
 ## 0.1.9
 
 * Stopped using syntax added in recent Python releases
