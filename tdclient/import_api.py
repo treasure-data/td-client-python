@@ -17,6 +17,7 @@ try:
     from urllib.parse import quote as urlquote # >=3.0
 except ImportError:
     from urllib import quote as urlquote
+import warnings
 
 class ImportAPI(object):
     ####
@@ -101,10 +102,14 @@ class ImportAPI(object):
         # current impl doesn't torelate any unpack error
         unpacker = msgpack.Unpacker(file)
         for record in unpacker:
+            if "time" not in record:
+                warnings.warn("records should have \"time\" column to import records properly.", category=RuntimeWarning)
             yield record
 
     def _parse_json_file(self, file):
         # current impl doesn't torelate any JSON parse error
         for s in file:
             record = json.loads(s.decode("utf-8"))
+            if "time" not in record:
+                warnings.warn("records should have \"time\" column to import records properly.", category=RuntimeWarning)
             yield record
