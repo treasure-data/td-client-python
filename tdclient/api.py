@@ -205,7 +205,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
                         raise(APIError("Retrying stopped by retry_post_requests == False"))
                     log.warn("Error %d: %s. Retrying after %d seconds..." % (response.status, response.data, retry_delay))
             except ( urllib3.exceptions.TimeoutStateError, urllib3.exceptions.TimeoutError, urllib3.exceptions.PoolError, socket.error ):
-                if self._retry_post_requests:
+                if not self._retry_post_requests:
                     raise(APIError("Retrying stopped by retry_post_requests == False"))
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
