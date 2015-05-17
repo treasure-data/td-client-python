@@ -1,5 +1,10 @@
 # Version History
 
+## 0.1.11
+
+* Fix API client to retry POST requests properly if `retry_post_requests` is set to `True` (#5)
+* Show warnings if imported data don't have `time` column
+
 ## 0.1.10
 
 * Fixed a JSON parse error in `job.result_format("json")` with multipe result rows (#4)
