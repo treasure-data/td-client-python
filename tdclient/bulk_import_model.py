@@ -98,3 +98,23 @@ class BulkImport(Model):
         """
         for record in self._client.bulk_import_error_records(self.name):
             yield record
+
+    def upload_part(self, part_name, bytes_or_stream, size):
+        """Upload a part to bulk import session
+
+        Params:
+            part_name (str): name of a part of the bulk import session
+            bytes_or_stream (file-like): a file-like object contains the part
+            size (int): the size of the part
+        """
+        return self._client.bulk_import_upload_part(self.name, part_name, bytes_or_stream, size)
+
+    def upload_file(self, part_name, format, file):
+        """Upload a part to Bulk Import session, from an existing file on filesystem.
+
+        Params:
+            part_name (str): name of a part of the bulk import session
+            format (str): format of data type (e.g. "msgpack", "json")
+            file (str or file-like): a name of a file, or a file-like object contains the data
+        """
+        return self._client.bulk_import_upload_file(self.name, part_name, format, file)

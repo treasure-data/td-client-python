@@ -10,7 +10,7 @@ try:
 except ImportError:
     import mock
 import pytest
-import zlib
+import time
 
 from tdclient import api
 from tdclient.test.test_helper import *
@@ -81,6 +81,20 @@ def test_list_bulk_import_upload_part_success():
     td.bulk_import_upload_part("name", "part_name", "stream", 1024)
     td.put.assert_called_with("/v3/bulk_import/upload_part/name/part_name", "stream", 1024)
 
+def test_list_bulk_import_upload_file_success():
+    td = api.API("APIKEY")
+    data = [
+        {"time": int(time.time()), "str": "value1", "int": 1, "float": 2.3},
+        {"time": int(time.time()), "str": "value4", "int": 5, "float": 6.7},
+    ]
+    def bulk_import_upload_part(name, part_name, stream, size):
+        assert name == "name"
+        assert part_name == "part_name"
+        assert msgunpackb(gunzipb(stream.read(size))) == data
+    td.bulk_import_upload_part = bulk_import_upload_part
+    stream = io.BytesIO(jsonb(data))
+    td.bulk_import_upload_file("name", "part_name", "json", stream)
+
 def test_list_bulk_import_delete_part_success():
     td = api.API("APIKEY")
     td.post = mock.MagicMock(return_value=make_response(200, b""))
@@ -117,19 +131,6 @@ def test_commit_bulk_import_success():
     td.post = mock.MagicMock(return_value=make_response(200, body))
     td.commit_bulk_import("foo")
     td.post.assert_called_with("/v3/bulk_import/commit/foo", {})
-
-def msgpackb(list):
-    """list -> bytes"""
-    stream = io.BytesIO()
-    packer = msgpack.Packer()
-    for item in list:
-        stream.write(packer.pack(item))
-    return stream.getvalue()
-
-def gzipb(bytes):
-    """bytes -> bytes"""
-    compress = zlib.compressobj(9, zlib.DEFLATED, zlib.MAX_WBITS | 16)
-    return compress.compress(bytes) + compress.flush()
 
 def test_bulk_import_error_records_success():
     td = api.API("APIKEY")
