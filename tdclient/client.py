@@ -369,14 +369,19 @@ class Client(object):
             name (str): name of new bulk import session
             database (str): name of a database
             table (str): name of a table
+
+        Returns: :class:`tdclient.model.BulkImport`
         """
-        return self.api.create_bulk_import(name, database, table, params)
+        self.api.create_bulk_import(name, database, table, params)
+        return model.BulkImport(self, name=name, database=database, table=table)
 
     def delete_bulk_import(self, name):
         """Delete a bulk import session
 
         Params:
             name (str): name of a bulk import session
+
+        Returns: `True` if success
         """
         return self.api.delete_bulk_import(name)
 
@@ -385,6 +390,8 @@ class Client(object):
 
         Params:
             name (str): name of a bulk import session
+
+        Returns: `True` if success
         """
         return self.api.freeze_bulk_import(name)
 
@@ -393,6 +400,8 @@ class Client(object):
 
         Params:
             name (str): name of a bulk import session
+
+        Returns: `True` if success
         """
         return self.api.unfreeze_bulk_import(name)
 
@@ -412,6 +421,8 @@ class Client(object):
 
         Params:
             name (str): name of a bulk import session
+
+        Returns: `True` if success
         """
         return self.api.commit_bulk_import(name)
 
@@ -460,6 +471,8 @@ class Client(object):
         Params:
             name (str): name of a bulk import session
             part_name (str): name of a part of the bulk import session
+
+        Returns: `True` if success
         """
         return self.api.bulk_import_delete_part(name, part_name)
 
