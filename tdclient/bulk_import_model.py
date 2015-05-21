@@ -31,7 +31,7 @@ class BulkImport(Model):
         self._valid_parts = data.get("valid_parts")
         self._error_parts = data.get("error_parts")
 
-    def _update(self):
+    def update(self):
         data = self._client.api.show_bulk_import(self.name)
         self._feed(data)
 
@@ -109,37 +109,46 @@ class BulkImport(Model):
         """
         TODO: add docstring
         """
-        return self._client.delete_bulk_import(self.name)
+        response = self._client.delete_bulk_import(self.name)
+        self.update()
+        return response
 
     def freeze(self):
         """
         TODO: add docstring
         """
-        return self._client.freeze_bulk_import(self.name)
+        response = self._client.freeze_bulk_import(self.name)
+        self.update()
+        return response
 
     def unfreeze(self):
         """
         TODO: add docstring
         """
-        return self._client.unfreeze_bulk_import(self.name)
+        response = self._client.unfreeze_bulk_import(self.name)
+        self.update()
+        return response
 
     def perform(self, wait=False):
         """
         TODO: add docstring
         """
-        self._update()
+        self.update()
         if not self.upload_frozen:
             raise(RuntimeError("bulk import session \"%s\" is not frozen" % (self.name,)))
         job = self._client.perform_bulk_import(self.name)
         if wait:
             job.wait()
+        self.update()
         return job
 
     def commit(self):
         """
         TODO: add docstring
         """
-        return self._client.commit_bulk_import(self.name)
+        response = self._client.commit_bulk_import(self.name)
+        self.update()
+        return response
 
     def error_record_items(self):
         """
@@ -156,7 +165,9 @@ class BulkImport(Model):
             bytes_or_stream (file-like): a file-like object contains the part
             size (int): the size of the part
         """
-        return self._client.bulk_import_upload_part(self.name, part_name, bytes_or_stream, size)
+        response = self._client.bulk_import_upload_part(self.name, part_name, bytes_or_stream, size)
+        self.update()
+        return response
 
     def upload_file(self, part_name, format, file):
         """Upload a part to Bulk Import session, from an existing file on filesystem.
@@ -166,16 +177,22 @@ class BulkImport(Model):
             format (str): format of data type (e.g. "msgpack", "json")
             file (str or file-like): a name of a file, or a file-like object contains the data
         """
-        return self._client.bulk_import_upload_file(self.name, part_name, format, file)
+        response = self._client.bulk_import_upload_file(self.name, part_name, format, file)
+        self.update()
+        return response
 
     def delete_part(self, part_name):
         """
         TODO: add docstring
         """
-        return self._client.bulk_import_delete_part(self.name, part_name)
+        response = self._client.bulk_import_delete_part(self.name, part_name)
+        self.update()
+        return response
 
     def list_parts(self):
         """
         TODO: add docstring
         """
-        return self._client.list_bulk_import_parts(self.name)
+        response = self._client.list_bulk_import_parts(self.name)
+        self.update()
+        return response
