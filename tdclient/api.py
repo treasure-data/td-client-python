@@ -346,7 +346,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
 
     def _prepare_file(self, file, format):
         fp = tempfile.TemporaryFile()
-        with gzip.GzipFile(mode="wb", fileobj=fp) as gz:
+        with contextlib.closing(gzip.GzipFile(mode="wb", fileobj=fp)) as gz:
             packer = msgpack.Packer()
             with contextlib.closing(self._read_file(file, format)) as items:
                 for item in items:
