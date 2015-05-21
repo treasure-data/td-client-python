@@ -123,14 +123,17 @@ class BulkImport(Model):
         """
         return self._client.unfreeze_bulk_import(self.name)
 
-    def perform(self):
+    def perform(self, wait=False):
         """
         TODO: add docstring
         """
         self._update()
         if not self.upload_frozen:
             raise(RuntimeError("bulk import session \"%s\" is not frozen" % (self.name,)))
-        return self._client.perform_bulk_import(self.name)
+        job = self._client.perform_bulk_import(self.name)
+        if wait:
+            job.wait()
+        return job
 
     def commit(self):
         """
