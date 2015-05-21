@@ -109,9 +109,7 @@ class BulkImport(Model):
         """
         TODO: add docstring
         """
-        response = self._client.delete_bulk_import(self.name)
-        self.update()
-        return response
+        return self._client.delete_bulk_import(self.name)
 
     def freeze(self):
         """
