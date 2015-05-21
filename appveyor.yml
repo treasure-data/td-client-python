@@ -37,8 +37,7 @@ init:
   - "ECHO %PYTHON% %PYTHON_VERSION% %PYTHON_ARCH%"
 
 install:
-  - pip install -r requirements.txt
-  - pip install -r test-requirements.txt
+  - "powershell appveyor\\install.ps1"
 
 build: off
 
