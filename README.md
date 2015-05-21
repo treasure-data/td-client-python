@@ -1,6 +1,7 @@
 # Treasure Data API library for Python
 
 [![Build Status](https://travis-ci.org/treasure-data/td-client-python.svg)](https://travis-ci.org/treasure-data/td-client-python)
+[![Build status](https://ci.appveyor.com/api/projects/status/eol91l1ag50xee9m/branch/master?svg=true)](https://ci.appveyor.com/project/nahi/td-client-python/branch/master)
 [![Coverage Status](https://coveralls.io/repos/treasure-data/td-client-python/badge.svg)](https://coveralls.io/r/treasure-data/td-client-python)
 [![PyPI version](https://badge.fury.io/py/td-client.svg)](http://badge.fury.io/py/td-client)
 
