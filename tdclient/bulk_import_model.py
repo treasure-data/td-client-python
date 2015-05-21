@@ -9,18 +9,31 @@ class BulkImport(Model):
     """Bulk-import session on Treasure Data Service
     """
 
-    def __init__(self, client, name=None, database=None, table=None, status=None, upload_frozen=None, job_id=None, valid_records=None, error_records=None, valid_parts=None, error_parts=None, **kwargs):
+    STATUS_UPLOADING = "uploading"
+    STATUS_PERFORMING = "performing"
+    STATUS_READY = "ready"
+    STATUS_COMMITTING = "committing"
+    STATUS_COMMITTED = "committed"
+
+    def __init__(self, client, **kwargs):
         super(BulkImport, self).__init__(client)
-        self._name = name
-        self._database = database
-        self._table = table
-        self._status = status
-        self._upload_frozen = upload_frozen
-        self._job_id = job_id
-        self._valid_records = valid_records
-        self._error_records = error_records
-        self._valid_parts = valid_parts
-        self._error_parts = error_parts
+        self._feed(kwargs)
+
+    def _feed(self, data={}):
+        self._name = data["name"]
+        self._database = data.get("database")
+        self._table = data.get("table")
+        self._status = data.get("status")
+        self._upload_frozen = data.get("upload_frozen")
+        self._job_id = data.get("job_id")
+        self._valid_records = data.get("valid_records")
+        self._error_records = data.get("error_records")
+        self._valid_parts = data.get("valid_parts")
+        self._error_parts = data.get("error_parts")
+
+    def _update(self):
+        data = self._client.api.show_bulk_import(self.name)
+        self._feed(data)
 
     @property
     def name(self):
@@ -114,6 +127,9 @@ class BulkImport(Model):
         """
         TODO: add docstring
         """
+        self._update()
+        if not self.upload_frozen:
+            raise(RuntimeError("bulk import session \"%s\" is not frozen" % (self.name,)))
         return self._client.perform_bulk_import(self.name)
 
     def commit(self):
