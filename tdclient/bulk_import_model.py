@@ -3,6 +3,8 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import time
+
 from tdclient._model import Model
 
 class BulkImport(Model):
@@ -127,7 +129,7 @@ class BulkImport(Model):
         self.update()
         return response
 
-    def perform(self, wait=False):
+    def perform(self, wait=False, wait_interval=1):
         """
         TODO: add docstring
         """
@@ -136,16 +138,25 @@ class BulkImport(Model):
             raise(RuntimeError("bulk import session \"%s\" is not frozen" % (self.name,)))
         job = self._client.perform_bulk_import(self.name)
         if wait:
-            job.wait()
+            job.wait(wait_interval=wait_interval)
         self.update()
         return job
 
-    def commit(self):
+    def commit(self, wait=False, wait_interval=1, timeout=None):
         """
         TODO: add docstring
         """
         response = self._client.commit_bulk_import(self.name)
-        self.update()
+        if wait:
+            started_at = time.time()
+            while self._status != self.STATUS_COMMITTED:
+                if timeout is None or abs(time.time() - started_at) < timeout:
+                    time.sleep(wait_interval)
+                else:
+                    raise RuntimeError("timeout") # TODO: throw proper error
+                self.update()
+        else:
+            self.update()
         return response
 
     def error_record_items(self):
