@@ -92,6 +92,36 @@ class BulkImport(Model):
         """
         return self._upload_frozen
 
+    def delete(self):
+        """
+        TODO: add docstring
+        """
+        return self._client.delete_bulk_import(self.name)
+
+    def freeze(self):
+        """
+        TODO: add docstring
+        """
+        return self._client.freeze_bulk_import(self.name)
+
+    def unfreeze(self):
+        """
+        TODO: add docstring
+        """
+        return self._client.unfreeze_bulk_import(self.name)
+
+    def perform(self):
+        """
+        TODO: add docstring
+        """
+        return self._client.perform_bulk_import(self.name)
+
+    def commit(self):
+        """
+        TODO: add docstring
+        """
+        return self._client.commit_bulk_import(self.name)
+
     def error_record_items(self):
         """
         TODO: add docstring
@@ -118,3 +148,15 @@ class BulkImport(Model):
             file (str or file-like): a name of a file, or a file-like object contains the data
         """
         return self._client.bulk_import_upload_file(self.name, part_name, format, file)
+
+    def delete_part(self, part_name):
+        """
+        TODO: add docstring
+        """
+        return self._client.bulk_import_delete_part(self.name, part_name)
+
+    def list_parts(self):
+        """
+        TODO: add docstring
+        """
+        return self._client.list_bulk_import_parts(self.name)
