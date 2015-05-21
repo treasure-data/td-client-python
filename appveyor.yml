@@ -50,6 +50,6 @@ after_test:
 artifacts:
   - path: dist\*
 
-on_success:
-  - py.test --cov tdclient tdclient/test
-  - coveralls
+#on_success:
+#  - py.test --cov tdclient tdclient/test
+#  - coveralls
