@@ -4,11 +4,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import contextlib
-import gzip
-import json
-import msgpack
 import os
-import tempfile
 try:
     import urllib.parse as urlparse # >=3.0
 except ImportError:
@@ -58,6 +54,7 @@ class ImportAPI(object):
 
         This method will decompress/deserialize records from given file, and then
         convert it into format acceptable from Treasure Data Service ("msgpack.gz").
+        This method is a warpper function to `import_data`.
 
         Params:
             db (str): name of a database
@@ -68,48 +65,6 @@ class ImportAPI(object):
 
         Returns: float represents the elapsed time to import data
         """
-        if hasattr(file, "read"):
-            if format.endswith(".gz"):
-                return self._import_file(db, table, format[0:len(format)-len(".gz")], gzip.GzipFile(fileobj=file), unique_id=unique_id)
-            else:
-                return self._import_file(db, table, format, file, unique_id=unique_id)
-        else:
-            with open(file, "rb") as fp:
-                if format.endswith(".gz"):
-                    return self._import_file(db, table, format[0:len(format)-len(".gz")], gzip.GzipFile(fileobj=fp), unique_id=unique_id)
-                else:
-                    return self._import_file(db, table, format, fp, unique_id=unique_id)
-
-    def _import_file(self, db, table, format, file, unique_id=None):
-        if format == "msgpack":
-            return self._import_items(db, table, self._parse_msgpack_file(file), unique_id=unique_id)
-        elif format == "json":
-            return self._import_items(db, table, self._parse_json_file(file), unique_id=unique_id)
-        else:
-            raise TypeError("unknown format: %s" % (format,))
-
-    def _import_items(self, db, table, items, unique_id=None):
-        with tempfile.TemporaryFile() as fp:
-            with contextlib.closing(gzip.GzipFile(mode="wb", fileobj=fp)) as gz:
-                packer = msgpack.Packer()
-                for record in items:
-                    gz.write(packer.pack(record))
-            fp.seek(0)
+        with contextlib.closing(self._prepare_file(file, format)) as fp:
             size = os.fstat(fp.fileno()).st_size
             return self.import_data(db, table, "msgpack.gz", fp, size, unique_id=unique_id)
-
-    def _parse_msgpack_file(self, file):
-        # current impl doesn't torelate any unpack error
-        unpacker = msgpack.Unpacker(file)
-        for record in unpacker:
-            if "time" not in record:
-                warnings.warn("records should have \"time\" column to import records properly.", category=RuntimeWarning)
-            yield record
-
-    def _parse_json_file(self, file):
-        # current impl doesn't torelate any JSON parse error
-        for s in file:
-            record = json.loads(s.decode("utf-8"))
-            if "time" not in record:
-                warnings.warn("records should have \"time\" column to import records properly.", category=RuntimeWarning)
-            yield record

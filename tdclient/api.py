@@ -13,13 +13,16 @@ except ImportError:
 import contextlib
 import dateutil.parser
 import email.utils
+import gzip
 import io
 import json
 import logging
+import msgpack
 import os
 import socket
 import ssl
 import sys
+import tempfile
 import time
 try:
     import urllib.parse as urlparse # >=3.0
@@ -340,3 +343,49 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         # urllib3 doesn't allow to close all connections immediately.
         # all connections in pool will be closed eventually during gc.
         self.http.clear()
+
+    def _prepare_file(self, file, format):
+        fp = tempfile.TemporaryFile()
+        with contextlib.closing(gzip.GzipFile(mode="wb", fileobj=fp)) as gz:
+            packer = msgpack.Packer()
+            with contextlib.closing(self._read_file(file, format)) as items:
+                for item in items:
+                    gz.write(packer.pack(item))
+        fp.seek(0)
+        return fp
+
+    def _read_file(self, file, format):
+        if hasattr(file, "read"):
+            if format.endswith(".gz"):
+                return self.__read_file(gzip.GzipFile(fileobj=file), format[0:len(format)-len(".gz")])
+            else:
+                return self.__read_file(file, format)
+        else:
+            if format.endswith(".gz"):
+                return self.__read_file(gzip.GzipFile(fileobj=open(file, "rb")), format[0:len(format)-len(".gz")])
+            else:
+                return self.__read_file(open(file, "rb"), format)
+
+    def __read_file(self, file, format):
+        if format == "msgpack":
+            return self._read_msgpack_file(file)
+        elif format == "json":
+            return self._read_json_file(file)
+        else:
+            raise TypeError("unknown format: %s" % (format,))
+
+    def _read_msgpack_file(self, file):
+        # current impl doesn't torelate any unpack error
+        unpacker = msgpack.Unpacker(file)
+        for record in unpacker:
+            if "time" not in record:
+                warnings.warn("records should have \"time\" column to import records properly.", category=RuntimeWarning)
+            yield record
+
+    def _read_json_file(self, file):
+        # current impl doesn't torelate any JSON parse error
+        for s in file:
+            record = json.loads(s.decode("utf-8"))
+            if "time" not in record:
+                warnings.warn("records should have \"time\" column to import records properly.", category=RuntimeWarning)
+            yield record

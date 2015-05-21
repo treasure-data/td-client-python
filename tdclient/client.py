@@ -369,14 +369,19 @@ class Client(object):
             name (str): name of new bulk import session
             database (str): name of a database
             table (str): name of a table
+
+        Returns: :class:`tdclient.model.BulkImport`
         """
-        return self.api.create_bulk_import(name, database, table, params)
+        self.api.create_bulk_import(name, database, table, params)
+        return model.BulkImport(self, name=name, database=database, table=table)
 
     def delete_bulk_import(self, name):
         """Delete a bulk import session
 
         Params:
             name (str): name of a bulk import session
+
+        Returns: `True` if success
         """
         return self.api.delete_bulk_import(name)
 
@@ -385,6 +390,8 @@ class Client(object):
 
         Params:
             name (str): name of a bulk import session
+
+        Returns: `True` if success
         """
         return self.api.freeze_bulk_import(name)
 
@@ -393,6 +400,8 @@ class Client(object):
 
         Params:
             name (str): name of a bulk import session
+
+        Returns: `True` if success
         """
         return self.api.unfreeze_bulk_import(name)
 
@@ -412,6 +421,8 @@ class Client(object):
 
         Params:
             name (str): name of a bulk import session
+
+        Returns: `True` if success
         """
         return self.api.commit_bulk_import(name)
 
@@ -443,16 +454,27 @@ class Client(object):
         """
         return [ model.BulkImport(self, **data) for data in self.api.list_bulk_imports() ]
 
-    def bulk_import_upload_part(self, name, part_name, stream, size):
+    def bulk_import_upload_part(self, name, part_name, bytes_or_stream, size):
         """Upload a part to a bulk import session
 
         Params:
             name (str): name of a bulk import session
             part_name (str): name of a part of the bulk import session
-            stream (file-like): a file-like object contains the part
+            bytes_or_stream (file-like): a file-like object contains the part
             size (int): the size of the part
         """
-        return self.api.bulk_import_upload_part(name, part_name, stream, size)
+        return self.api.bulk_import_upload_part(name, part_name, bytes_or_stream, size)
+
+    def bulk_import_upload_file(self, name, part_name, format, file):
+        """Upload a part to Bulk Import session, from an existing file on filesystem.
+
+        Params:
+            name (str): name of a bulk import session
+            part_name (str): name of a part of the bulk import session
+            format (str): format of data type (e.g. "msgpack", "json")
+            file (str or file-like): a name of a file, or a file-like object contains the data
+        """
+        return self.api.bulk_import_upload_file(name, part_name, format, file)
 
     def bulk_import_delete_part(self, name, part_name):
         """Delete a part from a bulk import session
@@ -460,6 +482,8 @@ class Client(object):
         Params:
             name (str): name of a bulk import session
             part_name (str): name of a part of the bulk import session
+
+        Returns: `True` if success
         """
         return self.api.bulk_import_delete_part(name, part_name)
 

@@ -10,7 +10,7 @@ try:
 except ImportError:
     import mock
 import pytest
-import zlib
+import time
 
 from tdclient import api
 from tdclient.test.test_helper import *
@@ -32,30 +32,30 @@ def test_delete_bulk_import_success():
 
 def test_show_bulk_import_success():
     td = api.API("APIKEY")
-    # TODO: should be replaced by wire dump
     body = b"""
-        {
-            "status": "SUCCESS"
-        }
+        {"name":"foo","status":"uploading","job_id":null,"valid_records":null,"error_records":null,"valid_parts":null,"error_parts":null,"upload_frozen":false,"database":"db_name","table":"tbl_name"}
     """
     td.get = mock.MagicMock(return_value=make_response(200, body))
-    bulk_import = td.show_bulk_import("name")
-    td.get.assert_called_with("/v3/bulk_import/show/name")
-    assert bulk_import == {"status": "SUCCESS"}
+    bulk_import = td.show_bulk_import("foo")
+    td.get.assert_called_with("/v3/bulk_import/show/foo")
+    assert bulk_import["name"] == "foo"
+    assert bulk_import["status"] == "uploading"
 
 def test_list_bulk_imports_success():
     td = api.API("APIKEY")
-    # TODO: should be replaced by wire dump
     body = b"""
         {
             "bulk_imports":[
+                {"name":"foo","valid_records":null,"error_records":null,"valid_parts":null,"error_parts":null,"status":"uploading","upload_frozen":false,"database":"yuudb","table":"yuutbl1","job_id":null},
+                {"name":"bar","valid_records":null,"error_records":null,"valid_parts":null,"error_parts":null,"status":"uploading","upload_frozen":false,"database":"yuudb","table":"yuutbl1","job_id":null}
             ]
         }
     """
     td.get = mock.MagicMock(return_value=make_response(200, body))
     bulk_imports = td.list_bulk_imports()
     td.get.assert_called_with("/v3/bulk_import/list", {})
-    assert len(bulk_imports) == 0
+    assert len(bulk_imports) == 2
+    assert sorted([ bulk_import["name"] for bulk_import in bulk_imports ]) == ["bar", "foo"]
 
 def test_list_bulk_imports_failure():
     td = api.API("APIKEY")
@@ -66,23 +66,34 @@ def test_list_bulk_imports_failure():
 
 def test_list_bulk_import_parts_success():
     td = api.API("APIKEY")
-    # TODO: should be replaced by wire dump
     body = b"""
-        {
-            "parts":[
-            ]
-        }
+        {"parts":["part1", "part2"],"name":"foo","bulk_import":"foo"}
     """
     td.get = mock.MagicMock(return_value=make_response(200, body))
     parts = td.list_bulk_import_parts("foo")
     td.get.assert_called_with("/v3/bulk_import/list_parts/foo", {})
-    assert len(parts) == 0
+    assert len(parts) == 2
+    assert sorted(parts) == ["part1", "part2"]
 
 def test_list_bulk_import_upload_part_success():
     td = api.API("APIKEY")
     td.put = mock.MagicMock(return_value=make_response(200, b""))
     td.bulk_import_upload_part("name", "part_name", "stream", 1024)
     td.put.assert_called_with("/v3/bulk_import/upload_part/name/part_name", "stream", 1024)
+
+def test_list_bulk_import_upload_file_success():
+    td = api.API("APIKEY")
+    data = [
+        {"time": int(time.time()), "str": "value1", "int": 1, "float": 2.3},
+        {"time": int(time.time()), "str": "value4", "int": 5, "float": 6.7},
+    ]
+    def bulk_import_upload_part(name, part_name, stream, size):
+        assert name == "name"
+        assert part_name == "part_name"
+        assert msgunpackb(gunzipb(stream.read(size))) == data
+    td.bulk_import_upload_part = bulk_import_upload_part
+    stream = io.BytesIO(jsonb(data))
+    td.bulk_import_upload_file("name", "part_name", "json", stream)
 
 def test_list_bulk_import_delete_part_success():
     td = api.API("APIKEY")
@@ -104,36 +115,22 @@ def test_unfreeze_bulk_import_success():
 
 def test_perform_bulk_import_success():
     td = api.API("APIKEY")
-    # TODO: should be replaced by wire dump
     body = b"""
-        {
-            "job_id": "12345"
-        }
+        {"name":"foo","bulk_import":"foo","job_id":12345}
     """
     td.post = mock.MagicMock(return_value=make_response(200, body))
-    job_id = td.perform_bulk_import("name")
-    td.post.assert_called_with("/v3/bulk_import/perform/name", {})
+    job_id = td.perform_bulk_import("foo")
+    td.post.assert_called_with("/v3/bulk_import/perform/foo", {})
     assert job_id == "12345"
 
 def test_commit_bulk_import_success():
     td = api.API("APIKEY")
-    # TODO: should be replaced by wire dump
-    td.post = mock.MagicMock(return_value=make_response(200, b""))
-    td.commit_bulk_import("name")
-    td.post.assert_called_with("/v3/bulk_import/commit/name", {})
-
-def msgpackb(list):
-    """list -> bytes"""
-    stream = io.BytesIO()
-    packer = msgpack.Packer()
-    for item in list:
-        stream.write(packer.pack(item))
-    return stream.getvalue()
-
-def gzipb(bytes):
-    """bytes -> bytes"""
-    compress = zlib.compressobj(9, zlib.DEFLATED, zlib.MAX_WBITS | 16)
-    return compress.compress(bytes) + compress.flush()
+    body = b"""
+        {"name":"foo","bulk_import":"foo"}
+    """
+    td.post = mock.MagicMock(return_value=make_response(200, body))
+    td.commit_bulk_import("foo")
+    td.post.assert_called_with("/v3/bulk_import/commit/foo", {})
 
 def test_bulk_import_error_records_success():
     td = api.API("APIKEY")

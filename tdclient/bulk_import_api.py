@@ -3,9 +3,11 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import contextlib
 import gzip
-import msgpack
 import io
+import msgpack
+import os
 try:
     from urllib.parse import quote as urlquote # >=3.0
 except ImportError:
@@ -19,22 +21,24 @@ class BulkImportAPI(object):
     def create_bulk_import(self, name, db, table, params={}):
         """
         TODO: add docstring
-        => None
+        => True
         """
         with self.post("/v3/bulk_import/create/%s/%s/%s" % (urlquote(str(name)), urlquote(str(db)), urlquote(str(table))), params) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Create bulk import failed", res, body)
+            return True
 
     def delete_bulk_import(self, name, params={}):
         """
         TODO: add docstring
-        => None
+        => True
         """
         with self.post("/v3/bulk_import/delete/%s" % (urlquote(str(name))), params) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Delete bulk import failed", res, body)
+            return True
 
     def show_bulk_import(self, name):
         """
@@ -81,35 +85,47 @@ class BulkImportAPI(object):
             if code / 100 != 2:
                 self.raise_error("Upload a part failed", res, body)
 
-    def bulk_import_delete_part(self, name, part_name, params={}):
+    def bulk_import_upload_file(self, name, part_name, format, file):
         """
         TODO: add docstring
         => None
+        """
+        with contextlib.closing(self._prepare_file(file, format)) as fp:
+            size = os.fstat(fp.fileno()).st_size
+            return self.bulk_import_upload_part(name, part_name, fp, size)
+
+    def bulk_import_delete_part(self, name, part_name, params={}):
+        """
+        TODO: add docstring
+        => True
         """
         with self.post("/v3/bulk_import/delete_part/%s/%s" % (urlquote(str(name)), urlquote(str(part_name))), params) as res:
             code, body = res.status, res.read()
             if code / 100 != 2:
                 self.raise_error("Delete a part failed", res, body)
+            return True
 
     def freeze_bulk_import(self, name, params={}):
         """
         TODO: add docstring
-        => None
+        => True
         """
         with self.post("/v3/bulk_import/freeze/%s" % (urlquote(str(name))), params) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Freeze bulk import failed", res, body)
+            return True
 
     def unfreeze_bulk_import(self, name, params={}):
         """
         TODO: add docstring
-        => None
+        => True
         """
         with self.post("/v3/bulk_import/unfreeze/%s" % (urlquote(str(name))), params) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Unfreeze bulk import failed", res, body)
+            return True
 
     def perform_bulk_import(self, name, params={}):
         """
@@ -126,12 +142,13 @@ class BulkImportAPI(object):
     def commit_bulk_import(self, name, params={}):
         """
         TODO: add docstring
-        => None
+        => True
         """
         with self.post("/v3/bulk_import/commit/%s" % (urlquote(str(name))), params) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Commit bulk import failed", res, body)
+            return True
 
     def bulk_import_error_records(self, name, params={}):
         """

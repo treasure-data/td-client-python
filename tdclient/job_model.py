@@ -148,7 +148,7 @@ class Job(Model):
         """
         return self._db_name
 
-    def wait(self, timeout=None):
+    def wait(self, timeout=None, wait_interval=1):
         """Sleep until the job has been finished
 
         Params:
@@ -157,7 +157,7 @@ class Job(Model):
         started_at = time.time()
         while not self.finished():
             if timeout is None or abs(time.time() - started_at) < timeout:
-                time.sleep(1) # TODO: configurable
+                time.sleep(wait_interval)
             else:
                 raise RuntimeError("timeout") # TODO: throw proper error
 

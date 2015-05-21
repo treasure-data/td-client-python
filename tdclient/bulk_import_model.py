@@ -3,24 +3,39 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import time
+
 from tdclient._model import Model
 
 class BulkImport(Model):
     """Bulk-import session on Treasure Data Service
     """
 
-    def __init__(self, client, name=None, database=None, table=None, status=None, upload_frozen=None, job_id=None, valid_records=None, error_records=None, valid_parts=None, error_parts=None, **kwargs):
+    STATUS_UPLOADING = "uploading"
+    STATUS_PERFORMING = "performing"
+    STATUS_READY = "ready"
+    STATUS_COMMITTING = "committing"
+    STATUS_COMMITTED = "committed"
+
+    def __init__(self, client, **kwargs):
         super(BulkImport, self).__init__(client)
-        self._name = name
-        self._database = database
-        self._table = table
-        self._status = status
-        self._upload_frozen = upload_frozen
-        self._job_id = job_id
-        self._valid_records = valid_records
-        self._error_records = error_records
-        self._valid_parts = valid_parts
-        self._error_parts = error_parts
+        self._feed(kwargs)
+
+    def _feed(self, data={}):
+        self._name = data["name"]
+        self._database = data.get("database")
+        self._table = data.get("table")
+        self._status = data.get("status")
+        self._upload_frozen = data.get("upload_frozen")
+        self._job_id = data.get("job_id")
+        self._valid_records = data.get("valid_records")
+        self._error_records = data.get("error_records")
+        self._valid_parts = data.get("valid_parts")
+        self._error_parts = data.get("error_parts")
+
+    def update(self):
+        data = self._client.api.show_bulk_import(self.name)
+        self._feed(data)
 
     @property
     def name(self):
@@ -92,9 +107,101 @@ class BulkImport(Model):
         """
         return self._upload_frozen
 
+    def delete(self):
+        """
+        TODO: add docstring
+        """
+        return self._client.delete_bulk_import(self.name)
+
+    def freeze(self):
+        """
+        TODO: add docstring
+        """
+        response = self._client.freeze_bulk_import(self.name)
+        self.update()
+        return response
+
+    def unfreeze(self):
+        """
+        TODO: add docstring
+        """
+        response = self._client.unfreeze_bulk_import(self.name)
+        self.update()
+        return response
+
+    def perform(self, wait=False, wait_interval=1):
+        """
+        TODO: add docstring
+        """
+        self.update()
+        if not self.upload_frozen:
+            raise(RuntimeError("bulk import session \"%s\" is not frozen" % (self.name,)))
+        job = self._client.perform_bulk_import(self.name)
+        if wait:
+            job.wait(wait_interval=wait_interval)
+        self.update()
+        return job
+
+    def commit(self, wait=False, wait_interval=1, timeout=None):
+        """
+        TODO: add docstring
+        """
+        response = self._client.commit_bulk_import(self.name)
+        if wait:
+            started_at = time.time()
+            while self._status != self.STATUS_COMMITTED:
+                if timeout is None or abs(time.time() - started_at) < timeout:
+                    time.sleep(wait_interval)
+                else:
+                    raise RuntimeError("timeout") # TODO: throw proper error
+                self.update()
+        else:
+            self.update()
+        return response
+
     def error_record_items(self):
         """
         TODO: add docstring
         """
         for record in self._client.bulk_import_error_records(self.name):
             yield record
+
+    def upload_part(self, part_name, bytes_or_stream, size):
+        """Upload a part to bulk import session
+
+        Params:
+            part_name (str): name of a part of the bulk import session
+            bytes_or_stream (file-like): a file-like object contains the part
+            size (int): the size of the part
+        """
+        response = self._client.bulk_import_upload_part(self.name, part_name, bytes_or_stream, size)
+        self.update()
+        return response
+
+    def upload_file(self, part_name, format, file):
+        """Upload a part to Bulk Import session, from an existing file on filesystem.
+
+        Params:
+            part_name (str): name of a part of the bulk import session
+            format (str): format of data type (e.g. "msgpack", "json")
+            file (str or file-like): a name of a file, or a file-like object contains the data
+        """
+        response = self._client.bulk_import_upload_file(self.name, part_name, format, file)
+        self.update()
+        return response
+
+    def delete_part(self, part_name):
+        """
+        TODO: add docstring
+        """
+        response = self._client.bulk_import_delete_part(self.name, part_name)
+        self.update()
+        return response
+
+    def list_parts(self):
+        """
+        TODO: add docstring
+        """
+        response = self._client.list_bulk_import_parts(self.name)
+        self.update()
+        return response
