@@ -1,5 +1,10 @@
 # Version History
 
+## 0.2.0.dev0
+
+* Improve the bulk import model. Add a convenient method named `upload_file` to upload a part from file-like object.
+* Support CSV/TSV format on both streaming import and bulk import
+
 ## 0.1.11
 
 * Fix API client to retry POST requests properly if `retry_post_requests` is set to `True` (#5)
