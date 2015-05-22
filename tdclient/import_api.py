@@ -49,7 +49,7 @@ class ImportAPI(object):
             time = float(js["elapsed_time"])
             return time
 
-    def import_file(self, db, table, format, file, unique_id=None):
+    def import_file(self, db, table, format, file, unique_id=None, **kwargs):
         """Import data into Treasure Data Service, from an existing file on filesystem.
 
         This method will decompress/deserialize records from given file, and then
@@ -65,6 +65,6 @@ class ImportAPI(object):
 
         Returns: float represents the elapsed time to import data
         """
-        with contextlib.closing(self._prepare_file(file, format)) as fp:
+        with contextlib.closing(self._prepare_file(file, format, **kwargs)) as fp:
             size = os.fstat(fp.fileno()).st_size
             return self.import_data(db, table, "msgpack.gz", fp, size, unique_id=unique_id)

@@ -85,12 +85,12 @@ class BulkImportAPI(object):
             if code / 100 != 2:
                 self.raise_error("Upload a part failed", res, body)
 
-    def bulk_import_upload_file(self, name, part_name, format, file):
+    def bulk_import_upload_file(self, name, part_name, format, file, **kwargs):
         """
         TODO: add docstring
         => None
         """
-        with contextlib.closing(self._prepare_file(file, format)) as fp:
+        with contextlib.closing(self._prepare_file(file, format, **kwargs)) as fp:
             size = os.fstat(fp.fileno()).st_size
             return self.bulk_import_upload_part(name, part_name, fp, size)
 

@@ -198,6 +198,52 @@ def test_import_file_json_gz_failure():
     with pytest.raises(IOError) as error:
         td.import_file("db", "table", "json.gz", stream)
 
+def test_import_file_csv_success():
+    td = api.API("APIKEY")
+    data = [
+        {"time": int(time.time()), "str": "value1", "int": 1, "float": 2.3},
+        {"time": int(time.time()), "str": "value4", "int": 5, "float": 6.7},
+    ]
+    def import_data(db, table, format, stream, size, unique_id=None):
+        assert db == "db"
+        assert table == "table"
+        assert format == "msgpack.gz"
+        assert msgunpackb(gunzipb(stream.read(size))) == data
+        assert unique_id is None
+    td.import_data = import_data
+    stream = io.BytesIO(csvb(data))
+    td.import_file("db", "table", "csv", stream)
+
+def test_import_file_csv_failure():
+    td = api.API("APIKEY")
+    td.import_data = mock.MagicMock()
+    stream = io.BytesIO(b"malformed\0csv")
+    with pytest.raises(Exception) as error:
+        td.import_file("db", "table", "csv", stream)
+
+def test_import_file_tsv_success():
+    td = api.API("APIKEY")
+    data = [
+        {"time": int(time.time()), "str": "value1", "int": 1, "float": 2.3},
+        {"time": int(time.time()), "str": "value4", "int": 5, "float": 6.7},
+    ]
+    def import_data(db, table, format, stream, size, unique_id=None):
+        assert db == "db"
+        assert table == "table"
+        assert format == "msgpack.gz"
+        assert msgunpackb(gunzipb(stream.read(size))) == data
+        assert unique_id is None
+    td.import_data = import_data
+    stream = io.BytesIO(tsvb(data))
+    td.import_file("db", "table", "tsv", stream)
+
+def test_import_file_tsv_failure():
+    td = api.API("APIKEY")
+    td.import_data = mock.MagicMock()
+    stream = io.BytesIO(b"malformed\0tsv")
+    with pytest.raises(Exception) as error:
+        td.import_file("db", "table", "tsv", stream)
+
 def test_import_file_unknown_format():
     td = api.API("APIKEY")
     td.import_data = mock.MagicMock()

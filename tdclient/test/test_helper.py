@@ -3,7 +3,9 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import codecs
 import contextlib
+import csv
 import gzip
 import io
 import json
@@ -76,7 +78,51 @@ def jsonb(list):
 def unjsonb(bytes):
     """bytes -> list"""
     return [ json.loads(s.decode("utf-8")) for s in bytes.splitlines() ]
-    return list(unpacker)
+
+def csvb(list, dialect=csv.excel):
+    """list -> bytes"""
+    cols = list[0].keys()
+#   stream = io.StringIO()
+#   writer = csv.DictWriter(stream, cols, dialect=dialect)
+#   writer.writeheader()
+#   for item in list:
+#       writer.writerow(item)
+#   return stream.getvalue().encode("utf-8")
+    stream = io.BytesIO()
+    writer = csv.DictWriter(codecs.getwriter("utf-8")(stream), cols, dialect=dialect)
+    writer.writeheader()
+    for item in list:
+        writer.writerow(item)
+    return stream.getvalue()
+
+def uncsvb(bytes, dialect=csv.excel):
+    """bytes -> list"""
+    def unpack(s):
+        try:
+            return int(s)
+        except ValueError:
+            try:
+                return float(s)
+            except ValueError:
+                pass
+        lower = s.lower()
+        if lower in ("false", "true"):
+            return "true" == lower
+        elif lower in ("", "none", "null"):
+            return None
+        else:
+            return s
+    stream = bytes
+    reader = csv.DictReader(io.StringIO(bytes.decode("utf-8")), dialect=dialect)
+    return [ dict([ (k, unpack(v)) for (k, v) in row.items() ]) for row in reader ]
+
+def tsvb(list):
+    """bytes -> list"""
+    return csvb(list, dialect=csv.excel_tab)
+
+def untsvb(bytes):
+    """bytes -> list"""
+    return uncsvb(bytes, dialect=csv.excel_tab)
 
 def gzipb(bytes):
     """bytes -> bytes"""

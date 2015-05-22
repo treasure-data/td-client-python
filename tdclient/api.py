@@ -10,7 +10,9 @@ except ImportError:
     # on py27 on windows, it tries to import pseudo "certifi" module instead of original one.
     # to avoid the weird behavior, the pseudo "certifi" module should be named differently.
     from tdclient import pseudo_certifi as certifi
+import codecs
 import contextlib
+import csv
 import dateutil.parser
 import email.utils
 import gzip
@@ -344,48 +346,83 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         # all connections in pool will be closed eventually during gc.
         self.http.clear()
 
-    def _prepare_file(self, file, format):
+    def _prepare_file(self, file, format, **kwargs):
         fp = tempfile.TemporaryFile()
         with contextlib.closing(gzip.GzipFile(mode="wb", fileobj=fp)) as gz:
             packer = msgpack.Packer()
-            with contextlib.closing(self._read_file(file, format)) as items:
+            with contextlib.closing(self._read_file(file, format, **kwargs)) as items:
                 for item in items:
                     gz.write(packer.pack(item))
         fp.seek(0)
         return fp
 
-    def _read_file(self, file, format):
-        if hasattr(file, "read"):
-            if format.endswith(".gz"):
-                return self.__read_file(gzip.GzipFile(fileobj=file), format[0:len(format)-len(".gz")])
-            else:
-                return self.__read_file(file, format)
-        else:
-            if format.endswith(".gz"):
-                return self.__read_file(gzip.GzipFile(fileobj=open(file, "rb")), format[0:len(format)-len(".gz")])
-            else:
-                return self.__read_file(open(file, "rb"), format)
-
-    def __read_file(self, file, format):
-        if format == "msgpack":
-            return self._read_msgpack_file(file)
-        elif format == "json":
-            return self._read_json_file(file)
+    def _read_file(self, file, format, **kwargs):
+        compressed = format.endswith(".gz")
+        if compressed:
+            format = format[0:len(format)-len(".gz")]
+        reader_name = "_read_%s_file" % (format,)
+        if hasattr(self, reader_name):
+            reader = getattr(self, reader_name)
         else:
             raise TypeError("unknown format: %s" % (format,))
+        if hasattr(file, "read"):
+            if compressed:
+                file = gzip.GzipFile(fileobj=file)
+            return reader(file, **kwargs)
+        else:
+            if compressed:
+                file = gzip.GzipFile(fileobj=open(file, "rb"))
+            else:
+                file = open(file, "rb")
+            return reader(file, **kwargs)
 
-    def _read_msgpack_file(self, file):
+    def _validate_record(self, record):
+        if "time" not in record:
+            warnings.warn("records should have \"time\" column to import records properly.", category=RuntimeWarning)
+        return True
+
+    def _read_msgpack_file(self, file, **kwargs):
         # current impl doesn't torelate any unpack error
         unpacker = msgpack.Unpacker(file)
         for record in unpacker:
-            if "time" not in record:
-                warnings.warn("records should have \"time\" column to import records properly.", category=RuntimeWarning)
+            self._validate_record(record)
             yield record
 
-    def _read_json_file(self, file):
+    def _read_json_file(self, file, **kwargs):
         # current impl doesn't torelate any JSON parse error
         for s in file:
             record = json.loads(s.decode("utf-8"))
-            if "time" not in record:
-                warnings.warn("records should have \"time\" column to import records properly.", category=RuntimeWarning)
+            self._validate_record(record)
             yield record
+
+    def _read_csv_file(self, file, dialect=csv.excel, columns=None, **kwargs):
+        def value(s):
+            try:
+                return int(s)
+            except ValueError:
+                try:
+                    return float(s)
+                except ValueError:
+                    pass
+            lower = s.lower()
+            if lower in ("false", "true"):
+                return "true" == lower
+            elif lower in ("", "none", "null"):
+                return None
+            else:
+                return s
+        if columns is None:
+            reader = csv.DictReader(codecs.getreader("utf-8")(file), dialect=dialect)
+            for row in reader:
+                record = dict([ (k, value(v)) for (k, v) in row.items() ])
+                self._validate_record(record)
+                yield record
+        else:
+            reader = csv.reader(file, dialect=dialect)
+            for row in reader:
+                record = dict(zip(columns, [ value(col) for col in row ]))
+                self._validate_record(record)
+                yield record
+
+    def _read_tsv_file(self, file, **kwargs):
+        return self._read_csv_file(file, dialect=csv.excel_tab, **kwargs)
