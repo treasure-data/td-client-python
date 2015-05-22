@@ -82,15 +82,12 @@ def unjsonb(bytes):
 def csvb(list, dialect=csv.excel):
     """list -> bytes"""
     cols = list[0].keys()
-#   stream = io.StringIO()
-#   writer = csv.DictWriter(stream, cols, dialect=dialect)
-#   writer.writeheader()
-#   for item in list:
-#       writer.writerow(item)
-#   return stream.getvalue().encode("utf-8")
     stream = io.BytesIO()
     writer = csv.DictWriter(codecs.getwriter("utf-8")(stream), cols, dialect=dialect)
-    writer.writeheader()
+    if hasattr(writer, "writeheader"):
+        writer.writeheader()
+    else:
+        writer.writerow(dict(zip(cols, cols)))
     for item in list:
         writer.writerow(item)
     return stream.getvalue()
