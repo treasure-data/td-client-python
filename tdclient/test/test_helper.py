@@ -94,7 +94,7 @@ def csvb(list, dialect=csv.excel):
 
 def uncsvb(bytes, dialect=csv.excel):
     """bytes -> list"""
-    def unpack(s):
+    def value(s):
         try:
             return int(s)
         except ValueError:
