@@ -176,13 +176,16 @@ class Job(Model):
                 time.sleep(wait_interval)
             else:
                 raise RuntimeError("timeout") # TODO: throw proper error
+        self.update()
 
     def kill(self):
         """Kill the job
 
         Returns: a string represents the status of killed job ("queued", "running")
         """
-        return self._client.kill(self.job_id)
+        response = self._client.kill(self.job_id)
+        self.update()
+        return response
 
     @property
     def query(self):
@@ -213,6 +216,7 @@ class Job(Model):
         if not self.finished():
             raise ValueError("result is not ready")
         else:
+            self.update()
             if self._result is None:
                 for row in self._client.job_result_each(self._job_id):
                     yield row
@@ -230,6 +234,7 @@ class Job(Model):
         if not self.finished():
             raise ValueError("result is not ready")
         else:
+            self.update()
             if self._result is None:
                 for row in self._client.job_result_format_each(self._job_id, format):
                     yield row

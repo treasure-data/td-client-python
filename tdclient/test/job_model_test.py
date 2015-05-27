@@ -46,6 +46,7 @@ def test_job_wait_success():
         False,
         True,
     ])
+    job.update = mock.MagicMock()
     with mock.patch("time.time") as t_time:
         t_time.side_effect = [
             1423570800.0,
@@ -58,11 +59,13 @@ def test_job_wait_success():
             assert t_sleep.called
         assert t_time.called
     assert job.finished.called
+    assert job.update.called
 
 def test_job_wait_failure():
     client = mock.MagicMock()
     job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
     job.finished = mock.MagicMock(return_value=False)
+    job.update = mock.MagicMock()
     with mock.patch("time.time") as t_time:
         t_time.side_effect = [
             1423570800.0,
@@ -76,12 +79,15 @@ def test_job_wait_failure():
                 assert t_sleep.called
         assert t_time.called
     assert job.finished.called
+    assert not job.update.called
 
 def test_job_kill():
     client = mock.MagicMock()
     job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
+    job.update = mock.MagicMock()
     job.kill()
     client.kill.assert_called_with("12345")
+    assert job.update.called
 
 def test_job_result_generator():
     client = mock.MagicMock()
@@ -93,10 +99,12 @@ def test_job_result_generator():
     client.job_result_each = job_result_each
     job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
     job.finished = mock.MagicMock(return_value=True)
+    job.update = mock.MagicMock()
     rows = []
     for row in job.result():
         rows.append(row)
     assert rows == [["foo", 123], ["bar", 456], ["baz", 789]]
+    assert job.update.called
 
 def test_job_result_list():
     client = mock.MagicMock()
@@ -107,18 +115,22 @@ def test_job_result_list():
     ]
     job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq", result=result)
     job.finished = mock.MagicMock(return_value=True)
+    job.update = mock.MagicMock()
     rows = []
     for row in job.result():
         rows.append(row)
     assert rows == [["foo", 123], ["bar", 456], ["baz", 789]]
+    assert job.update.called
 
 def test_job_result_failure():
     client = mock.MagicMock()
     job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
     job.finished = mock.MagicMock(return_value=False)
+    job.update = mock.MagicMock()
     with pytest.raises(ValueError) as error:
         for row in job.result():
             pass
+    assert not job.update.called
 
 def test_job_result_format_generator():
     client = mock.MagicMock()
@@ -131,10 +143,12 @@ def test_job_result_format_generator():
     client.job_result_format_each = job_result_format_each
     job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
     job.finished = mock.MagicMock(return_value=True)
+    job.update = mock.MagicMock()
     rows = []
     for row in job.result_format("msgpack.gz"):
         rows.append(row)
     assert rows == [["foo", 123], ["bar", 456], ["baz", 789]]
+    assert job.update.called
 
 def test_job_result_format_list():
     client = mock.MagicMock()
@@ -145,18 +159,22 @@ def test_job_result_format_list():
     ]
     job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq", result=result)
     job.finished = mock.MagicMock(return_value=True)
+    job.update = mock.MagicMock()
     rows = []
     for row in job.result_format("msgpack.gz"):
         rows.append(row)
     assert rows == [["foo", 123], ["bar", 456], ["baz", 789]]
+    assert job.update.called
 
 def test_job_result_format_failure():
     client = mock.MagicMock()
     job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
     job.finished = mock.MagicMock(return_value=False)
+    job.update = mock.MagicMock()
     with pytest.raises(ValueError) as error:
         for row in job.result_format("msgpack.gz"):
             pass
+    assert not job.update.called
 
 def test_job_finished():
     def job(client, status):
