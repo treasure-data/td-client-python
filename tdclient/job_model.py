@@ -66,27 +66,36 @@ class Job(Model):
         2: "VERY HIGH",
     }
 
-    def __init__(self, client, job_id, type, query, status=None, url=None, debug=None, start_at=None, end_at=None, cpu_time=None,
-                 result_size=None, result=None, result_url=None, hive_result_schema=None, priority=None, retry_limit=None,
-                 org_name=None, db_name=None):
+    def __init__(self, client, job_id, type, query, **kwargs):
         super(Job, self).__init__(client)
         self._job_id = job_id
         self._type = type
-        self._url = url
         self._query = query
-        self._status = status
-        self._debug = debug
-        self._start_at = start_at
-        self._end_at = end_at
-        self._cpu_time = cpu_time
-        self._result_size = result_size
-        self._result = result
-        self._result_url = result_url
-        self._hive_result_schema = hive_result_schema
-        self._priority = priority
-        self._retry_limit = retry_limit
-        self._org_name = org_name
-        self._db_name = db_name
+        self._feed(kwargs)
+
+    def _feed(self, data={}):
+        self._url = data.get("url")
+        self._status = data.get("status")
+        self._debug = data.get("debug")
+        self._start_at = data.get("start_at")
+        self._end_at = data.get("end_at")
+        self._cpu_time = data.get("cpu_time")
+        self._result = data.get("result")
+        self._result_size = data.get("result_size")
+        self._result_url = data.get("result_url")
+        self._hive_result_schema = data.get("hive_result_schema")
+        self._priority = data.get("priority")
+        self._retry_limit = data.get("retry_limit")
+        self._org_name = data.get("org_name")
+        self._db_name = data.get("db_name")
+
+    def update(self):
+        data = self._client.api.show_job(self._job_id)
+        self._feed(data)
+
+    def _update_progress(self):
+        if self._status not in self.FINISHED_STATUS:
+            self._status = self._client.job_status(self._job_id)
 
     @property
     def id(self):
@@ -180,7 +189,7 @@ class Job(Model):
         Returns: a string represents the status of the job ("success", "error", "killed", "queued", "running")
         """
         if self._query is not None and not self.finished():
-            self._update_status()
+            self.update()
         return self._status
 
     @property
@@ -262,26 +271,3 @@ class Job(Model):
         """
         self._update_progress()
         return self._status == self.STATUS_RUNNING
-
-    def _update_progress(self):
-        if self._status not in self.FINISHED_STATUS:
-            self.__update_progress()
-
-    def __update_progress(self):
-        self._status = self._client.job_status(self._job_id)
-
-    def _update_status(self):
-        job = self._client.api.show_job(self._job_id)
-        self._query = job.get("query")
-        self._status = job.get("status")
-        self._url = job.get("url")
-        self._debug = job.get("debug")
-        self._start_at = job.get("start_at")
-        self._end_at = job.get("end_at")
-        self._cpu_time = job.get("cpu_time")
-        self._result_size = job.get("result_size")
-        self._result_url = job.get("result_url")
-        self._hive_result_schema = job.get("hive_result_schema")
-        self._priority = job.get("priority")
-        self._retry_limit = job.get("retry_limit")
-        self._db_name = job.get("db_name")

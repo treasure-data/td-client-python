@@ -541,18 +541,22 @@ class Client(object):
         result = self.api.history(name, _from, to)
         def scheduled_job(m):
             scheduled_at,job_id,type,status,query,start_at,end_at,result_url,priority,database = m
-            job_param = [job_id, type, query, status,
-                None, None, # url, debug
-                start_at, end_at,
-                None, # cpu_time
-                None, None, # result_size, result
-                result_url,
-                None, # hive_result_schema
-                priority,
-                None, # retry_limit
-                None, # TODO org_name
-                database]
-            return model.ScheduledJob(self, scheduled_at, *job_param)
+            job_param = {
+                "url": None,
+                "debug": None,
+                "start_at": start_at,
+                "end_at": end_at,
+                "cpu_time": None,
+                "result_size": None,
+                "result": None,
+                "result_url": result_url,
+                "hive_result_schema": None,
+                "priority": priority,
+                "retry_limit": None,
+                "org_name": None,
+                "database": database
+            }
+            return model.ScheduledJob(self, scheduled_at, job_id, type, query, **job_param)
         return [ scheduled_job(m) for m in result ]
 
     def run_schedule(self, name, time, num):

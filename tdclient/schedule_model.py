@@ -9,8 +9,8 @@ from tdclient.job_model import Job
 class ScheduledJob(Job):
     """Scheduled job on Treasure Data Service
     """
-    def __init__(self, client, scheduled_at, *args, **kwargs):
-        super(ScheduledJob, self).__init__(client, *args, **kwargs)
+    def __init__(self, client, scheduled_at, job_id, type, query, **kwargs):
+        super(ScheduledJob, self).__init__(client, job_id, type, query, **kwargs)
         self._scheduled_at = scheduled_at
 
     @property
