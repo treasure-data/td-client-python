@@ -1,6 +1,6 @@
 # Version History
 
-## 0.2.0.dev0
+## 0.2.0.dev1
 
 * Improve the bulk import model. Add a convenient method named `upload_file` to upload a part from file-like object.
 * Support CSV/TSV format on both streaming import and bulk import
