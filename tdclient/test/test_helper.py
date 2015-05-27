@@ -79,7 +79,37 @@ def unjsonb(bytes):
     """bytes -> list"""
     return [ json.loads(s.decode("utf-8")) for s in bytes.splitlines() ]
 
-def csvb(list, dialect=csv.excel):
+def value(s):
+    try:
+        return int(s)
+    except ValueError:
+        try:
+            return float(s)
+        except ValueError:
+            pass
+    lower = s.lower()
+    if lower in ("false", "true"):
+        return "true" == lower
+    elif lower in ("", "none", "null"):
+        return None
+    else:
+        return s
+
+def csvb(list, columns=[], dialect=csv.excel):
+    """list -> bytes"""
+    stream = io.BytesIO()
+    writer = csv.writer(codecs.getwriter("utf-8")(stream), dialect=dialect)
+    for item in list:
+        writer.writerow([ item.get(column) for column in columns ])
+    return stream.getvalue()
+
+def uncsvb(bytes, columns=[], dialect=csv.excel):
+    """bytes -> list"""
+    stream = bytes
+    reader = csv.reader(io.StringIO(bytes.decode("utf-8")), dialect=dialect)
+    return [ dict(zip(columns, [ value(column) for column in row ])) for row in reader ]
+
+def dcsvb(list, dialect=csv.excel):
     """list -> bytes"""
     cols = list[0].keys()
     stream = io.BytesIO()
@@ -92,34 +122,27 @@ def csvb(list, dialect=csv.excel):
         writer.writerow(item)
     return stream.getvalue()
 
-def uncsvb(bytes, dialect=csv.excel):
+def undcsvb(bytes, dialect=csv.excel):
     """bytes -> list"""
-    def value(s):
-        try:
-            return int(s)
-        except ValueError:
-            try:
-                return float(s)
-            except ValueError:
-                pass
-        lower = s.lower()
-        if lower in ("false", "true"):
-            return "true" == lower
-        elif lower in ("", "none", "null"):
-            return None
-        else:
-            return s
     stream = bytes
     reader = csv.DictReader(io.StringIO(bytes.decode("utf-8")), dialect=dialect)
-    return [ dict([ (k, unpack(v)) for (k, v) in row.items() ]) for row in reader ]
+    return [ dict([ (k, value(v)) for (k, v) in row.items() ]) for row in reader ]
 
-def tsvb(list):
+def tsvb(list, columns=[]):
     """bytes -> list"""
-    return csvb(list, dialect=csv.excel_tab)
+    return csvb(list, columns=columns, dialect=csv.excel_tab)
 
-def untsvb(bytes):
+def untsvb(bytes, columns=[]):
     """bytes -> list"""
-    return uncsvb(bytes, dialect=csv.excel_tab)
+    return uncsvb(bytes, columns=columns, dialect=csv.excel_tab)
+
+def dtsvb(list):
+    """bytes -> list"""
+    return dcsvb(list, dialect=csv.excel_tab)
+
+def undtsvb(bytes):
+    """bytes -> list"""
+    return undcsvb(bytes, dialect=csv.excel_tab)
 
 def gzipb(bytes):
     """bytes -> bytes"""
