@@ -1,6 +1,6 @@
 # Version History
 
-## 0.2.0.dev2
+## 0.2.0.dev3
 
 * Improve the job model. Now it retrieves the job values automatically after the invocation of `wait`, `result` and `kill`.
 * Add a property `result_schema` to `Job` model to provide the schema of job result
