@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import time
+import warnings
 
 from tdclient._model import Model
 
@@ -90,10 +91,18 @@ class Job(Model):
         self._db_name = data.get("db_name")
 
     def update(self):
+        """Update all fields of the job
+        """
         data = self._client.api.show_job(self._job_id)
         self._feed(data)
 
+    def _update_status(self):
+        warnings.warn("_update_status() will be removed from future release. Please use update() instaed.)", category=DeprecationWarning)
+        self.update()
+
     def _update_progress(self):
+        """Update `_status` field of the job if it's not finished
+        """
         if self._status not in self.FINISHED_STATUS:
             self._status = self._client.job_status(self._job_id)
 
