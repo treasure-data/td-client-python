@@ -418,7 +418,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
                 self._validate_record(record)
                 yield record
         else:
-            reader = csv.reader(file, dialect=dialect)
+            reader = csv.reader(codecs.getreader("utf-8")(file), dialect=dialect)
             for row in reader:
                 record = dict(zip(columns, [ value(col) for col in row ]))
                 self._validate_record(record)
