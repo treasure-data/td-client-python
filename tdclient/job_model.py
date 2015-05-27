@@ -222,7 +222,7 @@ class Job(Model):
         """
         Returns: an iterator of rows in result set
         """
-        if not self.finished():
+        if not self.success():
             raise ValueError("result is not ready")
         else:
             self.update()
@@ -240,7 +240,7 @@ class Job(Model):
 
         Returns: an iterator of rows in result set
         """
-        if not self.finished():
+        if not self.success():
             raise ValueError("result is not ready")
         else:
             self.update()

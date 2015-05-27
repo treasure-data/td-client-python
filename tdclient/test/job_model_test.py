@@ -98,7 +98,7 @@ def test_job_result_generator():
         yield ["baz", 789]
     client.job_result_each = job_result_each
     job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
-    job.finished = mock.MagicMock(return_value=True)
+    job.success = mock.MagicMock(return_value=True)
     job.update = mock.MagicMock()
     rows = []
     for row in job.result():
@@ -114,7 +114,7 @@ def test_job_result_list():
         ["baz", 789],
     ]
     job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq", result=result)
-    job.finished = mock.MagicMock(return_value=True)
+    job.success = mock.MagicMock(return_value=True)
     job.update = mock.MagicMock()
     rows = []
     for row in job.result():
@@ -125,7 +125,7 @@ def test_job_result_list():
 def test_job_result_failure():
     client = mock.MagicMock()
     job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
-    job.finished = mock.MagicMock(return_value=False)
+    job.success = mock.MagicMock(return_value=False)
     job.update = mock.MagicMock()
     with pytest.raises(ValueError) as error:
         for row in job.result():
@@ -142,7 +142,7 @@ def test_job_result_format_generator():
         yield ["baz", 789]
     client.job_result_format_each = job_result_format_each
     job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
-    job.finished = mock.MagicMock(return_value=True)
+    job.success = mock.MagicMock(return_value=True)
     job.update = mock.MagicMock()
     rows = []
     for row in job.result_format("msgpack.gz"):
@@ -158,7 +158,7 @@ def test_job_result_format_list():
         ["baz", 789],
     ]
     job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq", result=result)
-    job.finished = mock.MagicMock(return_value=True)
+    job.success = mock.MagicMock(return_value=True)
     job.update = mock.MagicMock()
     rows = []
     for row in job.result_format("msgpack.gz"):
@@ -169,7 +169,7 @@ def test_job_result_format_list():
 def test_job_result_format_failure():
     client = mock.MagicMock()
     job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
-    job.finished = mock.MagicMock(return_value=False)
+    job.success = mock.MagicMock(return_value=False)
     job.update = mock.MagicMock()
     with pytest.raises(ValueError) as error:
         for row in job.result_format("msgpack.gz"):

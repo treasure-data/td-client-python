@@ -172,7 +172,7 @@ class JobAPI(object):
         with self.get("/v3/job/result/%s" % (urlquote(str(job_id))), {"format": format}) as res:
             code = res.status
             if code != 200:
-                self.raise_error("Get job result failed", res)
+                self.raise_error("Get job result failed", res, "")
             if format == "msgpack":
                 unpacker = msgpack.Unpacker(res, encoding=str("utf-8"))
                 for row in unpacker:
