@@ -8,7 +8,7 @@ try:
 except ImportError:
     import mock
 
-from tdclient import model
+from tdclient import models
 from tdclient.test.test_helper import *
 
 def setup_function(function):
@@ -16,7 +16,7 @@ def setup_function(function):
 
 def test_access_control():
     client = mock.MagicMock()
-    access_control = model.AccessControl(client, "subject", "action", "scope", "grant_option")
+    access_control = models.AccessControl(client, "subject", "action", "scope", "grant_option")
     assert access_control.subject == "subject"
     assert access_control.action == "action"
     assert access_control.scope == "scope"

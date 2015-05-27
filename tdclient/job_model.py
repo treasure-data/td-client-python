@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import time
 import warnings
 
-from tdclient._model import Model
+from tdclient.model import Model
 
 class Schema(object):
     """Schema of a database table on Treasure Data Service

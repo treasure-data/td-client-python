@@ -3,7 +3,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from tdclient._model import Model
+from tdclient.model import Model
 from tdclient.job_model import Job
 
 class ScheduledJob(Job):

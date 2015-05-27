@@ -8,7 +8,7 @@ try:
 except ImportError:
     import mock
 
-from tdclient import model
+from tdclient import models
 from tdclient.test.test_helper import *
 
 def setup_function(function):
@@ -16,7 +16,7 @@ def setup_function(function):
 
 def test_scheduled_job():
     client = mock.MagicMock()
-    schedule = model.Schedule(client, "name", "cron", "query", database="database", result_url="result_url", timezone="timezone", delay="delay", next_time="next_time", priority="priority", retry_limit="retry_limit", org_name="org_name")
+    schedule = models.Schedule(client, "name", "cron", "query", database="database", result_url="result_url", timezone="timezone", delay="delay", next_time="next_time", priority="priority", retry_limit="retry_limit", org_name="org_name")
     assert schedule.name == "name"
     assert schedule.cron == "cron"
     assert schedule.query == "query"

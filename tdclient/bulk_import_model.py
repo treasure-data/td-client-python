@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import time
 
-from tdclient._model import Model
+from tdclient.model import Model
 
 class BulkImport(Model):
     """Bulk-import session on Treasure Data Service

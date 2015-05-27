@@ -3,7 +3,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from tdclient._model import Model
+from tdclient.model import Model
 
 class Result(Model):
     """Result on Treasure Data Service

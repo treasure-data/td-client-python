@@ -6,6 +6,7 @@
 * Add a property `result_schema` to `Job` model to provide the schema of job result
 * Improve the bulk import model. Add a convenient method named `upload_file` to upload a part from file-like object.
 * Support CSV/TSV format on both streaming import and bulk import
+* Change module name; `tdclient.model` -> `tdclient.models`
 
 ## 0.1.11
 

@@ -11,7 +11,7 @@ except ImportError:
     import mock
 import pytest
 
-from tdclient import model
+from tdclient import models
 from tdclient.test.test_helper import *
 
 def setup_function(function):
@@ -19,7 +19,7 @@ def setup_function(function):
 
 def test_schema():
     client = mock.MagicMock()
-    job = model.Job(client, "job_id", "type", "query", status="status", url="url", debug="debug", start_at="start_at", end_at="end_at", cpu_time="cpu_time", result_size="result_size", result="result", result_url="result_url", hive_result_schema=[["_c1", "string"], ["_c2", "bigint"]], priority="UNKNOWN", retry_limit="retry_limit", org_name="org_name", db_name="db_name")
+    job = models.Job(client, "job_id", "type", "query", status="status", url="url", debug="debug", start_at="start_at", end_at="end_at", cpu_time="cpu_time", result_size="result_size", result="result", result_url="result_url", hive_result_schema=[["_c1", "string"], ["_c2", "bigint"]], priority="UNKNOWN", retry_limit="retry_limit", org_name="org_name", db_name="db_name")
     assert job.id == "job_id"
     assert job.job_id == "job_id"
     assert job.type == "type"
@@ -32,16 +32,16 @@ def test_schema():
 
 def test_job_priority():
     client = mock.MagicMock()
-    assert model.Job(client, "1", "hive", "SELECT COUNT(1) FROM nasdaq", priority=-2).priority == "VERY LOW"
-    assert model.Job(client, "2", "hive", "SELECT COUNT(1) FROM nasdaq", priority=-1).priority == "LOW"
-    assert model.Job(client, "3", "hive", "SELECT COUNT(1) FROM nasdaq", priority=0).priority == "NORMAL"
-    assert model.Job(client, "4", "hive", "SELECT COUNT(1) FROM nasdaq", priority=1).priority == "HIGH"
-    assert model.Job(client, "5", "hive", "SELECT COUNT(1) FROM nasdaq", priority=2).priority == "VERY HIGH"
-    assert model.Job(client, "42", "hive", "SELECT COUNT(1) FROM nasdaq", priority=42).priority == "42"
+    assert models.Job(client, "1", "hive", "SELECT COUNT(1) FROM nasdaq", priority=-2).priority == "VERY LOW"
+    assert models.Job(client, "2", "hive", "SELECT COUNT(1) FROM nasdaq", priority=-1).priority == "LOW"
+    assert models.Job(client, "3", "hive", "SELECT COUNT(1) FROM nasdaq", priority=0).priority == "NORMAL"
+    assert models.Job(client, "4", "hive", "SELECT COUNT(1) FROM nasdaq", priority=1).priority == "HIGH"
+    assert models.Job(client, "5", "hive", "SELECT COUNT(1) FROM nasdaq", priority=2).priority == "VERY HIGH"
+    assert models.Job(client, "42", "hive", "SELECT COUNT(1) FROM nasdaq", priority=42).priority == "42"
 
 def test_job_wait_success():
     client = mock.MagicMock()
-    job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
+    job = models.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
     job.finished = mock.MagicMock(side_effect=[
         False,
         True,
@@ -63,7 +63,7 @@ def test_job_wait_success():
 
 def test_job_wait_failure():
     client = mock.MagicMock()
-    job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
+    job = models.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
     job.finished = mock.MagicMock(return_value=False)
     job.update = mock.MagicMock()
     with mock.patch("time.time") as t_time:
@@ -83,7 +83,7 @@ def test_job_wait_failure():
 
 def test_job_kill():
     client = mock.MagicMock()
-    job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
+    job = models.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
     job.update = mock.MagicMock()
     job.kill()
     client.kill.assert_called_with("12345")
@@ -97,7 +97,7 @@ def test_job_result_generator():
         yield ["bar", 456]
         yield ["baz", 789]
     client.job_result_each = job_result_each
-    job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
+    job = models.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
     job.success = mock.MagicMock(return_value=True)
     job.update = mock.MagicMock()
     rows = []
@@ -113,7 +113,7 @@ def test_job_result_list():
         ["bar", 456],
         ["baz", 789],
     ]
-    job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq", result=result)
+    job = models.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq", result=result)
     job.success = mock.MagicMock(return_value=True)
     job.update = mock.MagicMock()
     rows = []
@@ -124,7 +124,7 @@ def test_job_result_list():
 
 def test_job_result_failure():
     client = mock.MagicMock()
-    job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
+    job = models.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
     job.success = mock.MagicMock(return_value=False)
     job.update = mock.MagicMock()
     with pytest.raises(ValueError) as error:
@@ -141,7 +141,7 @@ def test_job_result_format_generator():
         yield ["bar", 456]
         yield ["baz", 789]
     client.job_result_format_each = job_result_format_each
-    job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
+    job = models.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
     job.success = mock.MagicMock(return_value=True)
     job.update = mock.MagicMock()
     rows = []
@@ -157,7 +157,7 @@ def test_job_result_format_list():
         ["bar", 456],
         ["baz", 789],
     ]
-    job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq", result=result)
+    job = models.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq", result=result)
     job.success = mock.MagicMock(return_value=True)
     job.update = mock.MagicMock()
     rows = []
@@ -168,7 +168,7 @@ def test_job_result_format_list():
 
 def test_job_result_format_failure():
     client = mock.MagicMock()
-    job = model.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
+    job = models.Job(client, "12345", "presto", "SELECT COUNT(1) FROM nasdaq")
     job.success = mock.MagicMock(return_value=False)
     job.update = mock.MagicMock()
     with pytest.raises(ValueError) as error:
@@ -178,7 +178,7 @@ def test_job_result_format_failure():
 
 def test_job_finished():
     def job(client, status):
-        stub = model.Job(client, "1", "hive", "SELECT COUNT(1) FROM nasdaq", status=status)
+        stub = models.Job(client, "1", "hive", "SELECT COUNT(1) FROM nasdaq", status=status)
         stub._update_progress = mock.MagicMock()
         return stub
     client = mock.MagicMock()
@@ -193,7 +193,7 @@ def test_job_finished():
 
 def test_job_success():
     def job(client, status):
-        stub = model.Job(client, "1", "hive", "SELECT COUNT(1) FROM nasdaq", status=status)
+        stub = models.Job(client, "1", "hive", "SELECT COUNT(1) FROM nasdaq", status=status)
         stub._update_progress = mock.MagicMock()
         return stub
     client = mock.MagicMock()
@@ -208,7 +208,7 @@ def test_job_success():
 
 def test_job_error():
     def job(client, status):
-        stub = model.Job(client, "1", "hive", "SELECT COUNT(1) FROM nasdaq", status=status)
+        stub = models.Job(client, "1", "hive", "SELECT COUNT(1) FROM nasdaq", status=status)
         stub._update_progress = mock.MagicMock()
         return stub
     client = mock.MagicMock()
@@ -223,7 +223,7 @@ def test_job_error():
 
 def test_job_killed():
     def job(client, status):
-        stub = model.Job(client, "1", "hive", "SELECT COUNT(1) FROM nasdaq", status=status)
+        stub = models.Job(client, "1", "hive", "SELECT COUNT(1) FROM nasdaq", status=status)
         stub._update_progress = mock.MagicMock()
         return stub
     client = mock.MagicMock()
@@ -238,7 +238,7 @@ def test_job_killed():
 
 def test_job_queued():
     def job(client, status):
-        stub = model.Job(client, "1", "hive", "SELECT COUNT(1) FROM nasdaq", status=status)
+        stub = models.Job(client, "1", "hive", "SELECT COUNT(1) FROM nasdaq", status=status)
         stub._update_progress = mock.MagicMock()
         return stub
     client = mock.MagicMock()
@@ -253,7 +253,7 @@ def test_job_queued():
 
 def test_job_running():
     def job(client, status):
-        stub = model.Job(client, "1", "hive", "SELECT COUNT(1) FROM nasdaq", status=status)
+        stub = models.Job(client, "1", "hive", "SELECT COUNT(1) FROM nasdaq", status=status)
         stub._update_progress = mock.MagicMock()
         return stub
     client = mock.MagicMock()
@@ -268,7 +268,7 @@ def test_job_running():
 
 def test_job_update_progress():
     def run(client, job_id, status):
-        job = model.Job(client, job_id, "hive", "SELECT COUNT(1) FROM nasdaq", status=status)
+        job = models.Job(client, job_id, "hive", "SELECT COUNT(1) FROM nasdaq", status=status)
         client.job_status.reset_mock()
         job._update_progress()
 
@@ -314,7 +314,7 @@ def test_job_update_status():
         "org_name": None,
         "database": "sample_datasets",
     })
-    job = model.Job(client, "67890", "hive", "SELECT COUNT(1) FROM nasdaq")
+    job = models.Job(client, "67890", "hive", "SELECT COUNT(1) FROM nasdaq")
     job.finished = mock.MagicMock(return_value=False)
     assert job.status() == "success"
     client.api.show_job.assert_called_with("67890")
