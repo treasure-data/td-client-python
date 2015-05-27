@@ -1,10 +1,11 @@
 # Version History
 
-## 0.2.0.dev1
+## 0.2.0.dev2
 
+* Improve the job model. Now it retrieves the job values automatically after the invocation of `wait`, `result` and `kill`.
+* Add a property `result_schema` to `Job` model to provide the schema of job result
 * Improve the bulk import model. Add a convenient method named `upload_file` to upload a part from file-like object.
 * Support CSV/TSV format on both streaming import and bulk import
-* Add a property `result_schema` to `Job` model to provide the schema of job result
 
 ## 0.1.11
 
