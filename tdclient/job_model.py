@@ -126,6 +126,13 @@ class Job(Model):
         return self._result_url
 
     @property
+    def result_schema(self):
+        """
+        Returns: an array of array represents the type of result columns (Hive specific) (e.g. [["_c1", "string"], ["_c2", "bigint"]])
+        """
+        return self._hive_result_schema
+
+    @property
     def priority(self):
         """
         Returns: a string represents the priority of the job (e.g. "NORMAL", "HIGH", etc.)

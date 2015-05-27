@@ -19,7 +19,7 @@ def setup_function(function):
 
 def test_schema():
     client = mock.MagicMock()
-    job = model.Job(client, "job_id", "type", "query", status="status", url="url", debug="debug", start_at="start_at", end_at="end_at", cpu_time="cpu_time", result_size="result_size", result="result", result_url="result_url", hive_result_schema="hive_result_schema", priority="UNKNOWN", retry_limit="retry_limit", org_name="org_name", db_name="db_name")
+    job = model.Job(client, "job_id", "type", "query", status="status", url="url", debug="debug", start_at="start_at", end_at="end_at", cpu_time="cpu_time", result_size="result_size", result="result", result_url="result_url", hive_result_schema=[["_c1", "string"], ["_c2", "bigint"]], priority="UNKNOWN", retry_limit="retry_limit", org_name="org_name", db_name="db_name")
     assert job.id == "job_id"
     assert job.job_id == "job_id"
     assert job.type == "type"
@@ -28,6 +28,7 @@ def test_schema():
     assert job.retry_limit == "retry_limit"
     assert job.org_name == "org_name"
     assert job.db_name == "db_name"
+    assert job.result_schema == [["_c1", "string"], ["_c2", "bigint"]]
 
 def test_job_priority():
     client = mock.MagicMock()
