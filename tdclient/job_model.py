@@ -128,6 +128,13 @@ class Job(Model):
         return self._type
 
     @property
+    def result_size(self):
+        """
+        Returns: the length of job result
+        """
+        return self._result_size
+
+    @property
     def result_url(self):
         """
         Returns: a string of URL of the result on Treasure Data Service
@@ -172,6 +179,13 @@ class Job(Model):
         Returns: a string represents the name of a database that job is running on
         """
         return self._db_name
+
+    @property
+    def debug(self):
+        """
+        Returns: a :class:`dict` of debug output (e.g. "cmdout", "stderr")
+        """
+        return self._debug
 
     def wait(self, timeout=None, wait_interval=1):
         """Sleep until the job has been finished
