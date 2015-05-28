@@ -396,7 +396,18 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
             yield record
 
     def _read_csv_file(self, file, dialect=csv.excel, columns=None, encoding="utf-8", **kwargs):
+        try:
+            unicode
+            py2k = True
+        except NameError:
+            py2k = False
+        # `csv` module bundled with py2k doesn't support `unicode` :(
+        # https://docs.python.org/2/library/csv.html#examples
+        def getreader(file):
+            for s in codecs.getreader(encoding)(file):
+                yield s.encode(encoding) if py2k else s
         def value(s):
+            s = s.decode(encoding) if py2k else s
             try:
                 return int(s)
             except ValueError:
@@ -412,13 +423,13 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
             else:
                 return s
         if columns is None:
-            reader = csv.DictReader(codecs.getreader(encoding)(file), dialect=dialect)
+            reader = csv.DictReader(getreader(file), dialect=dialect)
             for row in reader:
                 record = dict([ (k, value(v)) for (k, v) in row.items() ])
                 self._validate_record(record)
                 yield record
         else:
-            reader = csv.reader(codecs.getreader(encoding)(file), dialect=dialect)
+            reader = csv.reader(getreader(file), dialect=dialect)
             for row in reader:
                 record = dict(zip(columns, [ value(col) for col in row ]))
                 self._validate_record(record)
