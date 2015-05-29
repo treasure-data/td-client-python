@@ -23,7 +23,6 @@ import msgpack
 import os
 import socket
 import ssl
-import sys
 import tempfile
 import time
 try:
@@ -32,7 +31,6 @@ except ImportError:
     import urlparse
 import urllib3
 import warnings
-import zlib
 
 from tdclient.access_control_api import AccessControlAPI
 from tdclient.account_api import AccountAPI
@@ -91,8 +89,9 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
     DEFAULT_ENDPOINT = "https://api.treasuredata.com/"
     DEFAULT_IMPORT_ENDPOINT = "https://api-import.treasuredata.com/"
 
-    def __init__(self, apikey=None, user_agent=None, endpoint=None, headers={}, retry_post_requests=False,
+    def __init__(self, apikey=None, user_agent=None, endpoint=None, headers=None, retry_post_requests=False,
                  max_cumul_retry_delay=600, http_proxy=None, **kwargs):
+        headers = {} if headers is None else headers
         if apikey is not None:
             self._apikey = apikey
         elif "TD_API_KEY" in os.environ:
@@ -147,7 +146,8 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
     def endpoint(self):
         return self._endpoint
 
-    def get(self, path, params={}, **kwargs):
+    def get(self, path, params=None, **kwargs):
+        params = {} if params is None else params
         headers = {
             "accept-encoding": "deflate, gzip",
         }
@@ -185,7 +185,8 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
 
         return contextlib.closing(response)
 
-    def post(self, path, params={}, **kwargs):
+    def post(self, path, params=None, **kwargs):
+        params = {} if params is None else params
         url, headers = self.build_request(path=path, headers={}, **kwargs)
 
         log.debug("REST POST call:\n  headers: %s\n  path: %s\n  params: %s" % (repr(headers), repr(path), repr(params)))
@@ -278,7 +279,8 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
 
         return contextlib.closing(response)
 
-    def build_request(self, path=None, headers={}, endpoint=None):
+    def build_request(self, path=None, headers=None, endpoint=None):
+        headers = {} if headers is None else headers
         if endpoint is None:
             endpoint = self._endpoint
         if path is None:
