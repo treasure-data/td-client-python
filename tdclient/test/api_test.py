@@ -42,7 +42,7 @@ def test_apikey_failure():
 
 def test_default_user_agent():
     td = api.API("apikey")
-    assert td._user_agent.startswith("TD-Client-Python: %s" % version.__version__)
+    assert td._user_agent.startswith("TD-Client-Python/%s" % version.__version__)
 
 def test_user_agent_from_keyword():
     td = api.API("apikey", user_agent="user_agent")

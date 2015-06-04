@@ -102,7 +102,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         if user_agent is not None:
             self._user_agent = user_agent
         else:
-            self._user_agent = "TD-Client-Python: %s" % (version.__version__)
+            self._user_agent = "TD-Client-Python/%s" % (version.__version__)
 
         if endpoint is not None:
             self._endpoint = endpoint
