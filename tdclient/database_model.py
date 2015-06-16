@@ -120,3 +120,24 @@ class Database(Model):
         self._tables = self._client.tables(self._db_name)
         for table in self._tables:
             table.database = self
+
+    def __str__(self):
+        print_fmt = """\
+{class_name}(name={db_name}, count={count}, created_at={created_at}, updated_at={updated_at}, org_name={org_name}, permission={permission})
+{db_name} has {table_num} tables.
+{tables}
+"""
+        tables_str = ""
+        if self.tables():
+            tables_str = "\n".join("- " + table.name for table in self.tables())
+        db_str = print_fmt.format(
+            class_name=self.__class__.__name__,
+            db_name=self.name,
+            count=self.count,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+            org_name=self.org_name,
+            permission=self.permission,
+            table_num=len(self.tables()),
+            tables=tables_str)
+        return db_str
