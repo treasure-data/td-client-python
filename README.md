@@ -41,8 +41,6 @@ TreasureData API key will be read from environment variable `TD_API_KEY`, if non
 ```python
 #!/usr/bin/env python
 
-import os
-import sys
 import tdclient
 
 with tdclient.Client() as td:
