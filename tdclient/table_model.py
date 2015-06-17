@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import time
 
 from tdclient.model import Model
-from tdclient.utils import table2str
+from tdclient.utils import rows2str
 
 class Table(Model):
     """Database table on Treasure Data Service
@@ -246,9 +246,8 @@ class Table(Model):
             primary_key_type=self.primary_key_type)
 
         if self.schema:
-            schema_table = self.schema.copy()
-            schema_table.insert(0, ['Filed', 'Type'])
-            schema_str = "Schema\n" + table2str(schema_table, len(schema_table))
+            schema_table = self.schema
+            schema_str = "Schema\n" + rows2str(schema_table, len(schema_table))
             if schema_str:
                 table_str += schema_str
         return table_str
