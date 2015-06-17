@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import time
 
 from tdclient.model import Model
+from tdclient.utils import table2str
 
 class Table(Model):
     """Database table on Treasure Data Service
@@ -211,3 +212,43 @@ class Table(Model):
 
     def _update_database(self):
         self.database = self._client.database(self._db_name)
+
+    def __str__(self):
+        print_fmt = """\
+{class_name}(db_name={db_name},
+    table_name={table_name}
+    type={type},
+    schema={schema},
+    count={count},
+    created_at={created_at},
+    updated_at={updated_at},
+    estimated_storage_size={estimated_storage_size},
+    last_import={last_import},
+    last_log_timestamp={last_log_timestamp},
+    expire_days={expire_days},
+    primary_key={primary_key},
+    primary_key_type={primary_key_type})
+"""
+        table_str = print_fmt.format(
+            class_name=self.__class__.__name__,
+            db_name=self.db_name,
+            table_name=self.table_name,
+            type=self.type,
+            schema=self.schema,
+            count=self.count,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+            estimated_storage_size=self.estimated_storage_size_string,
+            last_import=self.last_import,
+            last_log_timestamp=self.last_log_timestamp,
+            expire_days=self.expire_days,
+            primary_key=self.primary_key,
+            primary_key_type=self.primary_key_type)
+
+        if self.schema:
+            schema_table = self.schema.copy()
+            schema_table.insert(0, ['Filed', 'Type'])
+            schema_str = "Schema\n" + table2str(schema_table, len(schema_table))
+            if schema_str:
+                table_str += schema_str
+        return table_str
