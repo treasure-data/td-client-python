@@ -9,3 +9,6 @@
 /.tox
 /build
 /dist
+
+# JetBrains IDE
+.idea/
