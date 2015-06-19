@@ -127,7 +127,7 @@ def test_connect_timeout():
         td = api.API("apikey", connect_timeout=1, read_timeout=2, send_timeout=4)
         assert urllib3.PoolManager.called
         args, kwargs = urllib3.PoolManager.call_args
-        assert kwargs["timeout"] == 7
+        assert kwargs["timeout"] == 4
 
 def test_get_success():
     td = api.API("APIKEY")
