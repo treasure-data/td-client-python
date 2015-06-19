@@ -340,7 +340,7 @@ class Client(object):
         """
         return self.api.kill(job_id)
 
-    def export_data(self, db_name, table_name, storage_type, params={}):
+    def export_data(self, db_name, table_name, storage_type, params=None):
         """Export data from Treasure Data Service
 
         Params:
@@ -351,18 +351,20 @@ class Client(object):
 
         Returns: :class:`tdclient.models.Job`
         """
+        params = {} if params is None else params
         job_id = self.api.export_data(db_name, table_name, storage_type, params)
         return models.Job(self, job_id, "export", None)
 
-    def partial_delete(self, db_name, table_name, to, _from, params={}):
+    def partial_delete(self, db_name, table_name, to, _from, params=None):
         """
         TODO: add docstring
         => :class:`tdclient.models.Job`
         """
+        params = {} if params is None else params
         job_id = self.api.partial_delete(db_name, table_name, to, _from, params)
         return models.Job(self, job_id, "partialdelete", None)
 
-    def create_bulk_import(self, name, database, table, params={}):
+    def create_bulk_import(self, name, database, table, params=None):
         """Create new bulk import session
 
         Params:
@@ -372,6 +374,7 @@ class Client(object):
 
         Returns: :class:`tdclient.models.BulkImport`
         """
+        params = {} if params is None else params
         self.api.create_bulk_import(name, database, table, params)
         return models.BulkImport(self, name=name, database=database, table=table)
 
@@ -497,7 +500,7 @@ class Client(object):
         """
         return self.api.list_bulk_import_parts(name)
 
-    def create_schedule(self, name, params={}):
+    def create_schedule(self, name, params=None):
         """
         TODO: add docstring
         => first_time:datetime.datetime
@@ -506,6 +509,7 @@ class Client(object):
             raise ValueError("'cron' option is required")
         if "query" not in params:
             raise ValueError("'query' option is required")
+        params = {} if params is None else params
         return self.api.create_schedule(name, params)
 
     def delete_schedule(self, name):
@@ -526,11 +530,12 @@ class Client(object):
             return models.Schedule(self, name, cron, query, database, result_url, timezone, delay, next_time, priority, retry_limit, org_name)
         return [ schedule(m) for m in result ]
 
-    def update_schedule(self, name, params={}):
+    def update_schedule(self, name, params=None):
         """
         TODO: add docstring
         [:class:`tdclient.models.ScheduledJob`]
         """
+        params = {} if params is None else params
         self.api.update_schedule(name, params)
 
     def history(self, name, _from=None, to=None):
@@ -612,11 +617,12 @@ class Client(object):
             return models.Result(self, name, url, organizations)
         return [ result(m) for m in results ]
 
-    def create_result(self, name, url, params={}):
+    def create_result(self, name, url, params=None):
         """
         TODO: add docstring
         => True
         """
+        params = {} if params is None else params
         return self.api.create_result(name, url, params)
 
     def delete_result(self, name):

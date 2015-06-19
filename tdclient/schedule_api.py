@@ -13,11 +13,12 @@ class ScheduleAPI(object):
     ## Schedule API
     ##
 
-    def create_schedule(self, name, params={}):
+    def create_schedule(self, name, params=None):
         """
         TODO: add docstring
         => start:str
         """
+        params = {} if params is None else params
         params.update({"type": params.get("type", "hive")})
         with self.post("/v3/schedule/create/%s" % (urlquote(str(name))), params) as res:
             code, body = res.status, res.read()
@@ -62,10 +63,11 @@ class ScheduleAPI(object):
                 return (name, cron, query, database, result_url, timezone, delay, next_time, priority, retry_limit, None) # same as database
             return [ schedule(m) for m in js["schedules"] ]
 
-    def update_schedule(self, name, params={}):
+    def update_schedule(self, name, params=None):
         """
         TODO: add docstring
         """
+        params = {} if params is None else params
         with self.post("/v3/schedule/update/%s" % (urlquote(str(name))), params) as res:
             code, body = res.status, res.read()
             if code != 200:
@@ -87,7 +89,7 @@ class ScheduleAPI(object):
             js = self.checked_json(body, ["history"])
             def history(m):
                 job_id = m.get("job_id")
-                type = m.get("type", "?")
+                t = m.get("type", "?")
                 database = m.get("database")
                 status = m.get("status")
                 query = m.get("query")
@@ -96,7 +98,7 @@ class ScheduleAPI(object):
                 scheduled_at = self._parsedate(self.get_or_else(m, "scheduled_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
                 result_url = m.get("result")
                 priority = m.get("priority")
-                return (scheduled_at, job_id, type, status, query, start_at, end_at, result_url, priority, database)
+                return (scheduled_at, job_id, t, status, query, start_at, end_at, result_url, priority, database)
             return [ history(m) for m in js["history"] ]
 
     def run_schedule(self, name, time, num=None):
@@ -114,6 +116,6 @@ class ScheduleAPI(object):
         def job(m):
             job_id = m.get("job_id")
             scheduled_at = self._parsedate(self.get_or_else(m, "scheduled_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
-            type = m.get("type", "?")
-            return (job_id, type, scheduled_at)
+            t = m.get("type", "?")
+            return (job_id, t, scheduled_at)
         return [ job(m) for m in js["jobs"] ]

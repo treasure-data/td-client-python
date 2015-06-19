@@ -31,7 +31,8 @@ class Schema(object):
             """
             return self._type
 
-    def __init__(self, fields=[]):
+    def __init__(self, fields=None):
+        fields = [] if fields is None else fields
         self._fields = fields
 
     @property
@@ -74,7 +75,8 @@ class Job(Model):
         self._query = query
         self._feed(kwargs)
 
-    def _feed(self, data={}):
+    def _feed(self, data=None):
+        data = {} if data is None else data
         self._url = data.get("url")
         self._status = data.get("status")
         self._debug = data.get("debug")

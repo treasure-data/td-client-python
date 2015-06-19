@@ -56,7 +56,8 @@ class TableAPI(object):
         params = {"primary_key": primary_key, "primary_key_type": primary_key_type}
         return self._create_table(db, table, "item", params)
 
-    def _create_table(self, db, table, type, params={}):
+    def _create_table(self, db, table, type, params=None):
+        params = {} if params is None else params
         with self.post("/v3/table/create/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table)), urlquote(str(type))), params) as res:
             code, body = res.status, res.read()
             if code != 200:
@@ -105,5 +106,5 @@ class TableAPI(object):
             if code != 200:
                 self.raise_error("Delete table failed", res, body)
             js = self.checked_json(body, [])
-            type = js.get("type", "?")
-            return type
+            t = js.get("type", "?")
+            return t

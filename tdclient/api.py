@@ -153,7 +153,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         }
         url, headers = self.build_request(path=path, headers=headers, **kwargs)
 
-        log.debug("REST GET call:\n  headers: %s\n  path: %s\n  params: %s" % (repr(headers), repr(path), repr(params)))
+        log.debug("REST GET call:\n  headers: %s\n  path: %s\n  params: %s", repr(headers), repr(path), repr(params))
 
         # up to 7 retries with exponential (base 2) back-off starting at 'retry_delay'
         retry_delay = 5
@@ -169,19 +169,19 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
                 if response.status < 500:
                     break
                 else:
-                    log.warn("Error %d: %s. Retrying after %d seconds..." % (response.status, response.data, retry_delay))
+                    log.warn("Error %d: %s. Retrying after %d seconds...", response.status, response.data, retry_delay)
             except ( urllib3.exceptions.TimeoutStateError, urllib3.exceptions.TimeoutError, urllib3.exceptions.PoolError, socket.error ):
                 pass
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
-                log.warn("Retrying after %d seconds..." % (retry_delay))
+                log.warn("Retrying after %d seconds...", retry_delay)
                 time.sleep(retry_delay)
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
             else:
                 raise(APIError("Retrying stopped after %d seconds." % (self._max_cumul_retry_delay)))
 
-        log.debug("REST GET response:\n  headers: %s\n  status: %d\n  body: <omitted>" % (repr(dict(response.getheaders())), response.status))
+        log.debug("REST GET response:\n  headers: %s\n  status: %d\n  body: <omitted>", repr(dict(response.getheaders())), response.status)
 
         return contextlib.closing(response)
 
@@ -189,7 +189,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         params = {} if params is None else params
         url, headers = self.build_request(path=path, headers={}, **kwargs)
 
-        log.debug("REST POST call:\n  headers: %s\n  path: %s\n  params: %s" % (repr(headers), repr(path), repr(params)))
+        log.debug("REST POST call:\n  headers: %s\n  path: %s\n  params: %s", repr(headers), repr(path), repr(params))
 
         # up to 7 retries with exponential (base 2) back-off starting at 'retry_delay'
         retry_delay = 5
@@ -209,20 +209,20 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
                 else:
                     if not self._retry_post_requests:
                         raise(APIError("Retrying stopped by retry_post_requests == False"))
-                    log.warn("Error %d: %s. Retrying after %d seconds..." % (response.status, response.data, retry_delay))
+                    log.warn("Error %d: %s. Retrying after %d seconds...", response.status, response.data, retry_delay)
             except ( urllib3.exceptions.TimeoutStateError, urllib3.exceptions.TimeoutError, urllib3.exceptions.PoolError, socket.error ):
                 if not self._retry_post_requests:
                     raise(APIError("Retrying stopped by retry_post_requests == False"))
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
-                log.warn("Retrying after %d seconds..." % (retry_delay))
+                log.warn("Retrying after %d seconds...", retry_delay)
                 time.sleep(retry_delay)
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
             else:
                 raise(APIError("Retrying stopped after %d seconds." % (self._max_cumul_retry_delay)))
 
-        log.debug("REST POST response:\n  headers: %s\n  status: %d\n  body: <omitted>" % (repr(dict(response.getheaders())), response.status))
+        log.debug("REST POST response:\n  headers: %s\n  status: %d\n  body: <omitted>", repr(dict(response.getheaders())), response.status)
 
         return contextlib.closing(response)
 
@@ -232,7 +232,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         headers["content-type"] = "application/octet-stream"
         url, headers = self.build_request(path=path, headers=headers, **kwargs)
 
-        log.debug("REST PUT call:\n  headers: %s\n  path: %s\n  body: <omitted>" % (repr(headers), repr(path)))
+        log.debug("REST PUT call:\n  headers: %s\n  path: %s\n  body: <omitted>", repr(headers), repr(path))
 
         if hasattr(bytes_or_stream, "read"):
             # file-like must support `read` and `fileno` to work with `httplib`
@@ -263,19 +263,19 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
                 if response.status < 500:
                     break
                 else:
-                    log.warn("Error %d: %s. Retrying after %d seconds..." % (response.status, response.data, retry_delay))
+                    log.warn("Error %d: %s. Retrying after %d seconds...", response.status, response.data, retry_delay)
             except ( urllib3.exceptions.TimeoutStateError, urllib3.exceptions.TimeoutError, urllib3.exceptions.PoolError, socket.error ):
                 pass
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
-                log.warn("Retrying after %d seconds..." % (retry_delay))
+                log.warn("Retrying after %d seconds...", retry_delay)
                 time.sleep(retry_delay)
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
             else:
                 raise(APIError("Retrying stopped after %d seconds." % (self._max_cumul_retry_delay)))
 
-        log.debug("REST PUT response:\n  headers: %s\n  status: %d\n  body: <omitted>" % (repr(dict(response.getheaders())), response.status))
+        log.debug("REST PUT response:\n  headers: %s\n  status: %d\n  body: <omitted>", repr(dict(response.getheaders())), response.status)
 
         return contextlib.closing(response)
 
