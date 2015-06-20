@@ -135,6 +135,9 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
                 send_timeout = 0
             pool_options["timeout"] = max(connect_timeout, read_timeout, send_timeout)
 
+        if "timeout" not in pool_options:
+            pool_options["timeout"] = 60
+
         if http_proxy is None and "HTTP_PROXY" in os.environ:
             http_proxy = os.getenv("HTTP_PROXY")
 

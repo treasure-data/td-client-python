@@ -115,6 +115,13 @@ def test_http_proxy_with_scheme():
     assert isinstance(td.http, urllib3.ProxyManager)
     assert td.http.proxy.url == "http://proxy1.example.com:8080/"
 
+def test_no_timeout():
+    with mock.patch("tdclient.api.urllib3") as urllib3:
+        td = api.API("apikey")
+        assert urllib3.PoolManager.called
+        args, kwargs = urllib3.PoolManager.call_args
+        assert kwargs["timeout"] == 60
+
 def test_timeout():
     with mock.patch("tdclient.api.urllib3") as urllib3:
         td = api.API("apikey", timeout=12345)
