@@ -1,5 +1,11 @@
 # Version History
 
+## 0.2.1
+
+* Set default timeout of API client as 60 seconds.
+* Change the timeout of API client from `sum(connect_timeout, read_timeout, send_timeout)` to `max(connect_timeout, read_timeout, send_timeout)`
+* Change default user-agent of client from `TD-Client-Python:{version}` to `TD-Client-Python/{version}` to comply RFC2616
+
 ## 0.2.0
 
 * Improve the job model. Now it retrieves the job values automatically after the invocation of `wait`, `result` and `kill`.
