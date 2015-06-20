@@ -118,9 +118,21 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
             pool_options["cert_reqs"] = ssl.CERT_REQUIRED
 
         if "connect_timeout" in pool_options or "read_timeout" in pool_options or "send_timeout" in pool_options:
-            connect_timeout = pool_options.pop("connect_timeout") if "connect_timeout" in pool_options else 0
-            read_timeout = pool_options.pop("read_timeout") if "read_timeout" in pool_options else 0
-            send_timeout = pool_options.pop("send_timeout") if "send_timeout" in pool_options else 0
+            if "connect_timeout" in pool_options:
+                warnings.warn("connect_timeout will be removed from future release. Please use timeout instead.", category=DeprecationWarning)
+                connect_timeout = pool_options.pop("connect_timeout")
+            else:
+                connect_timeout = 0
+            if "read_timeout" in pool_options:
+                warnings.warn("read_timeout will be removed from future release. Please use timeout instead.", category=DeprecationWarning)
+                read_timeout = pool_options.pop("read_timeout")
+            else:
+                read_timeout = 0
+            if "send_timeout" in pool_options:
+                warnings.warn("send_timeout will be removed from future release. Please use timeout instead.", category=DeprecationWarning)
+                send_timeout = pool_options.pop("send_timeout")
+            else:
+                send_timeout = 0
             pool_options["timeout"] = max(connect_timeout, read_timeout, send_timeout)
 
         if http_proxy is None and "HTTP_PROXY" in os.environ:
