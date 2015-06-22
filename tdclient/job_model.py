@@ -200,7 +200,7 @@ class Job(Model):
             if timeout is None or abs(time.time() - started_at) < timeout:
                 time.sleep(wait_interval)
                 if callable(callback):
-                    callback()
+                    callback(self)
             else:
                 raise RuntimeError("timeout") # TODO: throw proper error
         self.update()
