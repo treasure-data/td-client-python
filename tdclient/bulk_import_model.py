@@ -205,3 +205,34 @@ class BulkImport(Model):
         response = self._client.list_bulk_import_parts(self.name)
         self.update()
         return response
+
+    def __str__(self):
+        print_fmt = """\
+{class_name}(
+    name={name},
+    database={database},
+    table={table},
+    status={status},
+    job_id={job_id},
+    valid_records={valid_records},
+    error_records={error_records},
+    valid_parts={valid_parts},
+    error_parts={error_parts},
+    upload_frozen={upload_frozen}
+    )
+"""
+
+        bulk_import_str = print_fmt.format(
+            class_name=self.__class__.__name__,
+            name=self._name,
+            database=self._database,
+            table=self._table,
+            status=self._status,
+            job_id=self._job_id,
+            valid_records=valid_records,
+            error_records=self._error_records,
+            valid_parts=self._valid_parts,
+            error_parts=self._error_parts,
+            upload_frozen=self._upload_frozen
+            )
+        return bulk_import_str

@@ -306,3 +306,34 @@ class Job(Model):
         """
         self._update_progress()
         return self._status == self.STATUS_RUNNING
+
+    def __str__(self):
+        print_fmt = """\
+{class_name}(
+    id={job_id},
+    type={type},
+    result_size={result_size},
+    result_url={result_url},
+    result_schema={result_schema},
+    priority={priority},
+    retry_limit={retry_limit},
+    org_name={org_name},
+    db_name={db_name},
+    debug={debug}
+)
+"""
+
+        job_str = print_fmt.format(
+            class_name=self.__class__.__name__,
+            job_id=self.job_id,
+            type=self.type,
+            result_size=self.result_size,
+            result_url=result_url,
+            result_schema=result_schema,
+            priority=self.priority,
+            retry_limit=self.retry_limit,
+            org_name=self.org_name,
+            db_name=self.db_name,
+            debug=self.debug
+        )
+        return job_str

@@ -43,3 +43,14 @@ class AccessControl(Model):
         TODO: add docstring
         """
         return self._grant_option
+
+    def __str__(self):
+        print_fmt = """\
+{class_name}(subject={subject}, action={action}, scope={scope}, grant_option={grant_option})
+"""
+        access_control = print_fmt.format(
+            subject=self._subject,
+            action=self._action,
+            scope=self._scope,
+            grant_option=self._grant_option
+            )

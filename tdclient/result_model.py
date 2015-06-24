@@ -35,3 +35,19 @@ class Result(Model):
         TODO: add docstring
         """
         return self._org_name
+
+    def __str__(self):
+        print_fmt = """\
+{class_name}(
+    name={name},
+    url={url},
+    org_name={org_name}
+)
+"""
+        result_str = print_fmt.format(
+            class_name=self.__class__.__name__,
+            name=self.name,
+            url=self.url,
+            org_name=self.org_name
+        )
+        return result_str

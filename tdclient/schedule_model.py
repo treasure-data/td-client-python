@@ -20,6 +20,11 @@ class ScheduledJob(Job):
         """
         return self._created_at
 
+    def __str__(self):
+        print_fmt = "{class_name}(scheduled_at={scheduled_at})"
+        scheduled_job_str = print_fmt.format(scheduled_at=self.scheduled_at)
+        return scheduled_job_str
+
 class Schedule(Model):
     """Schedule on Treasure Data Service
     """
@@ -120,3 +125,36 @@ class Schedule(Model):
         TODO: add docstring
         """
         return self._client.run_schedule(time, num)
+
+    def __str__(self):
+        print_fmt = """\
+{class_name}(
+    name={name},
+    cron={cron},
+    query={query},
+    database={database},
+    result_url={result_url},
+    timezone={timezone},
+    delay={delay},
+    next_time={next_time},
+    priority={priority},
+    retry_limit={retry_limit},
+    org_name={org_name}
+)
+"""
+
+        schedule_str = print_fmt.format(
+            name=self.name,
+            cron=self.name,
+            query=self.query,
+            database=self.database,
+            result_url=self.result_url,
+            timezone=self.timezone,
+            delay=self.dealy,
+            next_time=self.next_time,
+            priority=self.priority,
+            retry_limit=self.retry_limit,
+            org_name=self.org_name
+            )
+
+        return schedule_str

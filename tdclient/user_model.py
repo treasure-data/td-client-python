@@ -43,3 +43,13 @@ class User(Model):
         Returns: e-mail address
         """
         return self._email
+
+    def __str__(self):
+        print_fmt = "{class_name}(name={name}, org_name={org_name}, role_names={role_names}, email={email})"
+        user_str = print_fmt.format(
+            class_name=self.__class__.__name__,
+            org_name=self.org_name,
+            role_names=self.role_names,
+            email=self.email
+        )
+        return user_str

@@ -11,6 +11,7 @@ def rows2str(rows, num_rows=20):
 
     rows_list = []
     has_more_data = False
+
     for i, row in enumerate(rows):
         rows_list.append(row)
         if i >= num_rows:
