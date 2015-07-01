@@ -1,5 +1,9 @@
 # Version History
 
+## 0.3.0.dev0
+
+* Implement Python Database API (PEP 0249)
+
 ## 0.2.1
 
 * Set default timeout of API client as 60 seconds.
