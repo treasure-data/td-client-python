@@ -18,6 +18,10 @@ class Cursor(object):
         self.wait_callback = wait_callback
 
     @property
+    def api(self):
+        return self._api
+
+    @property
     def description(self):
         return self._description
 
@@ -67,7 +71,7 @@ class Cursor(object):
                 else:
                     time.sleep(self.wait_interval)
                     if callable(self.wait_callback):
-                        self.wait_callback(self._executed)
+                        self.wait_callback(self)
                     return self._do_execute()
 
     def _result_description(self, result_schema):
@@ -113,3 +117,24 @@ class Cursor(object):
 
     def setoutputsize(self, size, column=None):
         raise NotImplementedError
+
+    def show_job(self):
+        """
+        TODO:
+        """
+        self._check_executed()
+        return self._api.show_job(self._executed)
+
+    def job_status(self):
+        """
+        TODO:
+        """
+        self._check_executed()
+        return self._api.job_status(self._executed)
+
+    def job_result(self):
+        """
+        TODO:
+        """
+        self._check_executed()
+        return self._api.job_result(self._executed)
