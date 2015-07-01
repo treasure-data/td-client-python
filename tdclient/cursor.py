@@ -39,7 +39,7 @@ class Cursor(object):
     def execute(self, query, args=None):
         if args is not None:
             if isinstance(args, dict):
-                query = query.format(dict)
+                query = query.format(**args)
             else:
                 raise errors.NotSupportedError
         self._executed = self._api.query(query, **self._query_kwargs)
@@ -51,13 +51,14 @@ class Cursor(object):
         return self._executed
 
     def executemany(self, operation, seq_of_parameters):
-        return [ self.execute(operation, *parameter) for parameter in seq_of_parameters ]
+        return [ self.execute(operation, args=parameter) for parameter in seq_of_parameters ]
 
     def _check_executed(self):
         if self._executed is None:
             raise errors.ProgrammingError("execute() first")
 
     def _do_execute(self):
+        self._check_executed()
         if self._rows is None:
             status = self._api.job_status(self._executed)
             if status == "success":
