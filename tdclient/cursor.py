@@ -77,7 +77,7 @@ class Cursor(object):
     def _result_description(self, result_schema):
         if result_schema is None:
             result_schema = []
-        return [ (name, None, None, None, None, None, None) for name, t in result_schema ]
+        return [ (column[0], None, None, None, None, None, None) for column in result_schema ]
 
     def fetchone(self):
         self._check_executed()

@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 import datetime
 from tdclient import client
 from tdclient import connection
-from tdclient import cursor
 from tdclient import version
 
 __version__ = version.__version__
@@ -20,9 +19,6 @@ apilevel = "2.0"
 threadsafety = 3
 
 paramstyle = "pyformat"
-
-class Warning(Warning):
-    pass
 
 class Error(Exception):
     pass
