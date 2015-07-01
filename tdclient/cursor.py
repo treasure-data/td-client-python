@@ -42,10 +42,7 @@ class Cursor(object):
         return self._executed
 
     def executemany(self, operation, seq_of_parameters):
-        jobs = []
-        for parameter in seq_of_parameters:
-            jobs.append(self.execute(operation, *parameter))
-        return jobs
+        return [ self.execute(operation, *parameter) for parameter in seq_of_parameters ]
 
     def _check_executed(self):
         if self._executed is None:
