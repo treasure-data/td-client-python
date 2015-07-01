@@ -27,6 +27,12 @@ class Connection(object):
         self._api = api.API(**kwargs)
         self._cursor_kwargs = cursor_kwargs
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self._api.close()
+
     @property
     def api(self):
         return self._api
