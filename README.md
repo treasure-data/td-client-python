@@ -48,6 +48,26 @@ with tdclient.Client() as td:
         print(job.job_id)
 ```
 
+### Using with pandas
+
+td-client-python implements [PEP 0249](https://www.python.org/dev/peps/pep-0249/) Python Database API v2.0.
+You can use td-client-python with external libraries which supports Database API such like [pandas](http://pandas.pydata.org/).
+
+```python
+#!/usr/bin/env python
+
+import contextlib
+import pandas
+import tdclient
+
+def on_waiting(cursor):
+    print(cursor.job_status())
+
+with contextlib.closing(tdclient.connect(db="sample_datasets", type="presto", wait_callback=on_waiting)) as connection:
+    dataframe = pandas.read_sql("SELECT symbol, COUNT(1) AS c FROM nasdaq GROUP BY symbol ORDER BY c DESC", connection)
+    print(repr(dataframe))
+```
+
 ## Development
 
 ### Running tests
