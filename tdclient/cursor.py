@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import time
 
 class Cursor(object):
-    def __init__(self, api, **kwargs):
+    def __init__(self, api, wait_interval=3, wait_callback=None, **kwargs):
         self._api = api
         self._query_kwargs = kwargs
         self._executed = None
@@ -14,6 +14,8 @@ class Cursor(object):
         self._rownumber = 0
         self._rowcount = -1
         self._description = []
+        self.wait_interval = wait_interval
+        self.wait_callback = wait_callback
 
     @property
     def description(self):
@@ -37,10 +39,13 @@ class Cursor(object):
                 raise NotImplementedError
         self._executed = self._api.query(query, **self._query_kwargs)
         self._do_execute()
+        return self._executed
 
     def executemany(self, operation, seq_of_parameters):
+        jobs = []
         for parameter in seq_of_parameters:
-            self.execute(operation, *parameter)
+            jobs.append(self.execute(operation, *parameter))
+        return jobs
 
     def _check_executed(self):
         if self._executed is None:
@@ -59,7 +64,9 @@ class Cursor(object):
                 if status in ["error", "killed"]:
                     raise RuntimeError("job error: %s: %s" % (self._executed, status))
                 else:
-                    time.sleep(3) # TODO: make configurable
+                    time.sleep(self.wait_interval)
+                    if callable(self.wait_callback):
+                        self.wait_callback(self._executed)
                     return self._do_execute()
 
     def _result_description(self, result_schema):
