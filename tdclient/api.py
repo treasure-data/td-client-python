@@ -45,32 +45,16 @@ from tdclient.schedule_api import ScheduleAPI
 from tdclient.server_status_api import ServerStatusAPI
 from tdclient.table_api import TableAPI
 from tdclient.user_api import UserAPI
+from tdclient import errors
 from tdclient import version
 
 log = logging.getLogger(__name__)
 
-class ParameterValidationError(Exception):
-    pass
-
-# Generic API error
-class APIError(Exception):
-    pass
-
-# 401 API errors
-class AuthError(APIError):
-    pass
-
-# 403 API errors, used for database permissions
-class ForbiddenError(APIError):
-    pass
-
-# 409 API errors
-class AlreadyExistsError(APIError):
-    pass
-
-# 404 API errors
-class NotFoundError(APIError):
-    pass
+APIError = errors.APIError
+AuthError = errors.AuthError
+ForbiddenError = errors.ForbiddenError
+AlreadyExistsError = errors.AlreadyExistsError
+NotFoundError = errors.NotFoundError
 
 class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, ImportAPI,
           JobAPI, PartialDeleteAPI, ResultAPI, ScheduleAPI, ServerStatusAPI, TableAPI, UserAPI):
@@ -319,15 +303,15 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         status_code = res.status
         s = body.decode("utf-8")
         if status_code == 404:
-            raise NotFoundError("%s: %s" % (msg, s))
+            raise errors.NotFoundError("%s: %s" % (msg, s))
         elif status_code == 409:
-            raise AlreadyExistsError("%s: %s" % (msg, s))
+            raise errors.AlreadyExistsError("%s: %s" % (msg, s))
         elif status_code == 401:
-            raise AuthError("%s: %s" % (msg, s))
+            raise errors.AuthError("%s: %s" % (msg, s))
         elif status_code == 403:
-            raise ForbiddenError("%s: %s" % (msg, s))
+            raise errors.ForbiddenError("%s: %s" % (msg, s))
         else:
-            raise APIError("%d: %s: %s" % (status_code, msg, s))
+            raise errors.APIError("%d: %s: %s" % (status_code, msg, s))
 
     def checked_json(self, body, required):
         js = None

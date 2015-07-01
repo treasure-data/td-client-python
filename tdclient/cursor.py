@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import time
+from tdclient import errors
 
 class Cursor(object):
     def __init__(self, api, wait_interval=3, wait_callback=None, **kwargs):
@@ -30,7 +31,7 @@ class Cursor(object):
         return self._rowcount
 
     def callproc(self, procname, *parameters):
-        raise NotImplementedError
+        raise errors.NotSupportedError
 
     def close(self):
         self._api.close()
@@ -40,7 +41,7 @@ class Cursor(object):
             if isinstance(args, dict):
                 query = query.format(dict)
             else:
-                raise NotImplementedError
+                raise errors.NotSupportedError
         self._executed = self._api.query(query, **self._query_kwargs)
         self._rows = None
         self._rownumber = 0
@@ -54,7 +55,7 @@ class Cursor(object):
 
     def _check_executed(self):
         if self._executed is None:
-            raise RuntimeError("execute() first")
+            raise errors.ProgrammingError("execute() first")
 
     def _do_execute(self):
         if self._rows is None:
@@ -67,7 +68,7 @@ class Cursor(object):
                 self._description = self._result_description(job.get("hive_result_schema", []))
             else:
                 if status in ["error", "killed"]:
-                    raise RuntimeError("job error: %s: %s" % (self._executed, status))
+                    raise errors.InternalError("job error: %s: %s" % (self._executed, status))
                 else:
                     time.sleep(self.wait_interval)
                     if callable(self.wait_callback):
@@ -86,7 +87,7 @@ class Cursor(object):
             self._rownumber += 1
             return row
         else:
-            raise IndexError("index out of bound (%d out of %d)" % (self._rownumber, self._rowcount))
+            raise errors.InternalError("index out of bound (%d out of %d)" % (self._rownumber, self._rowcount))
 
     def fetchmany(self, size=None):
         if size is None:
@@ -98,7 +99,7 @@ class Cursor(object):
                 self._rownumber += size
                 return rows
             else:
-                raise IndexError("index out of bound (%d out of %d)" % (self._rownumber, self._rowcount))
+                raise errors.InternalError("index out of bound (%d out of %d)" % (self._rownumber, self._rowcount))
 
     def fetchall(self):
         self._check_executed()
@@ -107,16 +108,16 @@ class Cursor(object):
             self._rownumber = self._rowcount
             return rows
         else:
-            raise IndexError("row index out of bound (%d out of %d)" % (self._rownumber, self._rowcount))
+            raise errors.InternalError("row index out of bound (%d out of %d)" % (self._rownumber, self._rowcount))
 
     def nextset(self):
-        raise NotImplementedError
+        raise errors.NotSupportedError
 
     def setinputsizes(self, sizes):
-        raise NotImplementedError
+        raise errors.NotSupportedError
 
     def setoutputsize(self, size, column=None):
-        raise NotImplementedError
+        raise errors.NotSupportedError
 
     def show_job(self):
         """

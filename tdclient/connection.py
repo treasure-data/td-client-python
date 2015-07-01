@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 from tdclient import api
 from tdclient import cursor
+from tdclient import errors
 
 class Connection(object):
     def __init__(self, type=None, db=None, result_url=None, priority=None, retry_limit=None, wait_interval=None, wait_callback=None, **kwargs):
@@ -30,10 +31,10 @@ class Connection(object):
         self._api.close()
 
     def commit(self):
-        raise NotImplementedError
+        raise errors.NotSupportedError
 
     def rollback(self):
-        raise NotImplementedError
+        raise errors.NotSupportedError
 
     def cursor(self):
         return cursor.Cursor(self._api, **self._cursor_kwargs)

@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import datetime
 from tdclient import client
 from tdclient import connection
+from tdclient import errors
 from tdclient import version
 
 __version__ = version.__version__
@@ -11,46 +12,37 @@ __version__ = version.__version__
 Client = client.Client
 
 def connect(*args, **kwargs):
-    """TODO"""
+    """Returns a DBAPI compatible connection object
+
+    Params:
+        type (str): query engine type. "hive" by default.
+        db (str): the name of database on Treasure Data
+        result_url (str): result output URL
+        priority (str): job priority
+        retry_limit (int): job retry limit
+        wait_interval (int): job wait interval to check status
+        wait_callback (callable): a callback to be called on every ticks of job wait
+
+    Returns: `tdclient.connection.Connection`
+    """
     return connection.Connection(*args, **kwargs)
 
 apilevel = "2.0"
-
 threadsafety = 3
-
 paramstyle = "pyformat"
 
-class Error(Exception):
-    pass
-
-class InterfaceError(Error):
-    pass
-
-class DatabaseError(Error):
-    pass
-
-class DataError(DatabaseError):
-    pass
-
-class OperationalError(DatabaseError):
-    pass
-
-class IntegrityError(DatabaseError):
-    pass
-
-class InternalError(DatabaseError):
-    pass
-
-class ProgrammingError(DatabaseError):
-    pass
-
-class NotSupportedError(DatabaseError):
-    pass
+Error = errors.Error
+InterfaceError = errors.InterfaceError
+DatabaseError = errors.DatabaseError
+DataError = errors.DataError
+OperationalError = errors.OperationalError
+IntegrityError = errors.IntegrityError
+InternalError = errors.InternalError
+ProgrammingError = errors.ProgrammingError
+NotSupportedError = errors.NotSupportedError
 
 Date = datetime.date
-
 Time = datetime.time
-
 Timestamp = datetime.datetime
 
 def DateFromTicks(ticks):
