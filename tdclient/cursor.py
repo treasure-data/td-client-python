@@ -38,6 +38,10 @@ class Cursor(object):
             else:
                 raise NotImplementedError
         self._executed = self._api.query(query, **self._query_kwargs)
+        self._rows = None
+        self._rownumber = 0
+        self._rowcount = -1
+        self._description = []
         self._do_execute()
         return self._executed
 
