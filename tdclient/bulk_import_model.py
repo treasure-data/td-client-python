@@ -130,7 +130,7 @@ class BulkImport(Model):
         self.update()
         return response
 
-    def perform(self, wait=False, wait_interval=1, wait_callback=None):
+    def perform(self, wait=False, wait_interval=5, wait_callback=None):
         """
         TODO: add docstring
         """
@@ -143,7 +143,7 @@ class BulkImport(Model):
         self.update()
         return job
 
-    def commit(self, wait=False, wait_interval=1, timeout=None):
+    def commit(self, wait=False, wait_interval=5, timeout=None):
         """
         TODO: add docstring
         """

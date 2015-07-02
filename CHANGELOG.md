@@ -4,6 +4,7 @@
 
 * Add Python Database API (PEP 0249) compatible connection and cursor.
 * Add varidation to the part name of a bulk import. It should not contain '/'.
+* Changed default wait interval of job models from 1 second to 5 seconds.
 * Fix many potential problems/warnings found by landscape.io.
 
 ## 0.2.1 (2015-06-20)

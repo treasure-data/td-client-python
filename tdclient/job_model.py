@@ -189,11 +189,13 @@ class Job(Model):
         """
         return self._debug
 
-    def wait(self, timeout=None, wait_interval=1, wait_callback=None, callback=None):
+    def wait(self, timeout=None, wait_interval=5, wait_callback=None, callback=None):
         """Sleep until the job has been finished
 
         Params:
             timeout (int): Timeout in seconds. No timeout by default.
+            wait_interval (int): wait interval in second. Default 5 seconds.
+            wait_callback (callable): A callable to be called on every tick of wait interval.
         """
         started_at = time.time()
         while not self.finished():

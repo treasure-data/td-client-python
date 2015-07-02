@@ -7,7 +7,7 @@ import time
 from tdclient import errors
 
 class Cursor(object):
-    def __init__(self, api, wait_interval=3, wait_callback=None, **kwargs):
+    def __init__(self, api, wait_interval=5, wait_callback=None, **kwargs):
         self._api = api
         self._query_kwargs = kwargs
         self._executed = None
