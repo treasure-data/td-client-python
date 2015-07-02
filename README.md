@@ -105,6 +105,8 @@ with tdclient.Client() as td:
         if 0 < len(error_records):
             for record in error_records:
                 warnings.warn("found an error record: %s" % (repr(record),))
+        if bulk_import.valid_record < 1:
+            warnings.warn("no records have been imported")
         bulk_import.commit()
     bulk_import.delete()
 ```
