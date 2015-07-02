@@ -24,11 +24,12 @@ class ResultAPI(object):
             js = self.checked_json(body, ["results"])
             return [ (m["name"], m["url"], None) for m in js["results"] ] # same as database
 
-    def create_result(self, name, url, params={}):
+    def create_result(self, name, url, params=None):
         """
         TODO: add docstring
         => True
         """
+        params = {} if params is None else params
         params.update({"url": url})
         with self.post("/v3/result/create/%s" % (urlquote(str(name))), params) as res:
             code, body = res.status, res.read()

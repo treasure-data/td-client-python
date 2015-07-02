@@ -251,10 +251,10 @@ class Job(Model):
                 for row in self._result:
                     yield row
 
-    def result_format(self, format):
+    def result_format(self, fmt):
         """
         Params:
-            format (str): output format of result set
+            fmt (str): output format of result set
 
         Returns: an iterator of rows in result set
         """
@@ -263,7 +263,7 @@ class Job(Model):
         else:
             self.update()
             if self._result is None:
-                for row in self._client.job_result_format_each(self._job_id, format):
+                for row in self._client.job_result_format_each(self._job_id, fmt):
                     yield row
             else:
                 for row in self._result:

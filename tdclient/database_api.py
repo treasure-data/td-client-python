@@ -44,11 +44,12 @@ class DatabaseAPI(object):
                 self.raise_error("Delete database failed", res, body)
             return True
 
-    def create_database(self, db, params={}):
+    def create_database(self, db, params=None):
         """
         TODO: add docstring
         => True
         """
+        params = {} if params is None else params
         with self.post("/v3/database/create/%s" % urlquote(str(db)), params) as res:
             code, body = res.status, res.read()
             if code != 200:

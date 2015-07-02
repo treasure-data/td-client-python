@@ -21,7 +21,8 @@ class BulkImport(Model):
         super(BulkImport, self).__init__(client)
         self._feed(kwargs)
 
-    def _feed(self, data={}):
+    def _feed(self, data=None):
+        data = {} if data is None else data
         self._name = data["name"]
         self._database = data.get("database")
         self._table = data.get("table")
@@ -178,15 +179,15 @@ class BulkImport(Model):
         self.update()
         return response
 
-    def upload_file(self, part_name, format, file):
+    def upload_file(self, part_name, fmt, file_like):
         """Upload a part to Bulk Import session, from an existing file on filesystem.
 
         Params:
             part_name (str): name of a part of the bulk import session
-            format (str): format of data type (e.g. "msgpack", "json")
-            file (str or file-like): a name of a file, or a file-like object contains the data
+            fmt (str): format of data type (e.g. "msgpack", "json")
+            file_like (str or file-like): a name of a file, or a file-like object contains the data
         """
-        response = self._client.bulk_import_upload_file(self.name, part_name, format, file)
+        response = self._client.bulk_import_upload_file(self.name, part_name, fmt, file_like)
         self.update()
         return response
 
