@@ -76,6 +76,7 @@ with tdclient.Client() as td:
 ### Bulk import
 
 ```python
+from __future__ import print_function
 import sys
 import tdclient
 import time
@@ -94,19 +95,17 @@ with tdclient.Client() as td:
             part_name = "part-%s" % (file_name,)
             bulk_import.upload_file(part_name, "json", file_name)
         bulk_import.freeze()
-        if 0 < len(files):
-            job = bulk_import.perform()
     except:
         bulk_import.delete()
         raise
-    if job:
-        job.wait()
-        error_records = list(bulk_import.error_record_items())
-        if 0 < len(error_records):
-            for record in error_records:
-                warnings.warn("found an error record: %s" % (repr(record),))
-        if bulk_import.valid_record < 1:
-            warnings.warn("no records have been imported")
+    if 0 < len(files):
+        bulk_import.perform(wait=True)
+        if 0 < bulk_import.error_records:
+            warnings.warn("detected %d error records." % (bulk_import.error_records,))
+        if 0 < bulk_import.valid_records:
+            print("imported %d records." % (bulk_import.valid_records,))
+        else:
+            raise(RuntimeError("no records have been imported: %s" % (repr(bulk_import.name),)))
         bulk_import.commit()
     bulk_import.delete()
 ```
