@@ -46,7 +46,7 @@ class Schema(object):
         """
         TODO: add docstring
         """
-        self._fields.append(Field(name, type))
+        self._fields.append(Schema.Field(name, type))
 
 class Job(Model):
     """Job on Treasure Data Service
