@@ -103,7 +103,7 @@ with tdclient.Client() as td:
     bulk_import.delete()
 ```
 
-### Run jobs on Treasure Data via DBAPI2
+### Running jobs on Treasure Data via DBAPI2
 
 td-client-python implements [PEP 0249](https://www.python.org/dev/peps/pep-0249/) Python Database API v2.0.
 You can use td-client-python with external libraries which supports Database API such like [pandas](http://pandas.pydata.org/).
