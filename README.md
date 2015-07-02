@@ -39,13 +39,74 @@ Please see also the examples at [Treasure Data Documentation](http://docs.treasu
 TreasureData API key will be read from environment variable `TD_API_KEY`, if none is given via arguments to `tdclient.Client`.
 
 ```python
-#!/usr/bin/env python
-
 import tdclient
 
 with tdclient.Client() as td:
     for job in td.jobs():
         print(job.job_id)
+```
+
+### Running jobs
+
+```
+import tdclient
+
+with tdclient.Client() as td:
+    job = td.query("sample_datasets", "SELECT COUNT(1) FROM www_access", type="hive")
+    job.wait()
+    for row in job.result():
+        print(repr(row))
+```
+
+### Importing data
+
+```
+import sys
+import tdclient
+
+database_name = "database1"
+table_name = "table1"
+files = sys.argv[1:]
+
+with tdclient.Client() as td:
+    for file_name in files:
+        td.import_file(database_name, table_name, "csv", file_name)
+```
+
+### Bulk import
+
+```
+import sys
+import tdclient
+import time
+import warnings
+
+database_name = "database1"
+table_name = "table1"
+files = sys.argv[1:]
+
+with tdclient.Client() as td:
+    session_name = "session-%d" % (int(time.time()),)
+    bulk_import = td.create_bulk_import(session_name, database_name, table_name)
+    job = None
+    try:
+        for file_name in files:
+            part_name = "part-%s" % (file_name,)
+            bulk_import.upload_file(part_name, "json", file_name)
+        bulk_import.freeze()
+        if 0 < len(files):
+            job = bulk_import.perform()
+    except:
+        bulk_import.delete()
+        raise
+    if job:
+        job.wait()
+        error_records = list(bulk_import.error_record_items())
+        if 0 < len(error_records):
+            for record in error_records:
+                warnings.warn("found an error record: %s" % (repr(record),))
+        bulk_import.commit()
+    bulk_import.delete()
 ```
 
 ### Using with pandas
@@ -54,8 +115,6 @@ td-client-python implements [PEP 0249](https://www.python.org/dev/peps/pep-0249/
 You can use td-client-python with external libraries which supports Database API such like [pandas](http://pandas.pydata.org/).
 
 ```python
-#!/usr/bin/env python
-
 import pandas
 import tdclient
 
