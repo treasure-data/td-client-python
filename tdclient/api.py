@@ -330,10 +330,10 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         time.sleep(secs)
 
     def parsedate(self, s):
-        warnings.warn("parsedate(secs) will be removed from future release. Please use datetime.strptime(date_string, format) or other.", category=DeprecationWarning)
+        warnings.warn("parsedate(secs) will be removed from future release. Please use datetime.strptime(date_string, fmt) or other.", category=DeprecationWarning)
         return self._parsedate(s, None)
 
-    def _parsedate(self, s, format):
+    def _parsedate(self, s, fmt):
         # TODO: parse datetime with using format string
         # for now, this ignores given format string since API may return date in ambiguous format :(
         return dateutil.parser.parse(s)
@@ -347,56 +347,56 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
         # all connections in pool will be closed eventually during gc.
         self.http.clear()
 
-    def _prepare_file(self, file, format, **kwargs):
+    def _prepare_file(self, file_like, fmt, **kwargs):
         fp = tempfile.TemporaryFile()
         with contextlib.closing(gzip.GzipFile(mode="wb", fileobj=fp)) as gz:
             packer = msgpack.Packer()
-            with contextlib.closing(self._read_file(file, format, **kwargs)) as items:
+            with contextlib.closing(self._read_file(file_like, fmt, **kwargs)) as items:
                 for item in items:
                     gz.write(packer.pack(item))
         fp.seek(0)
         return fp
 
-    def _read_file(self, file, format, **kwargs):
-        compressed = format.endswith(".gz")
+    def _read_file(self, file_like, fmt, **kwargs):
+        compressed = fmt.endswith(".gz")
         if compressed:
-            format = format[0:len(format)-len(".gz")]
-        reader_name = "_read_%s_file" % (format,)
+            fmt = fmt[0:len(fmt)-len(".gz")]
+        reader_name = "_read_%s_file" % (fmt,)
         if hasattr(self, reader_name):
             reader = getattr(self, reader_name)
         else:
-            raise TypeError("unknown format: %s" % (format,))
-        if hasattr(file, "read"):
+            raise TypeError("unknown format: %s" % (fmt,))
+        if hasattr(file_like, "read"):
             if compressed:
-                file = gzip.GzipFile(fileobj=file)
-            return reader(file, **kwargs)
+                file_like = gzip.GzipFile(fileobj=file_like)
+            return reader(file_like, **kwargs)
         else:
             if compressed:
-                file = gzip.GzipFile(fileobj=open(file, "rb"))
+                file_like = gzip.GzipFile(fileobj=open(file_like, "rb"))
             else:
-                file = open(file, "rb")
-            return reader(file, **kwargs)
+                file_like = open(file_like, "rb")
+            return reader(file_like, **kwargs)
 
     def _validate_record(self, record):
         if "time" not in record:
             warnings.warn("records should have \"time\" column to import records properly.", category=RuntimeWarning)
         return True
 
-    def _read_msgpack_file(self, file, **kwargs):
+    def _read_msgpack_file(self, file_like, **kwargs):
         # current impl doesn't torelate any unpack error
-        unpacker = msgpack.Unpacker(file)
+        unpacker = msgpack.Unpacker(file_like)
         for record in unpacker:
             self._validate_record(record)
             yield record
 
-    def _read_json_file(self, file, **kwargs):
+    def _read_json_file(self, file_like, **kwargs):
         # current impl doesn't torelate any JSON parse error
-        for s in file:
+        for s in file_like:
             record = json.loads(s.decode("utf-8"))
             self._validate_record(record)
             yield record
 
-    def _read_csv_file(self, file, dialect=csv.excel, columns=None, encoding="utf-8", **kwargs):
+    def _read_csv_file(self, file_like, dialect=csv.excel, columns=None, encoding="utf-8", **kwargs):
         try:
             unicode
             py2k = True
@@ -404,8 +404,8 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
             py2k = False
         # `csv` module bundled with py2k doesn't support `unicode` :(
         # https://docs.python.org/2/library/csv.html#examples
-        def getreader(file):
-            for s in codecs.getreader(encoding)(file):
+        def getreader(file_like):
+            for s in codecs.getreader(encoding)(file_like):
                 yield s.encode(encoding) if py2k else s
         def value(s):
             s = s.decode(encoding) if py2k else s
@@ -424,17 +424,17 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
             else:
                 return s
         if columns is None:
-            reader = csv.DictReader(getreader(file), dialect=dialect)
+            reader = csv.DictReader(getreader(file_like), dialect=dialect)
             for row in reader:
                 record = dict([ (k, value(v)) for (k, v) in row.items() ])
                 self._validate_record(record)
                 yield record
         else:
-            reader = csv.reader(getreader(file), dialect=dialect)
+            reader = csv.reader(getreader(file_like), dialect=dialect)
             for row in reader:
                 record = dict(zip(columns, [ value(col) for col in row ]))
                 self._validate_record(record)
                 yield record
 
-    def _read_tsv_file(self, file, **kwargs):
-        return self._read_csv_file(file, dialect=csv.excel_tab, **kwargs)
+    def _read_tsv_file(self, file_like, **kwargs):
+        return self._read_csv_file(file_like, dialect=csv.excel_tab, **kwargs)
