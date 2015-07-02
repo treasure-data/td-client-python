@@ -3,12 +3,24 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from tdclient.access_control_model import AccessControl
-from tdclient.account_model import Account
-from tdclient.bulk_import_model import BulkImport
-from tdclient.database_model import Database
-from tdclient.job_model import Schema, Job
-from tdclient.result_model import Result
-from tdclient.schedule_model import ScheduledJob, Schedule
-from tdclient.table_model import Table
-from tdclient.user_model import User
+from tdclient import access_control_model
+from tdclient import account_model
+from tdclient import bulk_import_model
+from tdclient import database_model
+from tdclient import job_model
+from tdclient import result_model
+from tdclient import schedule_model
+from tdclient import table_model
+from tdclient import user_model
+
+AccessControl = access_control_model.AccessControl
+Account = account_model.Account
+BulkImport = bulk_import_model.BulkImport
+Database = database_model.Database
+Schema = job_model.Schema
+Job = job_model.Job
+Result = result_model.Result
+ScheduledJob = schedule_model.ScheduledJob
+Schedule = schedule_model.Schedule
+Table = table_model.Table
+User = user_model.User
