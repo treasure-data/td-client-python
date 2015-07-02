@@ -84,6 +84,8 @@ class BulkImportAPI(object):
         TODO: add docstring
         => None
         """
+        if 0 < part_name.find("/"):
+            raise ValueError("part name must not contain '/': %s" % (repr(part_name,)))
         with self.put("/v3/bulk_import/upload_part/%s/%s" % (urlquote(str(name)), urlquote(str(part_name))), stream, size) as res:
             code, body = res.status, res.read()
             if code / 100 != 2:
