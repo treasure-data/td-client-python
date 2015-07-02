@@ -189,7 +189,7 @@ class Job(Model):
         """
         return self._debug
 
-    def wait(self, timeout=None, wait_interval=1, callback=None):
+    def wait(self, timeout=None, wait_interval=1, wait_callback=None, callback=None):
         """Sleep until the job has been finished
 
         Params:
@@ -199,8 +199,9 @@ class Job(Model):
         while not self.finished():
             if timeout is None or abs(time.time() - started_at) < timeout:
                 time.sleep(wait_interval)
-                if callable(callback):
-                    callback(self)
+                cb = wait_callback if callable(wait_callback) else callback
+                if callable(cb):
+                    cb(self)
             else:
                 raise RuntimeError("timeout") # TODO: throw proper error
         self.update()

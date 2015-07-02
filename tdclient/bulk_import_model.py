@@ -130,7 +130,7 @@ class BulkImport(Model):
         self.update()
         return response
 
-    def perform(self, wait=False, wait_interval=1):
+    def perform(self, wait=False, wait_interval=1, wait_callback=None):
         """
         TODO: add docstring
         """
@@ -139,7 +139,7 @@ class BulkImport(Model):
             raise(RuntimeError("bulk import session \"%s\" is not frozen" % (self.name,)))
         job = self._client.perform_bulk_import(self.name)
         if wait:
-            job.wait(wait_interval=wait_interval)
+            job.wait(wait_interval=wait_interval, wait_callback=None)
         self.update()
         return job
 
