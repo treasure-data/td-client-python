@@ -2,7 +2,9 @@
 
 ## 0.3.0.dev0 (2015-07-XX)
 
-* Implement Python Database API (PEP 0249)
+* Add Python Database API (PEP 0249) compatible connection and cursor.
+* Add varidation to the part name of a bulk import. It should not contain '/'.
+* Fix many potential problems/warnings found by landscape.io.
 
 ## 0.2.1 (2015-06-20)
 

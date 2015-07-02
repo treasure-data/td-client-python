@@ -110,7 +110,7 @@ with tdclient.Client() as td:
     bulk_import.delete()
 ```
 
-### Using with pandas
+### Run jobs on Treasure Data via DBAPI2
 
 td-client-python implements [PEP 0249](https://www.python.org/dev/peps/pep-0249/) Python Database API v2.0.
 You can use td-client-python with external libraries which supports Database API such like [pandas](http://pandas.pydata.org/).
@@ -122,10 +122,14 @@ import tdclient
 def on_waiting(cursor):
     print(cursor.job_status())
 
-with tdclient.connect(db="sample_datasets", type="presto", wait_callback=on_waiting) as connection:
-    dataframe = pandas.read_sql("SELECT symbol, COUNT(1) AS c FROM nasdaq GROUP BY symbol ORDER BY c DESC", connection)
-    print(repr(dataframe))
+with tdclient.connect(db="sample_datasets", type="presto", wait_callback=on_waiting) as td:
+    data = pandas.read_sql("SELECT symbol, COUNT(1) AS c FROM nasdaq GROUP BY symbol", td)
+    print(repr(data))
 ```
+
+We offer another package for pandas named [pandas-td](https://github.com/treasure-data/pandas-td) with some advanced features.
+You may prefer it if you need to do complicated things, such like exporting result data to Treasure Data, printing job's
+progress during long execution, etc.
 
 ## Development
 
