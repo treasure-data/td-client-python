@@ -82,31 +82,31 @@ import tdclient
 import time
 import warnings
 
+if len(sys.argv) <= 1:
+    sys.exit("no files given")
+
 database_name = "database1"
 table_name = "table1"
-files = sys.argv[1:]
 
 with tdclient.Client() as td:
     session_name = "session-%d" % (int(time.time()),)
     bulk_import = td.create_bulk_import(session_name, database_name, table_name)
-    job = None
     try:
-        for file_name in files:
+        for file_name in sys.argv[1:]:
             part_name = "part-%s" % (file_name,)
             bulk_import.upload_file(part_name, "json", file_name)
         bulk_import.freeze()
     except:
         bulk_import.delete()
         raise
-    if 0 < len(files):
-        bulk_import.perform(wait=True)
-        if 0 < bulk_import.error_records:
-            warnings.warn("detected %d error records." % (bulk_import.error_records,))
-        if 0 < bulk_import.valid_records:
-            print("imported %d records." % (bulk_import.valid_records,))
-        else:
-            raise(RuntimeError("no records have been imported: %s" % (repr(bulk_import.name),)))
-        bulk_import.commit()
+    bulk_import.perform(wait=True)
+    if 0 < bulk_import.error_records:
+        warnings.warn("detected %d error records." % (bulk_import.error_records,))
+    if 0 < bulk_import.valid_records:
+        print("imported %d records." % (bulk_import.valid_records,))
+    else:
+        raise(RuntimeError("no records have been imported: %s" % (repr(bulk_import.name),)))
+    bulk_import.commit()
     bulk_import.delete()
 ```
 
