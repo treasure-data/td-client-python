@@ -48,7 +48,7 @@ with tdclient.Client() as td:
 
 ### Running jobs
 
-```
+```python
 import tdclient
 
 with tdclient.Client() as td:
@@ -60,7 +60,7 @@ with tdclient.Client() as td:
 
 ### Importing data
 
-```
+```python
 import sys
 import tdclient
 
@@ -75,7 +75,7 @@ with tdclient.Client() as td:
 
 ### Bulk import
 
-```
+```python
 import sys
 import tdclient
 import time
