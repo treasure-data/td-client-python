@@ -64,13 +64,9 @@ with tdclient.Client() as td:
 import sys
 import tdclient
 
-database_name = "database1"
-table_name = "table1"
-files = sys.argv[1:]
-
 with tdclient.Client() as td:
-    for file_name in files:
-        td.import_file(database_name, table_name, "csv", file_name)
+    for file_name in sys.argv[:1]:
+        td.import_file("mydb", "mytbl", "csv", file_name)
 ```
 
 ### Bulk import
@@ -83,14 +79,11 @@ import time
 import warnings
 
 if len(sys.argv) <= 1:
-    sys.exit("no files given")
-
-database_name = "database1"
-table_name = "table1"
+    sys.exit(0)
 
 with tdclient.Client() as td:
     session_name = "session-%d" % (int(time.time()),)
-    bulk_import = td.create_bulk_import(session_name, database_name, table_name)
+    bulk_import = td.create_bulk_import(session_name, "mydb", "mytbl")
     try:
         for file_name in sys.argv[1:]:
             part_name = "part-%s" % (file_name,)
