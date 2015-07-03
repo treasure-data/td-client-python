@@ -83,7 +83,7 @@ progress during long execution, etc.
 
 ### Importing data
 
-Importing data into Treasure Data in streaming manner, as same as [fluentd](http://www.fluentd.org/) is doing.
+Importing data into Treasure Data in streaming manner, as similar as [fluentd](http://www.fluentd.org/) is doing.
 
 ```python
 import sys
