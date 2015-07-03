@@ -48,6 +48,8 @@ with tdclient.Client() as td:
 
 ### Running jobs
 
+Running jobs on Treasure Data.
+
 ```python
 import tdclient
 
@@ -58,7 +60,30 @@ with tdclient.Client() as td:
         print(repr(row))
 ```
 
+### Running jobs via DBAPI2
+
+td-client-python implements [PEP 0249](https://www.python.org/dev/peps/pep-0249/) Python Database API v2.0.
+You can use td-client-python with external libraries which supports Database API such like [pandas](http://pandas.pydata.org/).
+
+```python
+import pandas
+import tdclient
+
+def on_waiting(cursor):
+    print(cursor.job_status())
+
+with tdclient.connect(db="sample_datasets", type="presto", wait_callback=on_waiting) as td:
+    data = pandas.read_sql("SELECT symbol, COUNT(1) AS c FROM nasdaq GROUP BY symbol", td)
+    print(repr(data))
+```
+
+We offer another package for pandas named [pandas-td](https://github.com/treasure-data/pandas-td) with some advanced features.
+You may prefer it if you need to do complicated things, such like exporting result data to Treasure Data, printing job's
+progress during long execution, etc.
+
 ### Importing data
+
+Importing data into Treasure Data in streaming manner, as same as [fluentd](http://www.fluentd.org/) is doing.
 
 ```python
 import sys
@@ -70,6 +95,8 @@ with tdclient.Client() as td:
 ```
 
 ### Bulk import
+
+Importing data into Treasure Data in batch manner.
 
 ```python
 from __future__ import print_function
@@ -102,27 +129,6 @@ with tdclient.Client() as td:
     bulk_import.commit()
     bulk_import.delete()
 ```
-
-### Running jobs on Treasure Data via DBAPI2
-
-td-client-python implements [PEP 0249](https://www.python.org/dev/peps/pep-0249/) Python Database API v2.0.
-You can use td-client-python with external libraries which supports Database API such like [pandas](http://pandas.pydata.org/).
-
-```python
-import pandas
-import tdclient
-
-def on_waiting(cursor):
-    print(cursor.job_status())
-
-with tdclient.connect(db="sample_datasets", type="presto", wait_callback=on_waiting) as td:
-    data = pandas.read_sql("SELECT symbol, COUNT(1) AS c FROM nasdaq GROUP BY symbol", td)
-    print(repr(data))
-```
-
-We offer another package for pandas named [pandas-td](https://github.com/treasure-data/pandas-td) with some advanced features.
-You may prefer it if you need to do complicated things, such like exporting result data to Treasure Data, printing job's
-progress during long execution, etc.
 
 ## Development
 
