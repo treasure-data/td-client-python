@@ -1,6 +1,6 @@
 # Version History
 
-## 0.3.0.dev0 (2015-07-XX)
+## 0.3.0 (2015-07-03)
 
 * Add Python Database API (PEP 0249) compatible connection and cursor.
 * Add varidation to the part name of a bulk import. It should not contain '/'.
