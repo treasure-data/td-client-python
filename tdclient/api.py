@@ -353,9 +353,29 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
             packer = msgpack.Packer()
             with contextlib.closing(self._read_file(file_like, fmt, **kwargs)) as items:
                 for item in items:
-                    gz.write(packer.pack(item))
+                    try:
+                        mp = packer.pack(item)
+                    except OverflowError:
+                        mp = packer.pack(self._normalize_value(item))
+                    gz.write(mp)
         fp.seek(0)
         return fp
+
+    def _normalize_value(self, value):
+        if isinstance(value, int):
+            return value if value < (1<<64) else str(value)
+        elif isinstance(value, list) or isinstance(value, tuple):
+            return [ self._normalize_value(v) for v in value ]
+        elif isinstance(value, dict):
+            return dict([ (self._normalize_value(k), self._normalize_value(v)) for (k, v) in value.items() ])
+        else:
+            try:
+                if isinstance(value, long):
+                    return str(value)
+                else:
+                    return value
+            except NameError: # py3k
+                return value
 
     def _read_file(self, file_like, fmt, **kwargs):
         compressed = fmt.endswith(".gz")

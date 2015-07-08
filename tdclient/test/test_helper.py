@@ -56,10 +56,29 @@ def make_response(*args, **kwargs):
 
 def msgpackb(list):
     """list -> bytes"""
+    def normalize(value):
+        if isinstance(value, int):
+            return value if value < (1<<64) else str(value)
+        elif isinstance(value, list) or isinstance(value, tuple):
+            return [ normalize(v) for v in value ]
+        elif isinstance(value, dict):
+            return dict([ (normalize(k), normalize(v)) for (k, v) in value.items() ])
+        else:
+            try:
+                if isinstance(value, long):
+                    return str(value)
+                else:
+                    return value
+            except NameError: # py3k
+                return value
     stream = io.BytesIO()
     packer = msgpack.Packer()
     for item in list:
-        stream.write(packer.pack(item))
+        try:
+            mp = packer.pack(item)
+        except OverflowError:
+            mp = normalize(item)
+        stream.write(mp)
     return stream.getvalue()
 
 def msgunpackb(bytes):
