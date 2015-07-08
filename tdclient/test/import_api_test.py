@@ -235,8 +235,8 @@ def test_import_file_tsv_success():
 def test_import_file_csv_dict_success():
     td = api.API("APIKEY")
     data = [
-        {"time": int(time.time()), "str": "value1", "int": 1, "float": 2.3},
-        {"time": int(time.time()), "str": "value4", "int": 5, "float": 6.7},
+        {"time": int(time.time()), "str": "value1", "int": 1, "float": 2.3, "bigint": (1<<1024 * 1<<1024)},
+        {"time": int(time.time()), "str": "value4", "int": 5, "float": 6.7, "bigint": (1<<1024 * 1<<1024)},
     ]
     def import_data(db, table, format, stream, size, unique_id=None):
         assert db == "db"

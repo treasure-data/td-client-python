@@ -82,10 +82,10 @@ def unjsonb(bytes):
 def value(s):
     try:
         return int(s)
-    except ValueError:
+    except (OverflowError, ValueError):
         try:
             return float(s)
-        except ValueError:
+        except (OverflowError, ValueError):
             pass
     lower = s.lower()
     if lower in ("false", "true"):

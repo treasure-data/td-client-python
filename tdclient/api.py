@@ -411,10 +411,10 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
             s = s.decode(encoding) if py2k else s
             try:
                 return int(s)
-            except ValueError:
+            except (OverflowError, ValueError):
                 try:
                     return float(s)
-                except ValueError:
+                except (OverflowError, ValueError):
                     pass
             lower = s.lower()
             if lower in ("false", "true"):
