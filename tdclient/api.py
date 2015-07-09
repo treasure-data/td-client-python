@@ -353,7 +353,12 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
             packer = msgpack.Packer()
             with contextlib.closing(self._read_file(file_like, fmt, **kwargs)) as items:
                 for item in items:
-                    gz.write(packer.pack(item))
+                    try:
+                        mp = packer.pack(item)
+                    except (OverflowError, msgpack.PackValueError):
+                        packer.reset()
+                        mp = packer.pack(normalized_msgpack(item))
+                    gz.write(mp)
         fp.seek(0)
         return fp
 
@@ -411,10 +416,10 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
             s = s.decode(encoding) if py2k else s
             try:
                 return int(s)
-            except ValueError:
+            except (OverflowError, ValueError):
                 try:
                     return float(s)
-                except ValueError:
+                except (OverflowError, ValueError):
                     pass
             lower = s.lower()
             if lower in ("false", "true"):
@@ -438,3 +443,24 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
 
     def _read_tsv_file(self, file_like, **kwargs):
         return self._read_csv_file(file_like, dialect=csv.excel_tab, **kwargs)
+
+def normalized_msgpack(value):
+    if isinstance(value, (list, tuple)):
+        return [ normalized_msgpack(v) for v in value ]
+    elif isinstance(value, dict):
+        return dict([ (normalized_msgpack(k), normalized_msgpack(v)) for (k, v) in value.items() ])
+    try:
+        long
+        py2k = True
+    except NameError:
+        py2k = False
+    if py2k:
+        if isinstance(value, long):
+            return str(value)
+        else:
+            return value
+    else:
+        if isinstance(value, int):
+            return value if value < (1<<64) else str(value)
+        else:
+            return value
