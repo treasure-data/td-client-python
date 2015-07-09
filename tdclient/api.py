@@ -364,7 +364,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
     def _normalize_value(self, value):
         if isinstance(value, int):
             return value if value < (1<<64) else str(value)
-        elif isinstance(value, list) or isinstance(value, tuple):
+        elif isinstance(value, (list, tuple)):
             return [ self._normalize_value(v) for v in value ]
         elif isinstance(value, dict):
             return dict([ (self._normalize_value(k), self._normalize_value(v)) for (k, v) in value.items() ])

@@ -70,6 +70,22 @@ def test_import_file_msgpack_success():
     stream = io.BytesIO(msgpackb(data))
     td.import_file("db", "table", "msgpack", stream)
 
+def test_import_file_msgpack_bigint_as_string():
+    td = api.API("APIKEY")
+    data = [
+        {"time": int(time.time()), "int": 64, "bigint": 1<<64},
+        {"time": int(time.time()), "int": 128, "gitint": 1<<128},
+    ]
+    def import_data(db, table, format, stream, size, unique_id=None):
+        assert db == "db"
+        assert table == "table"
+        assert format == "msgpack.gz"
+        assert msgunpackb(gunzipb(stream.read(size))) == data
+        assert unique_id is None
+    td.import_data = import_data
+    stream = io.BytesIO(msgpackb(data))
+    td.import_file("db", "table", "msgpack", stream)
+
 def test_import_file_msgpack_file_success():
     td = api.API("APIKEY")
     data = [
