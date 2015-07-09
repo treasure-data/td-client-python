@@ -356,26 +356,11 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
                     try:
                         mp = packer.pack(item)
                     except OverflowError:
-                        mp = packer.pack(self._normalize_value(item))
+                        packer.reset()
+                        mp = packer.pack(normalized_msgpack(item))
                     gz.write(mp)
         fp.seek(0)
         return fp
-
-    def _normalize_value(self, value):
-        if isinstance(value, int):
-            return value if value < (1<<64) else str(value)
-        elif isinstance(value, (list, tuple)):
-            return [ self._normalize_value(v) for v in value ]
-        elif isinstance(value, dict):
-            return dict([ (self._normalize_value(k), self._normalize_value(v)) for (k, v) in value.items() ])
-        else:
-            try:
-                if isinstance(value, long):
-                    return str(value)
-                else:
-                    return value
-            except NameError: # py3k
-                return value
 
     def _read_file(self, file_like, fmt, **kwargs):
         compressed = fmt.endswith(".gz")
@@ -458,3 +443,24 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
 
     def _read_tsv_file(self, file_like, **kwargs):
         return self._read_csv_file(file_like, dialect=csv.excel_tab, **kwargs)
+
+def normalized_msgpack(value):
+    if isinstance(value, (list, tuple)):
+        return [ normalized_msgpack(v) for v in value ]
+    elif isinstance(value, dict):
+        return dict([ (normalized_msgpack(k), normalized_msgpack(v)) for (k, v) in value.items() ])
+    try:
+        long
+        py2k = True
+    except NameError:
+        py2k = False
+    if py2k:
+        if isinstance(value, long):
+            return str(value)
+        else:
+            return value
+    else:
+        if isinstance(value, int):
+            return value if value < (1<<64) else str(value)
+        else:
+            return value

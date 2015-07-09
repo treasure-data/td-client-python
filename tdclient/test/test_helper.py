@@ -15,6 +15,7 @@ try:
 except ImportError:
     import mock
 import os
+from tdclient.api import normalized_msgpack
 import zlib
 
 def unset_environ():
@@ -56,28 +57,14 @@ def make_response(*args, **kwargs):
 
 def msgpackb(lis):
     """list -> bytes"""
-    def normalize(value):
-        if isinstance(value, int):
-            return value if value < (1<<64) else str(value)
-        elif isinstance(value, (list, tuple)):
-            return [ normalize(v) for v in value ]
-        elif isinstance(value, dict):
-            return dict([ (normalize(k), normalize(v)) for (k, v) in value.items() ])
-        else:
-            try:
-                if isinstance(value, long):
-                    return str(value)
-                else:
-                    return value
-            except NameError: # py3k
-                return value
     stream = io.BytesIO()
     packer = msgpack.Packer()
     for item in lis:
         try:
             mp = packer.pack(item)
         except OverflowError:
-            mp = packer.pack(normalize(item))
+            packer.reset()
+            mp = packer.pack(normalized_msgpack(item))
         stream.write(mp)
     return stream.getvalue()
 
