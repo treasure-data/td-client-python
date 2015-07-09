@@ -1,5 +1,9 @@
 # Version History
 
+## 0.3.1.dev0 (2015-07-XX)
+
+* Fix `OverflowError` on importing integer value longer than 64 bit length which is not supported by msgpack specification. Those values will be converted into string.
+
 ## 0.3.0 (2015-07-03)
 
 * Add Python Database API (PEP 0249) compatible connection and cursor.
