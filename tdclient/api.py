@@ -461,6 +461,9 @@ def normalized_msgpack(value):
             return value
     else:
         if isinstance(value, int):
-            return value if value < (1<<64) else str(value)
+            if -(1<<63) < value < (1<<64):
+                return value
+            else:
+                return str(value)
         else:
             return value

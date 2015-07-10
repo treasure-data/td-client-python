@@ -73,7 +73,7 @@ def test_import_file_msgpack_success():
 def test_import_file_msgpack_bigint_as_string():
     td = api.API("APIKEY")
     data = [
-        {"time": int(time.time()), "int": 64, "bigint": 1<<64},
+        {"time": int(time.time()), "int": 64, "bigint": -(1<<64)},
         {"time": int(time.time()), "int": 128, "bigint": 1<<128},
     ]
     def import_data(db, table, format, stream, size, unique_id=None):
