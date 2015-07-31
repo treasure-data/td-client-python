@@ -40,36 +40,33 @@ class Schedule(Model):
 
     @property
     def name(self):
-        """
-        TODO: add docstring
+        """The name of a scheduled job
         """
         return self._name
 
     @property
     def cron(self):
-        """
-        TODO: add docstring
+        """The configured schedule of a scheduled job.
+
+        Returns: a string represents the schedule in cron form, or `None` if the job is not scheduled to run (saved query)
         """
         return self._cron
 
     @property
     def query(self):
-        """
-        TODO: add docstring
+        """The query string of a scheduled job
         """
         return self._query
 
     @property
     def database(self):
-        """
-        TODO: add docstring
+        """The target database of a scheduled job
         """
         return self._database
 
     @property
     def result_url(self):
-        """
-        TODO: add docstring
+        """The result output configuration in URL form of a scheduled job
         """
         return self._result_url
 
@@ -89,8 +86,7 @@ class Schedule(Model):
 
     @property
     def priority(self):
-        """
-        TODO: add docstring
+        """The priority of a scheduled job
         """
         return self._priority
 
@@ -116,7 +112,6 @@ class Schedule(Model):
         return self._next_time
 
     def run(self, time, num=None):
-        """
-        TODO: add docstring
+        """Run a scheduled job
         """
         return self._client.run_schedule(self.name, time, num)
