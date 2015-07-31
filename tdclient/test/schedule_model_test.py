@@ -7,6 +7,7 @@ try:
     from unittest import mock
 except ImportError:
     import mock
+import time
 
 from tdclient import models
 from tdclient.test.test_helper import *
@@ -36,3 +37,10 @@ def test_schedule():
     assert schedule.priority == "priority"
     assert schedule.retry_limit == "retry_limit"
     assert schedule.org_name == "org_name"
+
+def test_schedule_run():
+    client = mock.MagicMock()
+    schedule = models.Schedule(client, "name", "cron", "query", database="database", result_url="result_url", timezone="timezone", delay="delay", next_time="next_time", priority="priority", retry_limit="retry_limit", org_name="org_name")
+    t = int(time.time())
+    schedule.run(t)
+    client.run_schedule.assert_called_with("name", t, None)

@@ -115,8 +115,8 @@ class Schedule(Model):
         """
         return self._next_time
 
-    def run(self, time, num):
+    def run(self, time, num=None):
         """
         TODO: add docstring
         """
-        return self._client.run_schedule(time, num)
+        return self._client.run_schedule(self.name, time, num)
