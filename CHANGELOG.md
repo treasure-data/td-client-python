@@ -1,6 +1,6 @@
 # Version History
 
-## 0.3.2.dev0 (2015-07-31)
+## 0.3.2.dev1 (2015-07-31)
 
 * Fix bugs in `ScheduledJob` and `Schedule` models
 
