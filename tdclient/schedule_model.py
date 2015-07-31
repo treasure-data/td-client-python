@@ -18,7 +18,7 @@ class ScheduledJob(Job):
         """
         Returns: a :class:`datetime.datetime` represents the schedule of next invocation of the job
         """
-        return self._created_at
+        return self._scheduled_at
 
 class Schedule(Model):
     """Schedule on Treasure Data Service
