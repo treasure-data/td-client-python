@@ -1,5 +1,9 @@
 # Version History
 
+## 0.3.2.dev0 (2015-07-31)
+
+* Fix bugs in `ScheduledJob` and `Schedule` models
+
 ## 0.3.1 (2015-07-10)
 
 * Fix `OverflowError` on importing integer value longer than 64 bit length which is not supported by msgpack specification. Those values will be converted into string.
