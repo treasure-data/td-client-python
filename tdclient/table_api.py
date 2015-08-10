@@ -8,6 +8,7 @@ try:
     from urllib.parse import quote as urlquote # >=3.0
 except ImportError:
     from urllib import quote as urlquote
+import warnings
 
 class TableAPI(object):
     ####
@@ -53,6 +54,7 @@ class TableAPI(object):
         TODO: add docstring
         => True
         """
+        warnings.warn("item tables have been deprecated. will be deleted from future releases.", category=DeprecationWarning)
         params = {"primary_key": primary_key, "primary_key_type": primary_key_type}
         return self._create_table(db, table, "item", params)
 

@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import json
+import warnings
 
 from tdclient import api
 from tdclient import models
@@ -113,6 +114,7 @@ class Client(object):
 
         Returns: `True` if success
         """
+        warnings.warn("item tables have been deprecated. will be deleted from future releases.", category=DeprecationWarning)
         return self.api.create_item_table(db_name, table_name, primary_key, primary_key_type)
 
     def swap_table(self, db_name, table_name1, table_name2):
