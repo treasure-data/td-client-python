@@ -168,17 +168,17 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
                 if response.status < 500:
                     break
                 else:
-                    log.warn("Error %d: %s. Retrying after %d seconds...", response.status, response.data, retry_delay)
+                    log.warn("Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)", response.status, response.data, retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
             except ( urllib3.exceptions.TimeoutStateError, urllib3.exceptions.TimeoutError, urllib3.exceptions.PoolError, socket.error ):
                 pass
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
-                log.warn("Retrying after %d seconds...", retry_delay)
+                log.warn("Retrying after %d seconds... (cumulative: %d/%d)", retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
                 time.sleep(retry_delay)
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
             else:
-                raise(APIError("Retrying stopped after %d seconds." % (self._max_cumul_retry_delay)))
+                raise(APIError("Retrying stopped after %d seconds. (cumulative: %d/%d)" % (self._max_cumul_retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)))
 
         log.debug("REST GET response:\n  headers: %s\n  status: %d\n  body: <omitted>", repr(dict(response.getheaders())), response.status)
 
@@ -208,18 +208,18 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
                 else:
                     if not self._retry_post_requests:
                         raise(APIError("Retrying stopped by retry_post_requests == False"))
-                    log.warn("Error %d: %s. Retrying after %d seconds...", response.status, response.data, retry_delay)
+                    log.warn("Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)", response.status, response.data, retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
             except ( urllib3.exceptions.TimeoutStateError, urllib3.exceptions.TimeoutError, urllib3.exceptions.PoolError, socket.error ):
                 if not self._retry_post_requests:
                     raise(APIError("Retrying stopped by retry_post_requests == False"))
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
-                log.warn("Retrying after %d seconds...", retry_delay)
+                log.warn("Retrying after %d seconds... (cumulative: %d/%d)", retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
                 time.sleep(retry_delay)
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
             else:
-                raise(APIError("Retrying stopped after %d seconds." % (self._max_cumul_retry_delay)))
+                raise(APIError("Retrying stopped after %d seconds. (cumulative: %d/%d)" % (self._max_cumul_retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)))
 
         log.debug("REST POST response:\n  headers: %s\n  status: %d\n  body: <omitted>", repr(dict(response.getheaders())), response.status)
 
@@ -262,17 +262,17 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, DatabaseAPI, ExportAPI, I
                 if response.status < 500:
                     break
                 else:
-                    log.warn("Error %d: %s. Retrying after %d seconds...", response.status, response.data, retry_delay)
+                    log.warn("Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)", response.status, response.data, retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
             except ( urllib3.exceptions.TimeoutStateError, urllib3.exceptions.TimeoutError, urllib3.exceptions.PoolError, socket.error ):
                 pass
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
-                log.warn("Retrying after %d seconds...", retry_delay)
+                log.warn("Retrying after %d seconds... (cumulative: %d/%d)", retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
                 time.sleep(retry_delay)
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
             else:
-                raise(APIError("Retrying stopped after %d seconds." % (self._max_cumul_retry_delay)))
+                raise(APIError("Retrying stopped after %d seconds. (cumulative: %d/%d)" % (self._max_cumul_retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)))
 
         log.debug("REST PUT response:\n  headers: %s\n  status: %d\n  body: <omitted>", repr(dict(response.getheaders())), response.status)
 
