@@ -10,7 +10,6 @@ try:
 except ImportError:
     import mock
 import pytest
-import time
 
 from tdclient import api
 from tdclient.test.test_helper import *
