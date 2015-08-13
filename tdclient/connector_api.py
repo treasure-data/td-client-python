@@ -9,12 +9,12 @@ try:
 except ImportError:
     from urllib import quote as urlquote
 
-class BulkLoadAPI(object):
+class ConnectorAPI(object):
     ####
-    ## Bulk load API
+    ## Connector API
     ##
 
-    def bulk_load_guess(self, job):
+    def connector_guess(self, job):
         """
         TODO: add docstring
         """
@@ -24,7 +24,7 @@ class BulkLoadAPI(object):
                 self.raise_error("BulkLoad configuration guess failed", res, body)
             return json.loads(body)
 
-    def bulk_load_preview(self, job):
+    def connector_preview(self, job):
         """
         TODO: add docstring
         """
@@ -34,7 +34,7 @@ class BulkLoadAPI(object):
                 self.raise_error("BulkLoad job preview failed", res, body)
             return json.loads(body)
 
-    def bulk_load_issue(self, db, table, job):
+    def connector_issue(self, db, table, job):
         """
         TODO: add docstring
         """
@@ -48,7 +48,7 @@ class BulkLoadAPI(object):
             js = self.checked_json(body, ["job_id"])
             return str(js["job_id"])
 
-    def bulk_load_list(self):
+    def connector_list(self):
         """
         TODO: add docstring
         """
@@ -58,7 +58,7 @@ class BulkLoadAPI(object):
                 self.raise_error("BulkLoadSession list retrieve failed", res, body)
             return json.loads(body)
 
-    def bulk_load_create(self, name, database, table, job, params=None):
+    def connector_create(self, name, database, table, job, params=None):
         """
         TODO: add docstring
         """
@@ -73,7 +73,7 @@ class BulkLoadAPI(object):
                 self.raise_error("BulkLoadSession: %s created failed" % (name,), res, body)
             return json.loads(body)
 
-    def bulk_load_show(self, name):
+    def connector_show(self, name):
         """
         TODO: add docstring
         """
@@ -83,7 +83,7 @@ class BulkLoadAPI(object):
                 self.raise_error("BulkLoadSession: %s retrieve failed" % (name,), res, body)
             return json.loads(body)
 
-    def bulk_load_update(self, name, job):
+    def connector_update(self, name, job):
         """
         TODO: add docstring
         """
@@ -93,7 +93,7 @@ class BulkLoadAPI(object):
                 self.raise_error("BulkLoadSession: %s update failed" % (name,), res, body)
             return json.loads(body)
 
-    def bulk_load_delete(self, name):
+    def connector_delete(self, name):
         """
         TODO: add docstring
         """
@@ -103,7 +103,7 @@ class BulkLoadAPI(object):
                 self.raise_error("BulkLoadSession: %s delete failed" % (name,), res, body)
             return json.loads(body)
 
-    def bulk_load_history(self, name):
+    def connector_history(self, name):
         """
         TODO: add docstring
         """
@@ -113,7 +113,7 @@ class BulkLoadAPI(object):
                 self.raise_error("history of BulkLoadSession: %s retrieve failed" % (name,), res, body)
             return json.loads(body)
 
-    def bulk_load_run(self, name, **kwargs):
+    def connector_run(self, name, **kwargs):
         """
         TODO: add docstring
         """
