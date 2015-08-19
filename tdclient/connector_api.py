@@ -3,6 +3,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import json
 try:
     from urllib.parse import quote as urlquote # >=3.0
 except ImportError:
@@ -55,7 +56,8 @@ class ConnectorAPI(object):
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("BulkLoadSession list retrieve failed", res, body)
-            return self.checked_json(body, [])
+            # cannot use `checked_json` since `GET /v3/bulk_loads` returns an array
+            return json.loads(body.decode("utf-8"))
 
     def connector_create(self, name, database, table, job, params=None):
         """

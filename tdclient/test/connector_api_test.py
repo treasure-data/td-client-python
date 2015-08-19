@@ -99,7 +99,7 @@ def test_connector_issue_success():
 
 def test_connector_list_success():
     td = api.API("APIKEY")
-    body = b"{}"
+    body = b"[]"
     td.get = mock.MagicMock(return_value=make_response(200, body))
     td.connector_list()
     td.get.assert_called_with("/v3/bulk_loads")
