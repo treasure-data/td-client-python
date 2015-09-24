@@ -3,12 +3,14 @@
 *.pyo
 *.swo
 *.swp
+/.cache
 /.coverage
 /.eggs
 /.envrc
 /.tox
 /build
 /dist
+/tmp
 
 # JetBrains IDE
 .idea/
