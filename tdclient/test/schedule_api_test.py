@@ -45,7 +45,13 @@ def test_create_schedule_without_cron_success():
     td.post = mock.MagicMock(return_value=make_response(200, body))
     start = td.create_schedule("bar", {"type": "presto", "cron": ""})
     td.post.assert_called_with("/v3/schedule/create/bar", {"type": "presto", "cron": ""})
-    assert start == ""
+    assert start.year == 1970
+    assert start.month == 1
+    assert start.day == 1
+    assert start.hour == 0
+    assert start.minute == 0
+    assert start.second == 0
+    assert start.utcoffset().seconds == 0 # UTC
 
 def test_delete_schedule_success():
     td = api.API("APIKEY")
