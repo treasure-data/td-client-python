@@ -247,7 +247,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
                 stream = bytes_or_stream
             else:
                 stream = array(str("b"), bytes_or_stream.read())
-            
+
         else:
             # send request body as an `array.array` since `httplib` requires the request body to be a unicode string
             stream = array(str("b"), bytes_or_stream)

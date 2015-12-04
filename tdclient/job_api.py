@@ -125,6 +125,7 @@ class JobAPI(object):
                 "retry_limit": js.get("retry_limit"),
                 "org_name": None,
                 "database": js.get("database"),
+                "records": js.get("records")
             }
             return job
 

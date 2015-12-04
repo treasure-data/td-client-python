@@ -282,6 +282,7 @@ class Client(object):
             retry_limit=d.get("retry_limit"),
             org_name=d.get("org_name"),
             db_name=d.get("db_name"),
+            records=d.get("records"),
         )
 
     def job_status(self, job_id):

@@ -91,6 +91,7 @@ class Job(Model):
         self._retry_limit = data.get("retry_limit")
         self._org_name = data.get("org_name")
         self._db_name = data.get("db_name")
+        self._records = data.get("records")
 
     def update(self):
         """Update all fields of the job
@@ -216,6 +217,13 @@ class Job(Model):
         response = self._client.kill(self.job_id)
         self.update()
         return response
+
+    @property
+    def records(self):
+        """
+        Returns: a number representing the # of records fetched by the query
+        """
+        return self._records
 
     @property
     def query(self):
