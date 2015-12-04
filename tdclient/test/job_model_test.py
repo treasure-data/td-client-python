@@ -19,7 +19,7 @@ def setup_function(function):
 
 def test_schema():
     client = mock.MagicMock()
-    job = models.Job(client, "job_id", "type", "query", status="status", url="url", debug="debug", start_at="start_at", end_at="end_at", cpu_time="cpu_time", result_size="result_size", result="result", result_url="result_url", hive_result_schema=[["_c1", "string"], ["_c2", "bigint"]], priority="UNKNOWN", retry_limit="retry_limit", org_name="org_name", db_name="db_name")
+    job = models.Job(client, "job_id", "type", "query", status="status", url="url", debug="debug", start_at="start_at", end_at="end_at", cpu_time="cpu_time", result_size="result_size", records="records", result="result", result_url="result_url", hive_result_schema=[["_c1", "string"], ["_c2", "bigint"]], priority="UNKNOWN", retry_limit="retry_limit", org_name="org_name", db_name="db_name")
     assert job.id == "job_id"
     assert job.job_id == "job_id"
     assert job.type == "type"
@@ -29,6 +29,8 @@ def test_schema():
     assert job.org_name == "org_name"
     assert job.db_name == "db_name"
     assert job.result_schema == [["_c1", "string"], ["_c2", "bigint"]]
+    assert job.records == "records"
+    assert job.result_size == "result_size"
 
 def test_job_priority():
     client = mock.MagicMock()
@@ -306,6 +308,7 @@ def test_job_update_status():
         "end_at": datetime.datetime(2015, 2, 10, 0, 2, 27, tzinfo=dateutil.tz.tzutc()),
         "cpu_time": None,
         "result_size": 22,
+        "records": 1234,
         "result": None,
         "result_url": None,
         "hive_result_schema": [["cnt", "bigint"]],

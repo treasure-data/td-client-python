@@ -74,6 +74,7 @@ def test_show_job_success():
             "query": "SELECT COUNT(1) FROM nasdaq",
             "result": "",
             "result_size": 22,
+            "records": 1234,
             "retry_limit": 0,
             "start_at": "2015-02-09 11:44:27 UTC",
             "status": "success",
@@ -99,6 +100,7 @@ def test_show_job_success():
     assert job["end_at"] == datetime.datetime(2015, 2, 9, 11, 44, 28, tzinfo=dateutil.tz.tzutc())
     assert job["cpu_time"] is None
     assert job["result_size"] == 22
+    assert job["records"] == 1234
     assert job["result"] is None
     assert job["result_url"] is None
     assert job["hive_result_schema"] == [["cnt", "bigint"]]
