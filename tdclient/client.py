@@ -250,7 +250,7 @@ class Client(object):
                 priority=d.get("priority"),
                 retry_limit=d.get("retry_limit"),
                 org_name=d.get("org_name"),
-                db_name=d.get("db_name"),
+                database=d.get("database"),
             )
         return [ job(d) for d in results ]
 
@@ -281,7 +281,7 @@ class Client(object):
             priority=d.get("priority"),
             retry_limit=d.get("retry_limit"),
             org_name=d.get("org_name"),
-            db_name=d.get("db_name"),
+            database=d.get("database"),
         )
 
     def job_status(self, job_id):

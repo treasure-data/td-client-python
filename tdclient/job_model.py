@@ -90,7 +90,7 @@ class Job(Model):
         self._priority = data.get("priority")
         self._retry_limit = data.get("retry_limit")
         self._org_name = data.get("org_name")
-        self._db_name = data.get("db_name")
+        self._database = data.get("database")
 
     def update(self):
         """Update all fields of the job
@@ -176,11 +176,11 @@ class Job(Model):
         return self._org_name
 
     @property
-    def db_name(self):
+    def database(self):
         """
         Returns: a string represents the name of a database that job is running on
         """
-        return self._db_name
+        return self._database
 
     @property
     def debug(self):
