@@ -25,7 +25,7 @@ class ScheduleAPI(object):
             if code != 200:
                 self.raise_error("Create schedule failed", res, body)
             js = self.checked_json(body, ["start"])
-            return self._parsedate(js["start"], "%Y-%m-%d %H:%M:%S %Z")
+            return self._parsedate(self.get_or_else(js, "start", "1970-01-01T00:00:00Z"), "%Y-%m-%d %H:%M:%S %Z")
 
     def delete_schedule(self, name):
         """
