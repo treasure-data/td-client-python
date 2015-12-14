@@ -1,5 +1,13 @@
 # Version History
 
+## 0.4.0 (2015-12-14)
+
+* Avoid an exception raised when a `start` is not set for a schedule (#12)
+* Fix getting database names of job objects (#13)
+* Add Data Connector APIs
+* Add deprecation warnings on the usage of "item tables"
+* Show `cumul_retry_delay` in retry messages
+
 ## 0.3.2 (2015-08-01)
 
 * Fix bugs in `ScheduledJob` and `Schedule` models
