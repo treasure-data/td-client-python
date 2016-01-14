@@ -147,7 +147,6 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
         return self._endpoint
 
     def get(self, path, params=None, **kwargs):
-        params = {} if params is None else params
         headers = {
             "accept-encoding": "deflate, gzip",
         }
@@ -164,7 +163,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
         response = None
         while True:
             try:
-                response = self.http.request("GET", url, fields=params, headers=headers, decode_content=True, preload_content=False)
+                response = self.send_request("GET", url, fields=params, headers=headers, decode_content=True, preload_content=False)
                 # retry if the HTTP error code is 500 or higher and we did not run out of retrying attempts
                 if response.status < 500:
                     break
@@ -186,7 +185,6 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
         return contextlib.closing(response)
 
     def post(self, path, params=None, **kwargs):
-        params = {} if params is None else params
         url, headers = self.build_request(path=path, headers={}, **kwargs)
 
         log.debug("REST POST call:\n  headers: %s\n  path: %s\n  params: %s", repr(headers), repr(path), repr(params))
@@ -198,10 +196,19 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
         # for both exceptions and 500+ errors retrying can be enabled by initialization
         # parameter 'retry_post_requests'. The total number of retries cumulatively
         # should not exceed 10 minutes / 600 seconds
+
+        # use `params` as request parameter if it is a `dict`.
+        # otherwise, use it as byte string of request body.
+        body = fields = None
+        if isinstance(params, dict):
+            fields = params
+        else:
+            body = params
+
         response = None
         while True:
             try:
-                response = self.http.request("POST", url, fields=params, headers=headers, decode_content=True, preload_content=False)
+                response = self.send_request("POST", url, fields=fields, body=body, headers=headers, decode_content=True, preload_content=False)
                 # if the HTTP error code is 500 or higher and the user requested retrying
                 # on post request, attempt a retry
                 if response.status < 500:
@@ -259,7 +266,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
         response = None
         while True:
             try:
-                response = self.http.urlopen("PUT", url, body=stream, headers=headers, decode_content=True, preload_content=False)
+                response = self.send_request("PUT", url, body=stream, headers=headers, decode_content=True, preload_content=False)
                 if response.status < 500:
                     break
                 else:
@@ -299,6 +306,12 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
         # override given headers
         _headers.update(dict([ (key.lower(), value) for (key, value) in headers.items() ]))
         return (url, _headers)
+
+    def send_request(self, method, url, fields=None, body=None, **kwargs):
+        if body is None:
+            return self.http.request(method, url, fields=fields, **kwargs)
+        else:
+            return self.http.urlopen(method, url, body=body, **kwargs)
 
     def raise_error(self, msg, res, body):
         status_code = res.status
