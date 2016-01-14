@@ -70,19 +70,22 @@ config = {
     },
 }
 
+def dumps(x):
+    return json.dumps(x).encode("utf-8")
+
 def test_connector_guess_success():
     td = api.API("APIKEY")
-    td.post = mock.MagicMock(return_value=make_response(200, json.dumps(config).encode("utf-8")))
+    td.post = mock.MagicMock(return_value=make_response(200, dumps(config)))
     res = td.connector_guess(seed)
     assert res == config
-    td.post.assert_called_with("/v3/bulk_loads/guess", seed)
+    td.post.assert_called_with("/v3/bulk_loads/guess", dumps(seed), headers={"content-type": "application/json; charset=utf-8"})
 
 def test_connector_preview_success():
     td = api.API("APIKEY")
     body = b"{}"
     td.post = mock.MagicMock(return_value=make_response(200, body))
     td.connector_preview(config)
-    td.post.assert_called_with("/v3/bulk_loads/preview", config)
+    td.post.assert_called_with("/v3/bulk_loads/preview", dumps(config), headers={"content-type": "application/json; charset=utf-8"})
 
 def test_connector_issue_success():
     td = api.API("APIKEY")
@@ -95,7 +98,7 @@ def test_connector_issue_success():
     req = dict(config)
     req["database"] = "database"
     req["table"] = "table"
-    td.post.assert_called_with("/v3/job/issue/bulkload/database", req)
+    td.post.assert_called_with("/v3/job/issue/bulkload/database", dumps(req), headers={"content-type": "application/json; charset=utf-8"})
 
 def test_connector_list_success():
     td = api.API("APIKEY")
@@ -113,7 +116,7 @@ def test_connector_create_success():
     req["name"] = "name"
     req["database"] = "database"
     req["table"] = "table"
-    td.post.assert_called_with("/v3/bulk_loads", req)
+    td.post.assert_called_with("/v3/bulk_loads", dumps(req), headers={"content-type": "application/json; charset=utf-8"})
 
 def test_connector_show_success():
     td = api.API("APIKEY")
@@ -127,7 +130,7 @@ def test_connector_update_success():
     body = b"{}"
     td.put = mock.MagicMock(return_value=make_response(200, body))
     td.connector_update("name", config)
-    td.put.assert_called_with("/v3/bulk_loads/name", config)
+    td.put.assert_called_with("/v3/bulk_loads/name", dumps(config), len(dumps(config)), headers={"content-type": "application/json; charset=utf-8"})
 
 def test_connector_delete_success():
     td = api.API("APIKEY")
@@ -138,14 +141,14 @@ def test_connector_delete_success():
 
 def test_connector_history_success():
     td = api.API("APIKEY")
-    body = b"{}"
+    body = b"[]"
     td.get = mock.MagicMock(return_value=make_response(200, body))
     td.connector_history("name")
-    td.get.assert_called_with("/v3/bulk_loads/name")
+    td.get.assert_called_with("/v3/bulk_loads/name/jobs")
 
 def test_connector_run_success():
     td = api.API("APIKEY")
     body = b"{}"
     td.post = mock.MagicMock(return_value=make_response(200, body))
     td.connector_run("name", scheduled_time="scheduled_time")
-    td.post.assert_called_with("/v3/bulk_loads/name", {"scheduled_time": "scheduled_time"})
+    td.post.assert_called_with("/v3/bulk_loads/name/jobs", dumps({"scheduled_time": "scheduled_time"}), headers={"content-type": "application/json; charset=utf-8"})

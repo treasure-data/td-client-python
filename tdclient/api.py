@@ -236,7 +236,8 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
     def put(self, path, bytes_or_stream, size, headers=None, **kwargs):
         headers = {} if headers is None else dict(headers)
         headers["content-length"] = str(size)
-        headers["content-type"] = "application/octet-stream"
+        if "content-type" not in headers:
+            headers["content-type"] = "application/octet-stream"
         url, headers = self.build_request(path=path, headers=headers, **kwargs)
 
         log.debug("REST PUT call:\n  headers: %s\n  path: %s\n  body: <omitted>", repr(headers), repr(path))
@@ -283,6 +284,42 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
                 raise(APIError("Retrying stopped after %d seconds. (cumulative: %d/%d)" % (self._max_cumul_retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)))
 
         log.debug("REST PUT response:\n  headers: %s\n  status: %d\n  body: <omitted>", repr(dict(response.getheaders())), response.status)
+
+        return contextlib.closing(response)
+
+    def delete(self, path, params=None, headers=None, **kwargs):
+        headers = {} if headers is None else dict(headers)
+        url, headers = self.build_request(path=path, headers=headers, **kwargs)
+
+        log.debug("REST DELETE call:\n  headers: %s\n  path: %s\n  params: %s", repr(headers), repr(path), repr(params))
+
+        # up to 7 retries with exponential (base 2) back-off starting at 'retry_delay'
+        retry_delay = 5
+        cumul_retry_delay = 0
+
+        # for both exceptions and 500+ errors retrying is enabled by default.
+        # The total number of retries cumulatively should not exceed 10 minutes / 600 seconds
+        response = None
+        while True:
+            try:
+                response = self.send_request("DELETE", url, fields=params, headers=headers, decode_content=True, preload_content=False)
+                # retry if the HTTP error code is 500 or higher and we did not run out of retrying attempts
+                if response.status < 500:
+                    break
+                else:
+                    log.warn("Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)", response.status, response.data, retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
+            except ( urllib3.exceptions.TimeoutStateError, urllib3.exceptions.TimeoutError, urllib3.exceptions.PoolError, socket.error ):
+                pass
+
+            if cumul_retry_delay <= self._max_cumul_retry_delay:
+                log.warn("Retrying after %d seconds... (cumulative: %d/%d)", retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
+                time.sleep(retry_delay)
+                cumul_retry_delay += retry_delay
+                retry_delay *= 2
+            else:
+                raise(APIError("Retrying stopped after %d seconds. (cumulative: %d/%d)" % (self._max_cumul_retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)))
+
+        log.debug("REST DELETE response:\n  headers: %s\n  status: %d\n  body: <omitted>", repr(dict(response.getheaders())), response.status)
 
         return contextlib.closing(response)
 
