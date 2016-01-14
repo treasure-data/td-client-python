@@ -146,10 +146,9 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
     def endpoint(self):
         return self._endpoint
 
-    def get(self, path, params=None, **kwargs):
-        headers = {
-            "accept-encoding": "deflate, gzip",
-        }
+    def get(self, path, params=None, headers=None, **kwargs):
+        headers = {} if headers is None else dict(headers)
+        headers["accept-encoding"] = "deflate, gzip"
         url, headers = self.build_request(path=path, headers=headers, **kwargs)
 
         log.debug("REST GET call:\n  headers: %s\n  path: %s\n  params: %s", repr(headers), repr(path), repr(params))
@@ -184,8 +183,9 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
 
         return contextlib.closing(response)
 
-    def post(self, path, params=None, **kwargs):
-        url, headers = self.build_request(path=path, headers={}, **kwargs)
+    def post(self, path, params=None, headers=None, **kwargs):
+        headers = {} if headers is None else dict(headers)
+        url, headers = self.build_request(path=path, headers=headers, **kwargs)
 
         log.debug("REST POST call:\n  headers: %s\n  path: %s\n  params: %s", repr(headers), repr(path), repr(params))
 
@@ -233,8 +233,8 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
 
         return contextlib.closing(response)
 
-    def put(self, path, bytes_or_stream, size, **kwargs):
-        headers = {}
+    def put(self, path, bytes_or_stream, size, headers=None, **kwargs):
+        headers = {} if headers is None else dict(headers)
         headers["content-length"] = str(size)
         headers["content-type"] = "application/octet-stream"
         url, headers = self.build_request(path=path, headers=headers, **kwargs)
