@@ -366,6 +366,77 @@ def test_put_failure():
         sleeps = [ args[0] for (args, kwargs) in t_sleep.call_args_list ]
         assert td._max_cumul_retry_delay < sum(sleeps)
 
+def test_delete_success():
+    td = api.API("APIKEY")
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.request = mock.MagicMock()
+        responses = [
+            make_raw_response(200, b"body"),
+        ]
+        td.http.request.side_effect = responses
+        with td.delete("/foo", {"bar": "baz"}) as response:
+            args, kwargs = td.http.request.call_args
+            assert args == ("DELETE", "https://api.treasuredata.com/foo")
+            assert kwargs["fields"] == {"bar": "baz"}
+            assert sorted(kwargs["headers"].keys()) == ["authorization", "date", "user-agent"]
+            status, body = response.status, response.read()
+            assert status == 200
+            assert body == b"body"
+        assert not t_sleep.called
+
+def test_delete_error():
+    td = api.API("APIKEY")
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.request = mock.MagicMock()
+        responses = [
+            make_raw_response(404, b"not found"),
+        ]
+        td.http.request.side_effect = responses
+        with td.delete("/foo", {"bar": "baz"}) as response:
+            args, kwargs = td.http.request.call_args
+            assert args == ("DELETE", "https://api.treasuredata.com/foo")
+            assert kwargs["fields"] == {"bar": "baz"}
+            assert sorted(kwargs["headers"].keys()) == ["authorization", "date", "user-agent"]
+            status, body = response.status, response.read()
+            assert status == 404
+            assert body == b"not found"
+        assert not t_sleep.called
+
+def test_delete_retry_success():
+    td = api.API("APIKEY")
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.request = mock.MagicMock()
+        responses = [
+            make_raw_response(500, b"failure1"),
+            make_raw_response(503, b"failure2"),
+            make_raw_response(200, b"success1"),
+        ]
+        td.http.request.side_effect = responses
+        with td.delete("/foo", {"bar": "baz"}) as response:
+            args, kwargs = td.http.request.call_args
+            assert args == ("DELETE", "https://api.treasuredata.com/foo")
+            assert kwargs["fields"] == {"bar": "baz"}
+            assert sorted(kwargs["headers"].keys()) == ["authorization", "date", "user-agent"]
+            status, body = response.status, response.read()
+            assert status == 200
+            assert body == b"success1"
+            assert t_sleep.called
+            sleeps = [ args[0] for (args, kwargs) in t_sleep.call_args_list ]
+            assert len(sleeps) == len(responses) - 1
+            assert sum(sleeps) < td._max_cumul_retry_delay
+
+def test_delete_failure():
+    td = api.API("APIKEY")
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.request = mock.MagicMock()
+        td.http.request.return_value = make_raw_response(500, b"failure")
+        with pytest.raises(api.APIError) as error:
+            with td.delete("/foo", {"bar": "baz"}) as response:
+                pass
+        assert t_sleep.called
+        sleeps = [ args[0] for (args, kwargs) in t_sleep.call_args_list ]
+        assert td._max_cumul_retry_delay < sum(sleeps)
+
 def test_raise_error_401():
     td = api.API("APIKEY")
     with pytest.raises(api.AuthError) as error:

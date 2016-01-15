@@ -146,11 +146,9 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
     def endpoint(self):
         return self._endpoint
 
-    def get(self, path, params=None, **kwargs):
-        params = {} if params is None else params
-        headers = {
-            "accept-encoding": "deflate, gzip",
-        }
+    def get(self, path, params=None, headers=None, **kwargs):
+        headers = {} if headers is None else dict(headers)
+        headers["accept-encoding"] = "deflate, gzip"
         url, headers = self.build_request(path=path, headers=headers, **kwargs)
 
         log.debug("REST GET call:\n  headers: %s\n  path: %s\n  params: %s", repr(headers), repr(path), repr(params))
@@ -164,7 +162,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
         response = None
         while True:
             try:
-                response = self.http.request("GET", url, fields=params, headers=headers, decode_content=True, preload_content=False)
+                response = self.send_request("GET", url, fields=params, headers=headers, decode_content=True, preload_content=False)
                 # retry if the HTTP error code is 500 or higher and we did not run out of retrying attempts
                 if response.status < 500:
                     break
@@ -185,9 +183,9 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
 
         return contextlib.closing(response)
 
-    def post(self, path, params=None, **kwargs):
-        params = {} if params is None else params
-        url, headers = self.build_request(path=path, headers={}, **kwargs)
+    def post(self, path, params=None, headers=None, **kwargs):
+        headers = {} if headers is None else dict(headers)
+        url, headers = self.build_request(path=path, headers=headers, **kwargs)
 
         log.debug("REST POST call:\n  headers: %s\n  path: %s\n  params: %s", repr(headers), repr(path), repr(params))
 
@@ -198,10 +196,19 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
         # for both exceptions and 500+ errors retrying can be enabled by initialization
         # parameter 'retry_post_requests'. The total number of retries cumulatively
         # should not exceed 10 minutes / 600 seconds
+
+        # use `params` as request parameter if it is a `dict`.
+        # otherwise, use it as byte string of request body.
+        body = fields = None
+        if isinstance(params, dict):
+            fields = params
+        else:
+            body = params
+
         response = None
         while True:
             try:
-                response = self.http.request("POST", url, fields=params, headers=headers, decode_content=True, preload_content=False)
+                response = self.send_request("POST", url, fields=fields, body=body, headers=headers, decode_content=True, preload_content=False)
                 # if the HTTP error code is 500 or higher and the user requested retrying
                 # on post request, attempt a retry
                 if response.status < 500:
@@ -226,10 +233,11 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
 
         return contextlib.closing(response)
 
-    def put(self, path, bytes_or_stream, size, **kwargs):
-        headers = {}
+    def put(self, path, bytes_or_stream, size, headers=None, **kwargs):
+        headers = {} if headers is None else dict(headers)
         headers["content-length"] = str(size)
-        headers["content-type"] = "application/octet-stream"
+        if "content-type" not in headers:
+            headers["content-type"] = "application/octet-stream"
         url, headers = self.build_request(path=path, headers=headers, **kwargs)
 
         log.debug("REST PUT call:\n  headers: %s\n  path: %s\n  body: <omitted>", repr(headers), repr(path))
@@ -259,7 +267,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
         response = None
         while True:
             try:
-                response = self.http.urlopen("PUT", url, body=stream, headers=headers, decode_content=True, preload_content=False)
+                response = self.send_request("PUT", url, body=stream, headers=headers, decode_content=True, preload_content=False)
                 if response.status < 500:
                     break
                 else:
@@ -276,6 +284,42 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
                 raise(APIError("Retrying stopped after %d seconds. (cumulative: %d/%d)" % (self._max_cumul_retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)))
 
         log.debug("REST PUT response:\n  headers: %s\n  status: %d\n  body: <omitted>", repr(dict(response.getheaders())), response.status)
+
+        return contextlib.closing(response)
+
+    def delete(self, path, params=None, headers=None, **kwargs):
+        headers = {} if headers is None else dict(headers)
+        url, headers = self.build_request(path=path, headers=headers, **kwargs)
+
+        log.debug("REST DELETE call:\n  headers: %s\n  path: %s\n  params: %s", repr(headers), repr(path), repr(params))
+
+        # up to 7 retries with exponential (base 2) back-off starting at 'retry_delay'
+        retry_delay = 5
+        cumul_retry_delay = 0
+
+        # for both exceptions and 500+ errors retrying is enabled by default.
+        # The total number of retries cumulatively should not exceed 10 minutes / 600 seconds
+        response = None
+        while True:
+            try:
+                response = self.send_request("DELETE", url, fields=params, headers=headers, decode_content=True, preload_content=False)
+                # retry if the HTTP error code is 500 or higher and we did not run out of retrying attempts
+                if response.status < 500:
+                    break
+                else:
+                    log.warn("Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)", response.status, response.data, retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
+            except ( urllib3.exceptions.TimeoutStateError, urllib3.exceptions.TimeoutError, urllib3.exceptions.PoolError, socket.error ):
+                pass
+
+            if cumul_retry_delay <= self._max_cumul_retry_delay:
+                log.warn("Retrying after %d seconds... (cumulative: %d/%d)", retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
+                time.sleep(retry_delay)
+                cumul_retry_delay += retry_delay
+                retry_delay *= 2
+            else:
+                raise(APIError("Retrying stopped after %d seconds. (cumulative: %d/%d)" % (self._max_cumul_retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)))
+
+        log.debug("REST DELETE response:\n  headers: %s\n  status: %d\n  body: <omitted>", repr(dict(response.getheaders())), response.status)
 
         return contextlib.closing(response)
 
@@ -299,6 +343,12 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
         # override given headers
         _headers.update(dict([ (key.lower(), value) for (key, value) in headers.items() ]))
         return (url, _headers)
+
+    def send_request(self, method, url, fields=None, body=None, **kwargs):
+        if body is None:
+            return self.http.request(method, url, fields=fields, **kwargs)
+        else:
+            return self.http.urlopen(method, url, body=body, **kwargs)
 
     def raise_error(self, msg, res, body):
         status_code = res.status
