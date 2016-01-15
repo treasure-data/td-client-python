@@ -16,7 +16,10 @@ class ConnectorAPI(object):
 
     def connector_guess(self, job):
         """
-        TODO: add docstring
+        Params:
+          job (dict): :class:`dict` representation of `seed.yml`
+
+        Returns: :class:`dict`
         """
         headers = {
             "content-type": "application/json; charset=utf-8",
@@ -30,7 +33,10 @@ class ConnectorAPI(object):
 
     def connector_preview(self, job):
         """
-        TODO: add docstring
+        Params:
+          job (dict): :class:`dict` representation of `load.yml`
+
+        Returns: :class:`dict`
         """
         headers = {
             "content-type": "application/json; charset=utf-8",
@@ -44,7 +50,12 @@ class ConnectorAPI(object):
 
     def connector_issue(self, db, table, job):
         """
-        TODO: add docstring
+        Params:
+          db (str): name of the database to perform connector job
+          table (str): name of the table to perform connector job
+          job (dict): :class:`dict` representation of `load.yml`
+
+        Returns: jobId:str
         """
         headers = {
             "content-type": "application/json; charset=utf-8",
@@ -62,7 +73,7 @@ class ConnectorAPI(object):
 
     def connector_list(self):
         """
-        TODO: add docstring
+        Returns: :class:`list`
         """
         with self.get("/v3/bulk_loads") as res:
             code, body = res.status, res.read()
@@ -73,7 +84,13 @@ class ConnectorAPI(object):
 
     def connector_create(self, name, database, table, job, params=None):
         """
-        TODO: add docstring
+        Params:
+          name (str): name of the connector job
+          database (str): name of the database to perform connector job
+          table (str): name of the table to perform connector job
+          job (dict): :class:`dict` representation of `load.yml`
+
+        Returns: :class:`dict`
         """
         headers = {
             "content-type": "application/json; charset=utf-8",
@@ -92,7 +109,10 @@ class ConnectorAPI(object):
 
     def connector_show(self, name):
         """
-        TODO: add docstring
+        Params:
+          name (str): name of the connector job
+
+        Returns: :class:`dict`
         """
         with self.get("/v3/bulk_loads/%s" % (urlquote(str(name)),)) as res:
             code, body = res.status, res.read()
@@ -102,7 +122,11 @@ class ConnectorAPI(object):
 
     def connector_update(self, name, job):
         """
-        TODO: add docstring
+        Params:
+          name (str): name of the connector job
+          job (dict): :class:`dict` representation of `load.yml`
+
+        Returns: :class:`dict`
         """
         headers = {
             "content-type": "application/json; charset=utf-8",
@@ -116,7 +140,10 @@ class ConnectorAPI(object):
 
     def connector_delete(self, name):
         """
-        TODO: add docstring
+        Params:
+          name (str): name of the connector job
+
+        Returns: :class:`dict`
         """
         with self.delete("/v3/bulk_loads/%s" % (urlquote(str(name)),)) as res:
             code, body = res.status, res.read()
@@ -126,7 +153,10 @@ class ConnectorAPI(object):
 
     def connector_history(self, name):
         """
-        TODO: add docstring
+        Params:
+          name (str): name of the connector job
+
+        Returns: :class:`list`
         """
         with self.get("/v3/bulk_loads/%s/jobs" % (urlquote(str(name)),)) as res:
             code, body = res.status, res.read()
@@ -136,7 +166,10 @@ class ConnectorAPI(object):
 
     def connector_run(self, name, **kwargs):
         """
-        TODO: add docstring
+        Params:
+          name (str): name of the connector job
+
+        Returns: :class:`dict`
         """
         headers = {
             "content-type": "application/json; charset=utf-8",
