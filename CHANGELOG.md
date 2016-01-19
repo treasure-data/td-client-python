@@ -1,5 +1,9 @@
 # Version History
 
+## 0.4.1 (2016-01-19)
+
+* Fix Data Connector APIs based on latest td-client-ruby's implementation (#14)
+
 ## 0.4.0 (2015-12-14)
 
 * Avoid an exception raised when a `start` is not set for a schedule (#12)
