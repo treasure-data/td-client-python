@@ -126,7 +126,7 @@ with tdclient.Client() as td:
         print("imported %d records." % (bulk_import.valid_records,))
     else:
         raise(RuntimeError("no records have been imported: %s" % (repr(bulk_import.name),)))
-    bulk_import.commit()
+    bulk_import.commit(wait=True)
     bulk_import.delete()
 ```
 
