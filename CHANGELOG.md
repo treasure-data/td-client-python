@@ -1,5 +1,9 @@
 # Version History
 
+## 0.4.2 (2016-03-15)
+
+* Catch exceptions on parsing date time string
+
 ## 0.4.1 (2016-01-19)
 
 * Fix Data Connector APIs based on latest td-client-ruby's implementation (#14)
