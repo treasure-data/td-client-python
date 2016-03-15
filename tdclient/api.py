@@ -382,12 +382,20 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
 
     def parsedate(self, s):
         warnings.warn("parsedate(secs) will be removed from future release. Please use datetime.strptime(date_string, fmt) or other.", category=DeprecationWarning)
-        return self._parsedate(s, None)
+        try:
+            return self._parsedate(s, None)
+        except ValueError:
+            log.warn("Failed to parse date string: %s" % (s,))
+            return None
 
     def _parsedate(self, s, fmt):
         # TODO: parse datetime with using format string
         # for now, this ignores given format string since API may return date in ambiguous format :(
-        return dateutil.parser.parse(s)
+        try:
+            return dateutil.parser.parse(s)
+        except ValueError:
+            log.warn("Failed to parse date string: %s as %s" % (s, fmt))
+            return None
 
     def get_or_else(self, hashmap, key, default_value=None):
         value = hashmap.get(key)
