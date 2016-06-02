@@ -9,10 +9,9 @@ python:
 # - "pypy3"
 # command to install dependencies
 install:
-  - pip install -r requirements.txt
-  - pip install -r test-requirements.txt
+  - pip install -r <(cat requirements.txt test-requirements.txt)
 # command to run tests
-script: python setup.py test
-after_success:
+script:
   - py.test --cov tdclient tdclient/test
+after_success:
   - coveralls
