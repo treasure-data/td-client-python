@@ -334,12 +334,11 @@ def test_put_file_without_fileno_success():
 
 def test_put_failure():
     td = api.API("APIKEY")
-    with mock.patch("time.sleep") as t_sleep:
-        td.http.urlopen = mock.MagicMock()
-        td.http.urlopen.return_value = make_raw_response(500, b"error")
-        with pytest.raises(api.APIError) as error:
-            with td.put("/foo", b"body", 7) as response:
-                pass
+    td.http.urlopen = mock.MagicMock()
+    td.http.urlopen.return_value = make_raw_response(500, b"error")
+    with pytest.raises(api.APIError) as error:
+        with td.put("/foo", b"body", 7) as response:
+            pass
 
 def test_delete_success():
     td = api.API("APIKEY")
