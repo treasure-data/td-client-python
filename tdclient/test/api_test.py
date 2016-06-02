@@ -332,39 +332,13 @@ def test_put_file_without_fileno_success():
             assert body == b"response body"
         assert not t_sleep.called
 
-def test_put_retry_success():
-    td = api.API("APIKEY")
-    with mock.patch("time.sleep") as t_sleep:
-        td.http.urlopen = mock.MagicMock()
-        responses = [
-            make_raw_response(500, b"failure1"),
-            make_raw_response(503, b"failure2"),
-            make_raw_response(200, b"success1"),
-        ]
-        td.http.urlopen.side_effect = responses
-        with td.put("/foo", b"body", 7) as response:
-            args, kwargs = td.http.urlopen.call_args
-            assert args == ("PUT", "https://api.treasuredata.com/foo")
-            assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
-            status, body = response.status, response.read()
-            assert status == 200
-            assert body == b"success1"
-            assert t_sleep.called
-            sleeps = [ args[0] for (args, kwargs) in t_sleep.call_args_list ]
-            assert len(sleeps) == len(responses) - 1
-            assert sum(sleeps) < td._max_cumul_retry_delay
-
 def test_put_failure():
     td = api.API("APIKEY")
-    with mock.patch("time.sleep") as t_sleep:
-        td.http.urlopen = mock.MagicMock()
-        td.http.urlopen.return_value = make_raw_response(500, b"error")
-        with pytest.raises(api.APIError) as error:
-            with td.put("/foo", b"body", 7) as response:
-                pass
-        assert t_sleep.called
-        sleeps = [ args[0] for (args, kwargs) in t_sleep.call_args_list ]
-        assert td._max_cumul_retry_delay < sum(sleeps)
+    td.http.urlopen = mock.MagicMock()
+    td.http.urlopen.return_value = make_raw_response(500, b"error")
+    with pytest.raises(api.APIError) as error:
+        with td.put("/foo", b"body", 7) as response:
+            pass
 
 def test_delete_success():
     td = api.API("APIKEY")
