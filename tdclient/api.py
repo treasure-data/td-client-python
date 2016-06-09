@@ -126,13 +126,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
         if http_proxy is None and "HTTP_PROXY" in os.environ:
             http_proxy = os.getenv("HTTP_PROXY")
 
-        if http_proxy is None:
-            self.http = urllib3.PoolManager(**pool_options)
-        else:
-            if http_proxy.startswith("http://"):
-                self.http = urllib3.ProxyManager(http_proxy, **pool_options)
-            else:
-                self.http = urllib3.ProxyManager("http://%s" % http_proxy, **pool_options)
+        self.http = self._init_http(http_proxy, **pool_options)
 
         self._retry_post_requests = retry_post_requests
         self._max_cumul_retry_delay = max_cumul_retry_delay
@@ -145,6 +139,25 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
     @property
     def endpoint(self):
         return self._endpoint
+
+    def _init_http(self, http_proxy=None, **kwargs):
+        if http_proxy is None:
+            return urllib3.PoolManager(**kwargs)
+        else:
+            if http_proxy.startswith("http://"):
+                return self._init_http_proxy(http_proxy, **kwargs)
+            else:
+                return self._init_http_proxy("http://%s" % (http_proxy,), **kwargs)
+
+    def _init_http_proxy(self, http_proxy, **kwargs):
+        pool_options = dict(kwargs)
+        p = urlparse.urlparse(http_proxy)
+        scheme = p.scheme
+        netloc = p.netloc
+        if "@" in netloc:
+            auth, netloc = netloc.split("@", 2)
+            pool_options["proxy_headers"] = urllib3.make_headers(proxy_basic_auth=auth)
+        return urllib3.ProxyManager("%s://%s" % (scheme, netloc), **pool_options)
 
     def get(self, path, params=None, headers=None, **kwargs):
         headers = {} if headers is None else dict(headers)
