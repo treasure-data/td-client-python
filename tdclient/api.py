@@ -123,11 +123,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
         if "timeout" not in pool_options:
             pool_options["timeout"] = 60
 
-        if http_proxy is None and "HTTP_PROXY" in os.environ:
-            http_proxy = os.getenv("HTTP_PROXY")
-
-        self.http = self._init_http(http_proxy, **pool_options)
-
+        self.http = self._init_http(http_proxy if http_proxy else os.getenv("HTTP_PROXY"), **pool_options)
         self._retry_post_requests = retry_post_requests
         self._max_cumul_retry_delay = max_cumul_retry_delay
         self._headers = dict([ (key.lower(), value) for (key, value) in headers.items() ])
