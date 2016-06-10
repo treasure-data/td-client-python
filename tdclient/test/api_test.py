@@ -97,23 +97,38 @@ def test_http_proxy_from_environ():
     td = api.API("apikey")
     assert isinstance(td.http, urllib3.ProxyManager)
     assert td.http.proxy.url == "http://proxy1.example.com:8080"
+    assert td.http.proxy_headers == {}
 
 def test_http_proxy_from_keyword():
     td = api.API("apikey", http_proxy="proxy2.example.com:8080")
     assert isinstance(td.http, urllib3.ProxyManager)
     assert td.http.proxy.url == "http://proxy2.example.com:8080"
+    assert td.http.proxy_headers == {}
 
 def test_http_proxy_prefer_keyword():
     os.environ["HTTP_PROXY"] = "proxy1.example.com:8080"
     td = api.API("apikey", http_proxy="proxy2.example.com:8080")
     assert isinstance(td.http, urllib3.ProxyManager)
     assert td.http.proxy.url == "http://proxy2.example.com:8080"
+    assert td.http.proxy_headers == {}
 
 def test_http_proxy_with_scheme():
-    os.environ["HTTP_PROXY"] = "http://proxy1.example.com:8080/"
-    td = api.API("apikey")
+    td = api.API("apikey", http_proxy="http://proxy1.example.com:8080/")
     assert isinstance(td.http, urllib3.ProxyManager)
-    assert td.http.proxy.url == "http://proxy1.example.com:8080/"
+    assert td.http.proxy.url == "http://proxy1.example.com:8080"
+    assert td.http.proxy_headers == {}
+
+def test_http_proxy_with_credentials():
+    td = api.API("apikey", http_proxy="john:doe@proxy1.example.com:8080")
+    assert isinstance(td.http, urllib3.ProxyManager)
+    assert td.http.proxy.url == "http://proxy1.example.com:8080"
+    assert td.http.proxy_headers == {"proxy-authorization": "Basic am9objpkb2U="}
+
+def test_http_proxy_with_scheme_and_credentials():
+    td = api.API("apikey", http_proxy="http://john:doe@proxy1.example.com:8080/")
+    assert isinstance(td.http, urllib3.ProxyManager)
+    assert td.http.proxy.url == "http://proxy1.example.com:8080"
+    assert td.http.proxy_headers == {"proxy-authorization": "Basic am9objpkb2U="}
 
 def test_no_timeout():
     with mock.patch("tdclient.api.urllib3") as urllib3:
