@@ -1,6 +1,6 @@
 # Version History
 
-## 0.5.0 (unreleased)
+## 0.5.0 (2016-06-10)
 
 * Prevent retry after PUT request failures. This is the same behavior as https://github.com/treasure-data/td-client-ruby (#16)
 * Support HTTP proxy authentication (#17)
