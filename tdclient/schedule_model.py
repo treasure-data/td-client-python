@@ -96,7 +96,10 @@ class Schedule(Model):
     def priority(self):
         """The priority of a scheduled job
         """
-        return self._priority
+        if self._priority in Job.JOB_PRIORITY:
+            return Job.JOB_PRIORITY[self._priority]
+        else:
+            return str(self._priority)
 
     @property
     def retry_limit(self):
