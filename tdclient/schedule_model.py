@@ -24,19 +24,19 @@ class Schedule(Model):
     """Schedule on Treasure Data Service
     """
 
-    def __init__(self, client, name, cron, query, database=None, result_url=None, timezone=None, delay=None, next_time=None, priority=None, retry_limit=None, org_name=None):
+    def __init__(self, client, name, cron, query, **kwargs):
         super(Schedule, self).__init__(client)
         self._name = name
         self._cron = cron
         self._query = query
-        self._database = database
-        self._result_url = result_url
-        self._timezone = timezone
-        self._delay = delay
-        self._next_time = next_time
-        self._priority = priority
-        self._retry_limit = retry_limit
-        self._org_name = org_name
+        self._database = kwargs.get("database")
+        self._result_url = kwargs.get("result_url")
+        self._timezone = kwargs.get("timezone")
+        self._delay = kwargs.get("delay")
+        self._next_time = kwargs.get("next_time")
+        self._priority = kwargs.get("priority")
+        self._retry_limit = kwargs.get("retry_limit")
+        self._org_name = kwargs.get("org_name")
 
     @property
     def name(self):
