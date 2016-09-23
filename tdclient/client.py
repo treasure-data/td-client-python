@@ -527,7 +527,7 @@ class Client(object):
         [:class:`tdclient.models.Schedule`]
         """
         result = self.api.list_schedules()
-        return [ models.Schedule(self, **m) for m in result ]
+        return [ models.Schedule(self, m.get("name"), m.get("cron"), m.get("query"), **m) for m in result ]
 
     def update_schedule(self, name, params=None):
         """
