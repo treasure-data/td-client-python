@@ -14,15 +14,15 @@ class Database(Model):
     PERMISSIONS = ["administrator", "full_access", "import_only", "query_only"]
     PERMISSION_LIST_TABLES = ["administrator", "full_access"]
 
-    def __init__(self, client, db_name, tables=None, count=None, created_at=None, updated_at=None, org_name=None, permission=None):
+    def __init__(self, client, db_name, **kwargs):
         super(Database, self).__init__(client)
         self._db_name = db_name
-        self._tables = tables
-        self._count = count
-        self._created_at = created_at
-        self._updated_at = updated_at
-        self._org_name = org_name
-        self._permission = permission
+        self._tables = kwargs.get("tables")
+        self._count = kwargs.get("count")
+        self._created_at = kwargs.get("created_at")
+        self._updated_at = kwargs.get("updated_at")
+        self._org_name = kwargs.get("org_name")
+        self._permission = kwargs.get("permission")
 
     @property
     def org_name(self):

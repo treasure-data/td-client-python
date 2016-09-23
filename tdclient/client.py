@@ -64,8 +64,8 @@ class Client(object):
         """
         Returns: :class:`tdclient.models.Acount`
         """
-        account_id, plan, storage, guaranteed_cores, maximum_cores, created_at = self.api.show_account()
-        return models.Account(self, account_id, plan, storage, guaranteed_cores, maximum_cores, created_at)
+        account = self.api.show_account()
+        return models.Account(self, account.get("id"), account.get("plan"), **account)
 
     def core_utilization(self, _from, to):
         """
@@ -79,7 +79,7 @@ class Client(object):
         Returns: a list of :class:`tdclient.models.Database`
         """
         databases = self.api.list_databases()
-        return [ models.Database(self, db_name, None, *args) for (db_name, args) in databases.items() ]
+        return [ models.Database(self, db_name, **kwargs) for (db_name, kwargs) in databases.items() ]
 
     def database(self, db_name):
         """
@@ -89,9 +89,9 @@ class Client(object):
         Returns: :class:`tdclient.models.Database`
         """
         databases = self.api.list_databases()
-        for (name, args) in databases.items():
+        for (name, kwargs) in databases.items():
             if name == db_name:
-                return models.Database(self, name, None, *args)
+                return models.Database(self, name, **kwargs)
         raise api.NotFoundError("Database '%s' does not exist" % (db_name))
 
     def create_log_table(self, db_name, table_name):

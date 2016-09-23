@@ -20,13 +20,13 @@ class AccountAPI(object):
                 self.raise_error("Show account failed", res, body)
             js = self.checked_json(body, ["account"])
             a = js["account"]
-            account_id = int(a["id"])
-            plan = int(a["plan"])
-            storage_size = int(a["storage_size"])
-            guaranteed_cores = int(a["guaranteed_cores"])
-            maximum_cores = int(a["maximum_cores"])
-            created_at = self._parsedate(a["created_at"], "%Y-%m-%d")
-            return [account_id, plan, storage_size, guaranteed_cores, maximum_cores, created_at]
+            a["id"] = int(a["id"])
+            a["plan"] = int(a["plan"])
+            a["storage_size"] = int(a["storage_size"])
+            a["guaranteed_cores"] = int(a["guaranteed_cores"])
+            a["maximum_cores"] = int(a["maximum_cores"])
+            a["created_at"] = self._parsedate(a["created_at"], "%Y-%m-%d")
+            return a
 
     def account_core_utilization(self, _from, to):
         """

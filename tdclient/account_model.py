@@ -9,14 +9,14 @@ class Account(Model):
     """Account on Treasure Data Service
     """
 
-    def __init__(self, client, account_id, plan, storage_size=None, guaranteed_cores=None, maximum_cores=None, created_at=None):
+    def __init__(self, client, _id, _plan, **kwargs):
         super(Account, self).__init__(client)
-        self._account_id = account_id
-        self._plan = plan
-        self._storage_size = storage_size
-        self._guaranteed_cores = guaranteed_cores
-        self._maximum_cores = maximum_cores
-        self._created_at = created_at
+        self._account_id = _id
+        self._plan = _plan
+        self._storage_size = kwargs.get("storage_size")
+        self._guaranteed_cores = kwargs.get("guaranteed_cores")
+        self._maximum_cores = kwargs.get("maximum_cores")
+        self._created_at = kwargs.get("created_at")
 
     @property
     def account_id(self):
