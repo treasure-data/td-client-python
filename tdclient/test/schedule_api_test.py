@@ -125,6 +125,22 @@ def test_list_schedules_success():
     schedules = td.list_schedules()
     td.get.assert_called_with("/v3/schedule/list")
     assert len(schedules) == 3
+    next_time = sorted([ schedule.get("next_time") for schedule in schedules if "next_time" in schedule ])
+    assert len(next_time) == 3
+    assert next_time[2].year == 2016
+    assert next_time[2].month == 9
+    assert next_time[2].day == 24
+    assert next_time[2].hour == 0
+    assert next_time[2].minute == 0
+    assert next_time[2].second == 0
+    created_at = sorted([ schedule.get("created_at") for schedule in schedules if "created_at" in schedule ])
+    assert len(created_at) == 3
+    assert created_at[2].year == 2016
+    assert created_at[2].month == 8
+    assert created_at[2].day == 2
+    assert created_at[2].hour == 18
+    assert created_at[2].minute == 1
+    assert created_at[2].second == 4
 
 def test_list_schedules_failure():
     td = api.API("APIKEY")

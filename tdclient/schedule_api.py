@@ -53,6 +53,7 @@ class ScheduleAPI(object):
                 m = dict(m)
                 if "timezone" not in m:
                     m["timezone"] = "UTC"
+                m["created_at"] = self._parsedate(self.get_or_else(m, "created_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
                 m["next_time"] = self._parsedate(self.get_or_else(m, "next_time", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
                 return m
             return [ schedule(m) for m in js["schedules"] ]
