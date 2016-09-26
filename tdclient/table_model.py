@@ -11,8 +11,7 @@ class Table(Model):
     """Database table on Treasure Data Service
     """
 
-    def __init__(self, client, db_name, table_name, type, schema, count, created_at=None, updated_at=None, estimated_storage_size=None,
-                 last_import=None, last_log_timestamp=None, expire_days=None, primary_key=None, primary_key_type=None):
+    def __init__(self, client, db_name, table_name, type, schema, count, **kwargs):
         super(Table, self).__init__(client)
         self.database = None
         self._db_name = db_name
@@ -20,14 +19,14 @@ class Table(Model):
         self._type = type
         self._schema = schema
         self._count = count
-        self._created_at = created_at
-        self._updated_at = updated_at
-        self._estimated_storage_size = estimated_storage_size
-        self._last_import = last_import
-        self._last_log_timestamp = last_log_timestamp
-        self._expire_days = expire_days
-        self._primary_key = primary_key
-        self._primary_key_type = primary_key_type
+        self._created_at = kwargs.get("created_at")
+        self._updated_at = kwargs.get("updated_at")
+        self._estimated_storage_size = kwargs.get("estimated_storage_size")
+        self._last_import = kwargs.get("last_import")
+        self._last_log_timestamp = kwargs.get("last_log_timestamp")
+        self._expire_days = kwargs.get("expire_days")
+        self._primary_key = kwargs.get("primary_key")
+        self._primary_key_type = kwargs.get("primary_key_type")
 
     @property
     def type(self):

@@ -26,11 +26,11 @@ class DatabaseAPI(object):
             result = {}
             for m in js["databases"]:
                 name = m.get("name")
-                count = m.get("count")
-                created_at = self._parsedate(self.get_or_else(m, "created_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
-                updated_at = self._parsedate(self.get_or_else(m, "updated_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
-                permission = m.get("permission")
-                result[name] = [count, created_at, updated_at, None, permission] # set None to org for API copatibility
+                m = dict(m)
+                m["created_at"] = self._parsedate(self.get_or_else(m, "created_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
+                m["updated_at"] = self._parsedate(self.get_or_else(m, "updated_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
+                m["org_name"] = None # set None to org for API copatibility
+                result[name] = m
             return result
 
     def delete_database(self, db):

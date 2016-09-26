@@ -31,7 +31,7 @@ def test_list_databases_success():
     td.get.assert_called_with("/v3/database/list")
     assert len(databases) == 3
     assert sorted(databases.keys()) == ["jma_weather", "sample_datasets", "test_db"]
-    assert sorted([ v[0] for v in databases.values() ]) == [15, 29545, 8812278]
+    assert sorted([ v.get("count") for v in databases.values() ]) == [15, 29545, 8812278]
 
 def test_list_databases_failure():
     td = api.API("APIKEY")

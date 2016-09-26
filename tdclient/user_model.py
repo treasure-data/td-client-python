@@ -9,7 +9,7 @@ class User(Model):
     """User on Treasure Data Service
     """
 
-    def __init__(self, client, name, org_name, role_names, email):
+    def __init__(self, client, name, org_name, role_names, email, **kwargs):
         super(User, self).__init__(client)
         self._name = name
         self._org_name = org_name
