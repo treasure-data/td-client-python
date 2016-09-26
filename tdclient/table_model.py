@@ -11,14 +11,19 @@ class Table(Model):
     """Database table on Treasure Data Service
     """
 
-    def __init__(self, client, db_name, table_name, type, schema, count, **kwargs):
+    def __init__(self, client, db_name, table_name, *args,**kwargs):
         super(Table, self).__init__(client)
         self.database = None
         self._db_name = db_name
         self._table_name = table_name
-        self._type = type
-        self._schema = schema
-        self._count = count
+        if 0 < len(args):
+            self._type = args[0]
+            self._schema = args[1]
+            self._count = args[2]
+        else:
+            self._type = kwargs.get("type")
+            self._schema = kwargs.get("schema")
+            self._count = kwargs.get("count")
         self._created_at = kwargs.get("created_at")
         self._updated_at = kwargs.get("updated_at")
         self._estimated_storage_size = kwargs.get("estimated_storage_size")

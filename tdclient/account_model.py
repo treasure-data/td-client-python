@@ -9,10 +9,14 @@ class Account(Model):
     """Account on Treasure Data Service
     """
 
-    def __init__(self, client, _id, _plan, **kwargs):
+    def __init__(self, client, *args, **kwargs):
         super(Account, self).__init__(client)
-        self._account_id = _id
-        self._plan = _plan
+        if 0 < len(args):
+            self._account_id = args[0]
+            self._plan = args[1]
+        else:
+            self._account_id = kwargs.get("id")
+            self._plan = kwargs.get("plan")
         self._storage_size = kwargs.get("storage_size")
         self._guaranteed_cores = kwargs.get("guaranteed_cores")
         self._maximum_cores = kwargs.get("maximum_cores")
