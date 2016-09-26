@@ -70,13 +70,54 @@ def test_delete_schedule_success():
 
 def test_list_schedules_success():
     td = api.API("APIKEY")
-    # TODO: should be replaced by wire dump
     body = b"""
         {
             "schedules":[
-                {"name":"foo","cron":"* * * * *","query":"SELECT COUNT(1) FROM nasdaq;","database":"sample_datasets","result":"","timezone":"UTC","delay":"","next_time":"","priority":"","retry_limit":""},
-                {"name":"bar","cron":"* * * * *","query":"SELECT COUNT(1) FROM nasdaq;","database":"sample_datasets","result":"","timezone":"UTC","delay":"","next_time":"","priority":"","retry_limit":""},
-                {"name":"baz","cron":"* * * * *","query":"SELECT COUNT(1) FROM nasdaq;","database":"sample_datasets","result":"","timezone":"UTC","delay":"","next_time":"","priority":"","retry_limit":""}
+                {
+                    "name": "foo",
+                    "cron": null,
+                    "timezone": "UTC",
+                    "delay": 0,
+                    "created_at": "2016-08-02T17:58:40Z",
+                    "type": "presto",
+                    "query": "SELECT COUNT(1) FROM nasdaq;",
+                    "database": "sample_datasets",
+                    "user_name": "Yuu Yamashita",
+                    "priority": 0,
+                    "retry_limit": 0,
+                    "result": "",
+                    "next_time": null
+                },
+                {
+                    "name": "bar",
+                    "cron": "0 0 * * *",
+                    "timezone": "UTC",
+                    "delay": 0,
+                    "created_at": "2016-08-02T18:01:04Z",
+                    "type": "presto",
+                    "query": "SELECT COUNT(1) FROM nasdaq;",
+                    "database": "sample_datasets",
+                    "user_name": "Kazuki Ota",
+                    "priority": 0,
+                    "retry_limit": 0,
+                    "result": "",
+                    "next_time": "2016-09-24T00:00:00Z"
+                },
+                {
+                    "name": "baz",
+                    "cron": "* * * * *",
+                    "timezone": "UTC",
+                    "delay": 0,
+                    "created_at": "2016-03-02T23:01:59Z",
+                    "type": "hive",
+                    "query": "SELECT COUNT(1) FROM nasdaq;",
+                    "database": "sample_datasets",
+                    "user_name": "Yuu Yamashita",
+                    "priority": 0,
+                    "retry_limit": 0,
+                    "result": "",
+                    "next_time": "2016-07-06T00:00:00Z"
+                }
             ]
         }
     """
@@ -84,6 +125,22 @@ def test_list_schedules_success():
     schedules = td.list_schedules()
     td.get.assert_called_with("/v3/schedule/list")
     assert len(schedules) == 3
+    next_time = sorted([ schedule.get("next_time") for schedule in schedules if "next_time" in schedule ])
+    assert len(next_time) == 3
+    assert next_time[2].year == 2016
+    assert next_time[2].month == 9
+    assert next_time[2].day == 24
+    assert next_time[2].hour == 0
+    assert next_time[2].minute == 0
+    assert next_time[2].second == 0
+    created_at = sorted([ schedule.get("created_at") for schedule in schedules if "created_at" in schedule ])
+    assert len(created_at) == 3
+    assert created_at[2].year == 2016
+    assert created_at[2].month == 8
+    assert created_at[2].day == 2
+    assert created_at[2].hour == 18
+    assert created_at[2].minute == 1
+    assert created_at[2].second == 4
 
 def test_list_schedules_failure():
     td = api.API("APIKEY")
@@ -100,13 +157,59 @@ def test_update_schedule_success():
 
 def test_history_success():
     td = api.API("APIKEY")
-    # TODO: should be replaced by wire dump
     body = b"""
         {
             "history": [
-                {"job_id":"12345"},
-                {"job_id":"67890"}
-            ]
+                {
+                    "query": "SELECT COUNT(1) FROM nasdaq;",
+                    "type": "presto",
+                    "priority": 0,
+                    "retry_limit": 0,
+                    "duration": 1,
+                    "status": "success",
+                    "cpu_time": null,
+                    "result_size": 30,
+                    "job_id": "12345",
+                    "created_at": "2016-04-13 05:24:59 UTC",
+                    "updated_at": "2016-04-13 05:25:02 UTC",
+                    "start_at": "2016-04-13 05:25:00 UTC",
+                    "end_at": "2016-04-13 05:25:01 UTC",
+                    "num_records": 1,
+                    "database": "sample_datasets",
+                    "user_name": "Ryuta Kamizono",
+                    "result": "",
+                    "url": "https://console.treasuredata.com/jobs/12345",
+                    "hive_result_schema": "[[\\"_col0\\", \\"bigint\\"]]",
+                    "organization": null,
+                    "scheduled_at": ""
+                },
+                {
+                    "query": "SELECT COUNT(1) FROM nasdaq;",
+                    "type": "presto",
+                    "priority": 0,
+                    "retry_limit": 0,
+                    "duration": 1,
+                    "status": "success",
+                    "cpu_time": null,
+                    "result_size": 30,
+                    "job_id": "67890",
+                    "created_at": "2016-04-13 05:24:59 UTC",
+                    "updated_at": "2016-04-13 05:25:02 UTC",
+                    "start_at": "2016-04-13 05:25:00 UTC",
+                    "end_at": "2016-04-13 05:25:01 UTC",
+                    "num_records": 1,
+                    "database": "sample_datasets",
+                    "user_name": "Ryuta Kamizono",
+                    "result": "",
+                    "url": "https://console.treasuredata.com/jobs/67890",
+                    "hive_result_schema": "[[\\"_col0\\", \\"bigint\\"]]",
+                    "organization": null,
+                    "scheduled_at": ""
+                }
+            ],
+            "count": 2,
+            "from": 0,
+            "to": 20
         }
     """
     td.get = mock.MagicMock(return_value=make_response(200, body))

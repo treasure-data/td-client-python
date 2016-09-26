@@ -24,19 +24,27 @@ class Schedule(Model):
     """Schedule on Treasure Data Service
     """
 
-    def __init__(self, client, name, cron, query, database=None, result_url=None, timezone=None, delay=None, next_time=None, priority=None, retry_limit=None, org_name=None):
+    def __init__(self, client, name, cron, query, **kwargs):
         super(Schedule, self).__init__(client)
         self._name = name
         self._cron = cron
+        self._timezone = kwargs.get("timezone")
+        self._delay = kwargs.get("delay")
+        self._created_at = kwargs.get("created_at")
+        self._type = kwargs.get("type")
         self._query = query
-        self._database = database
-        self._result_url = result_url
-        self._timezone = timezone
-        self._delay = delay
-        self._next_time = next_time
-        self._priority = priority
-        self._retry_limit = retry_limit
-        self._org_name = org_name
+        self._database = kwargs.get("database")
+        self._user_name = kwargs.get("user_name")
+        self._priority = kwargs.get("priority")
+        self._retry_limit = kwargs.get("retry_limit")
+        if "result_url" in kwargs:
+            # backward compatibility for td-client-python < 0.6.0
+            # TODO: remove this code if not necessary with fixing test
+            self._result = kwargs.get("result_url")
+        else:
+            self._result = kwargs.get("result")
+        self._next_time = kwargs.get("next_time")
+        self._org_name = kwargs.get("org_name")
 
     @property
     def name(self):
@@ -68,7 +76,7 @@ class Schedule(Model):
     def result_url(self):
         """The result output configuration in URL form of a scheduled job
         """
-        return self._result_url
+        return self._result
 
     @property
     def timezone(self):
@@ -88,7 +96,10 @@ class Schedule(Model):
     def priority(self):
         """The priority of a scheduled job
         """
-        return self._priority
+        if self._priority in Job.JOB_PRIORITY:
+            return Job.JOB_PRIORITY[self._priority]
+        else:
+            return str(self._priority)
 
     @property
     def retry_limit(self):
@@ -110,6 +121,27 @@ class Schedule(Model):
         TODO: add docstring
         """
         return self._next_time
+
+    @property
+    def created_at(self):
+        """
+        TODO: add docstring
+        """
+        return self._created_at
+
+    @property
+    def type(self):
+        """
+        TODO: add docstring
+        """
+        return self._type
+
+    @property
+    def user_name(self):
+        """
+        TODO: add docstring
+        """
+        return self._user_name
 
     def run(self, time, num=None):
         """Run a scheduled job

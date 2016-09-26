@@ -50,17 +50,12 @@ class ScheduleAPI(object):
                 self.raise_error("List schedules failed", res, body)
             js = self.checked_json(body, ["schedules"])
             def schedule(m):
-                name = m.get("name")
-                cron = m.get("cron")
-                query = m.get("query")
-                database = m.get("database")
-                result_url = m.get("result")
-                timezone = m.get("timezone", "UTC")
-                delay = m.get("delay")
-                next_time = self._parsedate(self.get_or_else(m, "next_time", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
-                priority = m.get("priority")
-                retry_limit = m.get("retry_limit")
-                return (name, cron, query, database, result_url, timezone, delay, next_time, priority, retry_limit, None) # same as database
+                m = dict(m)
+                if "timezone" not in m:
+                    m["timezone"] = "UTC"
+                m["created_at"] = self._parsedate(self.get_or_else(m, "created_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
+                m["next_time"] = self._parsedate(self.get_or_else(m, "next_time", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
+                return m
             return [ schedule(m) for m in js["schedules"] ]
 
     def update_schedule(self, name, params=None):
