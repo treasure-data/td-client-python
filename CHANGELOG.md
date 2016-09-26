@@ -1,6 +1,6 @@
 # Version History
 
-## 0.6.0.dev0 (2016-09-26)
+## 0.6.0.dev1 (2016-09-26)
 
 * Generate universal wheel by default since there's no binary in this package
 * Add missing support for `created_time` and `user_name` from `/v3/schedule/list` API (#20, #21)
