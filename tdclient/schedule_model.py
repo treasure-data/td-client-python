@@ -24,15 +24,20 @@ class Schedule(Model):
     """Schedule on Treasure Data Service
     """
 
-    def __init__(self, client, name, cron, query, **kwargs):
+    def __init__(self, client, *args, **kwargs):
         super(Schedule, self).__init__(client)
-        self._name = name
-        self._cron = cron
+        if 0 < len(args):
+            self._name = args[0]
+            self._cron = args[1]
+            self._query = args[2]
+        else:
+            self._name = kwargs.get("name")
+            self._cron = kwargs.get("cron")
+            self._query = kwargs.get("query")
         self._timezone = kwargs.get("timezone")
         self._delay = kwargs.get("delay")
         self._created_at = kwargs.get("created_at")
         self._type = kwargs.get("type")
-        self._query = query
         self._database = kwargs.get("database")
         self._user_name = kwargs.get("user_name")
         self._priority = kwargs.get("priority")
