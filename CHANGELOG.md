@@ -1,5 +1,11 @@
 # Version History
 
+## 0.6.0.dev0 (2016-09-26)
+
+* Generate universal wheel by default since there's no binary in this package
+* Add missing support for `created_time` and `user_name` from `/v3/schedule/list` API (#20, #21)
+* Use keyword arguments for initializing model attributes (#22)
+
 ## 0.5.0 (2016-06-10)
 
 * Prevent retry after PUT request failures. This is the same behavior as https://github.com/treasure-data/td-client-ruby (#16)
