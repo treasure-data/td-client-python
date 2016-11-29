@@ -172,7 +172,7 @@ class Client(object):
         Returns: a list of :class:`tdclient.models.Table`
         """
         m = self.api.list_tables(db_name)
-        return [ models.Table(self, db_name, table_name, *args) for (table_name, args) in m.items() ]
+        return [ models.Table(self, db_name, table_name, **kwargs) for (table_name, kwargs) in m.items() ]
 
     def table(self, db_name, table_name):
         """
