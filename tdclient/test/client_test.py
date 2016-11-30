@@ -125,14 +125,14 @@ def test_delete_table():
 def test_tables():
     td = client.Client("APIKEY")
     td._api = mock.MagicMock()
-    td._api.list_tables = mock.MagicMock(return_value=({"nasdaq": ["item", "", 100], "www_access": ["item", "", 200]}))
+    td._api.list_tables = mock.MagicMock(return_value=({"nasdaq": {"type": "item", "schema": [], "count": 100}, "www_access": {"type": "item", "schema": [], "count": 200}}))
     td.tables("sample_datasets")
     td.api.list_tables.assert_called_with("sample_datasets")
 
 def test_table():
     td = client.Client("APIKEY")
     td._api = mock.MagicMock()
-    td._api.list_tables = mock.MagicMock(return_value=({"nasdaq": ["item", "", 100], "www_access": ["item", "", 200]}))
+    td._api.list_tables = mock.MagicMock(return_value=({"nasdaq": {"type": "item", "schema": [], "count": 100}, "www_access": {"type ": "item", "schema": [], "count": 200}}))
     table = td.table("sample_datasets", "nasdaq")
     td.api.list_tables.assert_called_with("sample_datasets")
     assert table.table_name == "nasdaq"
