@@ -27,19 +27,16 @@ class TableAPI(object):
             js = self.checked_json(body, ["tables"])
             result = {}
             for m in js["tables"]:
-                name = m.get("name")
-                type = m.get("type", "?")
-                count = int(m.get("count", 0))
-                created_at = self._parsedate(self.get_or_else(m, "created_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
-                updated_at = self._parsedate(self.get_or_else(m, "updated_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
-                last_import = self._parsedate(self.get_or_else(m, "counter_updated_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
-                last_log_timestamp = self._parsedate(self.get_or_else(m, "last_log_timestamp", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
-                estimated_storage_size = int(m.get("estimated_storage_size", 0))
-                schema = json.loads(m.get("schema", "[]"))
-                expire_days = m.get("expire_days")
-                primary_key = m.get("primary_key")
-                primary_key_type = m.get("primary_key_type")
-                result[name] = (type, schema, count, created_at, updated_at, estimated_storage_size, last_import, last_log_timestamp, expire_days, primary_key, primary_key_type)
+                m = dict(m)
+                m["type"] = m.get("type", "?")
+                m["count"] = int(m.get("count", 0))
+                m["created_at"] = self._parsedate(self.get_or_else(m, "created_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
+                m["updated_at"] = self._parsedate(self.get_or_else(m, "updated_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
+                m["last_import"] = self._parsedate(self.get_or_else(m, "counter_updated_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
+                m["last_log_timestamp"] = self._parsedate(self.get_or_else(m, "last_log_timestamp", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")
+                m["estimated_storage_size"] = int(m["estimated_storage_size"])
+                m["schema"] = json.loads(m.get("schema", "[]"))
+                result[m["name"]] = m
             return result
 
     def create_log_table(self, db, table):

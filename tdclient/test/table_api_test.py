@@ -31,7 +31,7 @@ def test_list_tables_success():
     td.get.assert_called_with("/v3/table/list/sample_datasets")
     assert len(tables) == 2
     assert sorted(tables.keys()) == ["nasdaq", "www_access"]
-    assert sorted([ v[0] for v in tables.values() ]) == ["log", "log"]
+    assert sorted([ v.get("type") for v in tables.values() ]) == ["log", "log"]
 
 def test_list_tables_failure():
     td = api.API("APIKEY")
