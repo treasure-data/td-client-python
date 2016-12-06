@@ -1,5 +1,10 @@
 # Version History
 
+## 0.7.0 (2016-12-06)
+
+* Fix for tdclient tables data not populating
+* TableAPI.list_tables now returns a dictionary instead of a tuple
+
 ## 0.6.0 (2016-09-27)
 
 * Generate universal wheel by default since there's no binary in this package
