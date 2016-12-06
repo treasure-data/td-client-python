@@ -167,7 +167,7 @@ $ tox
 Release to PyPI.
 
 ```sh
-$ python setup.py sdist upload
+$ python setup.py bdist_wheel sdist --universal upload
 ```
 
 ## Version History
