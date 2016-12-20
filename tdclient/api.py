@@ -342,17 +342,17 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
         return (url, _headers)
 
     def send_request(self, method, url, fields=None, body=None, headers=None, **kwargs):
-        def encode(xs, encoding):
-            if xs is None:
-                return None
-            else:
-                return dict([ (k.encode(encoding), v.encode(encoding)) for k, v in xs.items() ])
+        def as_bytes(s, encoding):
+            return s.encode(encoding) if isinstance(s, six.text_type) else s
+
         if six.PY2:
             # FIXME: Ugly workaround for `UnicodeDecodeError` from `httplib.HTTPConnection._send_output` when sending multi-byte payloads on Python 2.x (#27)
-            method = method.encode('utf-8')
-            url = url.encode('utf-8')
-            fields = encode(fields, 'utf-8')
-            headers = encode(headers, 'utf-8')
+            method = as_bytes(method, 'utf-8')
+            url = as_bytes(url, 'utf-8')
+            if fields is not None:
+                fields = dict([ (as_bytes(k, 'utf-8'), as_bytes(v, 'utf-8')) for k, v in fields.items() ])
+            if headers is not None:
+                headers = dict([ (as_bytes(k, 'utf-8'), as_bytes(v, 'utf-8')) for k, v in headers.items() ])
         if body is None:
             return self.http.request(method, url, fields=fields, headers=headers, **kwargs)
         else:
