@@ -2,7 +2,7 @@
 
 ## 0.8.0.dev0 (unreleased)
 
-* Fix unicode encoding issues on Python 2.x (#27, #28)
+* Fix unicode encoding issues on Python 2.x (#27, #28, #29)
 
 ## 0.7.0 (2016-12-06)
 
