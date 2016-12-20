@@ -1,9 +1,13 @@
 # Version History
 
+## 0.8.0.dev0 (unreleased)
+
+* Fix unicode encoding issues on Python 2.x (#27, #28)
+
 ## 0.7.0 (2016-12-06)
 
 * Fix for tdclient tables data not populating
-* TableAPI.list_tables now returns a dictionary instead of a tuple
+* `TableAPI.list_tables` now returns a dictionary instead of a tuple
 
 ## 0.6.0 (2016-09-27)
 
