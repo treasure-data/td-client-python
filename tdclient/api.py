@@ -21,6 +21,7 @@ import json
 import logging
 import msgpack
 import os
+import six
 import socket
 import ssl
 import tempfile
@@ -340,11 +341,22 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
         _headers.update(dict([ (key.lower(), value) for (key, value) in headers.items() ]))
         return (url, _headers)
 
-    def send_request(self, method, url, fields=None, body=None, **kwargs):
+    def send_request(self, method, url, fields=None, body=None, headers=None, **kwargs):
+        def encode(xs, encoding):
+            if xs is None:
+                return None
+            else:
+                return dict([ (k.encode(encoding), v.encode(encoding)) for k, v in xs.items() ])
+        if six.PY2:
+            # FIXME: Ugly workaround for `UnicodeDecodeError` from `httplib.HTTPConnection._send_output` when sending multi-byte payloads on Python 2.x (#27)
+            method = method.encode('utf-8')
+            url = url.encode('utf-8')
+            fields = encode(fields, 'utf-8')
+            headers = encode(headers, 'utf-8')
         if body is None:
-            return self.http.request(method, url, fields=fields, **kwargs)
+            return self.http.request(method, url, fields=fields, headers=headers, **kwargs)
         else:
-            return self.http.urlopen(method, url, body=body, **kwargs)
+            return self.http.urlopen(method, url, body=body, headers=headers, **kwargs)
 
     def raise_error(self, msg, res, body):
         status_code = res.status

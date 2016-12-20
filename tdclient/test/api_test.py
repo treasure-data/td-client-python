@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding=utf-8
 
 from __future__ import print_function
 from __future__ import unicode_literals
@@ -11,6 +12,7 @@ except ImportError:
     import mock
 import os
 import pytest
+import six
 import tempfile
 import time
 try:
@@ -169,6 +171,27 @@ def test_get_success():
             assert body == b"body"
         assert not t_sleep.called
 
+def test_get_unicode_success():
+    td = api.API("APIKEY")
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.request = mock.MagicMock()
+        responses = [
+            make_raw_response(200, b"body"),
+        ]
+        td.http.request.side_effect = responses
+        with td.get("/hoge", {"fuga": "ふが"}) as response:
+            args, kwargs = td.http.request.call_args
+            assert args == ("GET", "https://api.treasuredata.com/hoge")
+            if six.PY2:
+                assert kwargs["fields"] == {"fuga": "ふが".encode('utf-8')}
+            else:
+                assert kwargs["fields"] == {"fuga": "ふが"}
+            assert sorted(kwargs["headers"].keys()) == ["accept-encoding", "authorization", "date", "user-agent"]
+            status, body = response.status, response.read()
+            assert status == 200
+            assert body == b"body"
+        assert not t_sleep.called
+
 def test_get_error():
     td = api.API("APIKEY")
     with mock.patch("time.sleep") as t_sleep:
@@ -234,6 +257,27 @@ def test_post_success():
             args, kwargs = td.http.request.call_args
             assert args == ("POST", "https://api.treasuredata.com/foo")
             assert kwargs["fields"] == {"bar": "baz"}
+            assert sorted(kwargs["headers"].keys()) == ["authorization", "date", "user-agent"]
+            status, body = response.status, response.read()
+            assert status == 200
+            assert body == b"body"
+        assert not t_sleep.called
+
+def test_post_unicode_success():
+    td = api.API("APIKEY")
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.request = mock.MagicMock()
+        responses = [
+            make_raw_response(200, b"body"),
+        ]
+        td.http.request.side_effect = responses
+        with td.post("/hoge", {"fuga": "ふが"}) as response:
+            args, kwargs = td.http.request.call_args
+            assert args == ("POST", "https://api.treasuredata.com/hoge")
+            if six.PY2:
+                assert kwargs["fields"] == {"fuga": "ふが".encode('utf-8')}
+            else:
+                assert kwargs["fields"] == {"fuga": "ふが"}
             assert sorted(kwargs["headers"].keys()) == ["authorization", "date", "user-agent"]
             status, body = response.status, response.read()
             assert status == 200
@@ -307,6 +351,25 @@ def test_put_bytes_success():
             assert body == b"response body"
         assert not t_sleep.called
 
+def test_put_bytes_unicode_success():
+    td = api.API("APIKEY")
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.urlopen = mock.MagicMock()
+        responses = [
+            make_raw_response(200, b"response body"),
+        ]
+        bytes_or_stream = "リクエストボディー".encode('utf-8')
+        td.http.urlopen.side_effect = responses
+        with td.put("/hoge", bytes_or_stream, 12) as response:
+            args, kwargs = td.http.urlopen.call_args
+            assert args == ("PUT", "https://api.treasuredata.com/hoge")
+            assert kwargs["body"] == array(str("b"), bytes_or_stream)
+            assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
+            status, body = response.status, response.read()
+            assert status == 200
+            assert body == b"response body"
+        assert not t_sleep.called
+
 def test_put_file_with_fileno_success():
     td = api.API("APIKEY")
     with mock.patch("time.sleep") as t_sleep:
@@ -328,6 +391,27 @@ def test_put_file_with_fileno_success():
             assert body == b"response body"
         assert not t_sleep.called
 
+def test_put_file_with_fileno_unicode_success():
+    td = api.API("APIKEY")
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.urlopen = mock.MagicMock()
+        responses = [
+            make_raw_response(200, b"response body"),
+        ]
+        td.http.urlopen.side_effect = responses
+        bytes_or_stream = tempfile.TemporaryFile()
+        bytes_or_stream.write("リクエストボディー".encode('utf-8'))
+        bytes_or_stream.seek(0)
+        with td.put("/hoge", bytes_or_stream, 12) as response:
+            args, kwargs = td.http.urlopen.call_args
+            assert args == ("PUT", "https://api.treasuredata.com/hoge")
+            assert kwargs["body"] == bytes_or_stream
+            assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
+            status, body = response.status, response.read()
+            assert status == 200
+            assert body == b"response body"
+        assert not t_sleep.called
+
 def test_put_file_without_fileno_success():
     td = api.API("APIKEY")
     with mock.patch("time.sleep") as t_sleep:
@@ -340,6 +424,25 @@ def test_put_file_without_fileno_success():
         with td.put("/foo", bytes_or_stream, 12) as response:
             args, kwargs = td.http.urlopen.call_args
             assert args == ("PUT", "https://api.treasuredata.com/foo")
+            assert kwargs["body"] == array(str("b"), bytes_or_stream.getvalue())
+            assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
+            status, body = response.status, response.read()
+            assert status == 200
+            assert body == b"response body"
+        assert not t_sleep.called
+
+def test_put_file_without_fileno_unicode_success():
+    td = api.API("APIKEY")
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.urlopen = mock.MagicMock()
+        responses = [
+            make_raw_response(200, b"response body"),
+        ]
+        td.http.urlopen.side_effect = responses
+        bytes_or_stream = io.BytesIO("リクエストボディー".encode('utf-8'))
+        with td.put("/hoge", bytes_or_stream, 12) as response:
+            args, kwargs = td.http.urlopen.call_args
+            assert args == ("PUT", "https://api.treasuredata.com/hoge")
             assert kwargs["body"] == array(str("b"), bytes_or_stream.getvalue())
             assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
             status, body = response.status, response.read()
@@ -367,6 +470,27 @@ def test_delete_success():
             args, kwargs = td.http.request.call_args
             assert args == ("DELETE", "https://api.treasuredata.com/foo")
             assert kwargs["fields"] == {"bar": "baz"}
+            assert sorted(kwargs["headers"].keys()) == ["authorization", "date", "user-agent"]
+            status, body = response.status, response.read()
+            assert status == 200
+            assert body == b"body"
+        assert not t_sleep.called
+
+def test_delete_unicode_success():
+    td = api.API("APIKEY")
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.request = mock.MagicMock()
+        responses = [
+            make_raw_response(200, b"body"),
+        ]
+        td.http.request.side_effect = responses
+        with td.delete("/hoge", {"fuga": "ふが"}) as response:
+            args, kwargs = td.http.request.call_args
+            assert args == ("DELETE", "https://api.treasuredata.com/hoge")
+            if six.PY2:
+                assert kwargs["fields"] == {"fuga": "ふが".encode('utf-8')}
+            else:
+                assert kwargs["fields"] == {"fuga": "ふが"}
             assert sorted(kwargs["headers"].keys()) == ["authorization", "date", "user-agent"]
             status, body = response.status, response.read()
             assert status == 200
