@@ -1,6 +1,6 @@
 # Version History
 
-## 0.8.0.dev0 (unreleased)
+## 0.8.0 (2016-12-22)
 
 * Fix unicode encoding issues on Python 2.x (#27, #28, #29)
 
