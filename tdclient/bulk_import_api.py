@@ -3,6 +3,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import collections
 import contextlib
 import gzip
 import io
@@ -79,13 +80,30 @@ class BulkImportAPI(object):
             js = self.checked_json(body, ["parts"])
             return js["parts"]
 
+    @staticmethod
+    def validate_part_name(part_name):
+        """Make sure the part_name is valid
+
+        Params:
+            part_name (str): The part name the user is trying to use
+        """
+        # Check for duplicate periods
+        d = collections.defaultdict(int)
+        for char in part_name:
+            d[char] += 1
+
+        if 1 < d['.']:
+            raise ValueError("part names cannot contain multiple periods: %s" % (repr(part_name)))
+
+        if 0 < part_name.find("/"):
+            raise ValueError("part name must not contain '/': %s" % (repr(part_name)))
+
     def bulk_import_upload_part(self, name, part_name, stream, size):
         """
         TODO: add docstring
         => None
         """
-        if 0 < part_name.find("/"):
-            raise ValueError("part name must not contain '/': %s" % (repr(part_name,)))
+        self.validate_part_name(part_name)
         with self.put("/v3/bulk_import/upload_part/%s/%s" % (urlquote(str(name)), urlquote(str(part_name))), stream, size) as res:
             code, body = res.status, res.read()
             if code / 100 != 2:
@@ -96,6 +114,7 @@ class BulkImportAPI(object):
         TODO: add docstring
         => None
         """
+        self.validate_part_name(part_name)
         with contextlib.closing(self._prepare_file(file, format, **kwargs)) as fp:
             size = os.fstat(fp.fileno()).st_size
             return self.bulk_import_upload_part(name, part_name, fp, size)
@@ -105,6 +124,7 @@ class BulkImportAPI(object):
         TODO: add docstring
         => True
         """
+        self.validate_part_name(part_name)
         params = {} if params is None else params
         with self.post("/v3/bulk_import/delete_part/%s/%s" % (urlquote(str(name)), urlquote(str(part_name))), params) as res:
             code, body = res.status, res.read()

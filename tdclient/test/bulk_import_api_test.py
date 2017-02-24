@@ -81,6 +81,18 @@ def test_list_bulk_import_upload_part_success():
     td.bulk_import_upload_part("name", "part_name", "stream", 1024)
     td.put.assert_called_with("/v3/bulk_import/upload_part/name/part_name", "stream", 1024)
 
+def test_list_bulk_import_upload_part_fail_periods():
+    td = api.API("APIKEY")
+    td.put = mock.MagicMock(return_value=make_response(200, b""))
+    with pytest.raises(ValueError):
+        td.bulk_import_upload_part("name", "bad.part.name", "stream", 1024)
+
+def test_list_bulk_import_upload_part_fail_slashes():
+    td = api.API("APIKEY")
+    td.put = mock.MagicMock(return_value=make_response(200, b""))
+    with pytest.raises(ValueError):
+        td.bulk_import_upload_part("name", "bad/part.name", "stream", 1024)
+
 def test_list_bulk_import_upload_file_success():
     td = api.API("APIKEY")
     data = [
