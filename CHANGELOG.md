@@ -1,5 +1,9 @@
 # Version History
 
+## 0.9.0 (2017-02-27)
+
+* Add validation to part names for bulk upload
+
 ## 0.8.0 (2016-12-22)
 
 * Fix unicode encoding issues on Python 2.x (#27, #28, #29)
