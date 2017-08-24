@@ -1,2 +1,4 @@
 include requirements.txt
 include test-requirements.txt
+
+graft src

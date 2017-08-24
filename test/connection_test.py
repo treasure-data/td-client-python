@@ -12,7 +12,7 @@ import pytest
 from tdclient import connection
 from tdclient import cursor
 from tdclient import errors
-from tdclient.test.test_helper import *
+from test.test_helper import *
 
 def setup_function(function):
     unset_environ()

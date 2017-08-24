@@ -9,7 +9,7 @@ except ImportError:
     import mock
 
 from tdclient import models
-from tdclient.test.test_helper import *
+from test.test_helper import *
 
 def setup_function(function):
     unset_environ()
