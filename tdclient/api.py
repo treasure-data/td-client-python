@@ -450,7 +450,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
             return reader(file_like, **kwargs)
 
     def _validate_record(self, record):
-        if "time" not in record and b"time" not in record:
+        if not any (k in record for k in ("time", b"time")):
             warnings.warn("records should have \"time\" column to import records properly.", category=RuntimeWarning)
         return True
 
