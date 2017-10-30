@@ -407,7 +407,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
 
     def get_or_else(self, hashmap, key, default_value=None):
         value = hashmap.get(key)
-        return default_value if value is None else value
+        return default_value if value is None else (value if value.strip() else default_value)
 
     def close(self):
         # urllib3 doesn't allow to close all connections immediately.
