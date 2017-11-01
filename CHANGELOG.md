@@ -1,5 +1,9 @@
 # Version History
 
+## 0.10.0 (2017-11-01)
+
+* Ignore empty string in job's `start_at` and `end_at` (#35, #36)
+
 ## 0.9.0 (2017-02-27)
 
 * Add validation to part names for bulk upload
