@@ -82,6 +82,8 @@ class Job(Model):
         self._debug = data.get("debug")
         self._start_at = data.get("start_at")
         self._end_at = data.get("end_at")
+        self._created_at = data.get("created_at")
+        self._updated_at = data.get("updated_at")
         self._cpu_time = data.get("cpu_time")
         self._result = data.get("result")
         self._result_size = data.get("result_size")
@@ -91,6 +93,10 @@ class Job(Model):
         self._retry_limit = data.get("retry_limit")
         self._org_name = data.get("org_name")
         self._database = data.get("database")
+        self._num_records = data.get("num_records")
+        self._user_name = data.get("user_name")
+        self._linked_result_export_job_id = data.get("linked_result_export_job_id")
+        self._result_export_target_job_id = data.get("result_export_target_job_id")
 
     def update(self):
         """Update all fields of the job
@@ -135,6 +141,13 @@ class Job(Model):
         Returns: the length of job result
         """
         return self._result_size
+    
+    @property
+    def num_records(self):
+        """
+        Returns: the number of records of job result
+        """
+        return self._num_records
 
     @property
     def result_url(self):
@@ -176,11 +189,32 @@ class Job(Model):
         return self._org_name
 
     @property
+    def user_name(self):
+        """
+        Returns: executing user name
+        """
+        return self._user_name
+
+    @property
     def database(self):
         """
         Returns: a string represents the name of a database that job is running on
         """
         return self._database
+    
+    @property
+    def linked_result_export_job_id(self):
+        """
+        TODO: add docstring
+        """
+        return self._linked_result_export_job_id
+
+    @property
+    def result_export_target_job_id(self):
+        """
+        TODO: add docstring
+        """
+        return self._result_export_target_job_id
 
     @property
     def debug(self):

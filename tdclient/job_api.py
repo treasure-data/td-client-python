@@ -66,6 +66,8 @@ class JobAPI(object):
                     hive_result_schema = None
                 start_at = self.get_or_else(m, "start_at")
                 end_at = self.get_or_else(m, "end_at")
+                created_at = self.get_or_else(m, "created_at")
+                updated_at = self.get_or_else(m, "updated_at")
                 job = {
                     "job_id": m.get("job_id"),
                     "type": m.get("type", "?"),
@@ -75,6 +77,8 @@ class JobAPI(object):
                     "debug": m.get("debug"),
                     "start_at": self._parsedate(start_at, "%Y-%m-%dT%H:%M:%SZ") if start_at else None,
                     "end_at": self._parsedate(end_at, "%Y-%m-%dT%H:%M:%SZ") if end_at else None,
+                    "created_at": self._parsedate(created_at, "%Y-%m-%dT%H:%M:%SZ") if created_at else None,
+                    "updated_at": self._parsedate(updated_at, "%Y-%m-%dT%H:%M:%SZ") if updated_at else None,
                     "cpu_time": m.get("cpu_time"),
                     "result_size": m.get("result_size"), # compressed result size in msgpack.gz format
                     "result": result,
@@ -84,6 +88,10 @@ class JobAPI(object):
                     "retry_limit": m.get("retry_limit"),
                     "org_name": None,
                     "database": m.get("database"),
+                    "num_records": m.get("num_records"),
+                    "user_name": m.get("user_name"),
+                    "linked_result_export_job_id": m.get("linked_result_export_job_id"),
+                    "result_export_target_job_id": m.get("result_export_target_job_id"),
                 }
                 jobs.append(job)
             return jobs
@@ -111,6 +119,8 @@ class JobAPI(object):
                 hive_result_schema = None
             start_at = self.get_or_else(js, "start_at")
             end_at = self.get_or_else(js, "end_at")
+            created_at = self.get_or_else(js, "created_at")
+            updated_at = self.get_or_else(js, "updated_at")
             job = {
                 "job_id": job_id,
                 "type": js.get("type", "?"),
@@ -120,6 +130,8 @@ class JobAPI(object):
                 "debug": js.get("debug"),
                 "start_at": self._parsedate(start_at, "%Y-%m-%dT%H:%M:%SZ") if start_at else None,
                 "end_at": self._parsedate(end_at, "%Y-%m-%dT%H:%M:%SZ") if end_at else None,
+                "created_at": self._parsedate(created_at, "%Y-%m-%dT%H:%M:%SZ") if created_at else None,
+                "updated_at": self._parsedate(updated_at, "%Y-%m-%dT%H:%M:%SZ") if updated_at else None,
                 "cpu_time": js.get("cpu_time"),
                 "result_size": js.get("result_size"), # compressed result size in msgpack.gz format
                 "result": result,
@@ -129,6 +141,10 @@ class JobAPI(object):
                 "retry_limit": js.get("retry_limit"),
                 "org_name": None,
                 "database": js.get("database"),
+                "num_records": js.get("num_records"),
+                "user_name": js.get("user_name"),
+                "linked_result_export_job_id": js.get("linked_result_export_job_id"),
+                "result_export_target_job_id": js.get("result_export_target_job_id"),
             }
             return job
 

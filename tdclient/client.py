@@ -242,6 +242,8 @@ class Client(object):
                 debug=d.get("debug"),
                 start_at=d.get("start_at"),
                 end_at=d.get("end_at"),
+                created_at=d.get("created_at"),
+                updated_at=d.get("updated_at"),
                 cpu_time=d.get("cpu_time"),
                 result_size=d.get("result_size"),
                 result=d.get("result"),
@@ -251,6 +253,10 @@ class Client(object):
                 retry_limit=d.get("retry_limit"),
                 org_name=d.get("org_name"),
                 database=d.get("database"),
+                num_records=d.get("num_records"),
+                user_name=d.get("user_name"),
+                linked_result_export_job_id=d.get("linked_result_export_job_id"),
+                result_export_target_job_id=d.get("result_export_target_job_id"),
             )
         return [ job(d) for d in results ]
 
@@ -273,6 +279,8 @@ class Client(object):
             debug=d.get("debug"),
             start_at=d.get("start_at"),
             end_at=d.get("end_at"),
+            created_at=d.get("created_at"),
+            updated_at=d.get("updated_at"),
             cpu_time=d.get("cpu_time"),
             result_size=d.get("result_size"),
             result=d.get("result"),
@@ -282,6 +290,10 @@ class Client(object):
             retry_limit=d.get("retry_limit"),
             org_name=d.get("org_name"),
             database=d.get("database"),
+            num_records=d.get("num_records"),
+            user_name=d.get("user_name"),
+            linked_result_export_job_id=d.get("linked_result_export_job_id"),
+            result_export_target_job_id=d.get("result_export_target_job_id"),
         )
 
     def job_status(self, job_id):
