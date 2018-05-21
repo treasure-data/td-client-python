@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+* None
+
+## 0.11.0 (2018-05-21)
+
 * Support missing parameters in JOB API (#39, #40)
 
 ## 0.10.0 (2017-11-01)
