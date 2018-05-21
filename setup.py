@@ -2,18 +2,20 @@
 
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
+import os
 import re
 import sys
 
-version = None
+def read(fname):
+    with open(os.path.join(os.path.dirname(__file__), fname)) as fp:
+        return fp.read()
 
-with open("tdclient/version.py") as fp:
-    m = re.search(r"^__version__ *= *\"([^\"]*)\" *$", fp.read(), re.MULTILINE)
-    if m is not None:
-        version = m.group(1)
+m = re.search(r"^__version__ *= *\"([^\"]*)\" *$", read("tdclient/version.py"), re.MULTILINE)
 
-if version is None:
+if m is None:
     raise(RuntimeError("could not read tdclient/version.py"))
+else:
+    version = m.group(1)
 
 class PyTest(TestCommand):
     user_options = [("pytest-args=", "a", "Arguments to pass to py.test")]
@@ -41,6 +43,7 @@ setup(
     name="td-client",
     version=version,
     description="Treasure Data API library for Python",
+    long_description=read("README.md"),
     author="Treasure Data, Inc.",
     author_email="support@treasure-data.com",
     url="http://treasuredata.com/",
