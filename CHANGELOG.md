@@ -4,6 +4,10 @@
 
 * None
 
+## 0.11.1 (2018-05-21)
+
+* Added 3.6 as test target. No functional changes have applied since 0.11.0 (#41)
+
 ## 0.11.0 (2018-05-21)
 
 * Support missing parameters in JOB API (#39, #40)
