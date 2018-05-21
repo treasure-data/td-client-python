@@ -304,6 +304,8 @@ def test_job_update_status():
         "debug": None,
         "start_at": datetime.datetime(2015, 2, 10, 0, 2, 14, tzinfo=dateutil.tz.tzutc()),
         "end_at": datetime.datetime(2015, 2, 10, 0, 2, 27, tzinfo=dateutil.tz.tzutc()),
+        "created_at": datetime.datetime(2015, 2, 10, 0, 2, 13, tzinfo=dateutil.tz.tzutc()),
+        "updated_at": datetime.datetime(2015, 2, 10, 0, 2, 15, tzinfo=dateutil.tz.tzutc()),
         "cpu_time": None,
         "result_size": 22,
         "result": None,
@@ -313,6 +315,10 @@ def test_job_update_status():
         "retry_limit": 0,
         "org_name": None,
         "database": "sample_datasets",
+        "num_records": 1,
+        "user_name": "Treasure Data",
+        "linked_result_export_job_id": None,
+        "result_export_target_job_id": None,
     })
     job = models.Job(client, "67890", "hive", "SELECT COUNT(1) FROM nasdaq")
     job.finished = mock.MagicMock(return_value=False)

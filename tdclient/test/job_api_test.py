@@ -80,7 +80,10 @@ def test_show_job_success():
             "type": "presto",
             "updated_at": "2015-02-09 11:44:28 UTC",
             "url": "http://console.example.com/jobs/12345",
-            "user_name": "nobody@example.com"
+            "user_name": "nobody@example.com",
+            "linked_result_export_job_id": null,
+            "result_export_target_job_id": null,
+            "num_records": 4
         }
     """
     td.get = mock.MagicMock(return_value=make_response(200, body))
