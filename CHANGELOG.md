@@ -1,5 +1,9 @@
 # Version History
 
+## Unreleased
+
+* Support missing parameters in JOB API (#39, #40)
+
 ## 0.10.0 (2017-11-01)
 
 * Ignore empty string in job's `start_at` and `end_at` (#35, #36)
