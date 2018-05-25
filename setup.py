@@ -29,16 +29,6 @@ class PyTest(TestCommand):
         errno = pytest.main(self.pytest_args)
         sys.exit(errno)
 
-install_requires = []
-with open("requirements.txt") as fp:
-    for s in fp:
-        install_requires.append(s.strip())
-
-tests_require = []
-with open("test-requirements.txt") as fp:
-    for s in fp:
-        tests_require.append(s.strip())
-
 setup(
     name="td-client",
     version=version,
@@ -47,8 +37,19 @@ setup(
     author="Treasure Data, Inc.",
     author_email="support@treasure-data.com",
     url="http://treasuredata.com/",
-    install_requires=install_requires,
-    tests_require=tests_require,
+    install_requires=[
+        "msgpack-python",
+        "python-dateutil",
+        "six",
+        "urllib3",
+    ],
+    test_requires=[
+        "coveralls",
+        "mock",
+        "pytest",
+        "pytest-cov",
+        "tox",
+    ],
     packages=find_packages(),
     cmdclass = {"test": PyTest},
     license="Apache Software License",
