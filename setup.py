@@ -34,7 +34,7 @@ setup(
     version=version,
     description="Treasure Data API library for Python",
     long_description=read("README.md"),
-    long_description_content_type="text/markdown",
+    long_description_content_type="text/markdown; charset=UTF-8; variant=GFM",
     author="Treasure Data, Inc.",
     author_email="support@treasure-data.com",
     url="http://treasuredata.com/",
