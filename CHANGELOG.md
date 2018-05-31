@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+* None
+
+## 0.12.0 (2018-05-31)
+
 * Avoided to declare library dependencies too tightly within this project since this is a library project (#42)
 * Got rid of all configurations for Python 2.6 completely (#42)
 
