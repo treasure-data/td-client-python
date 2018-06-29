@@ -133,8 +133,7 @@ def test_fetchone():
     assert td.fetchone() == ["foo", 1]
     assert td.fetchone() == ["bar", 1]
     assert td.fetchone() == ["baz", 2]
-    with pytest.raises(errors.InternalError) as error:
-        td.fetchone()
+    assert td.fetchone() == None
 
 def test_fetchmany():
     td = cursor.Cursor(mock.MagicMock())
@@ -144,8 +143,9 @@ def test_fetchmany():
     td._rowcount = len(td._rows)
     assert td.fetchmany(2) == [["foo", 1], ["bar", 1]]
     assert td.fetchmany() == [["baz", 2]]
+    assert td.fetchmany() == []
     with pytest.raises(errors.InternalError) as error:
-        td.fetchmany()
+        td.fetchmany(1)
 
 def test_fetchall():
     td = cursor.Cursor(mock.MagicMock())
@@ -154,8 +154,7 @@ def test_fetchall():
     td._rownumber = 0
     td._rowcount = len(td._rows)
     assert td.fetchall() == [["foo", 1], ["bar", 1], ["baz", 2]]
-    with pytest.raises(errors.InternalError) as error:
-        td.fetchall()
+    assert td.fetchall() == []
 
 def test_show_job():
     td = cursor.Cursor(mock.MagicMock())
