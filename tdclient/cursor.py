@@ -82,15 +82,22 @@ class Cursor(object):
         return [ (column[0], None, None, None, None, None, None) for column in result_schema ]
 
     def fetchone(self):
+        """
+        Fetch the next row of a query result set, returning a single sequence, or `None` when no more data is available.
+        """
         self._check_executed()
         if self._rownumber < self._rowcount:
             row = self._rows[self._rownumber]
             self._rownumber += 1
             return row
         else:
-            raise errors.InternalError("index out of bound (%d out of %d)" % (self._rownumber, self._rowcount))
+            return None
 
     def fetchmany(self, size=None):
+        """
+        Fetch the next set of rows of a query result, returning a sequence of sequences (e.g. a list of tuples).
+        An empty sequence is returned when no more rows are available.
+        """
         if size is None:
             return self.fetchall()
         else:
@@ -103,13 +110,17 @@ class Cursor(object):
                 raise errors.InternalError("index out of bound (%d out of %d)" % (self._rownumber, self._rowcount))
 
     def fetchall(self):
+        """
+        Fetch all (remaining) rows of a query result, returning them as a sequence of sequences (e.g. a list of tuples).
+        Note that the cursor's arraysize attribute can affect the performance of this operation.
+        """
         self._check_executed()
         if self._rownumber < self._rowcount:
             rows = self._rows[self._rownumber:]
             self._rownumber = self._rowcount
             return rows
         else:
-            raise errors.InternalError("row index out of bound (%d out of %d)" % (self._rownumber, self._rowcount))
+            return []
 
     def nextset(self):
         raise errors.NotSupportedError
