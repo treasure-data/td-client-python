@@ -38,7 +38,7 @@ Please see also the examples at [Treasure Data Documentation](http://docs.treasu
 
 Treasure Data API key will be read from environment variable `TD_API_KEY`, if none is given via `apikey=` argument passed to `tdclient.Client`.
 
-Treasure Data API endpoint `https://api.treasuredata.com` is used by default. You can override this with environment variable `TD_API_SERVER`, which in turn can be overridden via `endpoint=` argument passed to `tdclient.Client`.
+Treasure Data API endpoint `https://api.treasuredata.com` is used by default. You can override this with environment variable `TD_API_SERVER`, which in turn can be overridden via `endpoint=` argument passed to `tdclient.Client`. List of available Treasure Data sites and corresponding API endpoints can be found [here](https://support.treasuredata.com/hc/en-us/articles/360001474288-Sites-and-Endpoints).
 
 
 ```python
