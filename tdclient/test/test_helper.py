@@ -62,7 +62,7 @@ def msgpackb(lis):
     for item in lis:
         try:
             mp = packer.pack(item)
-        except (OverflowError, msgpack.PackValueError):
+        except (OverflowError, ValueError):
             packer.reset()
             mp = packer.pack(normalized_msgpack(item))
         stream.write(mp)

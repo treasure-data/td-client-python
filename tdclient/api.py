@@ -428,7 +428,7 @@ class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI
                 for item in items:
                     try:
                         mp = packer.pack(item)
-                    except (OverflowError, msgpack.PackValueError):
+                    except (OverflowError, ValueError):
                         packer.reset()
                         mp = packer.pack(normalized_msgpack(item))
                     gz.write(mp)

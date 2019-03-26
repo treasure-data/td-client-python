@@ -39,7 +39,7 @@ setup(
     author_email="support@treasure-data.com",
     url="http://treasuredata.com/",
     install_requires=[
-        "msgpack-python",
+        "msgpack",
         "python-dateutil",
         "six",
         "urllib3",
