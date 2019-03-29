@@ -1,4 +1,4 @@
 msgpack==0.6.1
 python-dateutil==2.7.3
 six
-urllib3==1.22
+urllib3>=1.23
