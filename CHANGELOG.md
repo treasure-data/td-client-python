@@ -4,6 +4,12 @@
 
 * None
 
+## 0.13.0 (2019-03-29)
+
+* Change msgpack-python to msgpack (#50)
+* Dropped 3.3 support as it has already been EOL'd (#52)
+* Set urllib3 minimum version as v1.24.1 (#51)
+
 ## 0.12.0 (2018-05-31)
 
 * Avoided to declare library dependencies too tightly within this project since this is a library project (#42)
