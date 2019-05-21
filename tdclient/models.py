@@ -3,7 +3,6 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from tdclient import access_control_model
 from tdclient import account_model
 from tdclient import bulk_import_model
 from tdclient import database_model
@@ -13,7 +12,6 @@ from tdclient import schedule_model
 from tdclient import table_model
 from tdclient import user_model
 
-AccessControl = access_control_model.AccessControl
 Account = account_model.Account
 BulkImport = bulk_import_model.BulkImport
 Database = database_model.Database

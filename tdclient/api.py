@@ -33,7 +33,6 @@ except ImportError:
 import urllib3
 import warnings
 
-from tdclient.access_control_api import AccessControlAPI
 from tdclient.account_api import AccountAPI
 from tdclient.bulk_import_api import BulkImportAPI
 from tdclient.connector_api import ConnectorAPI
@@ -58,7 +57,7 @@ ForbiddenError = errors.ForbiddenError
 AlreadyExistsError = errors.AlreadyExistsError
 NotFoundError = errors.NotFoundError
 
-class API(AccessControlAPI, AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
+class API(AccountAPI, BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
           JobAPI, PartialDeleteAPI, ResultAPI, ScheduleAPI, ServerStatusAPI, TableAPI, UserAPI):
     """Internal API class
 
