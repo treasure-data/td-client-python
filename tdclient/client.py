@@ -60,20 +60,6 @@ class Client(object):
         """
         return self.api.delete_database(db_name)
 
-    def account(self):
-        """
-        Returns: :class:`tdclient.models.Acount`
-        """
-        account = self.api.show_account()
-        return models.Account(self, **account)
-
-    def core_utilization(self, _from, to):
-        """
-        TODO: add docstring
-        """
-        _from, to, interval, history = self.api.account_core_utilization(_from, to)
-        return (_from, to, interval, history)
-
     def databases(self):
         """
         Returns: a list of :class:`tdclient.models.Database`

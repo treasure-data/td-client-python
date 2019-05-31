@@ -42,21 +42,6 @@ def test_delete_database():
     td.delete_database("db_name")
     td.api.delete_database.assert_called_with("db_name")
 
-def test_account():
-    td = client.Client("APIKEY")
-    td._api = mock.MagicMock()
-    td._api.show_account = mock.MagicMock(return_value={"id":1, "plan":0, "storage_size":10, "guaranteed_cores":0, "maximum_cores":4, "created_at":"2015-01-13 17:17:17 UTC"})
-    account = td.account()
-    td.api.show_account.assert_called_with()
-    assert account.account_id == 1
-
-def test_core_utilization():
-    td = client.Client("APIKEY")
-    td._api = mock.MagicMock()
-    td._api.account_core_utilization = mock.MagicMock(return_value=(0, 1, 2, []))
-    core_utilization = td.core_utilization(0, 1)
-    td.api.account_core_utilization.assert_called_with(0, 1)
-
 def test_databases():
     td = client.Client("APIKEY")
     td._api = mock.MagicMock()
