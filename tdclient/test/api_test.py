@@ -263,6 +263,29 @@ def test_post_success():
             assert body == b"body"
         assert not t_sleep.called
 
+def test_post_bytearray_success():
+    td = api.API("APIKEY")
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.urlopen = mock.MagicMock()
+        responses = [
+            make_raw_response(200, b"body"),
+        ]
+        td.http.urlopen.side_effect = responses
+        bytes_or_stream = bytearray(b"abcd")
+        with td.post("/foo", bytes_or_stream) as response:
+            args, kwargs = td.http.urlopen.call_args
+            assert args == ("POST", "https://api.treasuredata.com/foo")
+            assert kwargs["body"] == bytes_or_stream
+            if urllib3.util.IS_PYOPENSSL:
+                assert isinstance(kwargs["body"], memoryview)
+            else:
+                assert isinstance(kwargs["body"], bytearray)
+            assert sorted(kwargs["headers"].keys()) == ["authorization", "date", "user-agent"]
+            status, body = response.status, response.read()
+            assert status == 200
+            assert body == b"body"
+        assert not t_sleep.called
+
 def test_post_unicode_success():
     td = api.API("APIKEY")
     with mock.patch("time.sleep") as t_sleep:
