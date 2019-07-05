@@ -359,6 +359,9 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
         if urllib3.util.IS_PYOPENSSL and isinstance(body, bytearray):
             # workaround for https://github.com/pyca/pyopenssl/issues/621
             body = memoryview(body)
+        if urllib3.util.IS_PYOPENSSL and isinstance(body, array):
+            # workaround for https://github.com/pyca/pyopenssl/issues/621
+            body = body.tostring()
         return self.http.urlopen(method, url, body=body, headers=headers, **kwargs)
 
     def raise_error(self, msg, res, body):
