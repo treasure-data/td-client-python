@@ -367,7 +367,10 @@ def test_put_bytes_success():
         with td.put("/foo", bytes_or_stream, 12) as response:
             args, kwargs = td.http.urlopen.call_args
             assert args == ("PUT", "https://api.treasuredata.com/foo")
-            assert kwargs["body"] == array(str("b"), bytes_or_stream)
+            if urllib3.util.IS_PYOPENSSL:
+                assert kwargs["body"] == b"request body"
+            else:
+                assert kwargs["body"] == array(str("b"), bytes_or_stream)
             assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
             status, body = response.status, response.read()
             assert status == 200
@@ -386,7 +389,10 @@ def test_put_bytes_unicode_success():
         with td.put("/hoge", bytes_or_stream, 12) as response:
             args, kwargs = td.http.urlopen.call_args
             assert args == ("PUT", "https://api.treasuredata.com/hoge")
-            assert kwargs["body"] == array(str("b"), bytes_or_stream)
+            if urllib3.util.IS_PYOPENSSL:
+                assert kwargs["body"] == "リクエストボディー".encode('utf-8')
+            else:
+                assert kwargs["body"] == array(str("b"), bytes_or_stream)
             assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
             status, body = response.status, response.read()
             assert status == 200
@@ -447,7 +453,10 @@ def test_put_file_without_fileno_success():
         with td.put("/foo", bytes_or_stream, 12) as response:
             args, kwargs = td.http.urlopen.call_args
             assert args == ("PUT", "https://api.treasuredata.com/foo")
-            assert kwargs["body"] == array(str("b"), bytes_or_stream.getvalue())
+            if urllib3.util.IS_PYOPENSSL:
+                assert kwargs["body"] == b"request body"
+            else:
+                assert kwargs["body"] == array(str("b"), bytes_or_stream.getvalue())
             assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
             status, body = response.status, response.read()
             assert status == 200
@@ -466,7 +475,10 @@ def test_put_file_without_fileno_unicode_success():
         with td.put("/hoge", bytes_or_stream, 12) as response:
             args, kwargs = td.http.urlopen.call_args
             assert args == ("PUT", "https://api.treasuredata.com/hoge")
-            assert kwargs["body"] == array(str("b"), bytes_or_stream.getvalue())
+            if urllib3.util.IS_PYOPENSSL:
+                assert kwargs["body"] == "リクエストボディー".encode('utf-8')
+            else:
+                assert kwargs["body"] == array(str("b"), bytes_or_stream.getvalue())
             assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
             status, body = response.status, response.read()
             assert status == 200
