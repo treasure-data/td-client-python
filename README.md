@@ -101,7 +101,6 @@ with tdclient.Client() as td:
 Importing data into Treasure Data in batch manner.
 
 ```python
-from __future__ import print_function
 import sys
 import tdclient
 import time

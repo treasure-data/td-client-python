@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-from __future__ import print_function
-from __future__ import unicode_literals
-
 from array import array
 import io
 try:
@@ -12,7 +9,6 @@ except ImportError:
     import mock
 import os
 import pytest
-import six
 import tempfile
 import time
 try:
@@ -182,10 +178,7 @@ def test_get_unicode_success():
         with td.get("/hoge", {"fuga": "ふが"}) as response:
             args, kwargs = td.http.request.call_args
             assert args == ("GET", "https://api.treasuredata.com/hoge")
-            if six.PY2:
-                assert kwargs["fields"] == {"fuga": "ふが".encode('utf-8')}
-            else:
-                assert kwargs["fields"] == {"fuga": "ふが"}
+            assert kwargs["fields"] == {"fuga": "ふが"}
             assert sorted(kwargs["headers"].keys()) == ["accept-encoding", "authorization", "date", "user-agent"]
             status, body = response.status, response.read()
             assert status == 200
@@ -297,10 +290,7 @@ def test_post_unicode_success():
         with td.post("/hoge", {"fuga": "ふが"}) as response:
             args, kwargs = td.http.request.call_args
             assert args == ("POST", "https://api.treasuredata.com/hoge")
-            if six.PY2:
-                assert kwargs["fields"] == {"fuga": "ふが".encode('utf-8')}
-            else:
-                assert kwargs["fields"] == {"fuga": "ふが"}
+            assert kwargs["fields"] == {"fuga": "ふが"}
             assert sorted(kwargs["headers"].keys()) == ["authorization", "date", "user-agent"]
             status, body = response.status, response.read()
             assert status == 200
@@ -522,10 +512,7 @@ def test_delete_unicode_success():
         with td.delete("/hoge", {"fuga": "ふが"}) as response:
             args, kwargs = td.http.request.call_args
             assert args == ("DELETE", "https://api.treasuredata.com/hoge")
-            if six.PY2:
-                assert kwargs["fields"] == {"fuga": "ふが".encode('utf-8')}
-            else:
-                assert kwargs["fields"] == {"fuga": "ふが"}
+            assert kwargs["fields"] == {"fuga": "ふが"}
             assert sorted(kwargs["headers"].keys()) == ["authorization", "date", "user-agent"]
             status, body = response.status, response.read()
             assert status == 200

@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
-from __future__ import unicode_literals
-
 from tdclient import bulk_import_model
 from tdclient import database_model
 from tdclient import job_model

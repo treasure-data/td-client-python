@@ -1,18 +1,13 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import codecs
 import json
 import msgpack
-try:
-    from urllib.parse import quote as urlquote # >=3.0
-except ImportError:
-    from urllib import quote as urlquote
+from urllib.parse import quote as urlquote
 import warnings
 
-class JobAPI(object):
+
+class JobAPI:
     ####
     ## Job API
     ##

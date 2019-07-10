@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import json
 import warnings
 
 from tdclient import api
 from tdclient import models
 
-class Client(object):
+
+class Client:
     """API Client for Treasure Data Service
     """
 

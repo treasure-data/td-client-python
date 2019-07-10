@@ -42,7 +42,6 @@ setup(
     install_requires=[
         "msgpack",
         "python-dateutil",
-        "six",
         "urllib3",
     ],
     test_requires=[

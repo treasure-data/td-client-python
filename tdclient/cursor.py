@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import time
 from tdclient import errors
 
-class Cursor(object):
+class Cursor:
     def __init__(self, api, wait_interval=5, wait_callback=None, **kwargs):
         self._api = api
         self._query_kwargs = kwargs

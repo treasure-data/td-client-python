@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
-from __future__ import unicode_literals
-
 from array import array
 try:
     import certifi
@@ -21,15 +18,11 @@ import json
 import logging
 import msgpack
 import os
-import six
 import socket
 import ssl
 import tempfile
 import time
-try:
-    import urllib.parse as urlparse # >=3.0
-except ImportError:
-    import urlparse
+import urllib.parse as urlparse
 import urllib3
 import urllib3.util
 import warnings
@@ -343,16 +336,8 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
 
     def send_request(self, method, url, fields=None, body=None, headers=None, **kwargs):
         def as_bytes(s, encoding):
-            return s.encode(encoding) if isinstance(s, six.text_type) else s
+            return s.encode(encoding) if isinstance(s, str) else s
 
-        if six.PY2:
-            # FIXME: Ugly workaround for `UnicodeDecodeError` from `httplib.HTTPConnection._send_output` when sending multi-byte payloads on Python 2.x (#27)
-            method = as_bytes(method, 'utf-8')
-            url = as_bytes(url, 'utf-8')
-            if fields is not None:
-                fields = dict([ (as_bytes(k, 'utf-8'), as_bytes(v, 'utf-8')) for k, v in fields.items() ])
-            if headers is not None:
-                headers = dict([ (as_bytes(k, 'utf-8'), as_bytes(v, 'utf-8')) for k, v in headers.items() ])
         if body is None:
             return self.http.request(method, url, fields=fields, headers=headers, **kwargs)
         
