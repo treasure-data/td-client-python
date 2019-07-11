@@ -263,6 +263,29 @@ def test_post_success():
             assert body == b"body"
         assert not t_sleep.called
 
+def test_post_bytearray_success():
+    td = api.API("APIKEY")
+    with mock.patch("time.sleep") as t_sleep:
+        td.http.urlopen = mock.MagicMock()
+        responses = [
+            make_raw_response(200, b"body"),
+        ]
+        td.http.urlopen.side_effect = responses
+        bytes_or_stream = bytearray(b"abcd")
+        with td.post("/foo", bytes_or_stream) as response:
+            args, kwargs = td.http.urlopen.call_args
+            assert args == ("POST", "https://api.treasuredata.com/foo")
+            assert kwargs["body"] == bytes_or_stream
+            if urllib3.util.IS_PYOPENSSL:
+                assert isinstance(kwargs["body"], memoryview)
+            else:
+                assert isinstance(kwargs["body"], bytearray)
+            assert sorted(kwargs["headers"].keys()) == ["authorization", "date", "user-agent"]
+            status, body = response.status, response.read()
+            assert status == 200
+            assert body == b"body"
+        assert not t_sleep.called
+
 def test_post_unicode_success():
     td = api.API("APIKEY")
     with mock.patch("time.sleep") as t_sleep:
@@ -344,7 +367,10 @@ def test_put_bytes_success():
         with td.put("/foo", bytes_or_stream, 12) as response:
             args, kwargs = td.http.urlopen.call_args
             assert args == ("PUT", "https://api.treasuredata.com/foo")
-            assert kwargs["body"] == array(str("b"), bytes_or_stream)
+            if urllib3.util.IS_PYOPENSSL:
+                assert kwargs["body"] == b"request body"
+            else:
+                assert kwargs["body"] == array(str("b"), bytes_or_stream)
             assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
             status, body = response.status, response.read()
             assert status == 200
@@ -363,7 +389,10 @@ def test_put_bytes_unicode_success():
         with td.put("/hoge", bytes_or_stream, 12) as response:
             args, kwargs = td.http.urlopen.call_args
             assert args == ("PUT", "https://api.treasuredata.com/hoge")
-            assert kwargs["body"] == array(str("b"), bytes_or_stream)
+            if urllib3.util.IS_PYOPENSSL:
+                assert kwargs["body"] == "リクエストボディー".encode('utf-8')
+            else:
+                assert kwargs["body"] == array(str("b"), bytes_or_stream)
             assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
             status, body = response.status, response.read()
             assert status == 200
@@ -424,7 +453,10 @@ def test_put_file_without_fileno_success():
         with td.put("/foo", bytes_or_stream, 12) as response:
             args, kwargs = td.http.urlopen.call_args
             assert args == ("PUT", "https://api.treasuredata.com/foo")
-            assert kwargs["body"] == array(str("b"), bytes_or_stream.getvalue())
+            if urllib3.util.IS_PYOPENSSL:
+                assert kwargs["body"] == b"request body"
+            else:
+                assert kwargs["body"] == array(str("b"), bytes_or_stream.getvalue())
             assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
             status, body = response.status, response.read()
             assert status == 200
@@ -443,7 +475,10 @@ def test_put_file_without_fileno_unicode_success():
         with td.put("/hoge", bytes_or_stream, 12) as response:
             args, kwargs = td.http.urlopen.call_args
             assert args == ("PUT", "https://api.treasuredata.com/hoge")
-            assert kwargs["body"] == array(str("b"), bytes_or_stream.getvalue())
+            if urllib3.util.IS_PYOPENSSL:
+                assert kwargs["body"] == "リクエストボディー".encode('utf-8')
+            else:
+                assert kwargs["body"] == array(str("b"), bytes_or_stream.getvalue())
             assert sorted(kwargs["headers"].keys()) == ["authorization", "content-length", "content-type", "date", "user-agent"]
             status, body = response.status, response.read()
             assert status == 200

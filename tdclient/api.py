@@ -31,6 +31,7 @@ try:
 except ImportError:
     import urlparse
 import urllib3
+import urllib3.util
 import warnings
 
 from tdclient.bulk_import_api import BulkImportAPI
@@ -354,8 +355,14 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
                 headers = dict([ (as_bytes(k, 'utf-8'), as_bytes(v, 'utf-8')) for k, v in headers.items() ])
         if body is None:
             return self.http.request(method, url, fields=fields, headers=headers, **kwargs)
-        else:
-            return self.http.urlopen(method, url, body=body, headers=headers, **kwargs)
+        
+        if urllib3.util.IS_PYOPENSSL and isinstance(body, bytearray):
+            # workaround for https://github.com/pyca/pyopenssl/issues/621
+            body = memoryview(body)
+        if urllib3.util.IS_PYOPENSSL and isinstance(body, array):
+            # workaround for https://github.com/pyca/pyopenssl/issues/621
+            body = body.tostring()
+        return self.http.urlopen(method, url, body=body, headers=headers, **kwargs)
 
     def raise_error(self, msg, res, body):
         status_code = res.status
