@@ -170,12 +170,12 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
                 if response.status < 500:
                     break
                 else:
-                    log.warn("Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)", response.status, response.data, retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
+                    log.warning("Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)", response.status, response.data, retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
             except ( urllib3.exceptions.TimeoutStateError, urllib3.exceptions.TimeoutError, urllib3.exceptions.PoolError, socket.error ):
                 pass
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
-                log.warn("Retrying after %d seconds... (cumulative: %d/%d)", retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
+                log.warning("Retrying after %d seconds... (cumulative: %d/%d)", retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
                 time.sleep(retry_delay)
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
@@ -219,13 +219,13 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
                 else:
                     if not self._retry_post_requests:
                         raise(APIError("Retrying stopped by retry_post_requests == False"))
-                    log.warn("Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)", response.status, response.data, retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
+                    log.warning("Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)", response.status, response.data, retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
             except ( urllib3.exceptions.TimeoutStateError, urllib3.exceptions.TimeoutError, urllib3.exceptions.PoolError, socket.error ):
                 if not self._retry_post_requests:
                     raise(APIError("Retrying stopped by retry_post_requests == False"))
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
-                log.warn("Retrying after %d seconds... (cumulative: %d/%d)", retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
+                log.warning("Retrying after %d seconds... (cumulative: %d/%d)", retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
                 time.sleep(retry_delay)
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
@@ -297,12 +297,12 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
                 if response.status < 500:
                     break
                 else:
-                    log.warn("Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)", response.status, response.data, retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
+                    log.warning("Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)", response.status, response.data, retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
             except ( urllib3.exceptions.TimeoutStateError, urllib3.exceptions.TimeoutError, urllib3.exceptions.PoolError, socket.error ):
                 pass
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
-                log.warn("Retrying after %d seconds... (cumulative: %d/%d)", retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
+                log.warning("Retrying after %d seconds... (cumulative: %d/%d)", retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
                 time.sleep(retry_delay)
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
@@ -384,7 +384,7 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
         try:
             return self._parsedate(s, None)
         except ValueError:
-            log.warn("Failed to parse date string: %s" % (s,))
+            log.warning("Failed to parse date string: %s" % (s,))
             return None
 
     def _parsedate(self, s, fmt):
@@ -393,7 +393,7 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
         try:
             return dateutil.parser.parse(s)
         except ValueError:
-            log.warn("Failed to parse date string: %s as %s" % (s, fmt))
+            log.warning("Failed to parse date string: %s as %s" % (s, fmt))
             return None
 
     def get_or_else(self, hashmap, key, default_value=None):
