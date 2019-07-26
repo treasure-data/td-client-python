@@ -1,20 +1,15 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import collections
 import contextlib
 import gzip
 import io
 import msgpack
 import os
-try:
-    from urllib.parse import quote as urlquote # >=3.0
-except ImportError:
-    from urllib import quote as urlquote
+from urllib.parse import quote as urlquote
 
-class BulkImportAPI(object):
+
+class BulkImportAPI:
     ####
     ## Bulk import API
     ##

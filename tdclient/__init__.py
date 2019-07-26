@@ -1,6 +1,3 @@
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import datetime
 from tdclient import client
 from tdclient import connection

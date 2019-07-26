@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
-from __future__ import unicode_literals
-
-class ServerStatusAPI(object):
+class ServerStatusAPI:
     ####
     ## Server Status API
     ##

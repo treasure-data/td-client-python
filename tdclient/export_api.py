@@ -1,14 +1,9 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
-from __future__ import unicode_literals
+from urllib.parse import quote as urlquote
 
-try:
-    from urllib.parse import quote as urlquote # >=3.0
-except ImportError:
-    from urllib import quote as urlquote
 
-class ExportAPI(object):
+class ExportAPI:
     ####
     ## Export API
     ##

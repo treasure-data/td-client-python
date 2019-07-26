@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
-from __future__ import unicode_literals
-
 from array import array
 try:
     import certifi
@@ -21,15 +18,11 @@ import json
 import logging
 import msgpack
 import os
-import six
 import socket
 import ssl
 import tempfile
 import time
-try:
-    import urllib.parse as urlparse # >=3.0
-except ImportError:
-    import urlparse
+import urllib.parse as urlparse
 import urllib3
 import urllib3.util
 import warnings
@@ -177,12 +170,12 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
                 if response.status < 500:
                     break
                 else:
-                    log.warn("Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)", response.status, response.data, retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
+                    log.warning("Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)", response.status, response.data, retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
             except ( urllib3.exceptions.TimeoutStateError, urllib3.exceptions.TimeoutError, urllib3.exceptions.PoolError, socket.error ):
                 pass
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
-                log.warn("Retrying after %d seconds... (cumulative: %d/%d)", retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
+                log.warning("Retrying after %d seconds... (cumulative: %d/%d)", retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
                 time.sleep(retry_delay)
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
@@ -226,13 +219,13 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
                 else:
                     if not self._retry_post_requests:
                         raise(APIError("Retrying stopped by retry_post_requests == False"))
-                    log.warn("Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)", response.status, response.data, retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
+                    log.warning("Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)", response.status, response.data, retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
             except ( urllib3.exceptions.TimeoutStateError, urllib3.exceptions.TimeoutError, urllib3.exceptions.PoolError, socket.error ):
                 if not self._retry_post_requests:
                     raise(APIError("Retrying stopped by retry_post_requests == False"))
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
-                log.warn("Retrying after %d seconds... (cumulative: %d/%d)", retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
+                log.warning("Retrying after %d seconds... (cumulative: %d/%d)", retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
                 time.sleep(retry_delay)
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
@@ -304,12 +297,12 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
                 if response.status < 500:
                     break
                 else:
-                    log.warn("Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)", response.status, response.data, retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
+                    log.warning("Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)", response.status, response.data, retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
             except ( urllib3.exceptions.TimeoutStateError, urllib3.exceptions.TimeoutError, urllib3.exceptions.PoolError, socket.error ):
                 pass
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
-                log.warn("Retrying after %d seconds... (cumulative: %d/%d)", retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
+                log.warning("Retrying after %d seconds... (cumulative: %d/%d)", retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
                 time.sleep(retry_delay)
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
@@ -343,16 +336,8 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
 
     def send_request(self, method, url, fields=None, body=None, headers=None, **kwargs):
         def as_bytes(s, encoding):
-            return s.encode(encoding) if isinstance(s, six.text_type) else s
+            return s.encode(encoding) if isinstance(s, str) else s
 
-        if six.PY2:
-            # FIXME: Ugly workaround for `UnicodeDecodeError` from `httplib.HTTPConnection._send_output` when sending multi-byte payloads on Python 2.x (#27)
-            method = as_bytes(method, 'utf-8')
-            url = as_bytes(url, 'utf-8')
-            if fields is not None:
-                fields = dict([ (as_bytes(k, 'utf-8'), as_bytes(v, 'utf-8')) for k, v in fields.items() ])
-            if headers is not None:
-                headers = dict([ (as_bytes(k, 'utf-8'), as_bytes(v, 'utf-8')) for k, v in headers.items() ])
         if body is None:
             return self.http.request(method, url, fields=fields, headers=headers, **kwargs)
         
@@ -399,7 +384,7 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
         try:
             return self._parsedate(s, None)
         except ValueError:
-            log.warn("Failed to parse date string: %s" % (s,))
+            log.warning("Failed to parse date string: %s" % (s,))
             return None
 
     def _parsedate(self, s, fmt):
@@ -408,7 +393,7 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
         try:
             return dateutil.parser.parse(s)
         except ValueError:
-            log.warn("Failed to parse date string: %s as %s" % (s, fmt))
+            log.warning("Failed to parse date string: %s as %s" % (s, fmt))
             return None
 
     def get_or_else(self, hashmap, key, default_value=None):

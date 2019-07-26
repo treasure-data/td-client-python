@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
-from __future__ import unicode_literals
-
 from tdclient import api
 from tdclient import cursor
 from tdclient import errors
 
-class Connection(object):
+class Connection:
     def __init__(self, type=None, db=None, result_url=None, priority=None, retry_limit=None, wait_interval=None, wait_callback=None, **kwargs):
         cursor_kwargs = dict()
         if type is not None:

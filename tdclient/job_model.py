@@ -1,18 +1,16 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import time
 import warnings
 
 from tdclient.model import Model
 
-class Schema(object):
+
+class Schema:
     """Schema of a database table on Treasure Data Service
     """
 
-    class Field(object):
+    class Field:
         def __init__(self, name, type):
             self._name = name
             self._type = type

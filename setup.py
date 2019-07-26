@@ -38,10 +38,10 @@ setup(
     author="Treasure Data, Inc.",
     author_email="support@treasure-data.com",
     url="http://treasuredata.com/",
+    python_requires=">=3.5",
     install_requires=[
         "msgpack",
         "python-dateutil",
-        "six",
         "urllib3",
     ],
     test_requires=[
@@ -62,8 +62,6 @@ setup(
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
         "Topic :: Internet",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
