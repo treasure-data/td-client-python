@@ -54,6 +54,7 @@ setup(
     extras_require={
         "dev": [
             "black==19.3b0",
+            "isort",
         ],
     },
     packages=find_packages(),
