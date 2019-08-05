@@ -9,8 +9,10 @@ import pytest
 from tdclient import api
 from tdclient.test.test_helper import *
 
+
 def setup_function(function):
     unset_environ()
+
 
 def test_partial_delete_success():
     td = api.API("APIKEY")
@@ -22,7 +24,10 @@ def test_partial_delete_success():
     """
     td.post = mock.MagicMock(return_value=make_response(200, body))
     partial_delete = td.partial_delete("sample_datasets", "nasdaq", 0, 10)
-    td.post.assert_called_with("/v3/table/partialdelete/sample_datasets/nasdaq", {"from": "10", "to": "0"})
+    td.post.assert_called_with(
+        "/v3/table/partialdelete/sample_datasets/nasdaq", {"from": "10", "to": "0"}
+    )
+
 
 def test_partial_delete_failure():
     td = api.API("APIKEY")

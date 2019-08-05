@@ -26,9 +26,18 @@ class ImportAPI:
         Returns: float represents the elapsed time to import data
         """
         if unique_id is not None:
-            path = "/v3/table/import_with_id/%s/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table)), urlquote(str(unique_id)), urlquote(str(format)))
+            path = "/v3/table/import_with_id/%s/%s/%s/%s" % (
+                urlquote(str(db)),
+                urlquote(str(table)),
+                urlquote(str(unique_id)),
+                urlquote(str(format)),
+            )
         else:
-            path = "/v3/table/import/%s/%s/%s" % (urlquote(str(db)), urlquote(str(table)), urlquote(str(format)))
+            path = "/v3/table/import/%s/%s/%s" % (
+                urlquote(str(db)),
+                urlquote(str(table)),
+                urlquote(str(format)),
+            )
 
         kwargs = {}
         with self.put(path, bytes_or_stream, size, **kwargs) as res:
@@ -57,4 +66,6 @@ class ImportAPI:
         """
         with contextlib.closing(self._prepare_file(file, format, **kwargs)) as fp:
             size = os.fstat(fp.fileno()).st_size
-            return self.import_data(db, table, "msgpack.gz", fp, size, unique_id=unique_id)
+            return self.import_data(
+                db, table, "msgpack.gz", fp, size, unique_id=unique_id
+            )

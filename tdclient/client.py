@@ -3,8 +3,7 @@
 import json
 import warnings
 
-from tdclient import api
-from tdclient import models
+from tdclient import api, models
 
 
 class Client:
@@ -63,7 +62,10 @@ class Client:
         Returns: a list of :class:`tdclient.models.Database`
         """
         databases = self.api.list_databases()
-        return [ models.Database(self, db_name, **kwargs) for (db_name, kwargs) in databases.items() ]
+        return [
+            models.Database(self, db_name, **kwargs)
+            for (db_name, kwargs) in databases.items()
+        ]
 
     def database(self, db_name):
         """
@@ -98,8 +100,13 @@ class Client:
 
         Returns: `True` if success
         """
-        warnings.warn("item tables have been deprecated. will be deleted from future releases.", category=DeprecationWarning)
-        return self.api.create_item_table(db_name, table_name, primary_key, primary_key_type)
+        warnings.warn(
+            "item tables have been deprecated. will be deleted from future releases.",
+            category=DeprecationWarning,
+        )
+        return self.api.create_item_table(
+            db_name, table_name, primary_key, primary_key_type
+        )
 
     def swap_table(self, db_name, table_name1, table_name2):
         """
@@ -156,7 +163,10 @@ class Client:
         Returns: a list of :class:`tdclient.models.Table`
         """
         m = self.api.list_tables(db_name)
-        return [ models.Table(self, db_name, table_name, **kwargs) for (table_name, kwargs) in m.items() ]
+        return [
+            models.Table(self, db_name, table_name, **kwargs)
+            for (table_name, kwargs) in m.items()
+        ]
 
     def table(self, db_name, table_name):
         """
@@ -181,7 +191,16 @@ class Client:
         """
         return self.api.tail(db_name, table_name, count, to, _from, block)
 
-    def query(self, db_name, q, result_url=None, priority=None, retry_limit=None, type="hive", **kwargs):
+    def query(
+        self,
+        db_name,
+        q,
+        result_url=None,
+        priority=None,
+        retry_limit=None,
+        type="hive",
+        **kwargs
+    ):
         """Run a query on specified database table.
 
         Params:
@@ -200,7 +219,15 @@ class Client:
         # for compatibility, assume type is hive unless specifically specified
         if type not in ["hive", "pig", "impala", "presto"]:
             raise ValueError("The specified query type is not supported: %s" % (type))
-        job_id = self.api.query(q, type=type, db=db_name, result_url=result_url, priority=priority, retry_limit=retry_limit, **kwargs)
+        job_id = self.api.query(
+            q,
+            type=type,
+            db=db_name,
+            result_url=result_url,
+            priority=priority,
+            retry_limit=retry_limit,
+            **kwargs
+        )
         return models.Job(self, job_id, type, q)
 
     def jobs(self, _from=None, to=None, status=None, conditions=None):
@@ -215,6 +242,7 @@ class Client:
         Returns: a list of :class:`tdclient.models.Job`
         """
         results = self.api.list_jobs(_from, to, status, conditions)
+
         def job(d):
             return models.Job(
                 self,
@@ -242,7 +270,8 @@ class Client:
                 linked_result_export_job_id=d.get("linked_result_export_job_id"),
                 result_export_target_job_id=d.get("result_export_target_job_id"),
             )
-        return [ job(d) for d in results ]
+
+        return [job(d) for d in results]
 
     def job(self, job_id):
         """Get a job from `job_id`
@@ -453,7 +482,9 @@ class Client:
 
         Returns: a list of :class:`tdclient.models.BulkImport`
         """
-        return [ models.BulkImport(self, **data) for data in self.api.list_bulk_imports() ]
+        return [
+            models.BulkImport(self, **data) for data in self.api.list_bulk_imports()
+        ]
 
     def bulk_import_upload_part(self, name, part_name, bytes_or_stream, size):
         """Upload a part to a bulk import session
@@ -523,7 +554,7 @@ class Client:
         [:class:`tdclient.models.Schedule`]
         """
         result = self.api.list_schedules()
-        return [ models.Schedule(self, **m) for m in result ]
+        return [models.Schedule(self, **m) for m in result]
 
     def update_schedule(self, name, params=None):
         """
@@ -539,8 +570,11 @@ class Client:
         [:class:`tdclient.models.ScheduledJob`]
         """
         result = self.api.history(name, _from, to)
+
         def scheduled_job(m):
-            scheduled_at,job_id,type,status,query,start_at,end_at,result_url,priority,database = m
+            scheduled_at, job_id, type, status, query, start_at, end_at, result_url, priority, database = (
+                m
+            )
             job_param = {
                 "url": None,
                 "debug": None,
@@ -554,10 +588,13 @@ class Client:
                 "priority": priority,
                 "retry_limit": None,
                 "org_name": None,
-                "database": database
+                "database": database,
             }
-            return models.ScheduledJob(self, scheduled_at, job_id, type, query, **job_param)
-        return [ scheduled_job(m) for m in result ]
+            return models.ScheduledJob(
+                self, scheduled_at, job_id, type, query, **job_param
+            )
+
+        return [scheduled_job(m) for m in result]
 
     def run_schedule(self, name, time, num):
         """
@@ -565,12 +602,16 @@ class Client:
         [:class:`tdclient.models.ScheduledJob`]
         """
         results = self.api.run_schedule(name, time, num)
-        def scheduled_job(m):
-            job_id,type,scheduled_at = m
-            return models.ScheduledJob(self, scheduled_at, job_id, type, None)
-        return [ scheduled_job(m) for m in results ]
 
-    def import_data(self, db_name, table_name, format, bytes_or_stream, size, unique_id=None):
+        def scheduled_job(m):
+            job_id, type, scheduled_at = m
+            return models.ScheduledJob(self, scheduled_at, job_id, type, None)
+
+        return [scheduled_job(m) for m in results]
+
+    def import_data(
+        self, db_name, table_name, format, bytes_or_stream, size, unique_id=None
+    ):
         """Import data into Treasure Data Service
 
         Params:
@@ -583,7 +624,9 @@ class Client:
 
         Returns: second in float represents elapsed time to import data
         """
-        return self.api.import_data(db_name, table_name, format, bytes_or_stream, size, unique_id=unique_id)
+        return self.api.import_data(
+            db_name, table_name, format, bytes_or_stream, size, unique_id=unique_id
+        )
 
     def import_file(self, db_name, table_name, format, file, unique_id=None):
         """Import data into Treasure Data Service, from an existing file on filesystem.
@@ -600,17 +643,21 @@ class Client:
 
         Returns: float represents the elapsed time to import data
         """
-        return self.api.import_file(db_name, table_name, format, file, unique_id=unique_id)
+        return self.api.import_file(
+            db_name, table_name, format, file, unique_id=unique_id
+        )
 
     def results(self):
         """
         Returns: a list of :class:`tdclient.models.Result`
         """
         results = self.api.list_result()
+
         def result(m):
-            name,url,organizations = m
+            name, url, organizations = m
             return models.Result(self, name, url, organizations)
-        return [ result(m) for m in results ]
+
+        return [result(m) for m in results]
 
     def create_result(self, name, url, params=None):
         """
@@ -633,10 +680,12 @@ class Client:
         Returns: a liast of :class:`tdclient.models.User`
         """
         results = self.api.list_users()
+
         def user(m):
-            name,org,roles,email = m
+            name, org, roles, email = m
             return models.User(self, name, org, roles, email)
-        return [ user(m) for m in results ]
+
+        return [user(m) for m in results]
 
     def add_user(self, name, org, email, password):
         """Add a new user
@@ -724,10 +773,12 @@ class Client:
         Returns: a list of :class:`tdclient.models.AccessControl`
         """
         results = self.api.list_access_controls()
+
         def access_control(m):
-            subject,action,scope,grant_option = m
+            subject, action, scope, grant_option = m
             return models.AccessControl(self, subject, action, scope, grant_option)
-        return [ access_control(m) for m in results ]
+
+        return [access_control(m) for m in results]
 
     def grant_access_control(self, subject, action, scope, grant_option):
         """

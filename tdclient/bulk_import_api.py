@@ -4,9 +4,10 @@ import collections
 import contextlib
 import gzip
 import io
-import msgpack
 import os
 from urllib.parse import quote as urlquote
+
+import msgpack
 
 
 class BulkImportAPI:
@@ -20,7 +21,11 @@ class BulkImportAPI:
         => True
         """
         params = {} if params is None else params
-        with self.post("/v3/bulk_import/create/%s/%s/%s" % (urlquote(str(name)), urlquote(str(db)), urlquote(str(table))), params) as res:
+        with self.post(
+            "/v3/bulk_import/create/%s/%s/%s"
+            % (urlquote(str(name)), urlquote(str(db)), urlquote(str(table))),
+            params,
+        ) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Create bulk import failed", res, body)
@@ -32,7 +37,9 @@ class BulkImportAPI:
         => True
         """
         params = {} if params is None else params
-        with self.post("/v3/bulk_import/delete/%s" % (urlquote(str(name))), params) as res:
+        with self.post(
+            "/v3/bulk_import/delete/%s" % (urlquote(str(name))), params
+        ) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Delete bulk import failed", res, body)
@@ -68,7 +75,9 @@ class BulkImportAPI:
         TODO: add docstring
         """
         params = {} if params is None else params
-        with self.get("/v3/bulk_import/list_parts/%s" % (urlquote(str(name))), params) as res:
+        with self.get(
+            "/v3/bulk_import/list_parts/%s" % (urlquote(str(name))), params
+        ) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("List bulk import parts failed", res, body)
@@ -87,8 +96,10 @@ class BulkImportAPI:
         for char in part_name:
             d[char] += 1
 
-        if 1 < d['.']:
-            raise ValueError("part names cannot contain multiple periods: %s" % (repr(part_name)))
+        if 1 < d["."]:
+            raise ValueError(
+                "part names cannot contain multiple periods: %s" % (repr(part_name))
+            )
 
         if 0 < part_name.find("/"):
             raise ValueError("part name must not contain '/': %s" % (repr(part_name)))
@@ -99,7 +110,12 @@ class BulkImportAPI:
         => None
         """
         self.validate_part_name(part_name)
-        with self.put("/v3/bulk_import/upload_part/%s/%s" % (urlquote(str(name)), urlquote(str(part_name))), stream, size) as res:
+        with self.put(
+            "/v3/bulk_import/upload_part/%s/%s"
+            % (urlquote(str(name)), urlquote(str(part_name))),
+            stream,
+            size,
+        ) as res:
             code, body = res.status, res.read()
             if code / 100 != 2:
                 self.raise_error("Upload a part failed", res, body)
@@ -121,7 +137,11 @@ class BulkImportAPI:
         """
         self.validate_part_name(part_name)
         params = {} if params is None else params
-        with self.post("/v3/bulk_import/delete_part/%s/%s" % (urlquote(str(name)), urlquote(str(part_name))), params) as res:
+        with self.post(
+            "/v3/bulk_import/delete_part/%s/%s"
+            % (urlquote(str(name)), urlquote(str(part_name))),
+            params,
+        ) as res:
             code, body = res.status, res.read()
             if code / 100 != 2:
                 self.raise_error("Delete a part failed", res, body)
@@ -133,7 +153,9 @@ class BulkImportAPI:
         => True
         """
         params = {} if params is None else params
-        with self.post("/v3/bulk_import/freeze/%s" % (urlquote(str(name))), params) as res:
+        with self.post(
+            "/v3/bulk_import/freeze/%s" % (urlquote(str(name))), params
+        ) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Freeze bulk import failed", res, body)
@@ -145,7 +167,9 @@ class BulkImportAPI:
         => True
         """
         params = {} if params is None else params
-        with self.post("/v3/bulk_import/unfreeze/%s" % (urlquote(str(name))), params) as res:
+        with self.post(
+            "/v3/bulk_import/unfreeze/%s" % (urlquote(str(name))), params
+        ) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Unfreeze bulk import failed", res, body)
@@ -157,7 +181,9 @@ class BulkImportAPI:
         => jobId:str
         """
         params = {} if params is None else params
-        with self.post("/v3/bulk_import/perform/%s" % (urlquote(str(name))), params) as res:
+        with self.post(
+            "/v3/bulk_import/perform/%s" % (urlquote(str(name))), params
+        ) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Perform bulk import failed", res, body)
@@ -170,7 +196,9 @@ class BulkImportAPI:
         => True
         """
         params = {} if params is None else params
-        with self.post("/v3/bulk_import/commit/%s" % (urlquote(str(name))), params) as res:
+        with self.post(
+            "/v3/bulk_import/commit/%s" % (urlquote(str(name))), params
+        ) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Commit bulk import failed", res, body)
@@ -182,7 +210,9 @@ class BulkImportAPI:
         => data...
         """
         params = {} if params is None else params
-        with self.get("/v3/bulk_import/error_records/%s" % (urlquote(str(name))), params) as res:
+        with self.get(
+            "/v3/bulk_import/error_records/%s" % (urlquote(str(name))), params
+        ) as res:
             code = res.status
             if code != 200:
                 body = res.read()
@@ -191,9 +221,19 @@ class BulkImportAPI:
             body = io.BytesIO(res.read())
             decompressor = gzip.GzipFile(fileobj=body)
 
-            content_type = res.getheader("content-type", "application/x-msgpack; charset=utf-8")
-            type_params = dict([ p.strip().split("=", 2) for p in content_type.split(";") if 0 < p.find("=") ])
+            content_type = res.getheader(
+                "content-type", "application/x-msgpack; charset=utf-8"
+            )
+            type_params = dict(
+                [
+                    p.strip().split("=", 2)
+                    for p in content_type.split(";")
+                    if 0 < p.find("=")
+                ]
+            )
 
-            unpacker = msgpack.Unpacker(decompressor, encoding=str(type_params.get("charset", "utf-8")))
+            unpacker = msgpack.Unpacker(
+                decompressor, encoding=str(type_params.get("charset", "utf-8"))
+            )
             for row in unpacker:
                 yield row

@@ -44,13 +44,19 @@ setup(
         "python-dateutil",
         "urllib3",
     ],
-    test_requires=[
+    tests_require=[
         "coveralls",
         "mock",
         "pytest",
         "pytest-cov",
         "tox",
     ],
+    extras_require={
+        "dev": [
+            "black==19.3b0",
+            "isort",
+        ],
+    },
     packages=find_packages(),
     cmdclass = {"test": PyTest},
     license="Apache Software License",

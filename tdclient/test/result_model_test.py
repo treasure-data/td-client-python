@@ -8,8 +8,10 @@ except ImportError:
 from tdclient import models
 from tdclient.test.test_helper import *
 
+
 def setup_function(function):
     unset_environ()
+
 
 def test_result():
     client = mock.MagicMock()

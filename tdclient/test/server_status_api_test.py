@@ -9,8 +9,10 @@ import pytest
 from tdclient import api
 from tdclient.test.test_helper import *
 
+
 def setup_function(function):
     unset_environ()
+
 
 def test_server_status_success():
     td = api.API("APIKEY")
@@ -22,6 +24,7 @@ def test_server_status_success():
     td.get = mock.MagicMock(return_value=make_response(200, body))
     assert td.server_status() == "ok"
     td.get.assert_called_with("/v3/system/server_status")
+
 
 def test_server_status_failure():
     td = api.API("APIKEY")

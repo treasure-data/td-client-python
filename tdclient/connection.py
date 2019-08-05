@@ -1,11 +1,20 @@
 #!/usr/bin/env python
 
-from tdclient import api
-from tdclient import cursor
-from tdclient import errors
+from tdclient import api, cursor, errors
+
 
 class Connection:
-    def __init__(self, type=None, db=None, result_url=None, priority=None, retry_limit=None, wait_interval=None, wait_callback=None, **kwargs):
+    def __init__(
+        self,
+        type=None,
+        db=None,
+        result_url=None,
+        priority=None,
+        retry_limit=None,
+        wait_interval=None,
+        wait_callback=None,
+        **kwargs
+    ):
         cursor_kwargs = dict()
         if type is not None:
             cursor_kwargs["type"] = type

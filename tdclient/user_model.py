@@ -2,6 +2,7 @@
 
 from tdclient.model import Model
 
+
 class User(Model):
     """User on Treasure Data Service
     """

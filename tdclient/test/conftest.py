@@ -1,4 +1,5 @@
 import pytest
+
 try:
     from urllib3.contrib.pyopenssl import inject_into_urllib3, extract_from_urllib3
 except ImportError:

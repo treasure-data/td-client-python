@@ -1,12 +1,11 @@
 import datetime
-from tdclient import client
-from tdclient import connection
-from tdclient import errors
-from tdclient import version
+
+from tdclient import client, connection, errors, version
 
 __version__ = version.__version__
 
 Client = client.Client
+
 
 def connect(*args, **kwargs):
     """Returns a DBAPI compatible connection object
@@ -23,6 +22,7 @@ def connect(*args, **kwargs):
     Returns: `tdclient.connection.Connection`
     """
     return connection.Connection(*args, **kwargs)
+
 
 apilevel = "2.0"
 threadsafety = 3
@@ -42,17 +42,22 @@ Date = datetime.date
 Time = datetime.time
 Timestamp = datetime.datetime
 
+
 def DateFromTicks(ticks):
     return datetime.date(*datetime.localtime(ticks)[:3])
+
 
 def TimeFromTicks(ticks):
     return datetime.time(*datetime.localtime(ticks)[3:6])
 
+
 def TimestampFromTicks(ticks):
     return datetime.datetime(*datetime.localtime(ticks)[:6])
 
+
 def Binary(string):
     return bytes(string)
+
 
 STRING = "string"
 

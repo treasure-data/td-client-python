@@ -1,20 +1,20 @@
 #!/usr/bin/env python
 
 import datetime
-import dateutil.tz
 import json
-try:
-    from unittest import mock
-except ImportError:
-    import mock
+from unittest import mock
+
+import dateutil.tz
 import msgpack
 import pytest
 
 from tdclient import api
 from tdclient.test.test_helper import *
 
+
 def setup_function(function):
     unset_environ()
+
 
 def test_list_jobs_success():
     td = api.API("APIKEY")
@@ -31,18 +31,23 @@ def test_list_jobs_success():
     jobs = td.list_jobs(0, 2)
     td.get.assert_called_with("/v3/job/list", {"from": "0", "to": "2"})
     assert len(jobs) == 3
-    assert sorted([ job["job_id"] for job in jobs ]) == ["18879199", "18880612", "18882028"]
-    assert sorted([ job["url"] for job in jobs ]) == [
+    assert sorted([job["job_id"] for job in jobs]) == [
+        "18879199",
+        "18880612",
+        "18882028",
+    ]
+    assert sorted([job["url"] for job in jobs]) == [
         "http://console.treasuredata.com/jobs/18879199",
         "http://console.treasuredata.com/jobs/18880612",
         "http://console.treasuredata.com/jobs/18882028",
     ]
-    assert [ job["debug"] for job in jobs ] == [None, None, None]
-    assert sorted([ job["hive_result_schema"] for job in jobs ]) == [
+    assert [job["debug"] for job in jobs] == [None, None, None]
+    assert sorted([job["hive_result_schema"] for job in jobs]) == [
         [["_c0", "bigint"]],
         [["_c0", "bigint"]],
         [["_c0", "bigint"]],
     ]
+
 
 def test_list_jobs_failure():
     td = api.API("APIKEY")
@@ -50,6 +55,7 @@ def test_list_jobs_failure():
     with pytest.raises(api.APIError) as error:
         td.list_jobs(0, 2)
     assert error.value.args == ("500: List jobs failed: error",)
+
 
 def test_show_job_success():
     td = api.API("APIKEY")
@@ -95,8 +101,12 @@ def test_show_job_success():
         "cmdout": "started at 2015-02-09T11:44:27Z\nexecuting query: SELECT COUNT(1) FROM nasdaq\n",
         "stderr": None,
     }
-    assert job["start_at"] == datetime.datetime(2015, 2, 9, 11, 44, 27, tzinfo=dateutil.tz.tzutc())
-    assert job["end_at"] == datetime.datetime(2015, 2, 9, 11, 44, 28, tzinfo=dateutil.tz.tzutc())
+    assert job["start_at"] == datetime.datetime(
+        2015, 2, 9, 11, 44, 27, tzinfo=dateutil.tz.tzutc()
+    )
+    assert job["end_at"] == datetime.datetime(
+        2015, 2, 9, 11, 44, 28, tzinfo=dateutil.tz.tzutc()
+    )
     assert job["cpu_time"] is None
     assert job["result_size"] == 22
     assert job["result"] is None
@@ -106,6 +116,7 @@ def test_show_job_success():
     assert job["retry_limit"] == 0
     assert job["org_name"] is None
     assert job["database"] == "sample_datasets"
+
 
 def test_job_status_success():
     td = api.API("APIKEY")
@@ -119,14 +130,11 @@ def test_job_status_success():
     jobs = td.job_status(12345)
     td.get.assert_called_with("/v3/job/status/12345")
 
+
 def test_job_result_success():
     td = api.API("APIKEY")
     packer = msgpack.Packer()
-    rows = [
-        ["foo", 123],
-        ["bar", 456],
-        ["baz", 789],
-    ]
+    rows = [["foo", 123], ["bar", 456], ["baz", 789]]
     body = b""
     for row in rows:
         body += packer.pack(row)
@@ -135,14 +143,11 @@ def test_job_result_success():
     td.get.assert_called_with("/v3/job/result/12345", {"format": "msgpack"})
     assert result == rows
 
+
 def test_job_result_each_success():
     td = api.API("APIKEY")
     packer = msgpack.Packer()
-    rows = [
-        ["foo", 123],
-        ["bar", 456],
-        ["baz", 789],
-    ]
+    rows = [["foo", 123], ["bar", 456], ["baz", 789]]
     body = b""
     for row in rows:
         body += packer.pack(row)
@@ -153,35 +158,30 @@ def test_job_result_each_success():
     td.get.assert_called_with("/v3/job/result/12345", {"format": "msgpack"})
     assert result == rows
 
+
 def test_job_result_json_success():
     td = api.API("APIKEY")
-    rows = [
-        ["foo", 123],
-        ["bar", 456],
-        ["baz", 789],
-    ]
+    rows = [["foo", 123], ["bar", 456], ["baz", 789]]
     # result will be a JSON record per line (#4)
-    body = "\n".join([ json.dumps(row) for row in rows ]).encode("utf-8")
+    body = "\n".join([json.dumps(row) for row in rows]).encode("utf-8")
     td.get = mock.MagicMock(return_value=make_response(200, body))
     result = td.job_result_format(12345, "json")
     td.get.assert_called_with("/v3/job/result/12345", {"format": "json"})
     assert result == rows
 
+
 def test_job_result_json_each_success():
     td = api.API("APIKEY")
-    rows = [
-        ["foo", 123],
-        ["bar", 456],
-        ["baz", 789],
-    ]
+    rows = [["foo", 123], ["bar", 456], ["baz", 789]]
     # result will be a JSON record per line (#4)
-    body = "\n".join([ json.dumps(row) for row in rows ]).encode("utf-8")
+    body = "\n".join([json.dumps(row) for row in rows]).encode("utf-8")
     td.get = mock.MagicMock(return_value=make_response(200, body))
     result = []
     for row in td.job_result_format_each(12345, "json"):
         result.append(row)
     td.get.assert_called_with("/v3/job/result/12345", {"format": "json"})
     assert result == rows
+
 
 def test_kill_success():
     td = api.API("APIKEY")
@@ -195,6 +195,7 @@ def test_kill_success():
     jobs = td.kill(12345)
     td.post.assert_called_with("/v3/job/kill/12345")
 
+
 def test_hive_query_success():
     td = api.API("APIKEY")
     body = b"""
@@ -206,8 +207,11 @@ def test_hive_query_success():
     """
     td.post = mock.MagicMock(return_value=make_response(200, body))
     job_id = td.hive_query("SELECT COUNT(1) FROM nasdaq", db="sample_datasets")
-    td.post.assert_called_with("/v3/job/issue/hive/sample_datasets", {"query": "SELECT COUNT(1) FROM nasdaq"})
+    td.post.assert_called_with(
+        "/v3/job/issue/hive/sample_datasets", {"query": "SELECT COUNT(1) FROM nasdaq"}
+    )
     assert job_id == "12345"
+
 
 def test_pig_query_success():
     td = api.API("APIKEY")
@@ -219,9 +223,16 @@ def test_pig_query_success():
         }
     """
     td.post = mock.MagicMock(return_value=make_response(200, body))
-    job_id = td.pig_query("A=LOAD 'nasdaq';B=GROUP A ALL;C=FOREACH B GENERATE COUNT(A);", db="sample_datasets")
-    td.post.assert_called_with("/v3/job/issue/pig/sample_datasets", {"query": "A=LOAD 'nasdaq';B=GROUP A ALL;C=FOREACH B GENERATE COUNT(A);"})
+    job_id = td.pig_query(
+        "A=LOAD 'nasdaq';B=GROUP A ALL;C=FOREACH B GENERATE COUNT(A);",
+        db="sample_datasets",
+    )
+    td.post.assert_called_with(
+        "/v3/job/issue/pig/sample_datasets",
+        {"query": "A=LOAD 'nasdaq';B=GROUP A ALL;C=FOREACH B GENERATE COUNT(A);"},
+    )
     assert job_id == "12345"
+
 
 def test_presto_query_success():
     td = api.API("APIKEY")
@@ -233,9 +244,15 @@ def test_presto_query_success():
         }
     """
     td.post = mock.MagicMock(return_value=make_response(200, body))
-    job_id = td.query("SELECT COUNT(1) FROM nasdaq", db="sample_datasets", type="presto", priority=0)
-    td.post.assert_called_with("/v3/job/issue/presto/sample_datasets", {"query": "SELECT COUNT(1) FROM nasdaq", "priority": 0})
+    job_id = td.query(
+        "SELECT COUNT(1) FROM nasdaq", db="sample_datasets", type="presto", priority=0
+    )
+    td.post.assert_called_with(
+        "/v3/job/issue/presto/sample_datasets",
+        {"query": "SELECT COUNT(1) FROM nasdaq", "priority": 0},
+    )
     assert job_id == "12345"
+
 
 def test_query_success():
     td = api.API("APIKEY")
@@ -247,12 +264,20 @@ def test_query_success():
         }
     """
     td.post = mock.MagicMock(return_value=make_response(200, body))
-    job_id = td.query("SELECT COUNT(1) FROM nasdaq", db="sample_datasets", priority="HIGH")
-    td.post.assert_called_with("/v3/job/issue/hive/sample_datasets", {"query": "SELECT COUNT(1) FROM nasdaq", "priority": 1})
+    job_id = td.query(
+        "SELECT COUNT(1) FROM nasdaq", db="sample_datasets", priority="HIGH"
+    )
+    td.post.assert_called_with(
+        "/v3/job/issue/hive/sample_datasets",
+        {"query": "SELECT COUNT(1) FROM nasdaq", "priority": 1},
+    )
     assert job_id == "12345"
+
 
 def test_query_priority_unknown():
     td = api.API("APIKEY")
     td.post = mock.MagicMock(return_value=make_response(200, b""))
     with pytest.raises(ValueError) as error:
-        td.query("SELECT COUNT(1) FROM nasdaq", db="sample_datasets", priority="unknown")
+        td.query(
+            "SELECT COUNT(1) FROM nasdaq", db="sample_datasets", priority="unknown"
+        )

@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 import time
+
 from tdclient import errors
+
 
 class Cursor:
     def __init__(self, api, wait_interval=5, wait_callback=None, **kwargs):
@@ -48,7 +50,9 @@ class Cursor:
         return self._executed
 
     def executemany(self, operation, seq_of_parameters):
-        return [ self.execute(operation, args=parameter) for parameter in seq_of_parameters ]
+        return [
+            self.execute(operation, args=parameter) for parameter in seq_of_parameters
+        ]
 
     def _check_executed(self):
         if self._executed is None:
@@ -63,10 +67,14 @@ class Cursor:
                 self._rownumber = 0
                 self._rowcount = len(self._rows)
                 job = self._api.show_job(self._executed)
-                self._description = self._result_description(job.get("hive_result_schema", []))
+                self._description = self._result_description(
+                    job.get("hive_result_schema", [])
+                )
             else:
                 if status in ["error", "killed"]:
-                    raise errors.InternalError("job error: %s: %s" % (self._executed, status))
+                    raise errors.InternalError(
+                        "job error: %s: %s" % (self._executed, status)
+                    )
                 else:
                     time.sleep(self.wait_interval)
                     if callable(self.wait_callback):
@@ -76,7 +84,9 @@ class Cursor:
     def _result_description(self, result_schema):
         if result_schema is None:
             result_schema = []
-        return [ (column[0], None, None, None, None, None, None) for column in result_schema ]
+        return [
+            (column[0], None, None, None, None, None, None) for column in result_schema
+        ]
 
     def fetchone(self):
         """
@@ -100,11 +110,14 @@ class Cursor:
         else:
             self._check_executed()
             if self._rownumber + size - 1 < self._rowcount:
-                rows = self._rows[self._rownumber:self._rownumber+size]
+                rows = self._rows[self._rownumber : self._rownumber + size]
                 self._rownumber += size
                 return rows
             else:
-                raise errors.InternalError("index out of bound (%d out of %d)" % (self._rownumber, self._rowcount))
+                raise errors.InternalError(
+                    "index out of bound (%d out of %d)"
+                    % (self._rownumber, self._rowcount)
+                )
 
     def fetchall(self):
         """
@@ -113,7 +126,7 @@ class Cursor:
         """
         self._check_executed()
         if self._rownumber < self._rowcount:
-            rows = self._rows[self._rownumber:]
+            rows = self._rows[self._rownumber :]
             self._rownumber = self._rowcount
             return rows
         else:

@@ -4,6 +4,7 @@ import time
 
 from tdclient.model import Model
 
+
 class BulkImport(Model):
     """Bulk-import session on Treasure Data Service
     """
@@ -133,7 +134,9 @@ class BulkImport(Model):
         """
         self.update()
         if not self.upload_frozen:
-            raise(RuntimeError("bulk import session \"%s\" is not frozen" % (self.name,)))
+            raise (
+                RuntimeError('bulk import session "%s" is not frozen' % (self.name,))
+            )
         job = self._client.perform_bulk_import(self.name)
         if wait:
             job.wait(wait_interval=wait_interval, wait_callback=None)
@@ -151,7 +154,7 @@ class BulkImport(Model):
                 if timeout is None or abs(time.time() - started_at) < timeout:
                     time.sleep(wait_interval)
                 else:
-                    raise RuntimeError("timeout") # TODO: throw proper error
+                    raise RuntimeError("timeout")  # TODO: throw proper error
                 self.update()
         else:
             self.update()
@@ -172,7 +175,9 @@ class BulkImport(Model):
             bytes_or_stream (file-like): a file-like object contains the part
             size (int): the size of the part
         """
-        response = self._client.bulk_import_upload_part(self.name, part_name, bytes_or_stream, size)
+        response = self._client.bulk_import_upload_part(
+            self.name, part_name, bytes_or_stream, size
+        )
         self.update()
         return response
 
@@ -184,7 +189,9 @@ class BulkImport(Model):
             fmt (str): format of data type (e.g. "msgpack", "json")
             file_like (str or file-like): a name of a file, or a file-like object contains the data
         """
-        response = self._client.bulk_import_upload_file(self.name, part_name, fmt, file_like)
+        response = self._client.bulk_import_upload_file(
+            self.name, part_name, fmt, file_like
+        )
         self.update()
         return response
 
