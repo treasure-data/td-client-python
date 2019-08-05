@@ -2,7 +2,12 @@
 
 ## Unreleased
 
-* None
+* Drop Python 2 support (#60)
+
+## 0.14.0 (2019-07-11)
+
+* Remove ACL and account APIs (#56, #58)
+* Fix PyOpenSSL issue which causes pandas-td error (#59)
 
 ## 0.13.0 (2019-03-29)
 
