@@ -13,7 +13,9 @@ class UserAPI:
         TODO: add docstring
         apikey:str
         """
-        with self.post("/v3/user/authenticate", {"user": user, "password": password}) as res:
+        with self.post(
+            "/v3/user/authenticate", {"user": user, "password": password}
+        ) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Authentication failed", res, body)
@@ -31,11 +33,18 @@ class UserAPI:
             if code != 200:
                 self.raise_error("List users failed", res, body)
             js = self.checked_json(body, ["users"])
+
             def user(roleinfo):
                 name = roleinfo["name"]
                 email = roleinfo["email"]
-                return (name, None, None, email) # set None to org and role for API compatibility
-            return [ user(roleinfo) for roleinfo in js["users"] ]
+                return (
+                    name,
+                    None,
+                    None,
+                    email,
+                )  # set None to org and role for API compatibility
+
+            return [user(roleinfo) for roleinfo in js["users"]]
 
     def add_user(self, name, org, email, password):
         """
@@ -66,7 +75,9 @@ class UserAPI:
         => True
         """
         params = {"email": email}
-        with self.post("/v3/user/email/change/%s" % (urlquote(str(name))), params) as res:
+        with self.post(
+            "/v3/user/email/change/%s" % (urlquote(str(name))), params
+        ) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Changing email failed", res, body)
@@ -101,7 +112,9 @@ class UserAPI:
         => True
         """
         params = {"apikey": apikey}
-        with self.post("/v3/user/apikey/remove/%s" % (urlquote(str(name))), params) as res:
+        with self.post(
+            "/v3/user/apikey/remove/%s" % (urlquote(str(name))), params
+        ) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Removing API key failed", res, body)
@@ -113,7 +126,9 @@ class UserAPI:
         => True
         """
         params = {"password": password}
-        with self.post("/v3/user/password/change/%s" % (urlquote(str(name))), params) as res:
+        with self.post(
+            "/v3/user/password/change/%s" % (urlquote(str(name))), params
+        ) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Changing password failed", res, body)

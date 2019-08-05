@@ -4,6 +4,7 @@ import time
 
 from tdclient.model import Model
 
+
 class Table(Model):
     """Database table on Treasure Data Service
     """
@@ -177,7 +178,14 @@ class Table(Model):
 
         Returns: second in float represents elapsed time to import data
         """
-        return self._client.import_data(self._db_name, self._table_name, format, bytes_or_stream, size, unique_id=unique_id)
+        return self._client.import_data(
+            self._db_name,
+            self._table_name,
+            format,
+            bytes_or_stream,
+            size,
+            unique_id=unique_id,
+        )
 
     def import_file(self, format, file, unique_id=None):
         """Import data into Treasure Data Service, from an existing file on filesystem.
@@ -191,27 +199,35 @@ class Table(Model):
 
         Returns: float represents the elapsed time to import data
         """
-        return self._client.import_file(self._db_name, self._table_name, format, file, unique_id=unique_id)
+        return self._client.import_file(
+            self._db_name, self._table_name, format, file, unique_id=unique_id
+        )
 
     def export_data(self, storage_type, **kwargs):
         """
         TODO: add docstring
         """
-        return self._client.export_data(self._db_name, self._table_name, storage_type, kwargs)
+        return self._client.export_data(
+            self._db_name, self._table_name, storage_type, kwargs
+        )
 
     @property
     def estimated_storage_size_string(self):
         """
         Returns: a string represents estimated size of the table in human-readable format
         """
-        if self._estimated_storage_size <= 1024*1024:
+        if self._estimated_storage_size <= 1024 * 1024:
             return "0.0 GB"
-        elif self._estimated_storage_size <= 60*1024*1024:
+        elif self._estimated_storage_size <= 60 * 1024 * 1024:
             return "0.01 GB"
-        elif self._estimated_storage_size <= 60*1024*1024*1024:
-            return "%.1f GB" % (float(self._estimated_storage_size) / (1024*1024*1024))
+        elif self._estimated_storage_size <= 60 * 1024 * 1024 * 1024:
+            return "%.1f GB" % (
+                float(self._estimated_storage_size) / (1024 * 1024 * 1024)
+            )
         else:
-            return "%d GB" % int(float(self._estimated_storage_size) / (1024*1024*1024))
+            return "%d GB" % int(
+                float(self._estimated_storage_size) / (1024 * 1024 * 1024)
+            )
 
     def _update_database(self):
         self.database = self._client.database(self._db_name)

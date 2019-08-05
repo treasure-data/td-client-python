@@ -9,8 +9,10 @@ import pytest
 from tdclient import api
 from tdclient.test.test_helper import *
 
+
 def setup_function(function):
     unset_environ()
+
 
 def test_list_databases_success():
     td = api.API("APIKEY")
@@ -28,7 +30,8 @@ def test_list_databases_success():
     td.get.assert_called_with("/v3/database/list")
     assert len(databases) == 3
     assert sorted(databases.keys()) == ["jma_weather", "sample_datasets", "test_db"]
-    assert sorted([ v.get("count") for v in databases.values() ]) == [15, 29545, 8812278]
+    assert sorted([v.get("count") for v in databases.values()]) == [15, 29545, 8812278]
+
 
 def test_list_databases_failure():
     td = api.API("APIKEY")
@@ -37,11 +40,13 @@ def test_list_databases_failure():
         td.list_databases()
     assert error.value.args == ("500: List databases failed: error",)
 
+
 def test_delete_database_success():
     td = api.API("APIKEY")
     td.post = mock.MagicMock(return_value=make_response(200, b""))
     td.delete_database("sample_datasets")
     td.post.assert_called_with("/v3/database/delete/sample_datasets")
+
 
 def test_create_database_success():
     td = api.API("APIKEY")

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from array import array
+
 try:
     import certifi
 except ImportError:
@@ -51,8 +52,20 @@ AlreadyExistsError = errors.AlreadyExistsError
 NotFoundError = errors.NotFoundError
 
 
-class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
-          JobAPI, PartialDeleteAPI, ResultAPI, ScheduleAPI, ServerStatusAPI, TableAPI, UserAPI):
+class API(
+    BulkImportAPI,
+    ConnectorAPI,
+    DatabaseAPI,
+    ExportAPI,
+    ImportAPI,
+    JobAPI,
+    PartialDeleteAPI,
+    ResultAPI,
+    ScheduleAPI,
+    ServerStatusAPI,
+    TableAPI,
+    UserAPI,
+):
     """Internal API class
 
     Args:
@@ -68,15 +81,24 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
     DEFAULT_ENDPOINT = "https://api.treasuredata.com/"
     DEFAULT_IMPORT_ENDPOINT = "https://api-import.treasuredata.com/"
 
-    def __init__(self, apikey=None, user_agent=None, endpoint=None, headers=None, retry_post_requests=False,
-                 max_cumul_retry_delay=600, http_proxy=None, **kwargs):
+    def __init__(
+        self,
+        apikey=None,
+        user_agent=None,
+        endpoint=None,
+        headers=None,
+        retry_post_requests=False,
+        max_cumul_retry_delay=600,
+        http_proxy=None,
+        **kwargs
+    ):
         headers = {} if headers is None else headers
         if apikey is not None:
             self._apikey = apikey
         elif "TD_API_KEY" in os.environ:
             self._apikey = os.getenv("TD_API_KEY")
         else:
-            raise(ValueError("no API key given"))
+            raise (ValueError("no API key given"))
 
         if user_agent is not None:
             self._user_agent = user_agent
@@ -96,19 +118,32 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
             pool_options["ca_certs"] = certs
             pool_options["cert_reqs"] = ssl.CERT_REQUIRED
 
-        if "connect_timeout" in pool_options or "read_timeout" in pool_options or "send_timeout" in pool_options:
+        if (
+            "connect_timeout" in pool_options
+            or "read_timeout" in pool_options
+            or "send_timeout" in pool_options
+        ):
             if "connect_timeout" in pool_options:
-                warnings.warn("connect_timeout will be removed from future release. Please use timeout instead.", category=DeprecationWarning)
+                warnings.warn(
+                    "connect_timeout will be removed from future release. Please use timeout instead.",
+                    category=DeprecationWarning,
+                )
                 connect_timeout = pool_options.pop("connect_timeout")
             else:
                 connect_timeout = 0
             if "read_timeout" in pool_options:
-                warnings.warn("read_timeout will be removed from future release. Please use timeout instead.", category=DeprecationWarning)
+                warnings.warn(
+                    "read_timeout will be removed from future release. Please use timeout instead.",
+                    category=DeprecationWarning,
+                )
                 read_timeout = pool_options.pop("read_timeout")
             else:
                 read_timeout = 0
             if "send_timeout" in pool_options:
-                warnings.warn("send_timeout will be removed from future release. Please use timeout instead.", category=DeprecationWarning)
+                warnings.warn(
+                    "send_timeout will be removed from future release. Please use timeout instead.",
+                    category=DeprecationWarning,
+                )
                 send_timeout = pool_options.pop("send_timeout")
             else:
                 send_timeout = 0
@@ -117,10 +152,12 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
         if "timeout" not in pool_options:
             pool_options["timeout"] = 60
 
-        self.http = self._init_http(http_proxy if http_proxy else os.getenv("HTTP_PROXY"), **pool_options)
+        self.http = self._init_http(
+            http_proxy if http_proxy else os.getenv("HTTP_PROXY"), **pool_options
+        )
         self._retry_post_requests = retry_post_requests
         self._max_cumul_retry_delay = max_cumul_retry_delay
-        self._headers = dict([ (key.lower(), value) for (key, value) in headers.items() ])
+        self._headers = dict([(key.lower(), value) for (key, value) in headers.items()])
 
     @property
     def apikey(self):
@@ -154,7 +191,12 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
         headers["accept-encoding"] = "deflate, gzip"
         url, headers = self.build_request(path=path, headers=headers, **kwargs)
 
-        log.debug("REST GET call:\n  headers: %s\n  path: %s\n  params: %s", repr(headers), repr(path), repr(params))
+        log.debug(
+            "REST GET call:\n  headers: %s\n  path: %s\n  params: %s",
+            repr(headers),
+            repr(path),
+            repr(params),
+        )
 
         # up to 7 retries with exponential (base 2) back-off starting at 'retry_delay'
         retry_delay = 5
@@ -165,24 +207,61 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
         response = None
         while True:
             try:
-                response = self.send_request("GET", url, fields=params, headers=headers, decode_content=True, preload_content=False)
+                response = self.send_request(
+                    "GET",
+                    url,
+                    fields=params,
+                    headers=headers,
+                    decode_content=True,
+                    preload_content=False,
+                )
                 # retry if the HTTP error code is 500 or higher and we did not run out of retrying attempts
                 if response.status < 500:
                     break
                 else:
-                    log.warning("Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)", response.status, response.data, retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
-            except ( urllib3.exceptions.TimeoutStateError, urllib3.exceptions.TimeoutError, urllib3.exceptions.PoolError, socket.error ):
+                    log.warning(
+                        "Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)",
+                        response.status,
+                        response.data,
+                        retry_delay,
+                        cumul_retry_delay,
+                        self._max_cumul_retry_delay,
+                    )
+            except (
+                urllib3.exceptions.TimeoutStateError,
+                urllib3.exceptions.TimeoutError,
+                urllib3.exceptions.PoolError,
+                socket.error,
+            ):
                 pass
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
-                log.warning("Retrying after %d seconds... (cumulative: %d/%d)", retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
+                log.warning(
+                    "Retrying after %d seconds... (cumulative: %d/%d)",
+                    retry_delay,
+                    cumul_retry_delay,
+                    self._max_cumul_retry_delay,
+                )
                 time.sleep(retry_delay)
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
             else:
-                raise(APIError("Retrying stopped after %d seconds. (cumulative: %d/%d)" % (self._max_cumul_retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)))
+                raise (
+                    APIError(
+                        "Retrying stopped after %d seconds. (cumulative: %d/%d)"
+                        % (
+                            self._max_cumul_retry_delay,
+                            cumul_retry_delay,
+                            self._max_cumul_retry_delay,
+                        )
+                    )
+                )
 
-        log.debug("REST GET response:\n  headers: %s\n  status: %d\n  body: <omitted>", repr(dict(response.getheaders())), response.status)
+        log.debug(
+            "REST GET response:\n  headers: %s\n  status: %d\n  body: <omitted>",
+            repr(dict(response.getheaders())),
+            response.status,
+        )
 
         return contextlib.closing(response)
 
@@ -190,7 +269,12 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
         headers = {} if headers is None else dict(headers)
         url, headers = self.build_request(path=path, headers=headers, **kwargs)
 
-        log.debug("REST POST call:\n  headers: %s\n  path: %s\n  params: %s", repr(headers), repr(path), repr(params))
+        log.debug(
+            "REST POST call:\n  headers: %s\n  path: %s\n  params: %s",
+            repr(headers),
+            repr(path),
+            repr(params),
+        )
 
         # up to 7 retries with exponential (base 2) back-off starting at 'retry_delay'
         retry_delay = 5
@@ -211,28 +295,68 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
         response = None
         while True:
             try:
-                response = self.send_request("POST", url, fields=fields, body=body, headers=headers, decode_content=True, preload_content=False)
+                response = self.send_request(
+                    "POST",
+                    url,
+                    fields=fields,
+                    body=body,
+                    headers=headers,
+                    decode_content=True,
+                    preload_content=False,
+                )
                 # if the HTTP error code is 500 or higher and the user requested retrying
                 # on post request, attempt a retry
                 if response.status < 500:
                     break
                 else:
                     if not self._retry_post_requests:
-                        raise(APIError("Retrying stopped by retry_post_requests == False"))
-                    log.warning("Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)", response.status, response.data, retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
-            except ( urllib3.exceptions.TimeoutStateError, urllib3.exceptions.TimeoutError, urllib3.exceptions.PoolError, socket.error ):
+                        raise (
+                            APIError("Retrying stopped by retry_post_requests == False")
+                        )
+                    log.warning(
+                        "Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)",
+                        response.status,
+                        response.data,
+                        retry_delay,
+                        cumul_retry_delay,
+                        self._max_cumul_retry_delay,
+                    )
+            except (
+                urllib3.exceptions.TimeoutStateError,
+                urllib3.exceptions.TimeoutError,
+                urllib3.exceptions.PoolError,
+                socket.error,
+            ):
                 if not self._retry_post_requests:
-                    raise(APIError("Retrying stopped by retry_post_requests == False"))
+                    raise (APIError("Retrying stopped by retry_post_requests == False"))
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
-                log.warning("Retrying after %d seconds... (cumulative: %d/%d)", retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
+                log.warning(
+                    "Retrying after %d seconds... (cumulative: %d/%d)",
+                    retry_delay,
+                    cumul_retry_delay,
+                    self._max_cumul_retry_delay,
+                )
                 time.sleep(retry_delay)
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
             else:
-                raise(APIError("Retrying stopped after %d seconds. (cumulative: %d/%d)" % (self._max_cumul_retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)))
+                raise (
+                    APIError(
+                        "Retrying stopped after %d seconds. (cumulative: %d/%d)"
+                        % (
+                            self._max_cumul_retry_delay,
+                            cumul_retry_delay,
+                            self._max_cumul_retry_delay,
+                        )
+                    )
+                )
 
-        log.debug("REST POST response:\n  headers: %s\n  status: %d\n  body: <omitted>", repr(dict(response.getheaders())), response.status)
+        log.debug(
+            "REST POST response:\n  headers: %s\n  status: %d\n  body: <omitted>",
+            repr(dict(response.getheaders())),
+            response.status,
+        )
 
         return contextlib.closing(response)
 
@@ -243,7 +367,11 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
             headers["content-type"] = "application/octet-stream"
         url, headers = self.build_request(path=path, headers=headers, **kwargs)
 
-        log.debug("REST PUT call:\n  headers: %s\n  path: %s\n  body: <omitted>", repr(headers), repr(path))
+        log.debug(
+            "REST PUT call:\n  headers: %s\n  path: %s\n  body: <omitted>",
+            repr(headers),
+            repr(path),
+        )
 
         if hasattr(bytes_or_stream, "read"):
             # file-like must support `read` and `fileno` to work with `httplib`
@@ -265,15 +393,31 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
 
         response = None
         try:
-            response = self.send_request("PUT", url, body=stream, headers=headers, decode_content=True, preload_content=False)
+            response = self.send_request(
+                "PUT",
+                url,
+                body=stream,
+                headers=headers,
+                decode_content=True,
+                preload_content=False,
+            )
             if response.status < 500:
                 pass
             else:
-                raise(APIError("Error %d: %s", response.status, response.data))
-        except ( urllib3.exceptions.TimeoutStateError, urllib3.exceptions.TimeoutError, urllib3.exceptions.PoolError, socket.error ):
-            raise(APIError("Error: %s" % (repr(response))))
+                raise (APIError("Error %d: %s", response.status, response.data))
+        except (
+            urllib3.exceptions.TimeoutStateError,
+            urllib3.exceptions.TimeoutError,
+            urllib3.exceptions.PoolError,
+            socket.error,
+        ):
+            raise (APIError("Error: %s" % (repr(response))))
 
-        log.debug("REST PUT response:\n  headers: %s\n  status: %d\n  body: <omitted>", repr(dict(response.getheaders())), response.status)
+        log.debug(
+            "REST PUT response:\n  headers: %s\n  status: %d\n  body: <omitted>",
+            repr(dict(response.getheaders())),
+            response.status,
+        )
 
         return contextlib.closing(response)
 
@@ -281,7 +425,12 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
         headers = {} if headers is None else dict(headers)
         url, headers = self.build_request(path=path, headers=headers, **kwargs)
 
-        log.debug("REST DELETE call:\n  headers: %s\n  path: %s\n  params: %s", repr(headers), repr(path), repr(params))
+        log.debug(
+            "REST DELETE call:\n  headers: %s\n  path: %s\n  params: %s",
+            repr(headers),
+            repr(path),
+            repr(params),
+        )
 
         # up to 7 retries with exponential (base 2) back-off starting at 'retry_delay'
         retry_delay = 5
@@ -292,24 +441,61 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
         response = None
         while True:
             try:
-                response = self.send_request("DELETE", url, fields=params, headers=headers, decode_content=True, preload_content=False)
+                response = self.send_request(
+                    "DELETE",
+                    url,
+                    fields=params,
+                    headers=headers,
+                    decode_content=True,
+                    preload_content=False,
+                )
                 # retry if the HTTP error code is 500 or higher and we did not run out of retrying attempts
                 if response.status < 500:
                     break
                 else:
-                    log.warning("Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)", response.status, response.data, retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
-            except ( urllib3.exceptions.TimeoutStateError, urllib3.exceptions.TimeoutError, urllib3.exceptions.PoolError, socket.error ):
+                    log.warning(
+                        "Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)",
+                        response.status,
+                        response.data,
+                        retry_delay,
+                        cumul_retry_delay,
+                        self._max_cumul_retry_delay,
+                    )
+            except (
+                urllib3.exceptions.TimeoutStateError,
+                urllib3.exceptions.TimeoutError,
+                urllib3.exceptions.PoolError,
+                socket.error,
+            ):
                 pass
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
-                log.warning("Retrying after %d seconds... (cumulative: %d/%d)", retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)
+                log.warning(
+                    "Retrying after %d seconds... (cumulative: %d/%d)",
+                    retry_delay,
+                    cumul_retry_delay,
+                    self._max_cumul_retry_delay,
+                )
                 time.sleep(retry_delay)
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
             else:
-                raise(APIError("Retrying stopped after %d seconds. (cumulative: %d/%d)" % (self._max_cumul_retry_delay, cumul_retry_delay, self._max_cumul_retry_delay)))
+                raise (
+                    APIError(
+                        "Retrying stopped after %d seconds. (cumulative: %d/%d)"
+                        % (
+                            self._max_cumul_retry_delay,
+                            cumul_retry_delay,
+                            self._max_cumul_retry_delay,
+                        )
+                    )
+                )
 
-        log.debug("REST DELETE response:\n  headers: %s\n  status: %d\n  body: <omitted>", repr(dict(response.getheaders())), response.status)
+        log.debug(
+            "REST DELETE response:\n  headers: %s\n  status: %d\n  body: <omitted>",
+            repr(dict(response.getheaders())),
+            response.status,
+        )
 
         return contextlib.closing(response)
 
@@ -323,7 +509,11 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
             p = urlparse.urlparse(endpoint)
             # should not use `os.path.join` since it returns path string like "/foo\\bar"
             request_path = path if p.path == "/" else "/".join([p.path, path])
-            url = urlparse.urlunparse(urlparse.ParseResult(p.scheme, p.netloc, request_path, p.params, p.query, p.fragment))
+            url = urlparse.urlunparse(
+                urlparse.ParseResult(
+                    p.scheme, p.netloc, request_path, p.params, p.query, p.fragment
+                )
+            )
         # use default headers first
         _headers = dict(self._headers)
         # add default headers
@@ -331,7 +521,9 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
         _headers["date"] = email.utils.formatdate(time.time())
         _headers["user-agent"] = self._user_agent
         # override given headers
-        _headers.update(dict([ (key.lower(), value) for (key, value) in headers.items() ]))
+        _headers.update(
+            dict([(key.lower(), value) for (key, value) in headers.items()])
+        )
         return (url, _headers)
 
     def send_request(self, method, url, fields=None, body=None, headers=None, **kwargs):
@@ -339,8 +531,10 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
             return s.encode(encoding) if isinstance(s, str) else s
 
         if body is None:
-            return self.http.request(method, url, fields=fields, headers=headers, **kwargs)
-        
+            return self.http.request(
+                method, url, fields=fields, headers=headers, **kwargs
+            )
+
         if urllib3.util.IS_PYOPENSSL and isinstance(body, bytearray):
             # workaround for https://github.com/pyca/pyopenssl/issues/621
             body = memoryview(body)
@@ -370,17 +564,25 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
         except ValueError as error:
             raise APIError("Unexpected API response: %s: %s" % (error, repr(body)))
         js = dict(js)
-        if 0 < [ k in js for k in required ].count(False):
-            missing = [ k for k in required if k not in js ]
-            raise APIError("Unexpected API response: %s: %s" % (repr(missing), repr(body)))
+        if 0 < [k in js for k in required].count(False):
+            missing = [k for k in required if k not in js]
+            raise APIError(
+                "Unexpected API response: %s: %s" % (repr(missing), repr(body))
+            )
         return js
 
     def sleep(self, secs):
-        warnings.warn("sleep(secs) will be removed from future release. Please use time.sleep(secs)", category=DeprecationWarning)
+        warnings.warn(
+            "sleep(secs) will be removed from future release. Please use time.sleep(secs)",
+            category=DeprecationWarning,
+        )
         time.sleep(secs)
 
     def parsedate(self, s):
-        warnings.warn("parsedate(secs) will be removed from future release. Please use datetime.strptime(date_string, fmt) or other.", category=DeprecationWarning)
+        warnings.warn(
+            "parsedate(secs) will be removed from future release. Please use datetime.strptime(date_string, fmt) or other.",
+            category=DeprecationWarning,
+        )
         try:
             return self._parsedate(s, None)
         except ValueError:
@@ -429,7 +631,7 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
     def _read_file(self, file_like, fmt, **kwargs):
         compressed = fmt.endswith(".gz")
         if compressed:
-            fmt = fmt[0:len(fmt)-len(".gz")]
+            fmt = fmt[0 : len(fmt) - len(".gz")]
         reader_name = "_read_%s_file" % (fmt,)
         if hasattr(self, reader_name):
             reader = getattr(self, reader_name)
@@ -447,8 +649,11 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
             return reader(file_like, **kwargs)
 
     def _validate_record(self, record):
-        if not any (k in record for k in ("time", b"time")):
-            warnings.warn("records should have \"time\" column to import records properly.", category=RuntimeWarning)
+        if not any(k in record for k in ("time", b"time")):
+            warnings.warn(
+                'records should have "time" column to import records properly.',
+                category=RuntimeWarning,
+            )
         return True
 
     def _read_msgpack_file(self, file_like, **kwargs):
@@ -465,7 +670,9 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
             self._validate_record(record)
             yield record
 
-    def _read_csv_file(self, file_like, dialect=csv.excel, columns=None, encoding="utf-8", **kwargs):
+    def _read_csv_file(
+        self, file_like, dialect=csv.excel, columns=None, encoding="utf-8", **kwargs
+    ):
         try:
             unicode
             py2k = True
@@ -476,6 +683,7 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
         def getreader(file_like):
             for s in codecs.getreader(encoding)(file_like):
                 yield s.encode(encoding) if py2k else s
+
         def value(s):
             s = s.decode(encoding) if py2k else s
             try:
@@ -492,27 +700,31 @@ class API(BulkImportAPI, ConnectorAPI, DatabaseAPI, ExportAPI, ImportAPI,
                 return None
             else:
                 return s
+
         if columns is None:
             reader = csv.DictReader(getreader(file_like), dialect=dialect)
             for row in reader:
-                record = dict([ (k, value(v)) for (k, v) in row.items() ])
+                record = dict([(k, value(v)) for (k, v) in row.items()])
                 self._validate_record(record)
                 yield record
         else:
             reader = csv.reader(getreader(file_like), dialect=dialect)
             for row in reader:
-                record = dict(zip(columns, [ value(col) for col in row ]))
+                record = dict(zip(columns, [value(col) for col in row]))
                 self._validate_record(record)
                 yield record
 
     def _read_tsv_file(self, file_like, **kwargs):
         return self._read_csv_file(file_like, dialect=csv.excel_tab, **kwargs)
 
+
 def normalized_msgpack(value):
     if isinstance(value, (list, tuple)):
-        return [ normalized_msgpack(v) for v in value ]
+        return [normalized_msgpack(v) for v in value]
     elif isinstance(value, dict):
-        return dict([ (normalized_msgpack(k), normalized_msgpack(v)) for (k, v) in value.items() ])
+        return dict(
+            [(normalized_msgpack(k), normalized_msgpack(v)) for (k, v) in value.items()]
+        )
     try:
         long
         py2k = True
@@ -525,7 +737,7 @@ def normalized_msgpack(value):
             return value
     else:
         if isinstance(value, int):
-            if -(1<<63) < value < (1<<64):
+            if -(1 << 63) < value < (1 << 64):
                 return value
             else:
                 return str(value)

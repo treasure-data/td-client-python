@@ -46,6 +46,7 @@ class Schema:
         """
         self._fields.append(Schema.Field(name, type))
 
+
 class Job(Model):
     """Job on Treasure Data Service
     """
@@ -58,13 +59,7 @@ class Job(Model):
     STATUS_KILLED = "killed"
     FINISHED_STATUS = [STATUS_SUCCESS, STATUS_ERROR, STATUS_KILLED]
 
-    JOB_PRIORITY = {
-        -2: "VERY LOW",
-        -1: "LOW",
-        0: "NORMAL",
-        1: "HIGH",
-        2: "VERY HIGH",
-    }
+    JOB_PRIORITY = {-2: "VERY LOW", -1: "LOW", 0: "NORMAL", 1: "HIGH", 2: "VERY HIGH"}
 
     def __init__(self, client, job_id, type, query, **kwargs):
         super(Job, self).__init__(client)
@@ -103,7 +98,10 @@ class Job(Model):
         self._feed(data)
 
     def _update_status(self):
-        warnings.warn("_update_status() will be removed from future release. Please use update() instaed.)", category=DeprecationWarning)
+        warnings.warn(
+            "_update_status() will be removed from future release. Please use update() instaed.)",
+            category=DeprecationWarning,
+        )
         self.update()
 
     def _update_progress(self):
@@ -139,7 +137,7 @@ class Job(Model):
         Returns: the length of job result
         """
         return self._result_size
-    
+
     @property
     def num_records(self):
         """
@@ -199,7 +197,7 @@ class Job(Model):
         Returns: a string represents the name of a database that job is running on
         """
         return self._database
-    
+
     @property
     def linked_result_export_job_id(self):
         """
@@ -237,7 +235,7 @@ class Job(Model):
                 if callable(cb):
                     cb(self)
             else:
-                raise RuntimeError("timeout") # TODO: throw proper error
+                raise RuntimeError("timeout")  # TODO: throw proper error
         self.update()
 
     def kill(self):

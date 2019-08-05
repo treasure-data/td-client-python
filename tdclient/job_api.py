@@ -55,7 +55,9 @@ class JobAPI:
                     result = m["result"]
                 else:
                     result = None
-                if m.get("hive_result_schema") is not None and 0 < len(str(m["hive_result_schema"])):
+                if m.get("hive_result_schema") is not None and 0 < len(
+                    str(m["hive_result_schema"])
+                ):
                     hive_result_schema = json.loads(m["hive_result_schema"])
                 else:
                     hive_result_schema = None
@@ -70,12 +72,22 @@ class JobAPI:
                     "query": m.get("query"),
                     "status": m.get("status"),
                     "debug": m.get("debug"),
-                    "start_at": self._parsedate(start_at, "%Y-%m-%dT%H:%M:%SZ") if start_at else None,
-                    "end_at": self._parsedate(end_at, "%Y-%m-%dT%H:%M:%SZ") if end_at else None,
-                    "created_at": self._parsedate(created_at, "%Y-%m-%dT%H:%M:%SZ") if created_at else None,
-                    "updated_at": self._parsedate(updated_at, "%Y-%m-%dT%H:%M:%SZ") if updated_at else None,
+                    "start_at": self._parsedate(start_at, "%Y-%m-%dT%H:%M:%SZ")
+                    if start_at
+                    else None,
+                    "end_at": self._parsedate(end_at, "%Y-%m-%dT%H:%M:%SZ")
+                    if end_at
+                    else None,
+                    "created_at": self._parsedate(created_at, "%Y-%m-%dT%H:%M:%SZ")
+                    if created_at
+                    else None,
+                    "updated_at": self._parsedate(updated_at, "%Y-%m-%dT%H:%M:%SZ")
+                    if updated_at
+                    else None,
                     "cpu_time": m.get("cpu_time"),
-                    "result_size": m.get("result_size"), # compressed result size in msgpack.gz format
+                    "result_size": m.get(
+                        "result_size"
+                    ),  # compressed result size in msgpack.gz format
                     "result": result,
                     "result_url": m.get("result_url"),
                     "hive_result_schema": hive_result_schema,
@@ -108,7 +120,9 @@ class JobAPI:
                 result = js["result"]
             else:
                 result = None
-            if js.get("hive_result_schema") is not None and 0 < len(str(js["hive_result_schema"])):
+            if js.get("hive_result_schema") is not None and 0 < len(
+                str(js["hive_result_schema"])
+            ):
                 hive_result_schema = json.loads(js["hive_result_schema"])
             else:
                 hive_result_schema = None
@@ -123,12 +137,22 @@ class JobAPI:
                 "query": js.get("query"),
                 "status": js.get("status"),
                 "debug": js.get("debug"),
-                "start_at": self._parsedate(start_at, "%Y-%m-%dT%H:%M:%SZ") if start_at else None,
-                "end_at": self._parsedate(end_at, "%Y-%m-%dT%H:%M:%SZ") if end_at else None,
-                "created_at": self._parsedate(created_at, "%Y-%m-%dT%H:%M:%SZ") if created_at else None,
-                "updated_at": self._parsedate(updated_at, "%Y-%m-%dT%H:%M:%SZ") if updated_at else None,
+                "start_at": self._parsedate(start_at, "%Y-%m-%dT%H:%M:%SZ")
+                if start_at
+                else None,
+                "end_at": self._parsedate(end_at, "%Y-%m-%dT%H:%M:%SZ")
+                if end_at
+                else None,
+                "created_at": self._parsedate(created_at, "%Y-%m-%dT%H:%M:%SZ")
+                if created_at
+                else None,
+                "updated_at": self._parsedate(updated_at, "%Y-%m-%dT%H:%M:%SZ")
+                if updated_at
+                else None,
                 "cpu_time": js.get("cpu_time"),
-                "result_size": js.get("result_size"), # compressed result size in msgpack.gz format
+                "result_size": js.get(
+                    "result_size"
+                ),  # compressed result size in msgpack.gz format
                 "result": result,
                 "result_url": js.get("result_url"),
                 "hive_result_schema": hive_result_schema,
@@ -184,7 +208,9 @@ class JobAPI:
         """
         TODO: add docstring
         """
-        with self.get("/v3/job/result/%s" % (urlquote(str(job_id))), {"format": format}) as res:
+        with self.get(
+            "/v3/job/result/%s" % (urlquote(str(job_id))), {"format": format}
+        ) as res:
             code = res.status
             if code != 200:
                 self.raise_error("Get job result failed", res, "")
@@ -211,18 +237,33 @@ class JobAPI:
             return former_status
 
     def hive_query(self, q, **kwargs):
-        warnings.warn("hive_query(q, ...) will be removed from future release. Please use query(q, type=\"hive\", ...)", category=DeprecationWarning)
+        warnings.warn(
+            'hive_query(q, ...) will be removed from future release. Please use query(q, type="hive", ...)',
+            category=DeprecationWarning,
+        )
         kwargs = dict(kwargs)
         kwargs["type"] = "hive"
         return self.query(q, **kwargs)
 
     def pig_query(self, q, **kwargs):
-        warnings.warn("pig_query(q, ...) will be removed from future release. Please use query(q, type=\"pig\", ...)", category=DeprecationWarning)
+        warnings.warn(
+            'pig_query(q, ...) will be removed from future release. Please use query(q, type="pig", ...)',
+            category=DeprecationWarning,
+        )
         kwargs = dict(kwargs)
         kwargs["type"] = "pig"
         return self.query(q, **kwargs)
 
-    def query(self, q, type="hive", db=None, result_url=None, priority=None, retry_limit=None, **kwargs):
+    def query(
+        self,
+        q,
+        type="hive",
+        db=None,
+        result_url=None,
+        priority=None,
+        retry_limit=None,
+        **kwargs
+    ):
         """
         TODO: add docstring
         => jobId:str
@@ -237,11 +278,13 @@ class JobAPI:
                 if priority_name in self.JOB_PRIORITY:
                     priority = self.JOB_PRIORITY[priority_name]
                 else:
-                    raise(ValueError("unknown job priority: %s" % (priority_name,)))
+                    raise (ValueError("unknown job priority: %s" % (priority_name,)))
             params["priority"] = priority
         if retry_limit is not None:
             params["retry_limit"] = retry_limit
-        with self.post("/v3/job/issue/%s/%s" % (urlquote(str(type)), urlquote(str(db))), params) as res:
+        with self.post(
+            "/v3/job/issue/%s/%s" % (urlquote(str(type)), urlquote(str(db))), params
+        ) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Query failed", res, body)

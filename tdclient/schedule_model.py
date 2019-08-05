@@ -3,9 +3,11 @@
 from tdclient.model import Model
 from tdclient.job_model import Job
 
+
 class ScheduledJob(Job):
     """Scheduled job on Treasure Data Service
     """
+
     def __init__(self, client, scheduled_at, job_id, type, query, **kwargs):
         super(ScheduledJob, self).__init__(client, job_id, type, query, **kwargs)
         self._scheduled_at = scheduled_at
@@ -16,6 +18,7 @@ class ScheduledJob(Job):
         Returns: a :class:`datetime.datetime` represents the schedule of next invocation of the job
         """
         return self._scheduled_at
+
 
 class Schedule(Model):
     """Schedule on Treasure Data Service

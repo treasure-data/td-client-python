@@ -4,6 +4,7 @@ import warnings
 
 from tdclient.model import Model
 
+
 class Database(Model):
     """Database on Treasure Data Service
     """
@@ -73,7 +74,10 @@ class Database(Model):
 
         Returns: :class:`tdclient.model.Table`
         """
-        warnings.warn("item tables have been deprecated. will be deleted from future releases.", category=DeprecationWarning)
+        warnings.warn(
+            "item tables have been deprecated. will be deleted from future releases.",
+            category=DeprecationWarning,
+        )
         return self._client.create_item_table(self._db_name, name)
 
     def table(self, table_name):

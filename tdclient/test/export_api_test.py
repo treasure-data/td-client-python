@@ -9,8 +9,10 @@ import pytest
 from tdclient import api
 from tdclient.test.test_helper import *
 
+
 def setup_function(function):
     unset_environ()
+
 
 def test_export_data_success():
     td = api.API("APIKEY")
@@ -24,6 +26,7 @@ def test_export_data_success():
     job = td.export_data("db", "table", "s3")
     td.post.assert_called_with("/v3/export/run/db/table", {"storage_type": "s3"})
     assert job == "12345"
+
 
 def test_export_data_failure():
     td = api.API("APIKEY")

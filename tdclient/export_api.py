@@ -15,7 +15,9 @@ class ExportAPI:
         """
         params = {} if params is None else params
         params["storage_type"] = storage_type
-        with self.post("/v3/export/run/%s/%s" % (urlquote(str(db)), urlquote(str(table))), params) as res:
+        with self.post(
+            "/v3/export/run/%s/%s" % (urlquote(str(db)), urlquote(str(table))), params
+        ) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Export failed", res, body)

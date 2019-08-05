@@ -9,8 +9,10 @@ import pytest
 from tdclient import api
 from tdclient.test.test_helper import *
 
+
 def setup_function(function):
     unset_environ()
+
 
 def test_create_schedule_success():
     td = api.API("APIKEY")
@@ -29,7 +31,8 @@ def test_create_schedule_success():
     assert start.hour == 4
     assert start.minute == 34
     assert start.second == 51
-    assert start.utcoffset().seconds == 0 # UTC
+    assert start.utcoffset().seconds == 0  # UTC
+
 
 def test_create_schedule_without_cron_success():
     td = api.API("APIKEY")
@@ -41,14 +44,17 @@ def test_create_schedule_without_cron_success():
     """
     td.post = mock.MagicMock(return_value=make_response(200, body))
     start = td.create_schedule("bar", {"type": "presto", "cron": ""})
-    td.post.assert_called_with("/v3/schedule/create/bar", {"type": "presto", "cron": ""})
+    td.post.assert_called_with(
+        "/v3/schedule/create/bar", {"type": "presto", "cron": ""}
+    )
     assert start.year == 1970
     assert start.month == 1
     assert start.day == 1
     assert start.hour == 0
     assert start.minute == 0
     assert start.second == 0
-    assert start.utcoffset().seconds == 0 # UTC
+    assert start.utcoffset().seconds == 0  # UTC
+
 
 def test_delete_schedule_success():
     td = api.API("APIKEY")
@@ -64,6 +70,7 @@ def test_delete_schedule_success():
     td.post.assert_called_with("/v3/schedule/delete/bar")
     assert cron == "foo"
     assert query == "SELECT 1 FROM nasdaq"
+
 
 def test_list_schedules_success():
     td = api.API("APIKEY")
@@ -122,7 +129,9 @@ def test_list_schedules_success():
     schedules = td.list_schedules()
     td.get.assert_called_with("/v3/schedule/list")
     assert len(schedules) == 3
-    next_time = sorted([ schedule.get("next_time") for schedule in schedules if "next_time" in schedule ])
+    next_time = sorted(
+        [schedule.get("next_time") for schedule in schedules if "next_time" in schedule]
+    )
     assert len(next_time) == 3
     assert next_time[2].year == 2016
     assert next_time[2].month == 9
@@ -130,7 +139,13 @@ def test_list_schedules_success():
     assert next_time[2].hour == 0
     assert next_time[2].minute == 0
     assert next_time[2].second == 0
-    created_at = sorted([ schedule.get("created_at") for schedule in schedules if "created_at" in schedule ])
+    created_at = sorted(
+        [
+            schedule.get("created_at")
+            for schedule in schedules
+            if "created_at" in schedule
+        ]
+    )
     assert len(created_at) == 3
     assert created_at[2].year == 2016
     assert created_at[2].month == 8
@@ -139,6 +154,7 @@ def test_list_schedules_success():
     assert created_at[2].minute == 1
     assert created_at[2].second == 4
 
+
 def test_list_schedules_failure():
     td = api.API("APIKEY")
     td.get = mock.MagicMock(return_value=make_response(500, b"error"))
@@ -146,11 +162,13 @@ def test_list_schedules_failure():
         td.list_schedules()
     assert error.value.args == ("500: List schedules failed: error",)
 
+
 def test_update_schedule_success():
     td = api.API("APIKEY")
     td.post = mock.MagicMock(return_value=make_response(200, b""))
     td.update_schedule("foo")
     td.post.assert_called_with("/v3/schedule/update/foo", {})
+
 
 def test_history_success():
     td = api.API("APIKEY")
@@ -212,6 +230,7 @@ def test_history_success():
     td.get = mock.MagicMock(return_value=make_response(200, body))
     history = td.history("foo", 0, 3)
     td.get.assert_called_with("/v3/schedule/history/foo", {"from": "0", "to": "3"})
+
 
 def test_run_schedule_success():
     td = api.API("APIKEY")
