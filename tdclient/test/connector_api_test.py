@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 
 import io
-import msgpack
+from unittest import mock
 
-try:
-    from unittest import mock
-except ImportError:
-    import mock
+import msgpack
 import pytest
 
 from tdclient import api

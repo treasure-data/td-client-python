@@ -2,16 +2,13 @@
 
 import io
 import json
-import msgpack
-
-try:
-    from unittest import mock
-except ImportError:
-    import mock
-import pytest
 import tempfile
 import time
 import zlib
+from unittest import mock
+
+import msgpack
+import pytest
 
 from tdclient import api
 from tdclient.test.test_helper import *

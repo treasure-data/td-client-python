@@ -4,9 +4,10 @@ import collections
 import contextlib
 import gzip
 import io
-import msgpack
 import os
 from urllib.parse import quote as urlquote
+
+import msgpack
 
 
 class BulkImportAPI:

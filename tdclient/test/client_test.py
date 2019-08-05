@@ -6,8 +6,7 @@ except ImportError:
     import mock
 import pytest
 
-from tdclient import api
-from tdclient import client
+from tdclient import api, client
 from tdclient.test.test_helper import *
 
 

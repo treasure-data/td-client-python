@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
-from tdclient import bulk_import_model
-from tdclient import database_model
-from tdclient import job_model
-from tdclient import result_model
-from tdclient import schedule_model
-from tdclient import table_model
-from tdclient import user_model
+from tdclient import (
+    bulk_import_model,
+    database_model,
+    job_model,
+    result_model,
+    schedule_model,
+    table_model,
+    user_model,
+)
 
 BulkImport = bulk_import_model.BulkImport
 Database = database_model.Database

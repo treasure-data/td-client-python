@@ -6,9 +6,7 @@ except ImportError:
     import mock
 import pytest
 
-from tdclient import connection
-from tdclient import cursor
-from tdclient import errors
+from tdclient import connection, cursor, errors
 from tdclient.test.test_helper import *
 
 

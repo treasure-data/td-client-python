@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
-from tdclient import api
-from tdclient import cursor
-from tdclient import errors
+from tdclient import api, cursor, errors
 
 
 class Connection:

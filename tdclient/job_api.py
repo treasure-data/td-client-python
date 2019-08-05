@@ -2,9 +2,10 @@
 
 import codecs
 import json
-import msgpack
-from urllib.parse import quote as urlquote
 import warnings
+from urllib.parse import quote as urlquote
+
+import msgpack
 
 
 class JobAPI:

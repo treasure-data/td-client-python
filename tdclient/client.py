@@ -3,8 +3,7 @@
 import json
 import warnings
 
-from tdclient import api
-from tdclient import models
+from tdclient import api, models
 
 
 class Client:

@@ -1,8 +1,6 @@
 import datetime
-from tdclient import client
-from tdclient import connection
-from tdclient import errors
-from tdclient import version
+
+from tdclient import client, connection, errors, version
 
 __version__ = version.__version__
 

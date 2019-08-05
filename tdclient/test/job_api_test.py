@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 
 import datetime
-import dateutil.tz
 import json
+from unittest import mock
 
-try:
-    from unittest import mock
-except ImportError:
-    import mock
+import dateutil.tz
 import msgpack
 import pytest
 

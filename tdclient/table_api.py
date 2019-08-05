@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import json
-from urllib.parse import quote as urlquote
 import warnings
+from urllib.parse import quote as urlquote
 
 
 class TableAPI:

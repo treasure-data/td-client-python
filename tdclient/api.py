@@ -1,33 +1,28 @@
 #!/usr/bin/env python
 
-from array import array
-
-try:
-    import certifi
-except ImportError:
-    # on py27 on windows, it tries to import pseudo "certifi" module instead of original one.
-    # to avoid the weird behavior, the pseudo "certifi" module should be named differently.
-    from tdclient import pseudo_certifi as certifi
 import codecs
 import contextlib
 import csv
-import dateutil.parser
 import email.utils
 import gzip
 import io
 import json
 import logging
-import msgpack
 import os
 import socket
 import ssl
 import tempfile
 import time
 import urllib.parse as urlparse
+import warnings
+from array import array
+
+import dateutil.parser
+import msgpack
 import urllib3
 import urllib3.util
-import warnings
 
+from tdclient import errors, version
 from tdclient.bulk_import_api import BulkImportAPI
 from tdclient.connector_api import ConnectorAPI
 from tdclient.database_api import DatabaseAPI
@@ -40,8 +35,14 @@ from tdclient.schedule_api import ScheduleAPI
 from tdclient.server_status_api import ServerStatusAPI
 from tdclient.table_api import TableAPI
 from tdclient.user_api import UserAPI
-from tdclient import errors
-from tdclient import version
+
+try:
+    import certifi
+except ImportError:
+    # on py27 on windows, it tries to import pseudo "certifi" module instead of original one.
+    # to avoid the weird behavior, the pseudo "certifi" module should be named differently.
+    from tdclient import pseudo_certifi as certifi
+
 
 log = logging.getLogger(__name__)
 

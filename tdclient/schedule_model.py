@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from tdclient.model import Model
 from tdclient.job_model import Job
+from tdclient.model import Model
 
 
 class ScheduledJob(Job):

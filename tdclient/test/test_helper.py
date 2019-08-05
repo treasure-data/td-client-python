@@ -6,15 +6,17 @@ import csv
 import gzip
 import io
 import json
+import os
+import zlib
+
 import msgpack
+
+from tdclient.api import normalized_msgpack
 
 try:
     from unittest import mock
 except ImportError:
     import mock
-import os
-from tdclient.api import normalized_msgpack
-import zlib
 
 
 def unset_environ():

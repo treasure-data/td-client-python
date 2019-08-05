@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 
 import datetime
-import dateutil.tz
+from unittest import mock
 
-try:
-    from unittest import mock
-except ImportError:
-    import mock
+import dateutil.tz
 import pytest
 
 from tdclient import models

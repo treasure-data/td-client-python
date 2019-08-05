@@ -1,26 +1,18 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-from array import array
 import io
-
-try:
-    from unittest import mock
-except ImportError:
-    import mock
 import os
-import pytest
 import tempfile
 import time
+import urllib.parse as urlparse
+from array import array
+from unittest import mock
 
-try:
-    import urllib.parse as urlparse
-except ImportError:
-    import urlparse
+import pytest
 import urllib3
 
-from tdclient import api
-from tdclient import version
+from tdclient import api, version
 from tdclient.test.test_helper import *
 
 
