@@ -99,7 +99,7 @@ class API(
         elif "TD_API_KEY" in os.environ:
             self._apikey = os.getenv("TD_API_KEY")
         else:
-            raise (ValueError("no API key given"))
+            raise ValueError("no API key given")
 
         if user_agent is not None:
             self._user_agent = user_agent
@@ -158,7 +158,7 @@ class API(
         )
         self._retry_post_requests = retry_post_requests
         self._max_cumul_retry_delay = max_cumul_retry_delay
-        self._headers = dict([(key.lower(), value) for (key, value) in headers.items()])
+        self._headers = {key.lower(): value for (key, value) in headers.items()}
 
     @property
     def apikey(self):
@@ -247,14 +247,12 @@ class API(
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
             else:
-                raise (
-                    APIError(
-                        "Retrying stopped after %d seconds. (cumulative: %d/%d)"
-                        % (
-                            self._max_cumul_retry_delay,
-                            cumul_retry_delay,
-                            self._max_cumul_retry_delay,
-                        )
+                raise APIError(
+                    "Retrying stopped after %d seconds. (cumulative: %d/%d)"
+                    % (
+                        self._max_cumul_retry_delay,
+                        cumul_retry_delay,
+                        self._max_cumul_retry_delay,
                     )
                 )
 
@@ -311,8 +309,8 @@ class API(
                     break
                 else:
                     if not self._retry_post_requests:
-                        raise (
-                            APIError("Retrying stopped by retry_post_requests == False")
+                        raise APIError(
+                            "Retrying stopped by retry_post_requests == False"
                         )
                     log.warning(
                         "Error %d: %s. Retrying after %d seconds... (cumulative: %d/%d)",
@@ -329,7 +327,7 @@ class API(
                 socket.error,
             ):
                 if not self._retry_post_requests:
-                    raise (APIError("Retrying stopped by retry_post_requests == False"))
+                    raise APIError("Retrying stopped by retry_post_requests == False")
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
                 log.warning(
@@ -342,14 +340,12 @@ class API(
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
             else:
-                raise (
-                    APIError(
-                        "Retrying stopped after %d seconds. (cumulative: %d/%d)"
-                        % (
-                            self._max_cumul_retry_delay,
-                            cumul_retry_delay,
-                            self._max_cumul_retry_delay,
-                        )
+                raise APIError(
+                    "Retrying stopped after %d seconds. (cumulative: %d/%d)"
+                    % (
+                        self._max_cumul_retry_delay,
+                        cumul_retry_delay,
+                        self._max_cumul_retry_delay,
                     )
                 )
 
@@ -386,11 +382,11 @@ class API(
             if fileno_supported:
                 stream = bytes_or_stream
             else:
-                stream = array(str("b"), bytes_or_stream.read())
+                stream = array("b", bytes_or_stream.read())
 
         else:
             # send request body as an `array.array` since `httplib` requires the request body to be a unicode string
-            stream = array(str("b"), bytes_or_stream)
+            stream = array("b", bytes_or_stream)
 
         response = None
         try:
@@ -405,14 +401,14 @@ class API(
             if response.status < 500:
                 pass
             else:
-                raise (APIError("Error %d: %s", response.status, response.data))
+                raise APIError("Error %d: %s", response.status, response.data)
         except (
             urllib3.exceptions.TimeoutStateError,
             urllib3.exceptions.TimeoutError,
             urllib3.exceptions.PoolError,
             socket.error,
         ):
-            raise (APIError("Error: %s" % (repr(response))))
+            raise APIError("Error: %s" % (repr(response)))
 
         log.debug(
             "REST PUT response:\n  headers: %s\n  status: %d\n  body: <omitted>",
@@ -481,14 +477,12 @@ class API(
                 cumul_retry_delay += retry_delay
                 retry_delay *= 2
             else:
-                raise (
-                    APIError(
-                        "Retrying stopped after %d seconds. (cumulative: %d/%d)"
-                        % (
-                            self._max_cumul_retry_delay,
-                            cumul_retry_delay,
-                            self._max_cumul_retry_delay,
-                        )
+                raise APIError(
+                    "Retrying stopped after %d seconds. (cumulative: %d/%d)"
+                    % (
+                        self._max_cumul_retry_delay,
+                        cumul_retry_delay,
+                        self._max_cumul_retry_delay,
                     )
                 )
 
@@ -522,9 +516,7 @@ class API(
         _headers["date"] = email.utils.formatdate(time.time())
         _headers["user-agent"] = self._user_agent
         # override given headers
-        _headers.update(
-            dict([(key.lower(), value) for (key, value) in headers.items()])
-        )
+        _headers.update({key.lower(): value for (key, value) in headers.items()})
         return (url, _headers)
 
     def send_request(self, method, url, fields=None, body=None, headers=None, **kwargs):
@@ -705,7 +697,7 @@ class API(
         if columns is None:
             reader = csv.DictReader(getreader(file_like), dialect=dialect)
             for row in reader:
-                record = dict([(k, value(v)) for (k, v) in row.items()])
+                record = {k: value(v) for (k, v) in row.items()}
                 self._validate_record(record)
                 yield record
         else:
@@ -726,21 +718,11 @@ def normalized_msgpack(value):
         return dict(
             [(normalized_msgpack(k), normalized_msgpack(v)) for (k, v) in value.items()]
         )
-    try:
-        long
-        py2k = True
-    except NameError:
-        py2k = False
-    if py2k:
-        if isinstance(value, long):
+
+    if isinstance(value, int):
+        if -(1 << 63) < value < (1 << 64):
+            return value
+        else:
             return str(value)
-        else:
-            return value
     else:
-        if isinstance(value, int):
-            if -(1 << 63) < value < (1 << 64):
-                return value
-            else:
-                return str(value)
-        else:
-            return value
+        return value
