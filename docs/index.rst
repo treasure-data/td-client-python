@@ -15,6 +15,11 @@ Welcome to td-client-python's documentation!
 Indices and tables
 ==================
 
+.. toctree::
+   :maxdepth: 2
+
+   reference
+
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
