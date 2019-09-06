@@ -56,6 +56,9 @@ setup(
             "black==19.3b0",
             "isort",
         ],
+        "docs": [
+            "sphinx",
+        ],
     },
     packages=find_packages(),
     cmdclass = {"test": PyTest},

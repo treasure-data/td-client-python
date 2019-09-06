@@ -14,3 +14,4 @@
 
 # JetBrains IDE
 .idea/
+/docs/_build
