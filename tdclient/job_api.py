@@ -169,8 +169,11 @@ class JobAPI:
             return job
 
     def job_status(self, job_id):
-        """
-        TODO: add docstring
+        """"
+        Params:
+            job_id (str): job ID
+
+        Returns: The status information of the given job id at last execution.
         """
         with self.get("/v3/job/status/%s" % (urlquote(str(job_id)))) as res:
             code, body = res.status, res.read()
@@ -182,7 +185,10 @@ class JobAPI:
 
     def job_result(self, job_id):
         """
-        TODO: add docstring
+        Params:
+            job_id (int): Job ID
+
+        Returns: Job result in :class:`list`
         """
         result = []
         for row in self.job_result_format_each(job_id, "msgpack"):
@@ -191,14 +197,22 @@ class JobAPI:
 
     def job_result_each(self, job_id):
         """
-        TODO: add docstring
+        Params:
+            job_id (int): Job ID
+
+        Yields: Row in a result
         """
         for row in self.job_result_format_each(job_id, "msgpack"):
             yield row
 
     def job_result_format(self, job_id, format):
         """
-        TODO: add docstring
+        Params:
+            job_id (int): Job ID
+            format (str): Output format of the job result information.
+                "json" or "msgpack"
+
+        Returns: The query result of the specified job in.
         """
         result = []
         for row in self.job_result_format_each(job_id, format):
@@ -207,7 +221,11 @@ class JobAPI:
 
     def job_result_format_each(self, job_id, format):
         """
-        TODO: add docstring
+        Params:
+            job_id (int): job ID
+            format (str): Output format of the job result information. "json" or "msgpack"
+
+        Yields: The query result of the specified job in.
         """
         with self.get(
             "/v3/job/result/%s" % (urlquote(str(job_id))), {"format": format}
@@ -227,7 +245,10 @@ class JobAPI:
 
     def kill(self, job_id):
         """
-        TODO: add docstring
+        Params:
+            job_id (str): Job Id to kill
+
+        Returns: Job status before killing
         """
         with self.post("/v3/job/kill/%s" % (urlquote(str(job_id)))) as res:
             code, body = res.status, res.read()
@@ -266,8 +287,20 @@ class JobAPI:
         **kwargs
     ):
         """
-        TODO: add docstring
-        => jobId:str
+        Params:
+            q (str): Query string.
+            type (str): Query type. `hive`, `presto`, `bulkload`. Default: `hive`
+            db (str): Database name.
+            result_url (str): Result output URL. For example,
+                postgresql://<username>:<password>@<hostname>:<port>/<database>/<table>
+            priority (int or str): Job priority.
+                In str, "Normal", "Very low", "Low", "High", "Very high".
+                In int, the number in the range of -2 to 2.
+            retry_limit (int): Automatic retry count.
+            **kwargs: Extra options.
+
+        Returns:
+            str: Job ID issued for the query
         """
         params = {"query": q}
         params.update(kwargs)
