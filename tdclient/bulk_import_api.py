@@ -16,9 +16,16 @@ class BulkImportAPI:
     ##
 
     def create_bulk_import(self, name, db, table, params=None):
-        """
-        TODO: add docstring
-        => True
+        """Enable bulk importing of data to the targeted database and table and stores
+        it in the default resource pool. Default expiration for bulk import is 30days.
+
+        Params:
+            name (str): Name of the bulk import.
+            db (str): Name of target database.
+            table (str): Name of target table.
+            params (dict, optional): Extra parameters.
+
+        Returns: True if succeeded
         """
         params = {} if params is None else params
         with self.post(
@@ -32,9 +39,12 @@ class BulkImportAPI:
             return True
 
     def delete_bulk_import(self, name, params=None):
-        """
-        TODO: add docstring
-        => True
+        """Delete the imported information with the specified name
+
+        Params:
+            name (str): Name of bulk import.
+            params (dict, optional): Extra parameters.
+        Returns: True if succeeded
         """
         params = {} if params is None else params
         with self.post(
@@ -46,9 +56,12 @@ class BulkImportAPI:
             return True
 
     def show_bulk_import(self, name):
-        """
-        TODO: add docstring
-        => data:dict
+        """Show the details of the bulk import with the specified name
+
+        Params:
+            name (str): Name of bulk import.
+        Returns:
+            dict: Detailed information of the bulk import.
         """
         with self.get("/v3/bulk_import/show/%s" % (urlquote(str(name)))) as res:
             code, body = res.status, res.read()
@@ -58,9 +71,11 @@ class BulkImportAPI:
             return js
 
     def list_bulk_imports(self, params=None):
-        """
-        TODO: add docstring
-        => result:[data:dict]
+        """Return the list of available bulk imports
+        Params:
+            params (dict, optional): Extra parameters.
+        Returns:
+            [dict]:  The list of available bulk import details.
         """
         params = {} if params is None else params
         with self.get("/v3/bulk_import/list", params) as res:
@@ -71,8 +86,14 @@ class BulkImportAPI:
             return js["bulk_imports"]
 
     def list_bulk_import_parts(self, name, params=None):
-        """
-        TODO: add docstring
+        """Return the list of available parts uploaded through
+        :func:`~BulkImportAPI.bulk_import_upload_part`.
+
+        Params:
+            name (str): Name of bulk import.
+            params (dict, optional): Extra parameteres.
+        Returns:
+            [str]: The list of bulk import part name.
         """
         params = {} if params is None else params
         with self.get(
@@ -105,9 +126,13 @@ class BulkImportAPI:
             raise ValueError("part name must not contain '/': %s" % (repr(part_name)))
 
     def bulk_import_upload_part(self, name, part_name, stream, size):
-        """
-        TODO: add docstring
-        => None
+        """Upload bulk import having the specified name and part in the path.
+
+        Params:
+            name (str): Bulk import name.
+            part_name (str): Bulk import part name.
+            stream (str or file-like): Byte string or file-like object contains the data
+            size (int): The length of the data.
         """
         self.validate_part_name(part_name)
         with self.put(
@@ -121,9 +146,14 @@ class BulkImportAPI:
                 self.raise_error("Upload a part failed", res, body)
 
     def bulk_import_upload_file(self, name, part_name, format, file, **kwargs):
-        """
-        TODO: add docstring
-        => None
+        """Upload a file with bulk import having the specified name.
+
+        Params:
+            name (str): Bulk import name.
+            part_name (str): Bulk import part name.
+            format (str): Format name. {msgpack, json, csv, tsv}
+            file (file-like): Byte string or file-like object contains the data.
+            **kwargs: Extra argments.
         """
         self.validate_part_name(part_name)
         with contextlib.closing(self._prepare_file(file, format, **kwargs)) as fp:
@@ -131,9 +161,14 @@ class BulkImportAPI:
             return self.bulk_import_upload_part(name, part_name, fp, size)
 
     def bulk_import_delete_part(self, name, part_name, params=None):
-        """
-        TODO: add docstring
-        => True
+        """Delete the imported information with the specified name.
+
+        Params:
+            name (str): Bulk import name.
+            part_name (str): Bulk import part name.
+            params (dict, optional): Extra parameters.
+        Returns:
+             True if succeeded.
         """
         self.validate_part_name(part_name)
         params = {} if params is None else params
@@ -148,9 +183,13 @@ class BulkImportAPI:
             return True
 
     def freeze_bulk_import(self, name, params=None):
-        """
-        TODO: add docstring
-        => True
+        """Freeze the bulk import with the specified name.
+
+        Params:
+            name (str): Bulk import name.
+            params (dict, optional): Extra parameters.
+        Returns:
+             True if succeeded.
         """
         params = {} if params is None else params
         with self.post(
@@ -162,9 +201,13 @@ class BulkImportAPI:
             return True
 
     def unfreeze_bulk_import(self, name, params=None):
-        """
-        TODO: add docstring
-        => True
+        """Unfreeze bulk_import with the specified name.
+
+        Params:
+            name (str): Bulk import name.
+            params (dict, optional): Extra parameters.
+        Returns:
+             True if succeeded.
         """
         params = {} if params is None else params
         with self.post(
@@ -176,9 +219,14 @@ class BulkImportAPI:
             return True
 
     def perform_bulk_import(self, name, params=None):
-        """
-        TODO: add docstring
-        => jobId:str
+        """Execute a job to perform bulk import with the indicated priority using the
+        resource pool if indicated, else it will use the account's default.
+        
+        Params:
+            name (str): Bulk import name.
+            params (dict, optional): Extra parameters.
+        Returns:
+            str: Job ID
         """
         params = {} if params is None else params
         with self.post(
@@ -191,9 +239,13 @@ class BulkImportAPI:
             return str(js["job_id"])
 
     def commit_bulk_import(self, name, params=None):
-        """
-        TODO: add docstring
-        => True
+        """Commit the bulk import information having the specified name.
+
+        Params:
+            name (str): Bulk import name.
+            params (dict, optional): Extra parameters.
+        Returns:
+            True if succeeded.
         """
         params = {} if params is None else params
         with self.post(
@@ -205,9 +257,13 @@ class BulkImportAPI:
             return True
 
     def bulk_import_error_records(self, name, params=None):
-        """
-        TODO: add docstring
-        => data...
+        """List the records that have errors under the specified bulk import name.
+
+        Params:
+            name (str): Bulk import name.
+            params (dict, optional): Extra parameters.
+        Yields:
+            Row of the data
         """
         params = {} if params is None else params
         with self.get(
