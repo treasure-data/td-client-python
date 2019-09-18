@@ -85,15 +85,13 @@ class Schedule(Model):
 
     @property
     def timezone(self):
-        """
-        TODO: add docstring
+        """The time zone of a scheduled job
         """
         return self._timezone
 
     @property
     def delay(self):
-        """
-        TODO: add docstring
+        """A delay ensures all buffered events are imported before running the query.
         """
         return self._delay
 
@@ -108,8 +106,7 @@ class Schedule(Model):
 
     @property
     def retry_limit(self):
-        """
-        TODO: add docstring
+        """Automatic retry count.
         """
         return self._retry_limit
 
@@ -122,29 +119,29 @@ class Schedule(Model):
 
     @property
     def next_time(self):
-        """
-        TODO: add docstring
+        """Schedule for next run
+        Returns:
+            :obj:`datetime.datetime`
         """
         return self._next_time
 
     @property
     def created_at(self):
-        """
-        TODO: add docstring
+        """Create date
+        Returns:
+            :obj:`datetime.datetime`
         """
         return self._created_at
 
     @property
     def type(self):
-        """
-        TODO: add docstring
+        """Query type. {"presto", "hive"}.
         """
         return self._type
 
     @property
     def user_name(self):
-        """
-        TODO: add docstring
+        """User name of a scheduled job
         """
         return self._user_name
 

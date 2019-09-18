@@ -584,9 +584,34 @@ class Client:
         return self.api.list_bulk_import_parts(name)
 
     def create_schedule(self, name, params=None):
-        """
-        TODO: add docstring
-        => first_time:datetime.datetime
+        """Create a new scheduled query with the specified name.
+
+        Args:
+            name (str): Scheduled query name.
+            params (dict, optional): Extra parameters.
+                type (str): Query type. {"presto", "hive"}. Default: "hive"
+                database (str): Target database name.
+                timezone (str): Scheduled query's timezone. e.g. "UTC"
+                    For details, see also: https://gist.github.com/frsyuki/4533752
+                cron (str, optional): Schedule of the query.
+                    {"@daily", "@hourly", "10 * * * *" (custom cron)}
+                    See also: https://support.treasuredata.com/hc/en-us/articles/360001451088-Scheduled-Jobs-Web-Console
+                delay (int, optional): A delay ensures all buffered events are imported
+                    before running the query. Default: 0
+                query (str): Is a language used to retrieve, insert, update and modify
+                    data. See also: https://support.treasuredata.com/hc/en-us/articles/360012069493-SQL-Examples-of-Scheduled-Queries
+                priority (int, optional): Priority of the query.
+                    Range is from -2 (very low) to 2 (very high). Default: 0
+                retry_limit (int, optional): Automatic retry count. Default: 0
+                engine_version (str, optional): Engine version to be used. If none is
+                    specified, the account's default engine version would be set.
+                    {"stable", "experimental"}
+                pool_name (str, optional): For Presto only. Pool name to be used, if not
+                    specified, default pool would be used.
+                result (str, optional): Location where to store the result of the query.
+                    e.g. 'tableau://user:password@host.com:1234/datasource'
+        Returns:
+            datetime.datetime: Start date time.
         """
         if "cron" not in params:
             raise ValueError("'cron' option is required")
@@ -596,32 +621,70 @@ class Client:
         return self.api.create_schedule(name, params)
 
     def delete_schedule(self, name):
-        """
-        TODO: add docstring
-        => True
+        """Delete the scheduled query with the specified name.
+
+        Args:
+            name (str): Target scheduled query name.
+        Returns:
+            (str, str): Tuple of cron and query.
         """
         return self.api.delete_schedule(name)
 
     def schedules(self):
-        """
-        TODO: add docstring
-        [:class:`tdclient.models.Schedule`]
+        """Get the list of all the scheduled queries.
+
+        Returns:
+            [:class:`tdclient.models.Schedule`]
         """
         result = self.api.list_schedules()
         return [models.Schedule(self, **m) for m in result]
 
     def update_schedule(self, name, params=None):
-        """
-        TODO: add docstring
-        [:class:`tdclient.models.ScheduledJob`]
+        """Update the scheduled query.
+
+        Args:
+            name (str): Target scheduled query name.
+            params (dict): Extra parameteres.
+                type (str): Query type. {"presto", "hive"}. Default: "hive"
+                database (str): Target database name.
+                timezone (str): Scheduled query's timezone. e.g. "UTC"
+                    For details, see also: https://gist.github.com/frsyuki/4533752
+                cron (str, optional): Schedule of the query.
+                    {"@daily", "@hourly", "10 * * * *" (custom cron)}
+                    See also: https://support.treasuredata.com/hc/en-us/articles/360001451088-Scheduled-Jobs-Web-Console
+                delay (int, optional): A delay ensures all buffered events are imported
+                    before running the query. Default: 0
+                query (str): Is a language used to retrieve, insert, update and modify
+                    data. See also: https://support.treasuredata.com/hc/en-us/articles/360012069493-SQL-Examples-of-Scheduled-Queries
+                priority (int, optional): Priority of the query.
+                    Range is from -2 (very low) to 2 (very high). Default: 0
+                retry_limit (int, optional): Automatic retry count. Default: 0
+                engine_version (str, optional): Engine version to be used. If none is
+                    specified, the account's default engine version would be set.
+                    {"stable", "experimental"}
+                pool_name (str, optional): For Presto only. Pool name to be used, if not
+                    specified, default pool would be used.
+                result (str, optional): Location where to store the result of the query.
+                    e.g. 'tableau://user:password@host.com:1234/datasource'
         """
         params = {} if params is None else params
         self.api.update_schedule(name, params)
 
     def history(self, name, _from=None, to=None):
-        """
-        TODO: add docstring
-        [:class:`tdclient.models.ScheduledJob`]
+        """Get the history details of the saved query for the past 90days.
+
+        Args:
+            name (str): Target name of the scheduled query.
+            _from (int, optional): Indicates from which nth record in the run history
+                would be fetched.
+                Default: 0.
+                Note: Count starts from zero. This means that the first record in the
+                list has a count of zero.
+            to (int, optional): Indicates up to which nth record in the run history
+                would be fetched.
+                Default: 20
+        Returns:
+            [:class:`tdclient.models.ScheduledJob`]
         """
         result = self.api.history(name, _from, to)
 
@@ -651,9 +714,15 @@ class Client:
         return [scheduled_job(m) for m in result]
 
     def run_schedule(self, name, time, num):
-        """
-        TODO: add docstring
-        [:class:`tdclient.models.ScheduledJob`]
+        """Execute the specified query.
+
+        Args:
+            name (str): Target scheduled query name.
+            time (int): Time in Unix epoch format that would be set as TD_SCHEDULED_TIME
+            num (int): Indicates how many times the query will be executed.
+                Value should be 9 or less.
+        Returns:
+            [:class:`tdclient.models.ScheduledJob`]
         """
         results = self.api.run_schedule(name, time, num)
 
