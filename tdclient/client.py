@@ -125,7 +125,17 @@ class Client:
         Params:
             db_name (str): name of a database
             table_name (str): name of a table
-            schema (dict): a dictionary object represents the schema definition (will convert to JSON)
+            schema (list): a dictionary object represents the schema definition (will
+                be converted to JSON)
+                e.g.
+                    [
+                        ["member_id", # column name
+                         "string", # data type
+                         "mem_id", # alias of the column name
+                        ],
+                        ["row_index", "long", "row_ind"],
+                        ...
+                    ]
 
         Returns: `True` if success
         """
@@ -186,8 +196,19 @@ class Client:
         raise api.NotFoundError("Table '%s.%s' does not exist" % (db_name, table_name))
 
     def tail(self, db_name, table_name, count, to=None, _from=None, block=None):
-        """
-        TODO: add docstring
+        """Get the contents of the table in reverse order based on the registered time
+        (last data first).
+
+        Args:
+            db_name (str): Target database name.
+            table_name (str): Target table name.
+            count (int): Number for record to show up from the end.
+            to: Deprecated parameter.
+            _from: Deprecated parameter.
+            block: Deprecated parameter.
+
+        Returns:
+            [dict]: Contents of the table.
         """
         return self.api.tail(db_name, table_name, count, to, _from, block)
 
