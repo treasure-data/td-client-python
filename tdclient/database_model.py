@@ -25,28 +25,32 @@ class Database(Model):
     @property
     def org_name(self):
         """
-        Returns: organization name
+        Returns:
+            str: organization name
         """
         return self._org_name
 
     @property
     def permission(self):
         """
-        Returns: a string represents permission for the database (e.g. "administrator", "full_access", etc.)
+        Returns:
+            str: permission for the database (e.g. "administrator", "full_access", etc.)
         """
         return self._permission
 
     @property
     def count(self):
         """
-        TODO: add docstring
+        Returns:
+            int: Total record counts in a database.
         """
         return self._count
 
     @property
     def name(self):
         """
-        Returns: a name of the database in string
+        Returns:
+             str: a name of the database
         """
         return self._db_name
 
