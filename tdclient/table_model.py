@@ -58,21 +58,23 @@ class Table(Model):
     @property
     def schema(self):
         """
-        TODO: add docstring
+        Returns:
+            [[column_name:str, column_type:str, alias:str]]
         """
         return self._schema
 
     @property
     def count(self):
         """
-        TODO: add docstring
+        Returns:
+            int: total number of the table
         """
         return self._count
 
     @property
     def estimated_storage_size(self):
         """
-        TODO: add docstring
+        Returns: estimated storage size
         """
         return self._estimated_storage_size
 
@@ -142,7 +144,8 @@ class Table(Model):
     @property
     def permission(self):
         """
-        TODO: add docstring
+        Returns:
+            str: permission for the database (e.g. "administrator", "full_access", etc.)
         """
         if self.database is None:
             self._update_database()
@@ -163,7 +166,13 @@ class Table(Model):
 
     def tail(self, count, to=None, _from=None):
         """
-        TODO: add docstring
+        Args:
+            count (int): Number for record to show up from the end.
+            to: Deprecated parameter.
+            _from: Deprecated parameter.
+
+        Returns: the contents of the table in reverse order based on the registered time
+            (last data first).
         """
         return self._client.tail(self._db_name, self._table_name, count, to, _from)
 

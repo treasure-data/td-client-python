@@ -844,6 +844,7 @@ class Client:
 
     def change_email(self, name, email):
         """
+        TODO: remove
         Params:
             name (str): name of the user
             email (str) new e-mail address
@@ -892,6 +893,7 @@ class Client:
 
     def change_my_password(self, old_password, password):
         """
+        TODO: remove
         Params:
             old_password (str): old password
             password (str): new password
@@ -914,21 +916,21 @@ class Client:
 
     def grant_access_control(self, subject, action, scope, grant_option):
         """
-        TODO: add docstring
+        TODO: remove
         => True
         """
         return self.api.grant_access_control(subject, action, scope, grant_option)
 
     def revoke_access_control(self, subject, action, scope):
         """
-        TODO: add docstring
+        TODO: remove
         => True
         """
         return self.api.revoke_access_control(subject, action, scope)
 
     def test_access_control(self, user, action, scope):
         """
-        TODO: add docstring
+        TODO: remove
         => True
         """
         return self.api.test_access_control(user, action, scope)

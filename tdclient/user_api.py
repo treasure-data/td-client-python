@@ -73,7 +73,6 @@ class UserAPI:
 
     def remove_user(self, name):
         """Remove the specified email in the account and revokes the user's access.
-
         Args:
             name (str): User's email address
         Returns:

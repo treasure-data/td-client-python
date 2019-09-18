@@ -32,6 +32,7 @@ class Result(Model):
     @property
     def org_name(self):
         """
-        TODO: add docstring
+        Returns:
+            str: organization name
         """
         return self._org_name
