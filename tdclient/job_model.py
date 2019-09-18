@@ -173,7 +173,7 @@ class Job(Model):
     @property
     def retry_limit(self):
         """
-        TODO: add docstring
+        Returns: a number for automatic retry count
         """
         return self._retry_limit
 
