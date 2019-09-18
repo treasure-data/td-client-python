@@ -9,8 +9,11 @@ class ResultAPI:
     ##
 
     def list_result(self):
-        """
-        TODO: add docstring
+        """Get the list of all the available authentications.
+
+        Returns:
+            [(str, str, None)]: The list of tuple of name, Result output url, and None
+                (organization name).
         """
         with self.get("/v3/result/list") as res:
             code, body = res.status, res.read()
@@ -22,9 +25,14 @@ class ResultAPI:
             ]  # same as database
 
     def create_result(self, name, url, params=None):
-        """
-        TODO: add docstring
-        => True
+        """Create a new authentication with the specified name.
+
+        Args:
+            name (str): Authentication name.
+            url (str):  Url of the authentication to be created. e.g. "ftp://test.com/"
+            params (dict, optional): Extra parameters.
+        Returns:
+            bool: True if succeeded.
         """
         params = {} if params is None else params
         params.update({"url": url})
@@ -35,9 +43,12 @@ class ResultAPI:
             return True
 
     def delete_result(self, name):
-        """
-        TODO: add docstring
-        => True
+        """Delete the authentication having the specified name.
+
+        Args:
+            name (str): Authentication name.
+        Returns:
+            bool: True if succeeded.
         """
         with self.post("/v3/result/delete/%s" % (urlquote(str(name)))) as res:
             code, body = res.status, res.read()

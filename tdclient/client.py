@@ -684,7 +684,8 @@ class Client:
         )
 
     def results(self):
-        """
+        """Get the list of all the available authentications.
+
         Returns: a list of :class:`tdclient.models.Result`
         """
         results = self.api.list_result()
@@ -696,17 +697,25 @@ class Client:
         return [result(m) for m in results]
 
     def create_result(self, name, url, params=None):
-        """
-        TODO: add docstring
-        => True
+        """Create a new authentication with the specified name.
+
+        Args:
+            name (str): Authentication name.
+            url (str):  Url of the authentication to be created. e.g. "ftp://test.com/"
+            params (dict, optional): Extra parameters.
+        Returns:
+            bool: True if succeeded.
         """
         params = {} if params is None else params
         return self.api.create_result(name, url, params)
 
     def delete_result(self, name):
-        """
-        TODO: add docstring
-        => True
+        """Delete the authentication having the specified name.
+
+        Args:
+            name (str): Authentication name.
+        Returns:
+            bool: True if succeeded.
         """
         return self.api.delete_result(name)
 
