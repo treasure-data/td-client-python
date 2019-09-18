@@ -9,9 +9,10 @@ class DatabaseAPI:
     ##
 
     def list_databases(self):
-        """
-        TODO: add docstring
-        => [name:str]
+        """Get the list of all the databases of the account.
+
+        Returns:
+            dict: Detailed database information. Each key of the dict is database name.
         """
         with self.get("/v3/database/list") as res:
             code, body = res.status, res.read()
@@ -35,9 +36,12 @@ class DatabaseAPI:
             return result
 
     def delete_database(self, db):
-        """
-        TODO: add docstring
-        => True
+        """Delete a database.
+
+        Args:
+            db (str): Target database name.
+        Returns:
+            bool: `True` if succeeded.
         """
         with self.post("/v3/database/delete/%s" % urlquote(str(db))) as res:
             code, body = res.status, res.read()
@@ -46,9 +50,13 @@ class DatabaseAPI:
             return True
 
     def create_database(self, db, params=None):
-        """
-        TODO: add docstring
-        => True
+        """Create a new database with the given name.
+
+        Args:
+            db (str): Target database name.
+            params (dict): Extra parameters.
+        Returns:
+            bool: `True` if succeeded.
         """
         params = {} if params is None else params
         with self.post("/v3/database/create/%s" % urlquote(str(db)), params) as res:
