@@ -556,8 +556,6 @@ class API(
             js = json.loads(body.decode("utf-8"))
         except ValueError as error:
             raise APIError("Unexpected API response: %s: %s" % (error, repr(body)))
-        if isinstance(js, list):
-            return js
         js = dict(js)
         if 0 < [k in js for k in required].count(False):
             missing = [k for k in required if k not in js]

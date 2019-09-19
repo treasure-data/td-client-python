@@ -4,6 +4,8 @@ import json
 import warnings
 from urllib.parse import quote as urlquote
 
+import msgpack
+
 
 class TableAPI:
     ####
@@ -148,14 +150,17 @@ class TableAPI:
         Returns:
             [dict]: Contents of the table.
         """
-        params = {"count": count}
+        params = {"count": count, "format": "msgpack"}
         with self.get(
-            "/v3/table/tail/%s/%s" % (urlquote(str(db)), urlquote(str(table))),
-            params
+            "/v3/table/tail/%s/%s" % (urlquote(str(db)), urlquote(str(table))), params
         ) as res:
-            code, body = res.status, res.read()
+            code = res.status
             if code != 200:
-                self.raise_error("Tail table failed", res, body)
+                self.raise_error("Tail table failed", res, "")
 
-            js = self.checked_json(body, [])
-            return js
+            unpacker = msgpack.Unpacker(res, raw=False)
+            result = []
+            for row in unpacker:
+                result.append(row)
+
+            return result
