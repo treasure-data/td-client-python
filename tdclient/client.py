@@ -423,8 +423,8 @@ class Client:
         time range.
 
         Args:
-            db (str): Target database name.
-            table (str): Target table name.
+            db_name (str): Target database name.
+            table_name (str): Target table name.
             to (int): Time in Unix Epoch format indicating the End date and time of the
                 data to be deleted. Should be set only by the hour. Minutes and seconds
                 values will not be accepted.
@@ -758,8 +758,8 @@ class Client:
         convert it into format acceptable from Treasure Data Service ("msgpack.gz").
 
         Args:
-            db (str): name of a database
-            table (str): name of a table
+            db_name (str): name of a database
+            table_name (str): name of a table
             format (str): format of data type (e.g. "msgpack", "json")
             file (str or file-like): a name of a file, or a file-like object contains the data
             unique_id (str): a unique identifier of the data
