@@ -41,7 +41,7 @@ class Client:
 
     def create_database(self, db_name, **kwargs):
         """
-        Params:
+        Args:
             db_name (str): name of a database to create
 
         Returns: `True` if success
@@ -50,7 +50,7 @@ class Client:
 
     def delete_database(self, db_name):
         """
-        Params:
+        Args:
             db_name (str): name of database to delete
 
         Returns: `True` if success
@@ -69,7 +69,7 @@ class Client:
 
     def database(self, db_name):
         """
-        Params:
+        Args:
             db_name (str): name of a database
 
         Returns: :class:`tdclient.models.Database`
@@ -82,7 +82,7 @@ class Client:
 
     def create_log_table(self, db_name, table_name):
         """
-        Params:
+        Args:
             db_name (str): name of a database
             table_name (str): name of a table to create
 
@@ -92,7 +92,7 @@ class Client:
 
     def create_item_table(self, db_name, table_name, primary_key, primary_key_type):
         """
-        Params:
+        Args:
             db_name (str): name of a database
             table_name (str): name of a table to create
             primary_key (str): name of primary key column
@@ -110,7 +110,7 @@ class Client:
 
     def swap_table(self, db_name, table_name1, table_name2):
         """
-        Params:
+        Args:
             db_name (str): name of a database
             table_name1 (str): original table name
             table_name2 (str): table name you want to rename to
@@ -122,7 +122,7 @@ class Client:
     def update_schema(self, db_name, table_name, schema):
         """Updates the schema of a table
 
-        Params:
+        Args:
             db_name (str): name of a database
             table_name (str): name of a table
             schema (list): a dictionary object represents the schema definition (will
@@ -144,7 +144,7 @@ class Client:
     def update_expire(self, db_name, table_name, expire_days):
         """Set expiration date to a table
 
-        Params:
+        Args:
             db_name (str): name of a database
             table_name (str): name of a table
             epire_days (int): expiration date in days from today
@@ -156,7 +156,7 @@ class Client:
     def delete_table(self, db_name, table_name):
         """Delete a table
 
-        Params:
+        Args:
             db_name (str): name of a database
             table_name (str): name of a table
 
@@ -167,7 +167,7 @@ class Client:
     def tables(self, db_name):
         """List existing tables
 
-        Params:
+        Args:
             db_name (str): name of a database
 
         Returns: a list of :class:`tdclient.models.Table`
@@ -180,7 +180,7 @@ class Client:
 
     def table(self, db_name, table_name):
         """
-        Params:
+        Args:
             db_name (str): name of a database
             table_name (str): name of a table
 
@@ -224,7 +224,7 @@ class Client:
     ):
         """Run a query on specified database table.
 
-        Params:
+        Args:
             db_name (str): name of a database
             q (str): a query string
             result_url (str): result output URL
@@ -254,7 +254,7 @@ class Client:
     def jobs(self, _from=None, to=None, status=None, conditions=None):
         """List jobs
 
-        Params:
+        Args:
             _from (int):
             to (int):
             status (str):
@@ -297,7 +297,7 @@ class Client:
     def job(self, job_id):
         """Get a job from `job_id`
 
-        Params:
+        Args:
             job_id (str): job id
 
         Returns: :class:`tdclient.models.Job`
@@ -332,7 +332,7 @@ class Client:
 
     def job_status(self, job_id):
         """
-        Params:
+        Args:
             job_id (str): job id
 
         Returns: a string represents the status of the job ("success", "error", "killed", "queued", "running")
@@ -341,7 +341,7 @@ class Client:
 
     def job_result(self, job_id):
         """
-        Params:
+        Args:
             job_id (str): job id
 
         Returns: a list of each rows in result set
@@ -350,7 +350,7 @@ class Client:
 
     def job_result_each(self, job_id):
         """
-        Params:
+        Args:
             job_id (str): job id
 
         Returns: an iterator of result set
@@ -360,7 +360,7 @@ class Client:
 
     def job_result_format(self, job_id, format):
         """
-        Params:
+        Args:
             job_id (str): job id
             format (str): output format of result set
 
@@ -370,7 +370,7 @@ class Client:
 
     def job_result_format_each(self, job_id, format):
         """
-        Params:
+        Args:
             job_id (str): job id
             format (str): output format of result set
 
@@ -381,7 +381,7 @@ class Client:
 
     def kill(self, job_id):
         """
-        Params:
+        Args:
             job_id (str): job id
 
         Returns: a string represents the status of killed job ("queued", "running")
@@ -391,7 +391,7 @@ class Client:
     def export_data(self, db_name, table_name, storage_type, params=None):
         """Export data from Treasure Data Service
 
-        Params:
+        Args:
             db_name (str): name of a database
             table_name (str): name of a table
             storage_type (str): type of the storage
@@ -448,7 +448,7 @@ class Client:
     def create_bulk_import(self, name, database, table, params=None):
         """Create new bulk import session
 
-        Params:
+        Args:
             name (str): name of new bulk import session
             database (str): name of a database
             table (str): name of a table
@@ -462,7 +462,7 @@ class Client:
     def delete_bulk_import(self, name):
         """Delete a bulk import session
 
-        Params:
+        Args:
             name (str): name of a bulk import session
 
         Returns: `True` if success
@@ -472,7 +472,7 @@ class Client:
     def freeze_bulk_import(self, name):
         """Freeze a bulk import session
 
-        Params:
+        Args:
             name (str): name of a bulk import session
 
         Returns: `True` if success
@@ -482,7 +482,7 @@ class Client:
     def unfreeze_bulk_import(self, name):
         """Unfreeze a bulk import session
 
-        Params:
+        Args:
             name (str): name of a bulk import session
 
         Returns: `True` if success
@@ -492,7 +492,7 @@ class Client:
     def perform_bulk_import(self, name):
         """Perform a bulk import session
 
-        Params:
+        Args:
             name (str): name of a bulk import session
 
         Returns: :class:`tdclient.models.Job`
@@ -503,7 +503,7 @@ class Client:
     def commit_bulk_import(self, name):
         """Commit a bulk import session
 
-        Params:
+        Args:
             name (str): name of a bulk import session
 
         Returns: `True` if success
@@ -512,7 +512,7 @@ class Client:
 
     def bulk_import_error_records(self, name):
         """
-        Params:
+        Args:
             name (str): name of a bulk import session
 
         Returns: an iterator of error records
@@ -523,7 +523,7 @@ class Client:
     def bulk_import(self, name):
         """Get a bulk import session
 
-        Params:
+        Args:
             name (str): name of a bulk import session
 
         Returns: :class:`tdclient.models.BulkImport`
@@ -543,7 +543,7 @@ class Client:
     def bulk_import_upload_part(self, name, part_name, bytes_or_stream, size):
         """Upload a part to a bulk import session
 
-        Params:
+        Args:
             name (str): name of a bulk import session
             part_name (str): name of a part of the bulk import session
             bytes_or_stream (file-like): a file-like object contains the part
@@ -554,7 +554,7 @@ class Client:
     def bulk_import_upload_file(self, name, part_name, format, file):
         """Upload a part to Bulk Import session, from an existing file on filesystem.
 
-        Params:
+        Args:
             name (str): name of a bulk import session
             part_name (str): name of a part of the bulk import session
             format (str): format of data type (e.g. "msgpack", "json")
@@ -565,7 +565,7 @@ class Client:
     def bulk_import_delete_part(self, name, part_name):
         """Delete a part from a bulk import session
 
-        Params:
+        Args:
             name (str): name of a bulk import session
             part_name (str): name of a part of the bulk import session
 
@@ -576,7 +576,7 @@ class Client:
     def list_bulk_import_parts(self, name):
         """List parts of a bulk import session
 
-        Params:
+        Args:
             name (str): name of a bulk import session
 
         Returns: a list of string represents the name of parts
@@ -737,7 +737,7 @@ class Client:
     ):
         """Import data into Treasure Data Service
 
-        Params:
+        Args:
             db_name (str): name of a database
             table_name (str): name of a table
             format (str): format of data type (e.g. "msgpack.gz")
@@ -757,7 +757,7 @@ class Client:
         This method will decompress/deserialize records from given file, and then
         convert it into format acceptable from Treasure Data Service ("msgpack.gz").
 
-        Params:
+        Args:
             db (str): name of a database
             table (str): name of a table
             format (str): format of data type (e.g. "msgpack", "json")
@@ -822,7 +822,7 @@ class Client:
     def add_user(self, name, org, email, password):
         """Add a new user
 
-        Params:
+        Args:
             name (str): name of the user
             org (str): organization
             email: (str): e-mail address
@@ -835,7 +835,7 @@ class Client:
     def remove_user(self, name):
         """Remove a user
 
-        Params:
+        Args:
             name (str): name of the user
 
         Returns: `True` if success
@@ -845,7 +845,7 @@ class Client:
     def change_email(self, name, email):
         """
         TODO: remove
-        Params:
+        Args:
             name (str): name of the user
             email (str) new e-mail address
 
@@ -855,7 +855,7 @@ class Client:
 
     def list_apikeys(self, name):
         """
-        Params:
+        Args:
             name (str): name of the user
 
         Returns: a list of string of API key
@@ -864,7 +864,7 @@ class Client:
 
     def add_apikey(self, name):
         """
-        Params:
+        Args:
             name (str): name of the user
 
         Returns: `True` if success
@@ -873,7 +873,7 @@ class Client:
 
     def remove_apikey(self, name, apikey):
         """
-        Params:
+        Args:
             name (str): name of the user
             apikey (str): an API key to remove
 
@@ -883,7 +883,7 @@ class Client:
 
     def change_password(self, name, password):
         """
-        Params:
+        Args:
             name (str): name of the user
             password (str): new password
 
@@ -894,7 +894,7 @@ class Client:
     def change_my_password(self, old_password, password):
         """
         TODO: remove
-        Params:
+        Args:
             old_password (str): old password
             password (str): new password
 

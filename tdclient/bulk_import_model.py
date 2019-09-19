@@ -170,7 +170,7 @@ class BulkImport(Model):
     def upload_part(self, part_name, bytes_or_stream, size):
         """Upload a part to bulk import session
 
-        Params:
+        Args:
             part_name (str): name of a part of the bulk import session
             bytes_or_stream (file-like): a file-like object contains the part
             size (int): the size of the part
@@ -184,7 +184,7 @@ class BulkImport(Model):
     def upload_file(self, part_name, fmt, file_like):
         """Upload a part to Bulk Import session, from an existing file on filesystem.
 
-        Params:
+        Args:
             part_name (str): name of a part of the bulk import session
             fmt (str): format of data type (e.g. "msgpack", "json")
             file_like (str or file-like): a name of a file, or a file-like object contains the data

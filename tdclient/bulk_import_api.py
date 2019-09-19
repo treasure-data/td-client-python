@@ -19,7 +19,7 @@ class BulkImportAPI:
         """Enable bulk importing of data to the targeted database and table and stores
         it in the default resource pool. Default expiration for bulk import is 30days.
 
-        Params:
+        Args:
             name (str): Name of the bulk import.
             db (str): Name of target database.
             table (str): Name of target table.
@@ -41,7 +41,7 @@ class BulkImportAPI:
     def delete_bulk_import(self, name, params=None):
         """Delete the imported information with the specified name
 
-        Params:
+        Args:
             name (str): Name of bulk import.
             params (dict, optional): Extra parameters.
         Returns: True if succeeded
@@ -58,7 +58,7 @@ class BulkImportAPI:
     def show_bulk_import(self, name):
         """Show the details of the bulk import with the specified name
 
-        Params:
+        Args:
             name (str): Name of bulk import.
         Returns:
             dict: Detailed information of the bulk import.
@@ -72,7 +72,7 @@ class BulkImportAPI:
 
     def list_bulk_imports(self, params=None):
         """Return the list of available bulk imports
-        Params:
+        Args:
             params (dict, optional): Extra parameters.
         Returns:
             [dict]:  The list of available bulk import details.
@@ -89,7 +89,7 @@ class BulkImportAPI:
         """Return the list of available parts uploaded through
         :func:`~BulkImportAPI.bulk_import_upload_part`.
 
-        Params:
+        Args:
             name (str): Name of bulk import.
             params (dict, optional): Extra parameteres.
         Returns:
@@ -109,7 +109,7 @@ class BulkImportAPI:
     def validate_part_name(part_name):
         """Make sure the part_name is valid
 
-        Params:
+        Args:
             part_name (str): The part name the user is trying to use
         """
         # Check for duplicate periods
@@ -128,7 +128,7 @@ class BulkImportAPI:
     def bulk_import_upload_part(self, name, part_name, stream, size):
         """Upload bulk import having the specified name and part in the path.
 
-        Params:
+        Args:
             name (str): Bulk import name.
             part_name (str): Bulk import part name.
             stream (str or file-like): Byte string or file-like object contains the data
@@ -148,7 +148,7 @@ class BulkImportAPI:
     def bulk_import_upload_file(self, name, part_name, format, file, **kwargs):
         """Upload a file with bulk import having the specified name.
 
-        Params:
+        Args:
             name (str): Bulk import name.
             part_name (str): Bulk import part name.
             format (str): Format name. {msgpack, json, csv, tsv}
@@ -163,7 +163,7 @@ class BulkImportAPI:
     def bulk_import_delete_part(self, name, part_name, params=None):
         """Delete the imported information with the specified name.
 
-        Params:
+        Args:
             name (str): Bulk import name.
             part_name (str): Bulk import part name.
             params (dict, optional): Extra parameters.
@@ -185,7 +185,7 @@ class BulkImportAPI:
     def freeze_bulk_import(self, name, params=None):
         """Freeze the bulk import with the specified name.
 
-        Params:
+        Args:
             name (str): Bulk import name.
             params (dict, optional): Extra parameters.
         Returns:
@@ -203,7 +203,7 @@ class BulkImportAPI:
     def unfreeze_bulk_import(self, name, params=None):
         """Unfreeze bulk_import with the specified name.
 
-        Params:
+        Args:
             name (str): Bulk import name.
             params (dict, optional): Extra parameters.
         Returns:
@@ -222,7 +222,7 @@ class BulkImportAPI:
         """Execute a job to perform bulk import with the indicated priority using the
         resource pool if indicated, else it will use the account's default.
         
-        Params:
+        Args:
             name (str): Bulk import name.
             params (dict, optional): Extra parameters.
         Returns:
@@ -241,7 +241,7 @@ class BulkImportAPI:
     def commit_bulk_import(self, name, params=None):
         """Commit the bulk import information having the specified name.
 
-        Params:
+        Args:
             name (str): Bulk import name.
             params (dict, optional): Extra parameters.
         Returns:
@@ -259,7 +259,7 @@ class BulkImportAPI:
     def bulk_import_error_records(self, name, params=None):
         """List the records that have errors under the specified bulk import name.
 
-        Params:
+        Args:
             name (str): Bulk import name.
             params (dict, optional): Extra parameters.
         Yields:

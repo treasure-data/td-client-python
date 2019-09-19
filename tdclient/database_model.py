@@ -64,7 +64,7 @@ class Database(Model):
 
     def create_log_table(self, name):
         """
-        Params:
+        Args:
             name (str): name of new log table
 
         Returns: :class:`tdclient.model.Table`
@@ -73,7 +73,7 @@ class Database(Model):
 
     def create_item_table(self, name):
         """
-        Params:
+        Args:
             name (str): name of new item table
 
         Returns: :class:`tdclient.model.Table`
@@ -86,7 +86,7 @@ class Database(Model):
 
     def table(self, table_name):
         """
-        Params:
+        Args:
             table_name (str): name of a table
 
         Returns: :class:`tdclient.model.Table`
@@ -103,7 +103,7 @@ class Database(Model):
     def query(self, q, **kwargs):
         """Run a query on the database
 
-        Params:
+        Args:
             q (str): a query string
 
         Returns: :class:`tdclient.model.Job`

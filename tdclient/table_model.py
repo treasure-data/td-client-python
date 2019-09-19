@@ -179,7 +179,7 @@ class Table(Model):
     def import_data(self, format, bytes_or_stream, size, unique_id=None):
         """Import data into Treasure Data Service
 
-        Params:
+        Args:
             format (str): format of data type (e.g. "msgpack.gz")
             bytes_or_stream (str or file-like): a byte string or a file-like object contains the data
             size (int): the length of the data
@@ -202,7 +202,7 @@ class Table(Model):
         This method will decompress/deserialize records from given file, and then
         convert it into format acceptable from Treasure Data Service ("msgpack.gz").
 
-        Params:
+        Args:
             file (str or file-like): a name of a file, or a file-like object contains the data
             unique_id (str): a unique identifier of the data
 

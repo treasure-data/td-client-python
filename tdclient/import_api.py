@@ -15,7 +15,7 @@ class ImportAPI:
 
         This method expects data from a file-like object formatted with "msgpack.gz".
 
-        Params:
+        Args:
             db (str): name of a database
             table (str): name of a table
             format (str): format of data type (e.g. "msgpack.gz")
@@ -55,7 +55,7 @@ class ImportAPI:
         convert it into format acceptable from Treasure Data Service ("msgpack.gz").
         This method is a warpper function to `import_data`.
 
-        Params:
+        Args:
             db (str): name of a database
             table (str): name of a table
             format (str): format of data type (e.g. "msgpack", "json")

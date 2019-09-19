@@ -28,7 +28,7 @@ class JobAPI:
 
     def list_jobs(self, _from=0, to=None, status=None, conditions=None):
         """
-        Params:
+        Args:
             _from (int):
             to (int):
             status (str):
@@ -106,7 +106,7 @@ class JobAPI:
 
     def show_job(self, job_id):
         """
-        Params:
+        Args:
             job_id (str): job ID
 
         Returns: :class:`dict`
@@ -170,7 +170,7 @@ class JobAPI:
 
     def job_status(self, job_id):
         """"
-        Params:
+        Args:
             job_id (str): job ID
 
         Returns: The status information of the given job id at last execution.
@@ -185,7 +185,7 @@ class JobAPI:
 
     def job_result(self, job_id):
         """
-        Params:
+        Args:
             job_id (int): Job ID
 
         Returns: Job result in :class:`list`
@@ -197,7 +197,7 @@ class JobAPI:
 
     def job_result_each(self, job_id):
         """
-        Params:
+        Args:
             job_id (int): Job ID
 
         Yields: Row in a result
@@ -207,7 +207,7 @@ class JobAPI:
 
     def job_result_format(self, job_id, format):
         """
-        Params:
+        Args:
             job_id (int): Job ID
             format (str): Output format of the job result information.
                 "json" or "msgpack"
@@ -221,7 +221,7 @@ class JobAPI:
 
     def job_result_format_each(self, job_id, format):
         """
-        Params:
+        Args:
             job_id (int): job ID
             format (str): Output format of the job result information. "json" or "msgpack"
 
@@ -245,7 +245,7 @@ class JobAPI:
 
     def kill(self, job_id):
         """
-        Params:
+        Args:
             job_id (str): Job Id to kill
 
         Returns: Job status before killing
@@ -287,7 +287,7 @@ class JobAPI:
         **kwargs
     ):
         """
-        Params:
+        Args:
             q (str): Query string.
             type (str): Query type. `hive`, `presto`, `bulkload`. Default: `hive`
             db (str): Database name.
