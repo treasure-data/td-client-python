@@ -666,19 +666,11 @@ class API(
     def _read_csv_file(
         self, file_like, dialect=csv.excel, columns=None, encoding="utf-8", **kwargs
     ):
-        try:
-            unicode
-            py2k = True
-        except NameError:
-            py2k = False
-        # `csv` module bundled with py2k doesn't support `unicode` :(
-        # https://docs.python.org/2/library/csv.html#examples
         def getreader(file_like):
             for s in codecs.getreader(encoding)(file_like):
-                yield s.encode(encoding) if py2k else s
+                yield s
 
         def value(s):
-            s = s.decode(encoding) if py2k else s
             try:
                 return int(s)
             except (OverflowError, ValueError):
