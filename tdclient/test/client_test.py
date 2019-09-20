@@ -576,14 +576,6 @@ def test_remove_user():
     td.api.remove_user("name")
 
 
-def test_change_email():
-    td = client.Client("APIKEY")
-    td._api = mock.MagicMock()
-    td._api.change_email = mock.MagicMock()
-    td.change_email("user", "email")
-    td.api.change_email("user", "email")
-
-
 def test_list_apikeys():
     td = client.Client("APIKEY")
     td._api = mock.MagicMock()
@@ -606,52 +598,3 @@ def test_remove_apikey():
     td._api.remove_apikey = mock.MagicMock()
     td.remove_apikey("user", "apikey")
     td.api.remove_apikey("user", "apikey")
-
-
-def test_change_password():
-    td = client.Client("APIKEY")
-    td._api = mock.MagicMock()
-    td._api.change_password = mock.MagicMock()
-    td.change_password("user", "password")
-    td.api.change_password("user", "password")
-
-
-def test_change_my_password():
-    td = client.Client("APIKEY")
-    td._api = mock.MagicMock()
-    td._api.change_my_password = mock.MagicMock()
-    td.change_my_password("old_password", "password")
-    td.api.change_my_password("old_password", "password")
-
-
-def test_access_controls():
-    td = client.Client("APIKEY")
-    td._api = mock.MagicMock()
-    td._api.list_access_controls = mock.MagicMock(return_value=[])
-    access_controls = td.access_controls()
-    td.api.list_access_controls.assert_called_with()
-    assert len(access_controls) == 0
-
-
-def test_grant_access_control():
-    td = client.Client("APIKEY")
-    td._api = mock.MagicMock()
-    td._api.grant_access_control = mock.MagicMock()
-    td.grant_access_control("subject", "action", "scope", "grant_option")
-    td.api.grant_access_control("subject", "action", "scope", "grant_option")
-
-
-def test_revoke_access_control():
-    td = client.Client("APIKEY")
-    td._api = mock.MagicMock()
-    td._api.revoke_access_control = mock.MagicMock()
-    td.revoke_access_control("subject", "action", "scope")
-    td.api.revoke_access_control("subject", "action", "scope")
-
-
-def test_test_access_control():
-    td = client.Client("APIKEY")
-    td._api = mock.MagicMock()
-    td._api.test_access_control = mock.MagicMock()
-    td.test_access_control("subject", "action", "scope")
-    td.api.test_access_control("subject", "action", "scope")
