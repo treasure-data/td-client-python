@@ -8,15 +8,11 @@ import io
 import json
 import os
 import zlib
+from unittest import mock
 
 import msgpack
 
 from tdclient.api import normalized_msgpack
-
-try:
-    from unittest import mock
-except ImportError:
-    import mock
 
 
 def unset_environ():

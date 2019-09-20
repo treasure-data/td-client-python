@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 
-try:
-    from unittest import mock
-except ImportError:
-    import mock
 import functools
+from unittest import mock
 
 from tdclient import pseudo_certifi as certifi
 
