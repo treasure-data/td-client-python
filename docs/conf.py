@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'td-client-python'
-copyright = '2019, Treasure Data, Inc.'
+copyright = '2019, Arm Treasure Data'
 author = 'Treasure Data, Inc.'
 
 
