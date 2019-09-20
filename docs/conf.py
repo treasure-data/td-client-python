@@ -19,7 +19,7 @@
 
 project = 'td-client-python'
 copyright = '2019, Arm Treasure Data'
-author = 'Treasure Data, Inc.'
+author = 'Arm Treasure Data'
 
 
 # -- General configuration ---------------------------------------------------
