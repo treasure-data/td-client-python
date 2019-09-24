@@ -11,7 +11,7 @@ class ConnectorAPI:
 
     def connector_guess(self, job):
         """
-        Params:
+        Args:
           job (dict): :class:`dict` representation of `seed.yml`
 
         Returns: :class:`dict`
@@ -26,7 +26,7 @@ class ConnectorAPI:
 
     def connector_preview(self, job):
         """
-        Params:
+        Args:
           job (dict): :class:`dict` representation of `load.yml`
 
         Returns: :class:`dict`
@@ -41,7 +41,7 @@ class ConnectorAPI:
 
     def connector_issue(self, db, table, job):
         """
-        Params:
+        Args:
           db (str): name of the database to perform connector job
           table (str): name of the table to perform connector job
           job (dict): :class:`dict` representation of `load.yml`
@@ -75,7 +75,7 @@ class ConnectorAPI:
 
     def connector_create(self, name, database, table, job, params=None):
         """
-        Params:
+        Args:
           name (str): name of the connector job
           database (str): name of the database to perform connector job
           table (str): name of the table to perform connector job
@@ -100,7 +100,7 @@ class ConnectorAPI:
 
     def connector_show(self, name):
         """
-        Params:
+        Args:
           name (str): name of the connector job
 
         Returns: :class:`dict`
@@ -115,7 +115,7 @@ class ConnectorAPI:
 
     def connector_update(self, name, job):
         """
-        Params:
+        Args:
           name (str): name of the connector job
           job (dict): :class:`dict` representation of `load.yml`
 
@@ -138,7 +138,7 @@ class ConnectorAPI:
 
     def connector_delete(self, name):
         """
-        Params:
+        Args:
           name (str): name of the connector job
 
         Returns: :class:`dict`
@@ -153,7 +153,7 @@ class ConnectorAPI:
 
     def connector_history(self, name):
         """
-        Params:
+        Args:
           name (str): name of the connector job
 
         Returns: :class:`list`
@@ -170,7 +170,7 @@ class ConnectorAPI:
 
     def connector_run(self, name, **kwargs):
         """
-        Params:
+        Args:
           name (str): name of the connector job
 
         Returns: :class:`dict`

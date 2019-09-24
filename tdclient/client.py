@@ -41,7 +41,7 @@ class Client:
 
     def create_database(self, db_name, **kwargs):
         """
-        Params:
+        Args:
             db_name (str): name of a database to create
 
         Returns: `True` if success
@@ -50,7 +50,7 @@ class Client:
 
     def delete_database(self, db_name):
         """
-        Params:
+        Args:
             db_name (str): name of database to delete
 
         Returns: `True` if success
@@ -69,7 +69,7 @@ class Client:
 
     def database(self, db_name):
         """
-        Params:
+        Args:
             db_name (str): name of a database
 
         Returns: :class:`tdclient.models.Database`
@@ -82,7 +82,7 @@ class Client:
 
     def create_log_table(self, db_name, table_name):
         """
-        Params:
+        Args:
             db_name (str): name of a database
             table_name (str): name of a table to create
 
@@ -92,7 +92,7 @@ class Client:
 
     def create_item_table(self, db_name, table_name, primary_key, primary_key_type):
         """
-        Params:
+        Args:
             db_name (str): name of a database
             table_name (str): name of a table to create
             primary_key (str): name of primary key column
@@ -110,7 +110,7 @@ class Client:
 
     def swap_table(self, db_name, table_name1, table_name2):
         """
-        Params:
+        Args:
             db_name (str): name of a database
             table_name1 (str): original table name
             table_name2 (str): table name you want to rename to
@@ -122,10 +122,20 @@ class Client:
     def update_schema(self, db_name, table_name, schema):
         """Updates the schema of a table
 
-        Params:
+        Args:
             db_name (str): name of a database
             table_name (str): name of a table
-            schema (dict): a dictionary object represents the schema definition (will convert to JSON)
+            schema (list): a dictionary object represents the schema definition (will
+                be converted to JSON)
+                e.g.
+                    [
+                        ["member_id", # column name
+                         "string", # data type
+                         "mem_id", # alias of the column name
+                        ],
+                        ["row_index", "long", "row_ind"],
+                        ...
+                    ]
 
         Returns: `True` if success
         """
@@ -134,7 +144,7 @@ class Client:
     def update_expire(self, db_name, table_name, expire_days):
         """Set expiration date to a table
 
-        Params:
+        Args:
             db_name (str): name of a database
             table_name (str): name of a table
             epire_days (int): expiration date in days from today
@@ -146,7 +156,7 @@ class Client:
     def delete_table(self, db_name, table_name):
         """Delete a table
 
-        Params:
+        Args:
             db_name (str): name of a database
             table_name (str): name of a table
 
@@ -157,7 +167,7 @@ class Client:
     def tables(self, db_name):
         """List existing tables
 
-        Params:
+        Args:
             db_name (str): name of a database
 
         Returns: a list of :class:`tdclient.models.Table`
@@ -170,7 +180,7 @@ class Client:
 
     def table(self, db_name, table_name):
         """
-        Params:
+        Args:
             db_name (str): name of a database
             table_name (str): name of a table
 
@@ -186,8 +196,19 @@ class Client:
         raise api.NotFoundError("Table '%s.%s' does not exist" % (db_name, table_name))
 
     def tail(self, db_name, table_name, count, to=None, _from=None, block=None):
-        """
-        TODO: add docstring
+        """Get the contents of the table in reverse order based on the registered time
+        (last data first).
+
+        Args:
+            db_name (str): Target database name.
+            table_name (str): Target table name.
+            count (int): Number for record to show up from the end.
+            to: Deprecated parameter.
+            _from: Deprecated parameter.
+            block: Deprecated parameter.
+
+        Returns:
+            [dict]: Contents of the table.
         """
         return self.api.tail(db_name, table_name, count, to, _from, block)
 
@@ -203,7 +224,7 @@ class Client:
     ):
         """Run a query on specified database table.
 
-        Params:
+        Args:
             db_name (str): name of a database
             q (str): a query string
             result_url (str): result output URL
@@ -233,7 +254,7 @@ class Client:
     def jobs(self, _from=None, to=None, status=None, conditions=None):
         """List jobs
 
-        Params:
+        Args:
             _from (int):
             to (int):
             status (str):
@@ -276,7 +297,7 @@ class Client:
     def job(self, job_id):
         """Get a job from `job_id`
 
-        Params:
+        Args:
             job_id (str): job id
 
         Returns: :class:`tdclient.models.Job`
@@ -311,7 +332,7 @@ class Client:
 
     def job_status(self, job_id):
         """
-        Params:
+        Args:
             job_id (str): job id
 
         Returns: a string represents the status of the job ("success", "error", "killed", "queued", "running")
@@ -320,7 +341,7 @@ class Client:
 
     def job_result(self, job_id):
         """
-        Params:
+        Args:
             job_id (str): job id
 
         Returns: a list of each rows in result set
@@ -329,7 +350,7 @@ class Client:
 
     def job_result_each(self, job_id):
         """
-        Params:
+        Args:
             job_id (str): job id
 
         Returns: an iterator of result set
@@ -339,7 +360,7 @@ class Client:
 
     def job_result_format(self, job_id, format):
         """
-        Params:
+        Args:
             job_id (str): job id
             format (str): output format of result set
 
@@ -349,7 +370,7 @@ class Client:
 
     def job_result_format_each(self, job_id, format):
         """
-        Params:
+        Args:
             job_id (str): job id
             format (str): output format of result set
 
@@ -360,7 +381,7 @@ class Client:
 
     def kill(self, job_id):
         """
-        Params:
+        Args:
             job_id (str): job id
 
         Returns: a string represents the status of killed job ("queued", "running")
@@ -370,11 +391,26 @@ class Client:
     def export_data(self, db_name, table_name, storage_type, params=None):
         """Export data from Treasure Data Service
 
-        Params:
+        Args:
             db_name (str): name of a database
             table_name (str): name of a table
             storage_type (str): type of the storage
-            params (dict): optional parameters
+            params (dict): optional parameters. Assuming the following keys:
+                access_key_id (str): ID to access the information to be exported.
+                secret_access_key (str): Password for the `access_key_id`.
+                file_prefix (str, optional): Filename of exported file.
+                    Default: "<database_name>/<table_name>"
+                file_format (str, optional): File format of the information to be
+                    exported. {"jsonl.gz", "tsv.gz", "json.gz"}
+                from (int, optional): From Time of the data to be exported in Unix epoch
+                    format.
+                to (int, optional): End Time of the data to be exported in Unix epoch
+                    format.
+                assume_role (str, optional): Assume role.
+                bucket (str): Name of bucket to be used.
+                domain_key (str, optional): Job domain key.
+                pool_name (str, optional): For Presto only. Pool name to be used, if not
+                    specified, default pool would be used.
 
         Returns: :class:`tdclient.models.Job`
         """
@@ -383,9 +419,27 @@ class Client:
         return models.Job(self, job_id, "export", None)
 
     def partial_delete(self, db_name, table_name, to, _from, params=None):
-        """
-        TODO: add docstring
-        => :class:`tdclient.models.Job`
+        """Create a job to partially delete the contents of the table with the given
+        time range.
+
+        Args:
+            db_name (str): Target database name.
+            table_name (str): Target table name.
+            to (int): Time in Unix Epoch format indicating the End date and time of the
+                data to be deleted. Should be set only by the hour. Minutes and seconds
+                values will not be accepted.
+            _from (int): Time in Unix Epoch format indicating the Start date and time of
+                the data to be deleted. Should be set only by the hour. Minutes and
+                seconds values will not be accepted.
+            params (dict, optional): Extra parameters.
+                pool_name (str, optional): Indicates the resource pool to execute this
+                    job. If not provided, the account's default resource pool would be
+                    used.
+                domain_key (str, optional): Domain key that will be assigned to the
+                    partial delete job to be created
+
+        Returns:
+             :class:`tdclient.models.Job`
         """
         params = {} if params is None else params
         job_id = self.api.partial_delete(db_name, table_name, to, _from, params)
@@ -394,7 +448,7 @@ class Client:
     def create_bulk_import(self, name, database, table, params=None):
         """Create new bulk import session
 
-        Params:
+        Args:
             name (str): name of new bulk import session
             database (str): name of a database
             table (str): name of a table
@@ -408,7 +462,7 @@ class Client:
     def delete_bulk_import(self, name):
         """Delete a bulk import session
 
-        Params:
+        Args:
             name (str): name of a bulk import session
 
         Returns: `True` if success
@@ -418,7 +472,7 @@ class Client:
     def freeze_bulk_import(self, name):
         """Freeze a bulk import session
 
-        Params:
+        Args:
             name (str): name of a bulk import session
 
         Returns: `True` if success
@@ -428,7 +482,7 @@ class Client:
     def unfreeze_bulk_import(self, name):
         """Unfreeze a bulk import session
 
-        Params:
+        Args:
             name (str): name of a bulk import session
 
         Returns: `True` if success
@@ -438,7 +492,7 @@ class Client:
     def perform_bulk_import(self, name):
         """Perform a bulk import session
 
-        Params:
+        Args:
             name (str): name of a bulk import session
 
         Returns: :class:`tdclient.models.Job`
@@ -449,7 +503,7 @@ class Client:
     def commit_bulk_import(self, name):
         """Commit a bulk import session
 
-        Params:
+        Args:
             name (str): name of a bulk import session
 
         Returns: `True` if success
@@ -458,7 +512,7 @@ class Client:
 
     def bulk_import_error_records(self, name):
         """
-        Params:
+        Args:
             name (str): name of a bulk import session
 
         Returns: an iterator of error records
@@ -469,7 +523,7 @@ class Client:
     def bulk_import(self, name):
         """Get a bulk import session
 
-        Params:
+        Args:
             name (str): name of a bulk import session
 
         Returns: :class:`tdclient.models.BulkImport`
@@ -489,7 +543,7 @@ class Client:
     def bulk_import_upload_part(self, name, part_name, bytes_or_stream, size):
         """Upload a part to a bulk import session
 
-        Params:
+        Args:
             name (str): name of a bulk import session
             part_name (str): name of a part of the bulk import session
             bytes_or_stream (file-like): a file-like object contains the part
@@ -500,7 +554,7 @@ class Client:
     def bulk_import_upload_file(self, name, part_name, format, file):
         """Upload a part to Bulk Import session, from an existing file on filesystem.
 
-        Params:
+        Args:
             name (str): name of a bulk import session
             part_name (str): name of a part of the bulk import session
             format (str): format of data type (e.g. "msgpack", "json")
@@ -511,7 +565,7 @@ class Client:
     def bulk_import_delete_part(self, name, part_name):
         """Delete a part from a bulk import session
 
-        Params:
+        Args:
             name (str): name of a bulk import session
             part_name (str): name of a part of the bulk import session
 
@@ -522,7 +576,7 @@ class Client:
     def list_bulk_import_parts(self, name):
         """List parts of a bulk import session
 
-        Params:
+        Args:
             name (str): name of a bulk import session
 
         Returns: a list of string represents the name of parts
@@ -530,9 +584,34 @@ class Client:
         return self.api.list_bulk_import_parts(name)
 
     def create_schedule(self, name, params=None):
-        """
-        TODO: add docstring
-        => first_time:datetime.datetime
+        """Create a new scheduled query with the specified name.
+
+        Args:
+            name (str): Scheduled query name.
+            params (dict, optional): Extra parameters.
+                type (str): Query type. {"presto", "hive"}. Default: "hive"
+                database (str): Target database name.
+                timezone (str): Scheduled query's timezone. e.g. "UTC"
+                    For details, see also: https://gist.github.com/frsyuki/4533752
+                cron (str, optional): Schedule of the query.
+                    {"@daily", "@hourly", "10 * * * *" (custom cron)}
+                    See also: https://support.treasuredata.com/hc/en-us/articles/360001451088-Scheduled-Jobs-Web-Console
+                delay (int, optional): A delay ensures all buffered events are imported
+                    before running the query. Default: 0
+                query (str): Is a language used to retrieve, insert, update and modify
+                    data. See also: https://support.treasuredata.com/hc/en-us/articles/360012069493-SQL-Examples-of-Scheduled-Queries
+                priority (int, optional): Priority of the query.
+                    Range is from -2 (very low) to 2 (very high). Default: 0
+                retry_limit (int, optional): Automatic retry count. Default: 0
+                engine_version (str, optional): Engine version to be used. If none is
+                    specified, the account's default engine version would be set.
+                    {"stable", "experimental"}
+                pool_name (str, optional): For Presto only. Pool name to be used, if not
+                    specified, default pool would be used.
+                result (str, optional): Location where to store the result of the query.
+                    e.g. 'tableau://user:password@host.com:1234/datasource'
+        Returns:
+            datetime.datetime: Start date time.
         """
         if "cron" not in params:
             raise ValueError("'cron' option is required")
@@ -542,32 +621,70 @@ class Client:
         return self.api.create_schedule(name, params)
 
     def delete_schedule(self, name):
-        """
-        TODO: add docstring
-        => True
+        """Delete the scheduled query with the specified name.
+
+        Args:
+            name (str): Target scheduled query name.
+        Returns:
+            (str, str): Tuple of cron and query.
         """
         return self.api.delete_schedule(name)
 
     def schedules(self):
-        """
-        TODO: add docstring
-        [:class:`tdclient.models.Schedule`]
+        """Get the list of all the scheduled queries.
+
+        Returns:
+            [:class:`tdclient.models.Schedule`]
         """
         result = self.api.list_schedules()
         return [models.Schedule(self, **m) for m in result]
 
     def update_schedule(self, name, params=None):
-        """
-        TODO: add docstring
-        [:class:`tdclient.models.ScheduledJob`]
+        """Update the scheduled query.
+
+        Args:
+            name (str): Target scheduled query name.
+            params (dict): Extra parameteres.
+                type (str): Query type. {"presto", "hive"}. Default: "hive"
+                database (str): Target database name.
+                timezone (str): Scheduled query's timezone. e.g. "UTC"
+                    For details, see also: https://gist.github.com/frsyuki/4533752
+                cron (str, optional): Schedule of the query.
+                    {"@daily", "@hourly", "10 * * * *" (custom cron)}
+                    See also: https://support.treasuredata.com/hc/en-us/articles/360001451088-Scheduled-Jobs-Web-Console
+                delay (int, optional): A delay ensures all buffered events are imported
+                    before running the query. Default: 0
+                query (str): Is a language used to retrieve, insert, update and modify
+                    data. See also: https://support.treasuredata.com/hc/en-us/articles/360012069493-SQL-Examples-of-Scheduled-Queries
+                priority (int, optional): Priority of the query.
+                    Range is from -2 (very low) to 2 (very high). Default: 0
+                retry_limit (int, optional): Automatic retry count. Default: 0
+                engine_version (str, optional): Engine version to be used. If none is
+                    specified, the account's default engine version would be set.
+                    {"stable", "experimental"}
+                pool_name (str, optional): For Presto only. Pool name to be used, if not
+                    specified, default pool would be used.
+                result (str, optional): Location where to store the result of the query.
+                    e.g. 'tableau://user:password@host.com:1234/datasource'
         """
         params = {} if params is None else params
         self.api.update_schedule(name, params)
 
     def history(self, name, _from=None, to=None):
-        """
-        TODO: add docstring
-        [:class:`tdclient.models.ScheduledJob`]
+        """Get the history details of the saved query for the past 90days.
+
+        Args:
+            name (str): Target name of the scheduled query.
+            _from (int, optional): Indicates from which nth record in the run history
+                would be fetched.
+                Default: 0.
+                Note: Count starts from zero. This means that the first record in the
+                list has a count of zero.
+            to (int, optional): Indicates up to which nth record in the run history
+                would be fetched.
+                Default: 20
+        Returns:
+            [:class:`tdclient.models.ScheduledJob`]
         """
         result = self.api.history(name, _from, to)
 
@@ -597,9 +714,15 @@ class Client:
         return [scheduled_job(m) for m in result]
 
     def run_schedule(self, name, time, num):
-        """
-        TODO: add docstring
-        [:class:`tdclient.models.ScheduledJob`]
+        """Execute the specified query.
+
+        Args:
+            name (str): Target scheduled query name.
+            time (int): Time in Unix epoch format that would be set as TD_SCHEDULED_TIME
+            num (int): Indicates how many times the query will be executed.
+                Value should be 9 or less.
+        Returns:
+            [:class:`tdclient.models.ScheduledJob`]
         """
         results = self.api.run_schedule(name, time, num)
 
@@ -614,7 +737,7 @@ class Client:
     ):
         """Import data into Treasure Data Service
 
-        Params:
+        Args:
             db_name (str): name of a database
             table_name (str): name of a table
             format (str): format of data type (e.g. "msgpack.gz")
@@ -634,9 +757,9 @@ class Client:
         This method will decompress/deserialize records from given file, and then
         convert it into format acceptable from Treasure Data Service ("msgpack.gz").
 
-        Params:
-            db (str): name of a database
-            table (str): name of a table
+        Args:
+            db_name (str): name of a database
+            table_name (str): name of a table
             format (str): format of data type (e.g. "msgpack", "json")
             file (str or file-like): a name of a file, or a file-like object contains the data
             unique_id (str): a unique identifier of the data
@@ -648,7 +771,8 @@ class Client:
         )
 
     def results(self):
-        """
+        """Get the list of all the available authentications.
+
         Returns: a list of :class:`tdclient.models.Result`
         """
         results = self.api.list_result()
@@ -660,17 +784,25 @@ class Client:
         return [result(m) for m in results]
 
     def create_result(self, name, url, params=None):
-        """
-        TODO: add docstring
-        => True
+        """Create a new authentication with the specified name.
+
+        Args:
+            name (str): Authentication name.
+            url (str):  Url of the authentication to be created. e.g. "ftp://test.com/"
+            params (dict, optional): Extra parameters.
+        Returns:
+            bool: True if succeeded.
         """
         params = {} if params is None else params
         return self.api.create_result(name, url, params)
 
     def delete_result(self, name):
-        """
-        TODO: add docstring
-        => True
+        """Delete the authentication having the specified name.
+
+        Args:
+            name (str): Authentication name.
+        Returns:
+            bool: True if succeeded.
         """
         return self.api.delete_result(name)
 
@@ -690,7 +822,7 @@ class Client:
     def add_user(self, name, org, email, password):
         """Add a new user
 
-        Params:
+        Args:
             name (str): name of the user
             org (str): organization
             email: (str): e-mail address
@@ -703,7 +835,7 @@ class Client:
     def remove_user(self, name):
         """Remove a user
 
-        Params:
+        Args:
             name (str): name of the user
 
         Returns: `True` if success
@@ -712,7 +844,8 @@ class Client:
 
     def change_email(self, name, email):
         """
-        Params:
+        TODO: remove
+        Args:
             name (str): name of the user
             email (str) new e-mail address
 
@@ -722,7 +855,7 @@ class Client:
 
     def list_apikeys(self, name):
         """
-        Params:
+        Args:
             name (str): name of the user
 
         Returns: a list of string of API key
@@ -731,7 +864,7 @@ class Client:
 
     def add_apikey(self, name):
         """
-        Params:
+        Args:
             name (str): name of the user
 
         Returns: `True` if success
@@ -740,7 +873,7 @@ class Client:
 
     def remove_apikey(self, name, apikey):
         """
-        Params:
+        Args:
             name (str): name of the user
             apikey (str): an API key to remove
 
@@ -750,7 +883,7 @@ class Client:
 
     def change_password(self, name, password):
         """
-        Params:
+        Args:
             name (str): name of the user
             password (str): new password
 
@@ -760,7 +893,8 @@ class Client:
 
     def change_my_password(self, old_password, password):
         """
-        Params:
+        TODO: remove
+        Args:
             old_password (str): old password
             password (str): new password
 
@@ -782,21 +916,21 @@ class Client:
 
     def grant_access_control(self, subject, action, scope, grant_option):
         """
-        TODO: add docstring
+        TODO: remove
         => True
         """
         return self.api.grant_access_control(subject, action, scope, grant_option)
 
     def revoke_access_control(self, subject, action, scope):
         """
-        TODO: add docstring
+        TODO: remove
         => True
         """
         return self.api.revoke_access_control(subject, action, scope)
 
     def test_access_control(self, user, action, scope):
         """
-        TODO: add docstring
+        TODO: remove
         => True
         """
         return self.api.test_access_control(user, action, scope)

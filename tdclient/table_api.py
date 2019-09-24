@@ -11,9 +11,35 @@ class TableAPI:
     ##
 
     def list_tables(self, db):
-        """
-        TODO: add docstring
-        => {name:str => [type:str, count:int]}
+        """Gets the list of table in the database.
+
+        Args:
+            db (str): Target database name.
+
+        Returns:
+            dict: Detailed table information.
+
+        Examples:
+            >>> td.api.list_tables("my_db")
+            { 'iris': {'id': 21039862,
+              'name': 'iris',
+              'estimated_storage_size': 1236,
+              'counter_updated_at': '2019-09-18T07:14:28Z',
+              'last_log_timestamp': datetime.datetime(2019, 1, 30, 5, 34, 42, tzinfo=tzutc()),
+              'delete_protected': False,
+              'created_at': datetime.datetime(2019, 1, 30, 5, 34, 42, tzinfo=tzutc()),
+              'updated_at': datetime.datetime(2019, 1, 30, 5, 34, 46, tzinfo=tzutc()),
+              'type': 'log',
+              'include_v': True,
+              'count': 150,
+              'schema': [['sepal_length', 'double', 'sepal_length'],
+               ['sepal_width', 'double', 'sepal_width'],
+               ['petal_length', 'double', 'petal_length'],
+               ['petal_width', 'double', 'petal_width'],
+               ['species', 'string', 'species']],
+              'expire_days': None,
+              'last_import': datetime.datetime(2019, 9, 18, 7, 14, 28, tzinfo=tzutc())},
+            }
         """
         with self.get("/v3/table/list/%s" % (urlquote(str(db)))) as res:
             code, body = res.status, res.read()
@@ -47,15 +73,20 @@ class TableAPI:
             return result
 
     def create_log_table(self, db, table):
-        """
-        TODO: add docstring
-        => True
+        """Create a new table in the database and registers it in PlazmaDB.
+
+        Args:
+            db (str): Target database name.
+            table (str): Target table name.
+
+        Returns:
+            bool: `True` if succeeded.
         """
         return self._create_table(db, table, "log")
 
     def create_item_table(self, db, table, primary_key, primary_key_type):
-        """
-        TODO: add docstring
+        """[Deprecated] Create a new table for item.
+
         => True
         """
         warnings.warn(
@@ -78,9 +109,15 @@ class TableAPI:
             return True
 
     def swap_table(self, db, table1, table2):
-        """
-        TODO: add docstring
-        => True
+        """Swap the two specified tables with each other belonging to the same database
+        and basically exchanges their names.
+
+        Args:
+            db (str): Target database name
+            table1 (str): First target table for the swap.
+            table2 (str): Second target table for the swap.
+        Returns:
+            bool: `True` if succeeded.
         """
         with self.post(
             "/v3/table/swap/%s/%s/%s"
@@ -92,9 +129,16 @@ class TableAPI:
             return True
 
     def update_schema(self, db, table, schema_json):
-        """
-        TODO: add docstring
-        => True
+        """Update the table schema.
+
+        Args:
+            db (str): Target database name.
+            table (str): Target table name.
+            schema_json (str): Schema format JSON string. See also: ~`Client.update_schema`
+                e.g. '[["sep_len", "long", "sep_len"], ["sep_wid", "long", "sep_wid"]]'
+
+        Returns:
+            bool: `True` if succeeded.
         """
         with self.post(
             "/v3/table/update-schema/%s/%s" % (urlquote(str(db)), urlquote(str(table))),
@@ -106,8 +150,15 @@ class TableAPI:
             return True
 
     def update_expire(self, db, table, expire_days):
-        """
-        TODO: add docstring
+        """Update the expire days for the specified table
+
+        Args:
+            db (str): Target database name.
+            table (str): Target table name.
+            expire_days (int): Number of days where the contents of the specified table
+                would expire.
+        Returns:
+            bool: True if succeeded.
         """
         with self.post(
             "/v3/table/update/%s/%s" % (urlquote(str(db)), urlquote(str(table))),
@@ -119,9 +170,14 @@ class TableAPI:
             return True
 
     def delete_table(self, db, table):
-        """
-        TODO: add docstring
-        => type:str
+        """Delete the specified table.
+
+        Args:
+            db (str): Target database name.
+            table (str): Target table name.
+
+        Returns:
+            str: Type information of the table (e.g. "log").
         """
         with self.post(
             "/v3/table/delete/%s/%s" % (urlquote(str(db)), urlquote(str(table)))

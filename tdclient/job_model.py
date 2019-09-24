@@ -173,7 +173,7 @@ class Job(Model):
     @property
     def retry_limit(self):
         """
-        TODO: add docstring
+        Returns: a number for automatic retry count
         """
         return self._retry_limit
 
@@ -222,7 +222,7 @@ class Job(Model):
     def wait(self, timeout=None, wait_interval=5, wait_callback=None, callback=None):
         """Sleep until the job has been finished
 
-        Params:
+        Args:
             timeout (int): Timeout in seconds. No timeout by default.
             wait_interval (int): wait interval in second. Default 5 seconds.
             wait_callback (callable): A callable to be called on every tick of wait interval.
@@ -286,7 +286,7 @@ class Job(Model):
 
     def result_format(self, fmt):
         """
-        Params:
+        Args:
             fmt (str): output format of result set
 
         Returns: an iterator of rows in result set

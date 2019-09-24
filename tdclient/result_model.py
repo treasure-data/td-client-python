@@ -16,20 +16,23 @@ class Result(Model):
     @property
     def name(self):
         """
-        TODO: add docstring
+        Returns:
+            str: a name for a authentication
         """
         return self._name
 
     @property
     def url(self):
         """
-        TODO: add docstring
+        Returns:
+            str: a result output URL
         """
         return self._url
 
     @property
     def org_name(self):
         """
-        TODO: add docstring
+        Returns:
+            str: organization name
         """
         return self._org_name

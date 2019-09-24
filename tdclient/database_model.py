@@ -25,28 +25,32 @@ class Database(Model):
     @property
     def org_name(self):
         """
-        Returns: organization name
+        Returns:
+            str: organization name
         """
         return self._org_name
 
     @property
     def permission(self):
         """
-        Returns: a string represents permission for the database (e.g. "administrator", "full_access", etc.)
+        Returns:
+            str: permission for the database (e.g. "administrator", "full_access", etc.)
         """
         return self._permission
 
     @property
     def count(self):
         """
-        TODO: add docstring
+        Returns:
+            int: Total record counts in a database.
         """
         return self._count
 
     @property
     def name(self):
         """
-        Returns: a name of the database in string
+        Returns:
+             str: a name of the database
         """
         return self._db_name
 
@@ -60,7 +64,7 @@ class Database(Model):
 
     def create_log_table(self, name):
         """
-        Params:
+        Args:
             name (str): name of new log table
 
         Returns: :class:`tdclient.model.Table`
@@ -69,7 +73,7 @@ class Database(Model):
 
     def create_item_table(self, name):
         """
-        Params:
+        Args:
             name (str): name of new item table
 
         Returns: :class:`tdclient.model.Table`
@@ -82,7 +86,7 @@ class Database(Model):
 
     def table(self, table_name):
         """
-        Params:
+        Args:
             table_name (str): name of a table
 
         Returns: :class:`tdclient.model.Table`
@@ -99,7 +103,7 @@ class Database(Model):
     def query(self, q, **kwargs):
         """Run a query on the database
 
-        Params:
+        Args:
             q (str): a query string
 
         Returns: :class:`tdclient.model.Job`

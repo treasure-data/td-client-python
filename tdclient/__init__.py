@@ -10,7 +10,7 @@ Client = client.Client
 def connect(*args, **kwargs):
     """Returns a DBAPI compatible connection object
 
-    Params:
+    Args:
         type (str): query engine type. "hive" by default.
         db (str): the name of database on Treasure Data
         result_url (str): result output URL
