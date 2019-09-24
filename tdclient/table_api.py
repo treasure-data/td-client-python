@@ -4,6 +4,8 @@ import json
 import warnings
 from urllib.parse import quote as urlquote
 
+import msgpack
+
 
 class TableAPI:
     ####
@@ -188,3 +190,33 @@ class TableAPI:
             js = self.checked_json(body, [])
             t = js.get("type", "?")
             return t
+
+    def tail(self, db, table, count, to=None, _from=None, block=None):
+        """Get the contents of the table in reverse order based on the registered time
+        (last data first).
+
+        Args:
+            db (str): Target database name.
+            table (str): Target table name.
+            count (int): Number for record to show up from the end.
+            to: Deprecated parameter.
+            _from: Deprecated parameter.
+            block: Deprecated parameter.
+
+        Returns:
+            [dict]: Contents of the table.
+        """
+        params = {"count": count, "format": "msgpack"}
+        with self.get(
+            "/v3/table/tail/%s/%s" % (urlquote(str(db)), urlquote(str(table))), params
+        ) as res:
+            code = res.status
+            if code != 200:
+                self.raise_error("Tail table failed", res, "")
+
+            unpacker = msgpack.Unpacker(res, raw=False)
+            result = []
+            for row in unpacker:
+                result.append(row)
+
+            return result
