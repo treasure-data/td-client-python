@@ -103,16 +103,6 @@ def test_create_log_table():
     td.api.create_log_table.assert_called_with("db_name", "table_name")
 
 
-def test_create_item_table():
-    td = client.Client("APIKEY")
-    td._api = mock.MagicMock()
-    td._api.create_item_table = mock.MagicMock()
-    td.create_item_table("db_name", "table_name", "primary_key", "primary_key_type")
-    td.api.create_item_table.assert_called_with(
-        "db_name", "table_name", "primary_key", "primary_key_type"
-    )
-
-
 def test_swap_table():
     td = client.Client("APIKEY")
     td._api = mock.MagicMock()

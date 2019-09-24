@@ -90,24 +90,6 @@ class Client:
         """
         return self.api.create_log_table(db_name, table_name)
 
-    def create_item_table(self, db_name, table_name, primary_key, primary_key_type):
-        """
-        Args:
-            db_name (str): name of a database
-            table_name (str): name of a table to create
-            primary_key (str): name of primary key column
-            primary_key_type (str): type of primary key column
-
-        Returns: `True` if success
-        """
-        warnings.warn(
-            "item tables have been deprecated. will be deleted from future releases.",
-            category=DeprecationWarning,
-        )
-        return self.api.create_item_table(
-            db_name, table_name, primary_key, primary_key_type
-        )
-
     def swap_table(self, db_name, table_name1, table_name2):
         """
         Args:
