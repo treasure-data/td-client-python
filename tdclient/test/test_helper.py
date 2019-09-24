@@ -73,7 +73,7 @@ def msgpackb(lis):
 
 def msgunpackb(bytes):
     """bytes -> list"""
-    unpacker = msgpack.Unpacker(io.BytesIO(bytes), encoding=str("utf-8"))
+    unpacker = msgpack.Unpacker(io.BytesIO(bytes), raw=False)
     return list(unpacker)
 
 

@@ -277,19 +277,6 @@ class BulkImportAPI:
             body = io.BytesIO(res.read())
             decompressor = gzip.GzipFile(fileobj=body)
 
-            content_type = res.getheader(
-                "content-type", "application/x-msgpack; charset=utf-8"
-            )
-            type_params = dict(
-                [
-                    p.strip().split("=", 2)
-                    for p in content_type.split(";")
-                    if 0 < p.find("=")
-                ]
-            )
-
-            unpacker = msgpack.Unpacker(
-                decompressor, encoding=str(type_params.get("charset", "utf-8"))
-            )
+            unpacker = msgpack.Unpacker(decompressor, raw=False)
             for row in unpacker:
                 yield row
