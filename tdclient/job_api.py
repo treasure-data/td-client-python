@@ -258,24 +258,6 @@ class JobAPI:
             former_status = js.get("former_status")
             return former_status
 
-    def hive_query(self, q, **kwargs):
-        warnings.warn(
-            'hive_query(q, ...) will be removed from future release. Please use query(q, type="hive", ...)',
-            category=DeprecationWarning,
-        )
-        kwargs = dict(kwargs)
-        kwargs["type"] = "hive"
-        return self.query(q, **kwargs)
-
-    def pig_query(self, q, **kwargs):
-        warnings.warn(
-            'pig_query(q, ...) will be removed from future release. Please use query(q, type="pig", ...)',
-            category=DeprecationWarning,
-        )
-        kwargs = dict(kwargs)
-        kwargs["type"] = "pig"
-        return self.query(q, **kwargs)
-
     def query(
         self,
         q,
