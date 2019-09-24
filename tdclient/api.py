@@ -538,7 +538,7 @@ class API(
 
     def raise_error(self, msg, res, body):
         status_code = res.status
-        s = body.decode("utf-8")
+        s = body if isinstance(body, str) else body.decode("utf-8")
         if status_code == 404:
             raise errors.NotFoundError("%s: %s" % (msg, s))
         elif status_code == 409:
