@@ -14,6 +14,66 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../tdclient'))
 
+import inspect
+import os
+import subprocess
+import sys
+
+import pkg_resources
+
+GH_ORGANIZATION = "treasure-data"
+GH_PROJECT = "td-client-python"
+PACKAGE = "td-client"
+MODULE = "tdclient"
+
+def linkcode_resolve(domain, info):
+    """Generate link to GitHub.
+    References:
+    - https://github.com/scikit-learn/scikit-learn/blob/f0faaee45762d0a5c75dcf3d487c118b10e1a5a8/doc/conf.py
+    - https://github.com/chainer/chainer/pull/2758/
+    """
+    if domain != "py" or not info["module"]:
+        return None
+
+    # tag
+    try:
+        revision = subprocess.check_output(["git", "rev-parse", "HEAD"]).strip()
+    except (subprocess.CalledProcessError, OSError):
+        print("Failed to execute git to get revision")
+        return None
+    revision = revision.decode("utf-8")
+
+    obj = sys.modules.get(info["module"])
+    if obj is None:
+        return None
+    for comp in info["fullname"].split("."):
+        obj = getattr(obj, comp)
+
+    # filename
+    try:
+        filename = inspect.getsourcefile(obj)
+    except Exception:
+        return None
+    if filename is None:
+        return None
+
+    # relpath
+    pkg_root_dir = os.path.dirname(__import__(MODULE).__file__)
+    filename = os.path.realpath(filename)
+    if not filename.startswith(pkg_root_dir):
+        return None
+    relpath = os.path.relpath(filename, pkg_root_dir)
+
+    # line number
+    try:
+        linenum = inspect.getsourcelines(obj)[1]
+    except Exception:
+        linenum = ""
+
+    return "https://github.com/{}/{}/blob/{}/{}/{}#L{}".format(
+        GH_ORGANIZATION, GH_PROJECT, revision, MODULE, relpath, linenum
+    )
+
 
 # -- Project information -----------------------------------------------------
 
@@ -21,6 +81,8 @@ project = 'td-client-python'
 copyright = '2019, Arm Treasure Data'
 author = 'Arm Treasure Data'
 
+# The full version, including alpha/beta/rc tags
+release = pkg_resources.get_distribution(PACKAGE).version
 
 # -- General configuration ---------------------------------------------------
 
@@ -31,6 +93,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx_rtd_theme",
+    "sphinx.ext.linkcode",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -53,3 +116,5 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+autodoc_member_order = 'groupwise'
