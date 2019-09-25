@@ -5,6 +5,9 @@ API Reference
 Client
 =======
 
+:class:`tdclient.client.Client` class is a public interface for `tdclient`.
+It provides methods for executions for REST API.
+
 tdclient.client
 ----------------------
 
@@ -16,6 +19,8 @@ tdclient.client
 
 API
 =====
+
+:class:`tdclient.api.API` class is a internal class represents API.
 
 tdclient.api
 -------------------
@@ -124,6 +129,29 @@ tdclient.user\_api
 Model
 ======
 
+Some methods of :class:`tdclient.client.Client` returns model object which represents results from REST API.
+
+tdclient.model
+---------------------
+
+.. automodule:: tdclient.model
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tdclient.models
+----------------------
+
+.. autodata:: tdclient.models.BulkImport
+.. autodata:: tdclient.models.Database
+.. autodata:: tdclient.models.Schema
+.. autodata:: tdclient.models.Job
+.. autodata:: tdclient.models.Result
+.. autodata:: tdclient.models.ScheduledJob
+.. autodata:: tdclient.models.Schedule
+.. autodata:: tdclient.models.Table
+.. autodata:: tdclient.models.User
+
 tdclient.bulk\_import\_model
 -----------------------------------
 
@@ -144,22 +172,6 @@ tdclient.job\_model
 --------------------------
 
 .. automodule:: tdclient.job_model
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-tdclient.model
----------------------
-
-.. automodule:: tdclient.model
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-tdclient.models
-----------------------
-
-.. automodule:: tdclient.models
    :members:
    :undoc-members:
    :show-inheritance:

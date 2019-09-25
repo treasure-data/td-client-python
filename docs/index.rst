@@ -10,7 +10,7 @@ we recommend to use `pytd <https://github.com/treasure-data/pytd>`_ instead.
 .. include:: gettingstarted.rst
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: References
 
    reference
