@@ -158,14 +158,6 @@ def test_timeout():
         assert kwargs["timeout"] == 12345
 
 
-def test_connect_timeout():
-    with mock.patch("tdclient.api.urllib3") as urllib3:
-        td = api.API("apikey", connect_timeout=1, read_timeout=2, send_timeout=4)
-        assert urllib3.PoolManager.called
-        args, kwargs = urllib3.PoolManager.call_args
-        assert kwargs["timeout"] == 4
-
-
 def test_get_success():
     td = api.API("APIKEY")
     with mock.patch("time.sleep") as t_sleep:
@@ -717,29 +709,6 @@ def test_checked_json_field_error():
     td = api.API("APIKEY")
     with pytest.raises(api.APIError) as error:
         td.checked_json(b"{}", ["foo"])
-
-
-def test_sleep_compat():
-    with mock.patch("tdclient.api.time") as time:
-        td = api.API("apikey")
-        td.sleep(600)
-        assert time.sleep.called
-        args, kwargs = time.sleep.call_args
-        assert args == (600,)
-
-
-def test_parsedate_compat():
-    td = api.API("APIKEY")
-    dt = td.parsedate("2013-11-01 16:48:41 -0700")  # ???
-    assert dt.year == 2013
-    assert dt.month == 11
-    assert dt.day == 1
-    assert dt.hour == 16
-    assert dt.minute == 48
-    assert dt.second == 41
-    offset = dt.utcoffset()
-    total_seconds = (offset.seconds + offset.days * 24 * 3600) * 10 ** 6 / 10 ** 6
-    assert total_seconds == -7 * 3600
 
 
 def test_parsedate1():

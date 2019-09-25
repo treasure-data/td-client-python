@@ -86,18 +86,6 @@ class TableAPI:
         """
         return self._create_table(db, table, "log")
 
-    def create_item_table(self, db, table, primary_key, primary_key_type):
-        """[Deprecated] Create a new table for item.
-
-        => True
-        """
-        warnings.warn(
-            "item tables have been deprecated. will be deleted from future releases.",
-            category=DeprecationWarning,
-        )
-        params = {"primary_key": primary_key, "primary_key_type": primary_key_type}
-        return self._create_table(db, table, "item", params)
-
     def _create_table(self, db, table, type, params=None):
         params = {} if params is None else params
         with self.post(

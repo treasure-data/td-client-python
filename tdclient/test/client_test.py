@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
-try:
-    from unittest import mock
-except ImportError:
-    import mock
+from unittest import mock
+
 import pytest
 
 from tdclient import api, client
@@ -103,16 +101,6 @@ def test_create_log_table():
     td._api.create_log_table = mock.MagicMock()
     td.create_log_table("db_name", "table_name")
     td.api.create_log_table.assert_called_with("db_name", "table_name")
-
-
-def test_create_item_table():
-    td = client.Client("APIKEY")
-    td._api = mock.MagicMock()
-    td._api.create_item_table = mock.MagicMock()
-    td.create_item_table("db_name", "table_name", "primary_key", "primary_key_type")
-    td.api.create_item_table.assert_called_with(
-        "db_name", "table_name", "primary_key", "primary_key_type"
-    )
 
 
 def test_swap_table():
@@ -576,14 +564,6 @@ def test_remove_user():
     td.api.remove_user("name")
 
 
-def test_change_email():
-    td = client.Client("APIKEY")
-    td._api = mock.MagicMock()
-    td._api.change_email = mock.MagicMock()
-    td.change_email("user", "email")
-    td.api.change_email("user", "email")
-
-
 def test_list_apikeys():
     td = client.Client("APIKEY")
     td._api = mock.MagicMock()
@@ -606,52 +586,3 @@ def test_remove_apikey():
     td._api.remove_apikey = mock.MagicMock()
     td.remove_apikey("user", "apikey")
     td.api.remove_apikey("user", "apikey")
-
-
-def test_change_password():
-    td = client.Client("APIKEY")
-    td._api = mock.MagicMock()
-    td._api.change_password = mock.MagicMock()
-    td.change_password("user", "password")
-    td.api.change_password("user", "password")
-
-
-def test_change_my_password():
-    td = client.Client("APIKEY")
-    td._api = mock.MagicMock()
-    td._api.change_my_password = mock.MagicMock()
-    td.change_my_password("old_password", "password")
-    td.api.change_my_password("old_password", "password")
-
-
-def test_access_controls():
-    td = client.Client("APIKEY")
-    td._api = mock.MagicMock()
-    td._api.list_access_controls = mock.MagicMock(return_value=[])
-    access_controls = td.access_controls()
-    td.api.list_access_controls.assert_called_with()
-    assert len(access_controls) == 0
-
-
-def test_grant_access_control():
-    td = client.Client("APIKEY")
-    td._api = mock.MagicMock()
-    td._api.grant_access_control = mock.MagicMock()
-    td.grant_access_control("subject", "action", "scope", "grant_option")
-    td.api.grant_access_control("subject", "action", "scope", "grant_option")
-
-
-def test_revoke_access_control():
-    td = client.Client("APIKEY")
-    td._api = mock.MagicMock()
-    td._api.revoke_access_control = mock.MagicMock()
-    td.revoke_access_control("subject", "action", "scope")
-    td.api.revoke_access_control("subject", "action", "scope")
-
-
-def test_test_access_control():
-    td = client.Client("APIKEY")
-    td._api = mock.MagicMock()
-    td._api.test_access_control = mock.MagicMock()
-    td.test_access_control("subject", "action", "scope")
-    td.api.test_access_control("subject", "action", "scope")

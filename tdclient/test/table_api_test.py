@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
-try:
-    from unittest import mock
-except ImportError:
-    import mock
+from unittest import mock
+
 import pytest
 
 from tdclient import api
@@ -46,16 +44,6 @@ def test_create_log_table_success():
     td.post = mock.MagicMock(return_value=make_response(200, b""))
     td.create_log_table("sample_datasets", "nasdaq")
     td.post.assert_called_with("/v3/table/create/sample_datasets/nasdaq/log", {})
-
-
-def test_create_item_table_success():
-    td = api.API("APIKEY")
-    td.post = mock.MagicMock(return_value=make_response(200, b""))
-    td.create_item_table("sample_datasets", "nasdaq", "id", "INT")
-    td.post.assert_called_with(
-        "/v3/table/create/sample_datasets/nasdaq/item",
-        {"primary_key": "id", "primary_key_type": "INT"},
-    )
 
 
 def test_swap_table_success():

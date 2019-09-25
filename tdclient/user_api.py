@@ -84,20 +84,6 @@ class UserAPI:
                 self.raise_error("Removing user failed", res, body)
             return True
 
-    def change_email(self, name, email):
-        """
-        TODO: remove
-        => True
-        """
-        params = {"email": email}
-        with self.post(
-            "/v3/user/email/change/%s" % (urlquote(str(name))), params
-        ) as res:
-            code, body = res.status, res.read()
-            if code != 200:
-                self.raise_error("Changing email failed", res, body)
-            return True
-
     def list_apikeys(self, name):
         """Get the apikeys of the current user.
 
@@ -143,30 +129,4 @@ class UserAPI:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Removing API key failed", res, body)
-            return True
-
-    def change_password(self, name, password):
-        """
-        TODO: remove
-        => True
-        """
-        params = {"password": password}
-        with self.post(
-            "/v3/user/password/change/%s" % (urlquote(str(name))), params
-        ) as res:
-            code, body = res.status, res.read()
-            if code != 200:
-                self.raise_error("Changing password failed", res, body)
-            return True
-
-    def change_my_password(self, old_password, password):
-        """
-        TODO: remove
-        => True
-        """
-        params = {"old_password": old_password, "password": password}
-        with self.post("/v3/user/password/change", params) as res:
-            code, body = res.status, res.read()
-            if code != 200:
-                self.raise_error("Changing password failed", res, body)
             return True

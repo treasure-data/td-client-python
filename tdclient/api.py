@@ -119,37 +119,6 @@ class API(
             pool_options["ca_certs"] = certs
             pool_options["cert_reqs"] = ssl.CERT_REQUIRED
 
-        if (
-            "connect_timeout" in pool_options
-            or "read_timeout" in pool_options
-            or "send_timeout" in pool_options
-        ):
-            if "connect_timeout" in pool_options:
-                warnings.warn(
-                    "connect_timeout will be removed from future release. Please use timeout instead.",
-                    category=DeprecationWarning,
-                )
-                connect_timeout = pool_options.pop("connect_timeout")
-            else:
-                connect_timeout = 0
-            if "read_timeout" in pool_options:
-                warnings.warn(
-                    "read_timeout will be removed from future release. Please use timeout instead.",
-                    category=DeprecationWarning,
-                )
-                read_timeout = pool_options.pop("read_timeout")
-            else:
-                read_timeout = 0
-            if "send_timeout" in pool_options:
-                warnings.warn(
-                    "send_timeout will be removed from future release. Please use timeout instead.",
-                    category=DeprecationWarning,
-                )
-                send_timeout = pool_options.pop("send_timeout")
-            else:
-                send_timeout = 0
-            pool_options["timeout"] = max(connect_timeout, read_timeout, send_timeout)
-
         if "timeout" not in pool_options:
             pool_options["timeout"] = 60
 
@@ -538,7 +507,7 @@ class API(
 
     def raise_error(self, msg, res, body):
         status_code = res.status
-        s = body.decode("utf-8")
+        s = body if isinstance(body, str) else body.decode("utf-8")
         if status_code == 404:
             raise errors.NotFoundError("%s: %s" % (msg, s))
         elif status_code == 409:
@@ -563,24 +532,6 @@ class API(
                 "Unexpected API response: %s: %s" % (repr(missing), repr(body))
             )
         return js
-
-    def sleep(self, secs):
-        warnings.warn(
-            "sleep(secs) will be removed from future release. Please use time.sleep(secs)",
-            category=DeprecationWarning,
-        )
-        time.sleep(secs)
-
-    def parsedate(self, s):
-        warnings.warn(
-            "parsedate(secs) will be removed from future release. Please use datetime.strptime(date_string, fmt) or other.",
-            category=DeprecationWarning,
-        )
-        try:
-            return self._parsedate(s, None)
-        except ValueError:
-            log.warning("Failed to parse date string: %s" % (s,))
-            return None
 
     def _parsedate(self, s, fmt):
         # TODO: parse datetime with using format string
@@ -666,19 +617,11 @@ class API(
     def _read_csv_file(
         self, file_like, dialect=csv.excel, columns=None, encoding="utf-8", **kwargs
     ):
-        try:
-            unicode
-            py2k = True
-        except NameError:
-            py2k = False
-        # `csv` module bundled with py2k doesn't support `unicode` :(
-        # https://docs.python.org/2/library/csv.html#examples
         def getreader(file_like):
             for s in codecs.getreader(encoding)(file_like):
-                yield s.encode(encoding) if py2k else s
+                yield s
 
         def value(s):
-            s = s.decode(encoding) if py2k else s
             try:
                 return int(s)
             except (OverflowError, ValueError):

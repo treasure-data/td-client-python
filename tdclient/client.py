@@ -90,24 +90,6 @@ class Client:
         """
         return self.api.create_log_table(db_name, table_name)
 
-    def create_item_table(self, db_name, table_name, primary_key, primary_key_type):
-        """
-        Args:
-            db_name (str): name of a database
-            table_name (str): name of a table to create
-            primary_key (str): name of primary key column
-            primary_key_type (str): type of primary key column
-
-        Returns: `True` if success
-        """
-        warnings.warn(
-            "item tables have been deprecated. will be deleted from future releases.",
-            category=DeprecationWarning,
-        )
-        return self.api.create_item_table(
-            db_name, table_name, primary_key, primary_key_type
-        )
-
     def swap_table(self, db_name, table_name1, table_name2):
         """
         Args:
@@ -842,17 +824,6 @@ class Client:
         """
         return self.api.remove_user(name)
 
-    def change_email(self, name, email):
-        """
-        TODO: remove
-        Args:
-            name (str): name of the user
-            email (str) new e-mail address
-
-        Returns: `True` if success
-        """
-        return self.api.change_email(name, email)
-
     def list_apikeys(self, name):
         """
         Args:
@@ -880,60 +851,6 @@ class Client:
         Returns: `True` if success
         """
         return self.api.remove_apikey(name, apikey)
-
-    def change_password(self, name, password):
-        """
-        Args:
-            name (str): name of the user
-            password (str): new password
-
-        Returns: `True` if success
-        """
-        return self.api.change_password(name, password)
-
-    def change_my_password(self, old_password, password):
-        """
-        TODO: remove
-        Args:
-            old_password (str): old password
-            password (str): new password
-
-        Returns: `True` if success
-        """
-        return self.api.change_my_password(old_password, password)
-
-    def access_controls(self):
-        """
-        Returns: a list of :class:`tdclient.models.AccessControl`
-        """
-        results = self.api.list_access_controls()
-
-        def access_control(m):
-            subject, action, scope, grant_option = m
-            return models.AccessControl(self, subject, action, scope, grant_option)
-
-        return [access_control(m) for m in results]
-
-    def grant_access_control(self, subject, action, scope, grant_option):
-        """
-        TODO: remove
-        => True
-        """
-        return self.api.grant_access_control(subject, action, scope, grant_option)
-
-    def revoke_access_control(self, subject, action, scope):
-        """
-        TODO: remove
-        => True
-        """
-        return self.api.revoke_access_control(subject, action, scope)
-
-    def test_access_control(self, user, action, scope):
-        """
-        TODO: remove
-        => True
-        """
-        return self.api.test_access_control(user, action, scope)
 
     def close(self):
         """Close opened API connections.

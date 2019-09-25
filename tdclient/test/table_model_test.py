@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 
-try:
-    from unittest import mock
-except ImportError:
-    import mock
+from unittest import mock
 
 from tdclient import models
 from tdclient.test.test_helper import *

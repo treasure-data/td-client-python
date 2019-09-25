@@ -234,7 +234,7 @@ class JobAPI:
             if code != 200:
                 self.raise_error("Get job result failed", res, "")
             if format == "msgpack":
-                unpacker = msgpack.Unpacker(res, encoding=str("utf-8"))
+                unpacker = msgpack.Unpacker(res, raw=False)
                 for row in unpacker:
                     yield row
             elif format == "json":
@@ -257,24 +257,6 @@ class JobAPI:
             js = self.checked_json(body, [])
             former_status = js.get("former_status")
             return former_status
-
-    def hive_query(self, q, **kwargs):
-        warnings.warn(
-            'hive_query(q, ...) will be removed from future release. Please use query(q, type="hive", ...)',
-            category=DeprecationWarning,
-        )
-        kwargs = dict(kwargs)
-        kwargs["type"] = "hive"
-        return self.query(q, **kwargs)
-
-    def pig_query(self, q, **kwargs):
-        warnings.warn(
-            'pig_query(q, ...) will be removed from future release. Please use query(q, type="pig", ...)',
-            category=DeprecationWarning,
-        )
-        kwargs = dict(kwargs)
-        kwargs["type"] = "pig"
-        return self.query(q, **kwargs)
 
     def query(
         self,

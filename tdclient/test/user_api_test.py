@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
-try:
-    from unittest import mock
-except ImportError:
-    import mock
+from unittest import mock
+
 import pytest
 
 from tdclient import api
@@ -73,15 +71,6 @@ def test_remove_user_success():
     td.post.assert_called_with("/v3/user/remove/user")
 
 
-def test_change_email_success():
-    td = api.API("APIKEY")
-    td.post = mock.MagicMock(return_value=make_response(200, b""))
-    apikey = td.change_email("user", "email@example.com")
-    td.post.assert_called_with(
-        "/v3/user/email/change/user", {"email": "email@example.com"}
-    )
-
-
 def test_list_apikeys_success():
     td = api.API("APIKEY")
     # TODO: should be replaced by wire dump
@@ -107,19 +96,3 @@ def test_remove_apikey_success():
     td.post = mock.MagicMock(return_value=make_response(200, b""))
     apikeys = td.remove_apikey("foo", "bar")
     td.post.assert_called_with("/v3/user/apikey/remove/foo", {"apikey": "bar"})
-
-
-def test_change_password_success():
-    td = api.API("APIKEY")
-    td.post = mock.MagicMock(return_value=make_response(200, b""))
-    apikeys = td.change_password("foo", "bar")
-    td.post.assert_called_with("/v3/user/password/change/foo", {"password": "bar"})
-
-
-def test_change_my_password_success():
-    td = api.API("APIKEY")
-    td.post = mock.MagicMock(return_value=make_response(200, b""))
-    apikeys = td.change_my_password("foo", "bar")
-    td.post.assert_called_with(
-        "/v3/user/password/change", {"old_password": "foo", "password": "bar"}
-    )
