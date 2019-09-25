@@ -58,6 +58,7 @@ setup(
         ],
         "docs": [
             "sphinx",
+            "sphinx_rtd_theme",
         ],
     },
     packages=find_packages(),

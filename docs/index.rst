@@ -1,17 +1,19 @@
-.. td-client-python documentation master file, created by
-   sphinx-quickstart on Fri Sep  6 10:12:53 2019.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+td-client - Treasure Data API library for Python
+========================================================
 
-Welcome to td-client-python's documentation!
-============================================
+``td-client`` is a Python client for Arm Treasure Data's REST API.
+
+``td-client`` is a low-level client for Arm Treasure Data, if you need more easy way to handle data on Arm Treasure Data,
+we recommend to use `pytd <https://github.com/treasure-data/pytd>`_ instead.
+
+
+.. include:: gettingstarted.rst
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 1
+   :caption: References
 
    reference
-
 
 
 Indices and tables
