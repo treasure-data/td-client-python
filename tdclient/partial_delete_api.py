@@ -22,10 +22,13 @@ class PartialDeleteAPI:
                 the data to be deleted. Should be set only by the hour. Minutes and
                 seconds values will not be accepted.
             params (dict, optional): Extra parameters.
-                pool_name (str, optional): Indicates the resource pool to execute this
+
+                - pool_name (str, optional):
+                    Indicates the resource pool to execute this
                     job. If not provided, the account's default resource pool would be
                     used.
-                domain_key (str, optional): Domain key that will be assigned to the
+                - domain_key (str, optional):
+                    Domain key that will be assigned to the
                     partial delete job to be created
         Returns:
             str: Job ID.

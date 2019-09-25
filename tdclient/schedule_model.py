@@ -14,8 +14,7 @@ class ScheduledJob(Job):
 
     @property
     def scheduled_at(self):
-        """
-        Returns: a :class:`datetime.datetime` represents the schedule of next invocation of the job
+        """a :class:`datetime.datetime` represents the schedule of next invocation of the job
         """
         return self._scheduled_at
 
@@ -61,7 +60,8 @@ class Schedule(Model):
     def cron(self):
         """The configured schedule of a scheduled job.
 
-        Returns: a string represents the schedule in cron form, or `None` if the job is not scheduled to run (saved query)
+        Returns a string represents the schedule in cron form, or `None` if the
+        job is not scheduled to run (saved query)
         """
         return self._cron
 
@@ -119,17 +119,15 @@ class Schedule(Model):
 
     @property
     def next_time(self):
-        """Schedule for next run
-        Returns:
-            :obj:`datetime.datetime`
+        """
+        :obj:`datetime.datetime`: Schedule for next run
         """
         return self._next_time
 
     @property
     def created_at(self):
-        """Create date
-        Returns:
-            :obj:`datetime.datetime`
+        """
+        :obj:`datetime.datetime`: Create date
         """
         return self._created_at
 
@@ -147,5 +145,12 @@ class Schedule(Model):
 
     def run(self, time, num=None):
         """Run a scheduled job
+
+        Args:
+            time (int): Time in Unix epoch format that would be set as TD_SCHEDULED_TIME
+            num (int): Indicates how many times the query will be executed.
+                Value should be 9 or less.
+        Returns:
+            [:class:`tdclient.models.ScheduledJob`]
         """
         return self._client.run_schedule(self.name, time, num)

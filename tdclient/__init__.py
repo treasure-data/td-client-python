@@ -19,7 +19,8 @@ def connect(*args, **kwargs):
         wait_interval (int): job wait interval to check status
         wait_callback (callable): a callback to be called on every ticks of job wait
 
-    Returns: `tdclient.connection.Connection`
+    Returns:
+         :class:`tdclient.connection.Connection`
     """
     return connection.Connection(*args, **kwargs)
 

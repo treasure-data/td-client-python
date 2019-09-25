@@ -14,26 +14,38 @@ class ScheduleAPI:
         Args:
             name (str): Scheduled query name.
             params (dict, optional): Extra parameters.
-                type (str): Query type. {"presto", "hive"}. Default: "hive"
-                database (str): Target database name.
-                timezone (str): Scheduled query's timezone. e.g. "UTC"
+
+                - type (str):
+                    Query type. {"presto", "hive"}. Default: "hive"
+                - database (str):
+                    Target database name.
+                - timezone (str):
+                    Scheduled query's timezone. e.g. "UTC"
                     For details, see also: https://gist.github.com/frsyuki/4533752
-                cron (str, optional): Schedule of the query.
-                    {"@daily", "@hourly", "10 * * * *" (custom cron)}
+                - cron (str, optional):
+                    Schedule of the query.
+                    {``"@daily"``, ``"@hourly"``, ``"10 * * * *"`` (custom cron)}
                     See also: https://support.treasuredata.com/hc/en-us/articles/360001451088-Scheduled-Jobs-Web-Console
-                delay (int, optional): A delay ensures all buffered events are imported
+                - delay (int, optional):
+                    A delay ensures all buffered events are imported
                     before running the query. Default: 0
-                query (str): Is a language used to retrieve, insert, update and modify
+                - query (str):
+                    Is a language used to retrieve, insert, update and modify
                     data. See also: https://support.treasuredata.com/hc/en-us/articles/360012069493-SQL-Examples-of-Scheduled-Queries
-                priority (int, optional): Priority of the query.
+                - priority (int, optional):
+                    Priority of the query.
                     Range is from -2 (very low) to 2 (very high). Default: 0
-                retry_limit (int, optional): Automatic retry count. Default: 0
-                engine_version (str, optional): Engine version to be used. If none is
+                - retry_limit (int, optional):
+                    Automatic retry count. Default: 0
+                - engine_version (str, optional):
+                    Engine version to be used. If none is
                     specified, the account's default engine version would be set.
                     {"stable", "experimental"}
-                pool_name (str, optional): For Presto only. Pool name to be used, if not
+                - pool_name (str, optional):
+                    For Presto only. Pool name to be used, if not
                     specified, default pool would be used.
-                result (str, optional): Location where to store the result of the query.
+                - result (str, optional):
+                    Location where to store the result of the query.
                     e.g. 'tableau://user:password@host.com:1234/datasource'
         Returns:
             datetime.datetime: Start date time.
@@ -99,26 +111,38 @@ class ScheduleAPI:
         Args:
             name (str): Target scheduled query name.
             params (dict): Extra parameteres.
-                type (str): Query type. {"presto", "hive"}. Default: "hive"
-                database (str): Target database name.
-                timezone (str): Scheduled query's timezone. e.g. "UTC"
+
+                - type (str):
+                    Query type. {"presto", "hive"}. Default: "hive"
+                - database (str):
+                    Target database name.
+                - timezone (str):
+                    Scheduled query's timezone. e.g. "UTC"
                     For details, see also: https://gist.github.com/frsyuki/4533752
-                cron (str, optional): Schedule of the query.
-                    {"@daily", "@hourly", "10 * * * *" (custom cron)}
+                - cron (str, optional):
+                    Schedule of the query.
+                    {``"@daily"``, ``"@hourly"``, ``"10 * * * *"`` (custom cron)}
                     See also: https://support.treasuredata.com/hc/en-us/articles/360001451088-Scheduled-Jobs-Web-Console
-                delay (int, optional): A delay ensures all buffered events are imported
+                - delay (int, optional):
+                    A delay ensures all buffered events are imported
                     before running the query. Default: 0
-                query (str): Is a language used to retrieve, insert, update and modify
+                - query (str):
+                    Is a language used to retrieve, insert, update and modify
                     data. See also: https://support.treasuredata.com/hc/en-us/articles/360012069493-SQL-Examples-of-Scheduled-Queries
-                priority (int, optional): Priority of the query.
+                - priority (int, optional):
+                    Priority of the query.
                     Range is from -2 (very low) to 2 (very high). Default: 0
-                retry_limit (int, optional): Automatic retry count. Default: 0
-                engine_version (str, optional): Engine version to be used. If none is
+                - retry_limit (int, optional):
+                    Automatic retry count. Default: 0
+                - engine_version (str, optional):
+                    Engine version to be used. If none is
                     specified, the account's default engine version would be set.
                     {"stable", "experimental"}
-                pool_name (str, optional): For Presto only. Pool name to be used, if not
+                - pool_name (str, optional):
+                    For Presto only. Pool name to be used, if not
                     specified, default pool would be used.
-                result (str, optional): Location where to store the result of the query.
+                - result (str, optional):
+                    Location where to store the result of the query.
                     e.g. 'tableau://user:password@host.com:1234/datasource'
         """
         params = {} if params is None else params

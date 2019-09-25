@@ -23,7 +23,8 @@ class ImportAPI:
             size (int): the length of the data
             unique_id (str): a unique identifier of the data
 
-        Returns: float represents the elapsed time to import data
+        Returns:
+             float represents the elapsed time to import data
         """
         if unique_id is not None:
             path = "/v3/table/import_with_id/%s/%s/%s/%s" % (
@@ -62,7 +63,8 @@ class ImportAPI:
             file (str or file-like): a name of a file, or a file-like object contains the data
             unique_id (str): a unique identifier of the data
 
-        Returns: float represents the elapsed time to import data
+        Returns:
+             float represents the elapsed time to import data
         """
         with contextlib.closing(self._prepare_file(file, format, **kwargs)) as fp:
             size = os.fstat(fp.fileno()).st_size

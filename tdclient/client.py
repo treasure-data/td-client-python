@@ -22,20 +22,21 @@ class Client:
     @property
     def api(self):
         """
-        Returns: an instance of :class:`tdclient.api.API`
+        an instance of :class:`tdclient.api.API`
         """
         return self._api
 
     @property
     def apikey(self):
         """
-        Returns: API key string.
+        API key string.
         """
         return self._api.apikey
 
     def server_status(self):
         """
-        Returns: a string represents current server status.
+        Returns:
+             a string represents current server status.
         """
         return self.api.server_status()
 
@@ -44,7 +45,8 @@ class Client:
         Args:
             db_name (str): name of a database to create
 
-        Returns: `True` if success
+        Returns:
+             `True` if success
         """
         return self.api.create_database(db_name, **kwargs)
 
@@ -53,13 +55,15 @@ class Client:
         Args:
             db_name (str): name of database to delete
 
-        Returns: `True` if success
+        Returns:
+             `True` if success
         """
         return self.api.delete_database(db_name)
 
     def databases(self):
         """
-        Returns: a list of :class:`tdclient.models.Database`
+        Returns:
+            a list of :class:`tdclient.models.Database`
         """
         databases = self.api.list_databases()
         return [
@@ -72,7 +76,8 @@ class Client:
         Args:
             db_name (str): name of a database
 
-        Returns: :class:`tdclient.models.Database`
+        Returns:
+             :class:`tdclient.models.Database`
         """
         databases = self.api.list_databases()
         for (name, kwargs) in databases.items():
@@ -86,7 +91,8 @@ class Client:
             db_name (str): name of a database
             table_name (str): name of a table to create
 
-        Returns: `True` if success
+        Returns:
+             `True` if success
         """
         return self.api.create_log_table(db_name, table_name)
 
@@ -97,7 +103,8 @@ class Client:
             table_name1 (str): original table name
             table_name2 (str): table name you want to rename to
 
-        Returns: `True` if success
+        Returns:
+            `True` if success
         """
         return self.api.swap_table(db_name, table_name1, table_name2)
 
@@ -110,6 +117,9 @@ class Client:
             schema (list): a dictionary object represents the schema definition (will
                 be converted to JSON)
                 e.g.
+
+                .. code-block:: python
+
                     [
                         ["member_id", # column name
                          "string", # data type
@@ -119,7 +129,8 @@ class Client:
                         ...
                     ]
 
-        Returns: `True` if success
+        Returns:
+             `True` if success
         """
         return self.api.update_schema(db_name, table_name, json.dumps(schema))
 
@@ -131,7 +142,8 @@ class Client:
             table_name (str): name of a table
             epire_days (int): expiration date in days from today
 
-        Returns: `True` if success
+        Returns:
+             `True` if success
         """
         return self.api.update_expire(db_name, table_name, expire_days)
 
@@ -142,7 +154,8 @@ class Client:
             db_name (str): name of a database
             table_name (str): name of a table
 
-        Returns: a string represents the type of deleted table
+        Returns:
+             a string represents the type of deleted table
         """
         return self.api.delete_table(db_name, table_name)
 
@@ -152,7 +165,8 @@ class Client:
         Args:
             db_name (str): name of a database
 
-        Returns: a list of :class:`tdclient.models.Table`
+        Returns:
+             a list of :class:`tdclient.models.Table`
         """
         m = self.api.list_tables(db_name)
         return [
@@ -166,7 +180,8 @@ class Client:
             db_name (str): name of a database
             table_name (str): name of a table
 
-        Returns: :class:`tdclient.models.Table`
+        Returns:
+            :class:`tdclient.models.Table`
 
         Raises:
             tdclient.api.NotFoundError: if the table doesn't exist
@@ -209,12 +224,14 @@ class Client:
         Args:
             db_name (str): name of a database
             q (str): a query string
-            result_url (str): result output URL
+            result_url (str): result output URL. e.g.,
+                ``postgresql://<username>:<password>@<hostname>:<port>/<database>/<table>``
             priority (int or str): priority (e.g. "NORMAL", "HIGH", etc.)
             retry_limit (int): retry limit
             type (str): name of a query engine
 
-        Returns: :class:`tdclient.models.Job`
+        Returns:
+            :class:`tdclient.models.Job`
 
         Raises:
             ValueError: if unknown query type has been specified
@@ -237,12 +254,15 @@ class Client:
         """List jobs
 
         Args:
-            _from (int):
-            to (int):
-            status (str):
-            conditions (str)
+            _from (int, optional): Gets the Job from the nth index in the list. Default: 0.
+            to (int, optional): Gets the Job up to the nth index in the list.
+                By default, the first 20 jobs in the list are displayed
+            status (str, optional): Filter by given status. {"queued", "running", "success", "error"}
+            conditions (str, optional): Condition for ``TIMESTAMPDIFF()`` to search for slow queries.
+                Avoid using this parameter as it can be dangerous.
 
-        Returns: a list of :class:`tdclient.models.Job`
+        Returns:
+             a list of :class:`tdclient.models.Job`
         """
         results = self.api.list_jobs(_from, to, status, conditions)
 
@@ -282,7 +302,8 @@ class Client:
         Args:
             job_id (str): job id
 
-        Returns: :class:`tdclient.models.Job`
+        Returns:
+             :class:`tdclient.models.Job`
         """
         d = self.api.show_job(str(job_id))
         return models.Job(
@@ -317,7 +338,8 @@ class Client:
         Args:
             job_id (str): job id
 
-        Returns: a string represents the status of the job ("success", "error", "killed", "queued", "running")
+        Returns:
+             a string represents the status of the job ("success", "error", "killed", "queued", "running")
         """
         return self.api.job_status(job_id)
 
@@ -326,7 +348,8 @@ class Client:
         Args:
             job_id (str): job id
 
-        Returns: a list of each rows in result set
+        Returns:
+             a list of each rows in result set
         """
         return self.api.job_result(job_id)
 
@@ -335,7 +358,8 @@ class Client:
         Args:
             job_id (str): job id
 
-        Returns: an iterator of result set
+        Returns:
+             an iterator of result set
         """
         for row in self.api.job_result_each(job_id):
             yield row
@@ -346,7 +370,8 @@ class Client:
             job_id (str): job id
             format (str): output format of result set
 
-        Returns: a list of each rows in result set
+        Returns:
+             a list of each rows in result set
         """
         return self.api.job_result_format(job_id, format)
 
@@ -356,7 +381,8 @@ class Client:
             job_id (str): job id
             format (str): output format of result set
 
-        Returns: an iterator of rows in result set
+        Returns:
+             an iterator of rows in result set
         """
         for row in self.api.job_result_format_each(job_id, format):
             yield row
@@ -366,7 +392,8 @@ class Client:
         Args:
             job_id (str): job id
 
-        Returns: a string represents the status of killed job ("queued", "running")
+        Returns:
+             a string represents the status of killed job ("queued", "running")
         """
         return self.api.kill(job_id)
 
@@ -378,23 +405,32 @@ class Client:
             table_name (str): name of a table
             storage_type (str): type of the storage
             params (dict): optional parameters. Assuming the following keys:
-                access_key_id (str): ID to access the information to be exported.
-                secret_access_key (str): Password for the `access_key_id`.
-                file_prefix (str, optional): Filename of exported file.
-                    Default: "<database_name>/<table_name>"
-                file_format (str, optional): File format of the information to be
-                    exported. {"jsonl.gz", "tsv.gz", "json.gz"}
-                from (int, optional): From Time of the data to be exported in Unix epoch
-                    format.
-                to (int, optional): End Time of the data to be exported in Unix epoch
-                    format.
-                assume_role (str, optional): Assume role.
-                bucket (str): Name of bucket to be used.
-                domain_key (str, optional): Job domain key.
-                pool_name (str, optional): For Presto only. Pool name to be used, if not
-                    specified, default pool would be used.
 
-        Returns: :class:`tdclient.models.Job`
+                - access_key_id (str):
+                     ID to access the information to be exported.
+                - secret_access_key (str):
+                     Password for the `access_key_id`.
+                - file_prefix (str, optional):
+                     Filename of exported file.
+                     Default: "<database_name>/<table_name>"
+                - file_format (str, optional):
+                     File format of the information to be
+                     exported. {"jsonl.gz", "tsv.gz", "json.gz"}
+                - from (int, optional):
+                     From Time of the data to be exported in Unix epoch format.
+                - to (int, optional):
+                     End Time of the data to be exported in Unix epoch format.
+                - assume_role (str, optional): Assume role.
+                - bucket (str):
+                     Name of bucket to be used.
+                - domain_key (str, optional):
+                     Job domain key.
+                - pool_name (str, optional):
+                     For Presto only. Pool name to be used, if not
+                     specified, default pool would be used.
+
+        Returns:
+             :class:`tdclient.models.Job`
         """
         params = {} if params is None else params
         job_id = self.api.export_data(db_name, table_name, storage_type, params)
@@ -414,10 +450,13 @@ class Client:
                 the data to be deleted. Should be set only by the hour. Minutes and
                 seconds values will not be accepted.
             params (dict, optional): Extra parameters.
-                pool_name (str, optional): Indicates the resource pool to execute this
+
+                - pool_name (str, optional):
+                    Indicates the resource pool to execute this
                     job. If not provided, the account's default resource pool would be
                     used.
-                domain_key (str, optional): Domain key that will be assigned to the
+                - domain_key (str, optional):
+                    Domain key that will be assigned to the
                     partial delete job to be created
 
         Returns:
@@ -435,7 +474,8 @@ class Client:
             database (str): name of a database
             table (str): name of a table
 
-        Returns: :class:`tdclient.models.BulkImport`
+        Returns:
+             :class:`tdclient.models.BulkImport`
         """
         params = {} if params is None else params
         self.api.create_bulk_import(name, database, table, params)
@@ -447,7 +487,8 @@ class Client:
         Args:
             name (str): name of a bulk import session
 
-        Returns: `True` if success
+        Returns:
+             `True` if success
         """
         return self.api.delete_bulk_import(name)
 
@@ -457,7 +498,8 @@ class Client:
         Args:
             name (str): name of a bulk import session
 
-        Returns: `True` if success
+        Returns:
+             `True` if success
         """
         return self.api.freeze_bulk_import(name)
 
@@ -467,7 +509,8 @@ class Client:
         Args:
             name (str): name of a bulk import session
 
-        Returns: `True` if success
+        Returns:
+             `True` if success
         """
         return self.api.unfreeze_bulk_import(name)
 
@@ -477,7 +520,8 @@ class Client:
         Args:
             name (str): name of a bulk import session
 
-        Returns: :class:`tdclient.models.Job`
+        Returns:
+             :class:`tdclient.models.Job`
         """
         job_id = self.api.perform_bulk_import(name)
         return models.Job(self, job_id, "bulk_import", None)
@@ -488,7 +532,8 @@ class Client:
         Args:
             name (str): name of a bulk import session
 
-        Returns: `True` if success
+        Returns:
+             `True` if success
         """
         return self.api.commit_bulk_import(name)
 
@@ -497,7 +542,8 @@ class Client:
         Args:
             name (str): name of a bulk import session
 
-        Returns: an iterator of error records
+        Returns:
+             an iterator of error records
         """
         for record in self.api.bulk_import_error_records(name):
             yield record
@@ -508,7 +554,8 @@ class Client:
         Args:
             name (str): name of a bulk import session
 
-        Returns: :class:`tdclient.models.BulkImport`
+        Returns:
+             :class:`tdclient.models.BulkImport`
         """
         data = self.api.show_bulk_import(name)
         return models.BulkImport(self, **data)
@@ -516,7 +563,8 @@ class Client:
     def bulk_imports(self):
         """List bulk import sessions
 
-        Returns: a list of :class:`tdclient.models.BulkImport`
+        Returns:
+             a list of :class:`tdclient.models.BulkImport`
         """
         return [
             models.BulkImport(self, **data) for data in self.api.list_bulk_imports()
@@ -551,7 +599,8 @@ class Client:
             name (str): name of a bulk import session
             part_name (str): name of a part of the bulk import session
 
-        Returns: `True` if success
+        Returns:
+             `True` if success
         """
         return self.api.bulk_import_delete_part(name, part_name)
 
@@ -561,7 +610,8 @@ class Client:
         Args:
             name (str): name of a bulk import session
 
-        Returns: a list of string represents the name of parts
+        Returns:
+             a list of string represents the name of parts
         """
         return self.api.list_bulk_import_parts(name)
 
@@ -571,29 +621,41 @@ class Client:
         Args:
             name (str): Scheduled query name.
             params (dict, optional): Extra parameters.
-                type (str): Query type. {"presto", "hive"}. Default: "hive"
-                database (str): Target database name.
-                timezone (str): Scheduled query's timezone. e.g. "UTC"
-                    For details, see also: https://gist.github.com/frsyuki/4533752
-                cron (str, optional): Schedule of the query.
-                    {"@daily", "@hourly", "10 * * * *" (custom cron)}
-                    See also: https://support.treasuredata.com/hc/en-us/articles/360001451088-Scheduled-Jobs-Web-Console
-                delay (int, optional): A delay ensures all buffered events are imported
-                    before running the query. Default: 0
-                query (str): Is a language used to retrieve, insert, update and modify
-                    data. See also: https://support.treasuredata.com/hc/en-us/articles/360012069493-SQL-Examples-of-Scheduled-Queries
-                priority (int, optional): Priority of the query.
-                    Range is from -2 (very low) to 2 (very high). Default: 0
-                retry_limit (int, optional): Automatic retry count. Default: 0
-                engine_version (str, optional): Engine version to be used. If none is
-                    specified, the account's default engine version would be set.
-                    {"stable", "experimental"}
-                pool_name (str, optional): For Presto only. Pool name to be used, if not
-                    specified, default pool would be used.
-                result (str, optional): Location where to store the result of the query.
-                    e.g. 'tableau://user:password@host.com:1234/datasource'
+
+                - type (str):
+                     Query type. {"presto", "hive"}. Default: "hive"
+                - database (str):
+                     Target database name.
+                - timezone (str):
+                     Scheduled query's timezone. e.g. "UTC"
+                     For details, see also: https://gist.github.com/frsyuki/4533752
+                - cron (str, optional):
+                     Schedule of the query.
+                     {``"@daily"``, ``"@hourly"``, ``"10 * * * *"`` (custom cron)}
+                     See also: https://support.treasuredata.com/hc/en-us/articles/360001451088-Scheduled-Jobs-Web-Console
+                - delay (int, optional):
+                     A delay ensures all buffered events are imported
+                     before running the query. Default: 0
+                - query (str):
+                     Is a language used to retrieve, insert, update and modify
+                     data. See also: https://support.treasuredata.com/hc/en-us/articles/360012069493-SQL-Examples-of-Scheduled-Queries
+                - priority (int, optional):
+                     Priority of the query.
+                     Range is from -2 (very low) to 2 (very high). Default: 0
+                - retry_limit (int, optional):
+                     Automatic retry count. Default: 0
+                - engine_version (str, optional):
+                     Engine version to be used. If none is
+                     specified, the account's default engine version would be set.
+                     {"stable", "experimental"}
+                - pool_name (str, optional):
+                     For Presto only. Pool name to be used, if not
+                     specified, default pool would be used.
+                - result (str, optional):
+                     Location where to store the result of the query.
+                     e.g. 'tableau://user:password@host.com:1234/datasource'
         Returns:
-            datetime.datetime: Start date time.
+            :class:`datetime.datetime`: Start date time.
         """
         if "cron" not in params:
             raise ValueError("'cron' option is required")
@@ -627,27 +689,39 @@ class Client:
         Args:
             name (str): Target scheduled query name.
             params (dict): Extra parameteres.
-                type (str): Query type. {"presto", "hive"}. Default: "hive"
-                database (str): Target database name.
-                timezone (str): Scheduled query's timezone. e.g. "UTC"
-                    For details, see also: https://gist.github.com/frsyuki/4533752
-                cron (str, optional): Schedule of the query.
-                    {"@daily", "@hourly", "10 * * * *" (custom cron)}
-                    See also: https://support.treasuredata.com/hc/en-us/articles/360001451088-Scheduled-Jobs-Web-Console
-                delay (int, optional): A delay ensures all buffered events are imported
-                    before running the query. Default: 0
-                query (str): Is a language used to retrieve, insert, update and modify
-                    data. See also: https://support.treasuredata.com/hc/en-us/articles/360012069493-SQL-Examples-of-Scheduled-Queries
-                priority (int, optional): Priority of the query.
-                    Range is from -2 (very low) to 2 (very high). Default: 0
-                retry_limit (int, optional): Automatic retry count. Default: 0
-                engine_version (str, optional): Engine version to be used. If none is
-                    specified, the account's default engine version would be set.
-                    {"stable", "experimental"}
-                pool_name (str, optional): For Presto only. Pool name to be used, if not
-                    specified, default pool would be used.
-                result (str, optional): Location where to store the result of the query.
-                    e.g. 'tableau://user:password@host.com:1234/datasource'
+
+                - type (str):
+                     Query type. {"presto", "hive"}. Default: "hive"
+                - database (str):
+                     Target database name.
+                - timezone (str):
+                     Scheduled query's timezone. e.g. "UTC"
+                     For details, see also: https://gist.github.com/frsyuki/4533752
+                - cron (str, optional):
+                     Schedule of the query.
+                     {``"@daily"``, ``"@hourly"``, ``"10 * * * *"`` (custom cron)}
+                     See also: https://support.treasuredata.com/hc/en-us/articles/360001451088-Scheduled-Jobs-Web-Console
+                - delay (int, optional):
+                     A delay ensures all buffered events are imported
+                     before running the query. Default: 0
+                - query (str):
+                     Is a language used to retrieve, insert, update and modify
+                     data. See also: https://support.treasuredata.com/hc/en-us/articles/360012069493-SQL-Examples-of-Scheduled-Queries
+                - priority (int, optional):
+                     Priority of the query.
+                     Range is from -2 (very low) to 2 (very high). Default: 0
+                - retry_limit (int, optional):
+                     Automatic retry count. Default: 0
+                - engine_version (str, optional):
+                     Engine version to be used. If none is
+                     specified, the account's default engine version would be set.
+                     {"stable", "experimental"}
+                - pool_name (str, optional):
+                     For Presto only. Pool name to be used, if not
+                     specified, default pool would be used.
+                - result (str, optional):
+                     Location where to store the result of the query.
+                     e.g. 'tableau://user:password@host.com:1234/datasource'
         """
         params = {} if params is None else params
         self.api.update_schedule(name, params)
@@ -727,7 +801,8 @@ class Client:
             size (int): the length of the data
             unique_id (str): a unique identifier of the data
 
-        Returns: second in float represents elapsed time to import data
+        Returns:
+             second in float represents elapsed time to import data
         """
         return self.api.import_data(
             db_name, table_name, format, bytes_or_stream, size, unique_id=unique_id
@@ -746,7 +821,8 @@ class Client:
             file (str or file-like): a name of a file, or a file-like object contains the data
             unique_id (str): a unique identifier of the data
 
-        Returns: float represents the elapsed time to import data
+        Returns:
+             float represents the elapsed time to import data
         """
         return self.api.import_file(
             db_name, table_name, format, file, unique_id=unique_id
@@ -755,7 +831,8 @@ class Client:
     def results(self):
         """Get the list of all the available authentications.
 
-        Returns: a list of :class:`tdclient.models.Result`
+        Returns:
+             a list of :class:`tdclient.models.Result`
         """
         results = self.api.list_result()
 
@@ -791,7 +868,8 @@ class Client:
     def users(self):
         """List users
 
-        Returns: a liast of :class:`tdclient.models.User`
+        Returns:
+             a list of :class:`tdclient.models.User`
         """
         results = self.api.list_users()
 
@@ -810,7 +888,8 @@ class Client:
             email: (str): e-mail address
             password (str): password
 
-        Returns: `True` if success
+        Returns:
+             `True` if success
         """
         return self.api.add_user(name, org, email, password)
 
@@ -820,7 +899,8 @@ class Client:
         Args:
             name (str): name of the user
 
-        Returns: `True` if success
+        Returns:
+             `True` if success
         """
         return self.api.remove_user(name)
 
@@ -829,7 +909,8 @@ class Client:
         Args:
             name (str): name of the user
 
-        Returns: a list of string of API key
+        Returns:
+             a list of string of API key
         """
         return self.api.list_apikeys(name)
 
@@ -838,7 +919,8 @@ class Client:
         Args:
             name (str): name of the user
 
-        Returns: `True` if success
+        Returns:
+             `True` if success
         """
         return self.api.add_apikey(name)
 
@@ -848,7 +930,8 @@ class Client:
             name (str): name of the user
             apikey (str): an API key to remove
 
-        Returns: `True` if success
+        Returns:
+             `True` if success
         """
         return self.api.remove_apikey(name, apikey)
 
