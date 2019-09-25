@@ -2,6 +2,9 @@
 API Reference
 =======================
 
+Client
+=======
+
 tdclient.client
 ----------------------
 
@@ -9,6 +12,10 @@ tdclient.client
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+API
+=====
 
 tdclient.api
 -------------------
@@ -26,22 +33,6 @@ tdclient.bulk\_import\_api
    :undoc-members:
    :show-inheritance:
 
-tdclient.bulk\_import\_model
------------------------------------
-
-.. automodule:: tdclient.bulk_import_model
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-tdclient.connection
---------------------------
-
-.. automodule:: tdclient.connection
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 tdclient.connector\_api
 ------------------------------
 
@@ -50,34 +41,10 @@ tdclient.connector\_api
    :undoc-members:
    :show-inheritance:
 
-tdclient.cursor
-----------------------
-
-.. automodule:: tdclient.cursor
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 tdclient.database\_api
 -----------------------------
 
 .. automodule:: tdclient.database_api
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-tdclient.database\_model
--------------------------------
-
-.. automodule:: tdclient.database_model
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-tdclient.errors
-----------------------
-
-.. automodule:: tdclient.errors
    :members:
    :undoc-members:
    :show-inheritance:
@@ -106,6 +73,73 @@ tdclient.job\_api
    :undoc-members:
    :show-inheritance:
 
+tdclient.partial\_delete\_api
+------------------------------------
+
+.. automodule:: tdclient.partial_delete_api
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tdclient.result\_api
+---------------------------
+
+.. automodule:: tdclient.result_api
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tdclient.schedule\_api
+-----------------------------
+
+.. automodule:: tdclient.schedule_api
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tdclient.server\_status\_api
+-----------------------------------
+
+.. automodule:: tdclient.server_status_api
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tdclient.table\_api
+--------------------------
+
+.. automodule:: tdclient.table_api
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tdclient.user\_api
+-------------------------
+
+.. automodule:: tdclient.user_api
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Model
+======
+
+tdclient.bulk\_import\_model
+-----------------------------------
+
+.. automodule:: tdclient.bulk_import_model
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tdclient.database\_model
+-------------------------------
+
+.. automodule:: tdclient.database_model
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 tdclient.job\_model
 --------------------------
 
@@ -130,42 +164,10 @@ tdclient.models
    :undoc-members:
    :show-inheritance:
 
-tdclient.partial\_delete\_api
-------------------------------------
-
-.. automodule:: tdclient.partial_delete_api
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-tdclient.pseudo\_certifi
--------------------------------
-
-.. automodule:: tdclient.pseudo_certifi
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-tdclient.result\_api
----------------------------
-
-.. automodule:: tdclient.result_api
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 tdclient.result\_model
 -----------------------------
 
 .. automodule:: tdclient.result_model
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-tdclient.schedule\_api
------------------------------
-
-.. automodule:: tdclient.schedule_api
    :members:
    :undoc-members:
    :show-inheritance:
@@ -178,34 +180,10 @@ tdclient.schedule\_model
    :undoc-members:
    :show-inheritance:
 
-tdclient.server\_status\_api
------------------------------------
-
-.. automodule:: tdclient.server_status_api
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-tdclient.table\_api
---------------------------
-
-.. automodule:: tdclient.table_api
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 tdclient.table\_model
 ----------------------------
 
 .. automodule:: tdclient.table_model
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-tdclient.user\_api
--------------------------
-
-.. automodule:: tdclient.user_api
    :members:
    :undoc-members:
    :show-inheritance:
@@ -218,10 +196,53 @@ tdclient.user\_model
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
+
+
+DB API
+==========
+
+tdclient
+--------------------------
 
 .. automodule:: tdclient
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+tdclient.connection
+--------------------------
+
+.. automodule:: tdclient.connection
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tdclient.cursor
+----------------------
+
+.. automodule:: tdclient.cursor
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Misc
+=====
+
+tdclient.errors
+----------------------
+
+.. automodule:: tdclient.errors
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+
+tdclient.pseudo\_certifi
+-------------------------------
+
+.. automodule:: tdclient.pseudo_certifi
    :members:
    :undoc-members:
    :show-inheritance:
