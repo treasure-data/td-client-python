@@ -174,6 +174,14 @@ def test_tail():
     td.api.tail.assert_called_with("sample_datasets", "nasdaq", 3, None, None, None)
 
 
+def test_change_database():
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.change_database = mock.MagicMock()
+    td.change_database("sample_datasets", "nasdaq", "new_db")
+    td.api.change_database.assert_called_with("sample_datasets", "nasdaq", "new_db")
+
+
 def test_query():
     td = client.Client("APIKEY")
     td._api = mock.MagicMock()

@@ -208,3 +208,24 @@ class TableAPI:
                 result.append(row)
 
             return result
+
+    def change_database(self, db, table, dest_db):
+        """Change the table's database into another database.
+
+        Args:
+            db (str): Target database name.
+            table (str): Target table name.
+            dest_db (str): Destination database name.
+
+        Returns:
+            bool: `True` if succeeded
+        """
+        params = {"dest_database_name": dest_db}
+        with self.post(
+            "/v3/table/change_database/%s/%s" % (urlquote(str(db)), urlquote(str(table))),
+            params,
+        ) as res:
+            code, body = res.status, res.read()
+            if code != 200:
+                self.raise_error("Change database failed", res, body)
+            return True

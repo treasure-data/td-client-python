@@ -82,3 +82,12 @@ def test_delete_table_success():
     td.post = mock.MagicMock(return_value=make_response(200, body))
     td.delete_table("sample_datasets", "foo")
     td.post.assert_called_with("/v3/table/delete/sample_datasets/foo")
+
+
+def test_change_database_success():
+    td = api.API("APIKEY")
+    td.post = mock.MagicMock(return_value=make_response(200, b""))
+    td.change_database("sample_datasets", "foo", "new_database")
+    td.post.assert_called_with(
+        "/v3/table/change_database/sample_datasets/foo", {"dest_database_name": "new_database"}
+    )
