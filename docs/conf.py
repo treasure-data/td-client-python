@@ -26,6 +26,7 @@ GH_PROJECT = "td-client-python"
 PACKAGE = "td-client"
 MODULE = "tdclient"
 
+
 def linkcode_resolve(domain, info):
     """Generate link to GitHub.
     References:

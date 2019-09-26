@@ -7,13 +7,16 @@ td-client - Treasure Data API library for Python
 we recommend to use `pytd <https://github.com/treasure-data/pytd>`_ instead.
 
 
-.. include:: gettingstarted.rst
-
 .. toctree::
-   :maxdepth: 2
-   :caption: References
+   :maxdepth: 1
+   :caption: Contents
 
    reference
+   changelog
+
+
+.. include:: ../README.rst
+
 
 
 Indices and tables
