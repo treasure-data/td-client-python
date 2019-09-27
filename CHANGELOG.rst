@@ -6,6 +6,10 @@ Unreleased
 ----------
 
 
+v1.0.0 (2019-09-27)
+--------------------
+
+
 * Drop Python 2 support (#60)
 * Remove deprecated functions as follows (#76):
 
