@@ -8,94 +8,94 @@ Unreleased
 
 * Drop Python 2 support (#60)
 
-0.14.0 (2019-07-11)
--------------------
+v0.14.0 (2019-07-11)
+--------------------
 
 
 * Remove ACL and account APIs (#56, #58)
 * Fix PyOpenSSL issue which causes pandas-td error (#59)
 
-0.13.0 (2019-03-29)
--------------------
+v0.13.0 (2019-03-29)
+--------------------
 
 
 * Change msgpack-python to msgpack (#50)
 * Dropped 3.3 support as it has already been EOL'd (#52)
 * Set urllib3 minimum version as v1.24.1 (#51)
 
-0.12.0 (2018-05-31)
--------------------
+v0.12.0 (2018-05-31)
+--------------------
 
 
 * Avoided to declare library dependencies too tightly within this project since this is a library project (#42)
 * Got rid of all configurations for Python 2.6 completely (#42)
 
-0.11.1 (2018-05-21)
--------------------
+v0.11.1 (2018-05-21)
+--------------------
 
 
 * Added 3.6 as test target. No functional changes have applied since 0.11.0 (#41)
 
-0.11.0 (2018-05-21)
--------------------
+v0.11.0 (2018-05-21)
+--------------------
 
 
 * Support missing parameters in JOB API (#39, #40)
 
-0.10.0 (2017-11-01)
--------------------
+v0.10.0 (2017-11-01)
+--------------------
 
 
 * Ignore empty string in job's ``start_at`` and ``end_at`` (#35, #36)
 
-0.9.0 (2017-02-27)
-------------------
+v0.9.0 (2017-02-27)
+-------------------
 
 
 * Add validation to part names for bulk upload
 
-0.8.0 (2016-12-22)
-------------------
+v0.8.0 (2016-12-22)
+-------------------
 
 
 * Fix unicode encoding issues on Python 2.x (#27, #28, #29)
 
-0.7.0 (2016-12-06)
-------------------
+v0.7.0 (2016-12-06)
+-------------------
 
 
 * Fix for tdclient tables data not populating
 * ``TableAPI.list_tables`` now returns a dictionary instead of a tuple
 
-0.6.0 (2016-09-27)
-------------------
+v0.6.0 (2016-09-27)
+-------------------
 
 
 * Generate universal wheel by default since there's no binary in this package
 * Add missing support for ``created_time`` and ``user_name`` from ``/v3/schedule/list`` API (#20, #21)
 * Use keyword arguments for initializing model attributes (#22)
 
-0.5.0 (2016-06-10)
-------------------
+v0.5.0 (2016-06-10)
+-------------------
 
 
 * Prevent retry after PUT request failures. This is the same behavior as https://github.com/treasure-data/td-client-ruby (#16)
 * Support HTTP proxy authentication (#17)
 
-0.4.2 (2016-03-15)
-------------------
+v0.4.2 (2016-03-15)
+-------------------
 
 
 * Catch exceptions on parsing date time string
 
-0.4.1 (2016-01-19)
-------------------
+v0.4.1 (2016-01-19)
+-------------------
 
 
 * Fix Data Connector APIs based on latest td-client-ruby's implementation (#14)
 
-0.4.0 (2015-12-14)
-------------------
+v0.4.0 (2015-12-14)
+-------------------
 
 
 * Avoid an exception raised when a ``start`` is not set for a schedule (#12)
@@ -104,20 +104,20 @@ Unreleased
 * Add deprecation warnings on the usage of "item tables"
 * Show ``cumul_retry_delay`` in retry messages
 
-0.3.2 (2015-08-01)
-------------------
+v0.3.2 (2015-08-01)
+-------------------
 
 
 * Fix bugs in ``ScheduledJob`` and ``Schedule`` models
 
-0.3.1 (2015-07-10)
-------------------
+v0.3.1 (2015-07-10)
+-------------------
 
 
 * Fix ``OverflowError`` on importing integer value longer than 64 bit length which is not supported by msgpack specification. Those values will be converted into string.
 
-0.3.0 (2015-07-03)
-------------------
+v0.3.0 (2015-07-03)
+-------------------
 
 
 * Add Python Database API (PEP 0249) compatible connection and cursor.
@@ -125,16 +125,16 @@ Unreleased
 * Changed default wait interval of job models from 1 second to 5 seconds.
 * Fix many potential problems/warnings found by landscape.io.
 
-0.2.1 (2015-06-20)
-------------------
+v0.2.1 (2015-06-20)
+-------------------
 
 
 * Set default timeout of API client as 60 seconds.
 * Change the timeout of API client from ``sum(connect_timeout, read_timeout, send_timeout)`` to ``max(connect_timeout, read_timeout, send_timeout)``
 * Change default user-agent of client from ``TD-Client-Python:{version}`` to ``TD-Client-Python/{version}`` to comply RFC2616
 
-0.2.0 (2015-05-28)
-------------------
+v0.2.0 (2015-05-28)
+-------------------
 
 
 * Improve the job model. Now it retrieves the job values automatically after the invocation of ``wait``\ , ``result`` and ``kill``.
@@ -143,42 +143,42 @@ Unreleased
 * Support CSV/TSV format on both streaming import and bulk import
 * Change module name; ``tdclient.model`` -> ``tdclient.models``
 
-0.1.11 (2015-05-17)
--------------------
+v0.1.11 (2015-05-17)
+--------------------
 
 
 * Fix API client to retry POST requests properly if ``retry_post_requests`` is set to ``True`` (#5)
 * Show warnings if imported data don't have ``time`` column
 
-0.1.10 (2015-03-30)
--------------------
+v0.1.10 (2015-03-30)
+--------------------
 
 
 * Fixed a JSON parse error in ``job.result_format("json")`` with multipe result rows (#4)
 * Refactored model classes and tests
 
-0.1.9 (2015-02-26)
-------------------
+v0.1.9 (2015-02-26)
+-------------------
 
 
 * Stopped using syntax added in recent Python releases
 
-0.1.8 (2015-02-26)
-------------------
+v0.1.8 (2015-02-26)
+-------------------
 
 
 * Fix SSL verification errors on Python 2.7 on Windows environment.
   Now it uses ``certifi`` to verify SSL certificates if it is available.
 
-0.1.7 (2015-02-26)
-------------------
+v0.1.7 (2015-02-26)
+-------------------
 
 
 * Fix support for Windows environments
 * Fix byte encoding problem in ``tdclient.api.API#import_file`` on Python 3.x
 
-0.1.6 (2015-02-12)
-------------------
+v0.1.6 (2015-02-12)
+-------------------
 
 
 * Support specifying job priority in its name (e.g. "NORMAL", "HIGH", etc.)
@@ -187,15 +187,15 @@ Unreleased
 * Fix broken ``tdclient.client.Client#database()`` which is used from ``tdclient.model.Table#permission()``
 * Fix broken ``tdclient.Client.Client#results()``
 
-0.1.5 (2015-02-10)
-------------------
+v0.1.5 (2015-02-10)
+-------------------
 
 
 * Fix local variable scope problem in ``tdclient.api.show_job`` (#2)
 * Fix broken multiple assignment in ``tdclient.model.Job#_update_status`` (#3)
 
-0.1.4 (2015-02-06)
-------------------
+v0.1.4 (2015-02-06)
+-------------------
 
 
 * Add new data import function of ``tdclient.api.import_file`` to allow importing data from
@@ -204,8 +204,8 @@ Unreleased
 * Add missing import to fix broken ``tdclient.model.Job#wait``
 * Use ``td.api.DEFAULT_ENDPOINT`` for all requests
 
-0.1.3 (2015-01-24)
-------------------
+v0.1.3 (2015-01-24)
+-------------------
 
 
 * Support PEP 343 in ``tdclient.Client`` and remove ``contextlib`` from example
@@ -215,23 +215,23 @@ Unreleased
 * Changed ``tdclient.model.Job#query`` as a property since it won't be modified during the execution
 * Allow specifying query options from ``tdclient.model.Database#query``
 
-0.1.2 (2015-01-21)
-------------------
+v0.1.2 (2015-01-21)
+-------------------
 
 
 * Fix broken PyPI identifiers
 * Update documentation
 
-0.1.1 (2015-01-21)
-------------------
+v0.1.1 (2015-01-21)
+-------------------
 
 
 * Improve the verification of SSL certificates on RedHat and variants
 * Implement ``wait`` and ``kill`` in ``tdclient.model.Job``
 * Change the "Development Status" from Alpha to Beta
 
-0.1.0 (2015-01-15)
-------------------
+v0.1.0 (2015-01-15)
+-------------------
 
 
 * Initial public release
