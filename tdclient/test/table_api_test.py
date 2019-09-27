@@ -84,6 +84,15 @@ def test_delete_table_success():
     td.post.assert_called_with("/v3/table/delete/sample_datasets/foo")
 
 
+def test_tail_success():
+    td = api.API("APIKEY")
+    td.get = mock.MagicMock(return_value=make_response(200, b""))
+    records = td.tail("sample_datasets", "nasdaq", 3)
+    td.get.assert_called_with(
+        "/v3/table/tail/sample_datasets/nasdaq", {"count": 3, "format": "msgpack"}
+    )
+
+
 def test_change_database_success():
     td = api.API("APIKEY")
     td.post = mock.MagicMock(return_value=make_response(200, b""))
