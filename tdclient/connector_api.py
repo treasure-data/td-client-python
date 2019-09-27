@@ -14,7 +14,8 @@ class ConnectorAPI:
         Args:
           job (dict): :class:`dict` representation of `seed.yml`
 
-        Returns: :class:`dict`
+        Returns:
+             :class:`dict`
         """
         headers = {"content-type": "application/json; charset=utf-8"}
         payload = json.dumps(job).encode("utf-8") if isinstance(job, dict) else job
@@ -29,7 +30,8 @@ class ConnectorAPI:
         Args:
           job (dict): :class:`dict` representation of `load.yml`
 
-        Returns: :class:`dict`
+        Returns:
+             :class:`dict`
         """
         headers = {"content-type": "application/json; charset=utf-8"}
         payload = json.dumps(job).encode("utf-8") if isinstance(job, dict) else job
@@ -46,7 +48,8 @@ class ConnectorAPI:
           table (str): name of the table to perform connector job
           job (dict): :class:`dict` representation of `load.yml`
 
-        Returns: jobId:str
+        Returns:
+             str: job Id
         """
         headers = {"content-type": "application/json; charset=utf-8"}
         params = dict(job)
@@ -64,7 +67,8 @@ class ConnectorAPI:
 
     def connector_list(self):
         """
-        Returns: :class:`list`
+        Returns:
+             :class:`list`
         """
         with self.get("/v3/bulk_loads") as res:
             code, body = res.status, res.read()
@@ -81,7 +85,8 @@ class ConnectorAPI:
           table (str): name of the table to perform connector job
           job (dict): :class:`dict` representation of `load.yml`
 
-        Returns: :class:`dict`
+        Returns:
+             :class:`dict`
         """
         headers = {"content-type": "application/json; charset=utf-8"}
         params = {} if params is None else dict(params)
@@ -103,7 +108,8 @@ class ConnectorAPI:
         Args:
           name (str): name of the connector job
 
-        Returns: :class:`dict`
+        Returns:
+             :class:`dict`
         """
         with self.get("/v3/bulk_loads/%s" % (urlquote(str(name)),)) as res:
             code, body = res.status, res.read()
@@ -119,7 +125,8 @@ class ConnectorAPI:
           name (str): name of the connector job
           job (dict): :class:`dict` representation of `load.yml`
 
-        Returns: :class:`dict`
+        Returns:
+             :class:`dict`
         """
         headers = {"content-type": "application/json; charset=utf-8"}
         payload = json.dumps(job).encode("utf-8")
@@ -141,7 +148,8 @@ class ConnectorAPI:
         Args:
           name (str): name of the connector job
 
-        Returns: :class:`dict`
+        Returns:
+             :class:`dict`
         """
         with self.delete("/v3/bulk_loads/%s" % (urlquote(str(name)),)) as res:
             code, body = res.status, res.read()
@@ -156,7 +164,8 @@ class ConnectorAPI:
         Args:
           name (str): name of the connector job
 
-        Returns: :class:`list`
+        Returns:
+             :class:`list`
         """
         with self.get("/v3/bulk_loads/%s/jobs" % (urlquote(str(name)),)) as res:
             code, body = res.status, res.read()
@@ -173,7 +182,8 @@ class ConnectorAPI:
         Args:
           name (str): name of the connector job
 
-        Returns: :class:`dict`
+        Returns:
+             :class:`dict`
         """
         headers = {"content-type": "application/json; charset=utf-8"}
         payload = json.dumps(kwargs).encode("utf-8")

@@ -38,99 +38,85 @@ class BulkImport(Model):
 
     @property
     def name(self):
-        """
-        Returns: name of the bulk import session
+        """A name of the bulk import session
         """
         return self._name
 
     @property
     def database(self):
-        """
-        Returns: database name in a string which the bulk import session is working on
+        """A database name in a string which the bulk import session is working on
         """
         return self._database
 
     @property
     def table(self):
-        """
-        Returns: table name in a string which the bulk import session is working on
+        """A table name in a string which the bulk import session is working on
         """
         return self._table
 
     @property
     def status(self):
-        """
-        Returns: status of the bulk import session in a string
+        """The status of the bulk import session in a string
         """
         return self._status
 
     @property
     def job_id(self):
-        """
-        TODO: add docstring
+        """Job ID
         """
         return self._job_id
 
     @property
     def valid_records(self):
-        """
-        TODO: add docstring
+        """The number of valid records.
         """
         return self._valid_records
 
     @property
     def error_records(self):
-        """
-        TODO: add docstring
+        """The number of error records.
         """
         return self._error_records
 
     @property
     def valid_parts(self):
-        """
-        TODO: add docstring
+        """The number of valid parts.
         """
         return self._valid_parts
 
     @property
     def error_parts(self):
-        """
-        TODO: add docstring
+        """The number of error parts.
         """
         return self._error_parts
 
     @property
     def upload_frozen(self):
-        """
-        TODO: add docstring
+        """The number of upload frozen.
         """
         return self._upload_frozen
 
     def delete(self):
-        """
-        TODO: add docstring
+        """Delete bulk import
         """
         return self._client.delete_bulk_import(self.name)
 
     def freeze(self):
-        """
-        TODO: add docstring
+        """Freeze bulk import
         """
         response = self._client.freeze_bulk_import(self.name)
         self.update()
         return response
 
     def unfreeze(self):
-        """
-        TODO: add docstring
+        """Unfreeze bulk import
         """
         response = self._client.unfreeze_bulk_import(self.name)
         self.update()
         return response
 
     def perform(self, wait=False, wait_interval=5, wait_callback=None):
-        """
-        TODO: add docstring
+        """Perform bulk import
         """
         self.update()
         if not self.upload_frozen:
@@ -144,8 +130,7 @@ class BulkImport(Model):
         return job
 
     def commit(self, wait=False, wait_interval=5, timeout=None):
-        """
-        TODO: add docstring
+        """Commit bulk import
         """
         response = self._client.commit_bulk_import(self.name)
         if wait:
@@ -161,8 +146,10 @@ class BulkImport(Model):
         return response
 
     def error_record_items(self):
-        """
-        TODO: add docstring
+        """Fetch error record rows.
+
+        Yields:
+            Error record
         """
         for record in self._client.bulk_import_error_records(self.name):
             yield record
@@ -196,16 +183,23 @@ class BulkImport(Model):
         return response
 
     def delete_part(self, part_name):
-        """
-        TODO: add docstring
+        """Delete a part of a Bulk Import session
+
+        Args:
+            part_name (str): name of a part of the bulk import session
+        Returns:
+             True if succeeded.
         """
         response = self._client.bulk_import_delete_part(self.name, part_name)
         self.update()
         return response
 
     def list_parts(self):
-        """
-        TODO: add docstring
+        """Return the list of available parts uploaded through
+        :func:`~BulkImportAPI.bulk_import_upload_part`.
+
+        Returns:
+            [str]: The list of bulk import part name.
         """
         response = self._client.list_bulk_import_parts(self.name)
         self.update()

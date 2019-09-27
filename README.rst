@@ -1,0 +1,206 @@
+
+Treasure Data API library for Python
+====================================
+
+
+.. image:: https://travis-ci.org/treasure-data/td-client-python.svg
+   :target: https://travis-ci.org/treasure-data/td-client-python
+   :alt: Build Status
+
+
+.. image:: https://ci.appveyor.com/api/projects/status/eol91l1ag50xee9m/branch/master?svg=true
+   :target: https://ci.appveyor.com/project/treasure-data/td-client-python/branch/master
+   :alt: Build status
+
+
+.. image:: https://coveralls.io/repos/treasure-data/td-client-python/badge.svg
+   :target: https://coveralls.io/r/treasure-data/td-client-python
+   :alt: Coverage Status
+
+
+.. image:: https://badge.fury.io/py/td-client.svg
+   :target: http://badge.fury.io/py/td-client
+   :alt: PyPI version
+
+
+Treasure Data API library for Python
+
+Requirements
+------------
+
+``td-client`` supports the following versions of Python.
+
+
+* Python 3.5+
+* PyPy
+
+Install
+-------
+
+You can install the releases from `PyPI <https://pypi.python.org/>`_.
+
+.. code-block:: sh
+
+   $ pip install td-client
+
+It'd be better to install `certifi <https://pypi.python.org/pypi/certifi>`_ to enable SSL certificate verification.
+
+.. code-block:: sh
+
+   $ pip install certifi
+
+Examples
+--------
+
+Please see also the examples at `Treasure Data Documentation <http://docs.treasuredata.com/articles/rest-api-python-client>`_.
+
+Listing jobs
+^^^^^^^^^^^^
+
+Treasure Data API key will be read from environment variable ``TD_API_KEY``\ , if none is given via ``apikey=`` argument passed to ``tdclient.Client``.
+
+Treasure Data API endpoint ``https://api.treasuredata.com`` is used by default. You can override this with environment variable ``TD_API_SERVER``\ , which in turn can be overridden via ``endpoint=`` argument passed to ``tdclient.Client``. List of available Treasure Data sites and corresponding API endpoints can be found `here <https://support.treasuredata.com/hc/en-us/articles/360001474288-Sites-and-Endpoints>`_.
+
+.. code-block:: python
+
+   import tdclient
+
+   with tdclient.Client() as td:
+       for job in td.jobs():
+           print(job.job_id)
+
+Running jobs
+^^^^^^^^^^^^
+
+Running jobs on Treasure Data.
+
+.. code-block:: python
+
+   import tdclient
+
+   with tdclient.Client() as td:
+       job = td.query("sample_datasets", "SELECT COUNT(1) FROM www_access", type="hive")
+       job.wait()
+       for row in job.result():
+           print(repr(row))
+
+Running jobs via DBAPI2
+^^^^^^^^^^^^^^^^^^^^^^^
+
+td-client-python implements `PEP 0249 <https://www.python.org/dev/peps/pep-0249/>`_ Python Database API v2.0.
+You can use td-client-python with external libraries which supports Database API such like `pandas <http://pandas.pydata.org/>`_.
+
+.. code-block:: python
+
+   import pandas
+   import tdclient
+
+   def on_waiting(cursor):
+       print(cursor.job_status())
+
+   with tdclient.connect(db="sample_datasets", type="presto", wait_callback=on_waiting) as td:
+       data = pandas.read_sql("SELECT symbol, COUNT(1) AS c FROM nasdaq GROUP BY symbol", td)
+       print(repr(data))
+
+We offer another package for pandas named `pytd <https://github.com/treasure-data/pytd>`_ with some advanced features.
+You may prefer it if you need to do complicated things, such like exporting result data to Treasure Data, printing job's
+progress during long execution, etc.
+
+Importing data
+^^^^^^^^^^^^^^
+
+Importing data into Treasure Data in streaming manner, as similar as `fluentd <http://www.fluentd.org/>`_ is doing.
+
+.. code-block:: python
+
+   import sys
+   import tdclient
+
+   with tdclient.Client() as td:
+       for file_name in sys.argv[:1]:
+           td.import_file("mydb", "mytbl", "csv", file_name)
+
+Bulk import
+^^^^^^^^^^^
+
+Importing data into Treasure Data in batch manner.
+
+.. code-block:: python
+
+   import sys
+   import tdclient
+   import time
+   import warnings
+
+   if len(sys.argv) <= 1:
+       sys.exit(0)
+
+   with tdclient.Client() as td:
+       session_name = "session-%d" % (int(time.time()),)
+       bulk_import = td.create_bulk_import(session_name, "mydb", "mytbl")
+       try:
+           for file_name in sys.argv[1:]:
+               part_name = "part-%s" % (file_name,)
+               bulk_import.upload_file(part_name, "json", file_name)
+           bulk_import.freeze()
+       except:
+           bulk_import.delete()
+           raise
+       bulk_import.perform(wait=True)
+       if 0 < bulk_import.error_records:
+           warnings.warn("detected %d error records." % (bulk_import.error_records,))
+       if 0 < bulk_import.valid_records:
+           print("imported %d records." % (bulk_import.valid_records,))
+       else:
+           raise(RuntimeError("no records have been imported: %s" % (repr(bulk_import.name),)))
+       bulk_import.commit(wait=True)
+       bulk_import.delete()
+
+Development
+-----------
+
+Running tests
+^^^^^^^^^^^^^
+
+Run tests.
+
+.. code-block:: sh
+
+   $ python setup.py test
+
+Running tests (tox)
+^^^^^^^^^^^^^^^^^^^
+
+You can run tests against all supported Python versions. I'd recommend you to install `pyenv <https://github.com/yyuu/pyenv>`_ to manage Pythons.
+
+.. code-block:: sh
+
+   $ pyenv shell system
+   $ for version in $(cat .python-version); do [ -d "$(pyenv root)/versions/${version}" ] || pyenv install "${version}"; done
+   $ pyenv shell --unset
+
+Install `tox <https://pypi.python.org/pypi/tox>`_.
+
+.. code-block:: sh
+
+   $ pip install tox
+
+Then, run ``tox``.
+
+.. code-block:: sh
+
+   $ tox
+
+Release
+^^^^^^^
+
+Release to PyPI.
+
+.. code-block:: sh
+
+   $ python setup.py bdist_wheel --universal sdist upload
+
+License
+-------
+
+Apache Software License, Version 2.0

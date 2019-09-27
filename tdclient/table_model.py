@@ -36,45 +36,38 @@ class Table(Model):
 
     @property
     def type(self):
-        """
-        Returns: a string represents the type of the table
+        """a string represents the type of the table
         """
         return self._type
 
     @property
     def db_name(self):
-        """
-        Returns: a string represents the name of the database
+        """a string represents the name of the database
         """
         return self._db_name
 
     @property
     def table_name(self):
-        """
-        Returns: a string represents the name of the table
+        """a string represents the name of the table
         """
         return self._table_name
 
     @property
     def schema(self):
         """
-        Returns:
-            [[column_name:str, column_type:str, alias:str]]
+        [[column_name:str, column_type:str, alias:str]]: The :obj:`list` of a schema
         """
         return self._schema
 
     @property
     def count(self):
-        """
-        Returns:
-            int: total number of the table
+        """int: total number of the table
         """
         return self._count
 
     @property
     def estimated_storage_size(self):
-        """
-        Returns: estimated storage size
+        """estimated storage size
         """
         return self._estimated_storage_size
 
@@ -94,58 +87,52 @@ class Table(Model):
 
     @property
     def database_name(self):
-        """
-        Returns: a string represents the name of the database
+        """a string represents the name of the database
         """
         return self._db_name
 
     @property
     def name(self):
-        """
-        Returns: a string represents the name of the table
+        """a string represents the name of the table
         """
         return self._table_name
 
     @property
     def created_at(self):
         """
-        Returns: :class:`datetime.datetime`
+        :class:`datetime.datetime`: Created datetime
         """
         return self._created_at
 
     @property
     def updated_at(self):
         """
-        Returns: :class:`datetime.datetime`
+        :class:`datetime.datetime`: Updated datetime
         """
         return self._updated_at
 
     @property
     def last_import(self):
-        """
-        Returns: :class:`datetime.datetime`
+        """:class:`datetime.datetime`
         """
         return self._last_import
 
     @property
     def last_log_timestamp(self):
-        """
-        Returns: :class:`datetime.datetime`
+        """:class:`datetime.datetime`
         """
         return self._last_log_timestamp
 
     @property
     def expire_days(self):
-        """
-        Returns: an int represents the days until expiration
+        """an int represents the days until expiration
         """
         return self._expire_days
 
     @property
     def permission(self):
         """
-        Returns:
-            str: permission for the database (e.g. "administrator", "full_access", etc.)
+        str: permission for the database (e.g. "administrator", "full_access", etc.)
         """
         if self.database is None:
             self._update_database()
@@ -153,14 +140,12 @@ class Table(Model):
 
     @property
     def identifier(self):
-        """
-        Returns: a string identifier of the table
+        """a string identifier of the table
         """
         return "%s.%s" % (self._db_name, self._table_name)
 
     def delete(self):
-        """
-        Returns: a string represents the type of deleted table
+        """a string represents the type of deleted table
         """
         return self._client.delete_table(self._db_name, self._table_name)
 
@@ -171,8 +156,9 @@ class Table(Model):
             to: Deprecated parameter.
             _from: Deprecated parameter.
 
-        Returns: the contents of the table in reverse order based on the registered time
-            (last data first).
+        Returns:
+             the contents of the table in reverse order based on the registered time
+             (last data first).
         """
         return self._client.tail(self._db_name, self._table_name, count, to, _from)
 
@@ -185,7 +171,8 @@ class Table(Model):
             size (int): the length of the data
             unique_id (str): a unique identifier of the data
 
-        Returns: second in float represents elapsed time to import data
+        Returns:
+             second in float represents elapsed time to import data
         """
         return self._client.import_data(
             self._db_name,
@@ -206,15 +193,46 @@ class Table(Model):
             file (str or file-like): a name of a file, or a file-like object contains the data
             unique_id (str): a unique identifier of the data
 
-        Returns: float represents the elapsed time to import data
+        Returns:
+             float represents the elapsed time to import data
         """
         return self._client.import_file(
             self._db_name, self._table_name, format, file, unique_id=unique_id
         )
 
     def export_data(self, storage_type, **kwargs):
-        """
-        TODO: add docstring
+        """Export data from Treasure Data Service
+
+        Args:
+            storage_type (str): type of the storage
+            **kwargs (dict): optional parameters. Assuming the following keys:
+
+                - access_key_id (str):
+                    ID to access the information to be exported.
+                - secret_access_key (str):
+                    Password for the `access_key_id`.
+                - file_prefix (str, optional):
+                    Filename of exported file.
+                    Default: "<database_name>/<table_name>"
+                - file_format (str, optional):
+                    File format of the information to be
+                    exported. {"jsonl.gz", "tsv.gz", "json.gz"}
+                - from (int, optional):
+                    From Time of the data to be exported in Unix epoch format.
+                - to (int, optional):
+                    End Time of the data to be exported in Unix epoch format.
+                - assume_role (str, optional):
+                    Assume role.
+                - bucket (str):
+                    Name of bucket to be used.
+                - domain_key (str, optional):
+                    Job domain key.
+                - pool_name (str, optional):
+                    For Presto only. Pool name to be used, if not
+                    specified, default pool would be used.
+
+        Returns:
+             :class:`tdclient.models.Job`
         """
         return self._client.export_data(
             self._db_name, self._table_name, storage_type, kwargs
@@ -222,8 +240,7 @@ class Table(Model):
 
     @property
     def estimated_storage_size_string(self):
-        """
-        Returns: a string represents estimated size of the table in human-readable format
+        """a string represents estimated size of the table in human-readable format
         """
         if self._estimated_storage_size <= 1024 * 1024:
             return "0.0 GB"

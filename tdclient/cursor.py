@@ -142,22 +142,28 @@ class Cursor:
         raise errors.NotSupportedError
 
     def show_job(self):
-        """
-        TODO:
+        """Returns detailed information of a Job
+
+        Returns:
+             :class:`dict`: Detailed information of a job
         """
         self._check_executed()
         return self._api.show_job(self._executed)
 
     def job_status(self):
-        """
-        TODO:
+        """Show job status
+
+        Returns:
+             The status information of the given job id at last execution.
         """
         self._check_executed()
         return self._api.job_status(self._executed)
 
     def job_result(self):
-        """
-        TODO:
+        """Fetch job results
+
+        Returns:
+             Job result in :class:`list`
         """
         self._check_executed()
         return self._api.job_result(self._executed)

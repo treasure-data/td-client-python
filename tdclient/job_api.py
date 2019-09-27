@@ -29,12 +29,15 @@ class JobAPI:
     def list_jobs(self, _from=0, to=None, status=None, conditions=None):
         """
         Args:
-            _from (int):
-            to (int):
-            status (str):
-            conditions (str):
+            _from (int): Gets the Job from the nth index in the list. Default: 0
+            to (int, optional): Gets the Job up to the nth index in the list.
+                By default, the first 20 jobs in the list are displayed
+            status (str, optional): Filter by given status. {"queued", "running", "success", "error"}
+            conditions (str, optional): Condition for ``TIMESTAMPDIFF()`` to search for slow queries.
+                Avoid using this parameter as it can be dangerous.
 
-        Returns: a list of :class:`dict` which represents a job
+        Returns:
+             a list of :class:`dict` which represents a job
         """
         params = {}
         if _from is not None:
@@ -105,11 +108,12 @@ class JobAPI:
             return jobs
 
     def show_job(self, job_id):
-        """
+        """Returns detailed information of a Job
         Args:
             job_id (str): job ID
 
-        Returns: :class:`dict`
+        Returns:
+             :class:`dict`: Detailed information of a job
         """
         # use v3/job/status instead of v3/job/show to poll finish of a job
         with self.get("/v3/job/show/%s" % (urlquote(str(job_id)))) as res:
@@ -169,11 +173,12 @@ class JobAPI:
             return job
 
     def job_status(self, job_id):
-        """"
+        """"Show job status
         Args:
             job_id (str): job ID
 
-        Returns: The status information of the given job id at last execution.
+        Returns:
+             The status information of the given job id at last execution.
         """
         with self.get("/v3/job/status/%s" % (urlquote(str(job_id)))) as res:
             code, body = res.status, res.read()
@@ -188,7 +193,8 @@ class JobAPI:
         Args:
             job_id (int): Job ID
 
-        Returns: Job result in :class:`list`
+        Returns:
+             Job result in :class:`list`
         """
         result = []
         for row in self.job_result_format_each(job_id, "msgpack"):
@@ -200,7 +206,8 @@ class JobAPI:
         Args:
             job_id (int): Job ID
 
-        Yields: Row in a result
+        Yields:
+             Row in a result
         """
         for row in self.job_result_format_each(job_id, "msgpack"):
             yield row
@@ -212,7 +219,8 @@ class JobAPI:
             format (str): Output format of the job result information.
                 "json" or "msgpack"
 
-        Returns: The query result of the specified job in.
+        Returns:
+             The query result of the specified job in.
         """
         result = []
         for row in self.job_result_format_each(job_id, format):
@@ -225,7 +233,8 @@ class JobAPI:
             job_id (int): job ID
             format (str): Output format of the job result information. "json" or "msgpack"
 
-        Yields: The query result of the specified job in.
+        Yields:
+             The query result of the specified job in.
         """
         with self.get(
             "/v3/job/result/%s" % (urlquote(str(job_id))), {"format": format}
@@ -248,7 +257,8 @@ class JobAPI:
         Args:
             job_id (str): Job Id to kill
 
-        Returns: Job status before killing
+        Returns:
+             Job status before killing
         """
         with self.post("/v3/job/kill/%s" % (urlquote(str(job_id)))) as res:
             code, body = res.status, res.read()
@@ -273,8 +283,8 @@ class JobAPI:
             q (str): Query string.
             type (str): Query type. `hive`, `presto`, `bulkload`. Default: `hive`
             db (str): Database name.
-            result_url (str): Result output URL. For example,
-                postgresql://<username>:<password>@<hostname>:<port>/<database>/<table>
+            result_url (str): Result output URL. e.g.,
+                ``postgresql://<username>:<password>@<hostname>:<port>/<database>/<table>``
             priority (int or str): Job priority.
                 In str, "Normal", "Very low", "Low", "High", "Very high".
                 In int, the number in the range of -2 to 2.

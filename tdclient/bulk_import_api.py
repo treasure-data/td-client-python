@@ -25,7 +25,8 @@ class BulkImportAPI:
             table (str): Name of target table.
             params (dict, optional): Extra parameters.
 
-        Returns: True if succeeded
+        Returns:
+             True if succeeded
         """
         params = {} if params is None else params
         with self.post(
@@ -44,7 +45,8 @@ class BulkImportAPI:
         Args:
             name (str): Name of bulk import.
             params (dict, optional): Extra parameters.
-        Returns: True if succeeded
+        Returns:
+             True if succeeded
         """
         params = {} if params is None else params
         with self.post(

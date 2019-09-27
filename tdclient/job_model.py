@@ -112,57 +112,49 @@ class Job(Model):
 
     @property
     def id(self):
-        """
-        Returns: a string represents the identifier of the job
+        """a string represents the identifier of the job
         """
         return self._job_id
 
     @property
     def job_id(self):
-        """
-        Returns: a string represents the identifier of the job
+        """a string represents the identifier of the job
         """
         return self._job_id
 
     @property
     def type(self):
-        """
-        Returns: a string represents the engine type of the job (e.g. "hive", "presto", etc.)
+        """a string represents the engine type of the job (e.g. "hive", "presto", etc.)
         """
         return self._type
 
     @property
     def result_size(self):
-        """
-        Returns: the length of job result
+        """the length of job result
         """
         return self._result_size
 
     @property
     def num_records(self):
-        """
-        Returns: the number of records of job result
+        """the number of records of job result
         """
         return self._num_records
 
     @property
     def result_url(self):
-        """
-        Returns: a string of URL of the result on Treasure Data Service
+        """a string of URL of the result on Treasure Data Service
         """
         return self._result_url
 
     @property
     def result_schema(self):
-        """
-        Returns: an array of array represents the type of result columns (Hive specific) (e.g. [["_c1", "string"], ["_c2", "bigint"]])
+        """an array of array represents the type of result columns (Hive specific) (e.g. [["_c1", "string"], ["_c2", "bigint"]])
         """
         return self._hive_result_schema
 
     @property
     def priority(self):
-        """
-        Returns: a string represents the priority of the job (e.g. "NORMAL", "HIGH", etc.)
+        """a string represents the priority of the job (e.g. "NORMAL", "HIGH", etc.)
         """
         if self._priority in self.JOB_PRIORITY:
             return self.JOB_PRIORITY[self._priority]
@@ -172,29 +164,25 @@ class Job(Model):
 
     @property
     def retry_limit(self):
-        """
-        Returns: a number for automatic retry count
+        """a number for automatic retry count
         """
         return self._retry_limit
 
     @property
     def org_name(self):
-        """
-        Returns: organization name
+        """organization name
         """
         return self._org_name
 
     @property
     def user_name(self):
-        """
-        Returns: executing user name
+        """executing user name
         """
         return self._user_name
 
     @property
     def database(self):
-        """
-        Returns: a string represents the name of a database that job is running on
+        """a string represents the name of a database that job is running on
         """
         return self._database
 
@@ -214,8 +202,7 @@ class Job(Model):
 
     @property
     def debug(self):
-        """
-        Returns: a :class:`dict` of debug output (e.g. "cmdout", "stderr")
+        """a :class:`dict` of debug output (e.g. "cmdout", "stderr")
         """
         return self._debug
 
@@ -241,7 +228,8 @@ class Job(Model):
     def kill(self):
         """Kill the job
 
-        Returns: a string represents the status of killed job ("queued", "running")
+        Returns:
+             a string represents the status of killed job ("queued", "running")
         """
         response = self._client.kill(self.job_id)
         self.update()
@@ -249,14 +237,14 @@ class Job(Model):
 
     @property
     def query(self):
-        """
-        Returns: a string represents the query string of the job
+        """a string represents the query string of the job
         """
         return self._query
 
     def status(self):
         """
-        Returns: a string represents the status of the job ("success", "error", "killed", "queued", "running")
+        Returns:
+             str: a string represents the status of the job ("success", "error", "killed", "queued", "running")
         """
         if self._query is not None and not self.finished():
             self.update()
@@ -264,14 +252,14 @@ class Job(Model):
 
     @property
     def url(self):
-        """
-        Returns: a string of URL of the job on Treasure Data Service
+        """a string of URL of the job on Treasure Data Service
         """
         return self._url
 
     def result(self):
         """
-        Returns: an iterator of rows in result set
+        Yields:
+             an iterator of rows in result set
         """
         if not self.success():
             raise ValueError("result is not ready")
@@ -289,7 +277,8 @@ class Job(Model):
         Args:
             fmt (str): output format of result set
 
-        Returns: an iterator of rows in result set
+        Yields:
+             an iterator of rows in result set
         """
         if not self.success():
             raise ValueError("result is not ready")
@@ -304,42 +293,48 @@ class Job(Model):
 
     def finished(self):
         """
-        Returns: `True` if the job has been finished in success, error or killed
+        Returns:
+             `True` if the job has been finished in success, error or killed
         """
         self._update_progress()
         return self._status in self.FINISHED_STATUS
 
     def success(self):
         """
-        Returns: `True` if the job has been finished in success
+        Returns:
+             `True` if the job has been finished in success
         """
         self._update_progress()
         return self._status == self.STATUS_SUCCESS
 
     def error(self):
         """
-        Returns: `True` if the job has been finished in error
+        Returns:
+             `True` if the job has been finished in error
         """
         self._update_progress()
         return self._status == self.STATUS_ERROR
 
     def killed(self):
         """
-        Returns: `True` if the job has been finished in killed
+        Returns:
+             `True` if the job has been finished in killed
         """
         self._update_progress()
         return self._status == self.STATUS_KILLED
 
     def queued(self):
         """
-        Returns: `True` if the job is queued
+        Returns:
+             `True` if the job is queued
         """
         self._update_progress()
         return self._status == self.STATUS_QUEUED
 
     def running(self):
         """
-        Returns: `True` if the job is running
+        Returns:
+             `True` if the job is running
         """
         self._update_progress()
         return self._status == self.STATUS_RUNNING
