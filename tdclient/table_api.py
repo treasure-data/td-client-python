@@ -222,7 +222,8 @@ class TableAPI:
         """
         params = {"dest_database_name": dest_db}
         with self.post(
-            "/v3/table/change_database/%s/%s" % (urlquote(str(db)), urlquote(str(table))),
+            "/v3/table/change_database/%s/%s"
+            % (urlquote(str(db)), urlquote(str(table))),
             params,
         ) as res:
             code, body = res.status, res.read()

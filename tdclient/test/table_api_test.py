@@ -98,5 +98,6 @@ def test_change_database_success():
     td.post = mock.MagicMock(return_value=make_response(200, b""))
     td.change_database("sample_datasets", "foo", "new_database")
     td.post.assert_called_with(
-        "/v3/table/change_database/sample_datasets/foo", {"dest_database_name": "new_database"}
+        "/v3/table/change_database/sample_datasets/foo",
+        {"dest_database_name": "new_database"},
     )
