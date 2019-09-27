@@ -102,7 +102,7 @@ You can use td-client-python with external libraries which supports Database API
        data = pandas.read_sql("SELECT symbol, COUNT(1) AS c FROM nasdaq GROUP BY symbol", td)
        print(repr(data))
 
-We offer another package for pandas named `pandas-td <https://github.com/treasure-data/pandas-td>`_ with some advanced features.
+We offer another package for pandas named `pytd <https://github.com/treasure-data/pytd>`_ with some advanced features.
 You may prefer it if you need to do complicated things, such like exporting result data to Treasure Data, printing job's
 progress during long execution, etc.
 
