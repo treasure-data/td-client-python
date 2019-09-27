@@ -4,7 +4,7 @@
    :maxdepth: 1
    :caption: Contents
 
-   reference
+   api/index
    changelog
 
 
