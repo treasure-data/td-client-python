@@ -7,6 +7,13 @@ Unreleased
 
 
 * Drop Python 2 support (#60)
+* Remove deprecated functions as follows (#76):
+
+  * ``TableAPI.create_item_table``
+  * ``UserAPI.change_email``, ``UserAPI.change_password``, and ``UserAPI.change_my_password``
+  * ``JobAPI.hive_query``, and ``JobAPI.pig_query``
+* Support ``TableAPI.tail`` and ``TableAPI.change_database`` (#64, #71)
+* Introduce documentation site (#65, #66, #70, #72)
 
 v0.14.0 (2019-07-11)
 --------------------
