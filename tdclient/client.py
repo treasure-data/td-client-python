@@ -195,7 +195,7 @@ class Client:
         return self.api.tail(db_name, table_name, count, to, _from, block)
 
     def change_database(self, db_name, table_name, new_db_name):
-        """Change the table's database into another database.
+        """Move a target table from it's original database to new destination database.
 
         Args:
             db_name (str): Target database name.

@@ -210,7 +210,7 @@ class TableAPI:
             return result
 
     def change_database(self, db, table, dest_db):
-        """Change the table's database into another database.
+        """Move a target table from it's original database to new destination database.
 
         Args:
             db (str): Target database name.
