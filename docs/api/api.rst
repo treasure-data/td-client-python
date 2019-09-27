@@ -1,7 +1,7 @@
 API
 =====
 
-:class:`tdclient.api.API` class is a internal class represents API.
+:class:`tdclient.api.API` class is an internal class represents API.
 
 tdclient.api
 -------------------
