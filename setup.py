@@ -44,7 +44,7 @@ setup(
     url="http://treasuredata.com/",
     python_requires=">=3.5",
     install_requires=[
-        "msgpack",
+        "msgpack>=0.5.2",
         "python-dateutil",
         "urllib3",
     ],
