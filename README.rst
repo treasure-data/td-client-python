@@ -54,6 +54,8 @@ Examples
 
 Please see also the examples at `Treasure Data Documentation <http://docs.treasuredata.com/articles/rest-api-python-client>`_.
 
+If you want to find API reference, see also `API document <https://tdclient.readthedocs.io/>`_.
+
 Listing jobs
 ^^^^^^^^^^^^
 
