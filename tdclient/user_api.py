@@ -15,7 +15,7 @@ class UserAPI:
             user (str): Email of the user to be authenticated.
             password (str): Must contain at least 1 letter, 1 number, and 1 special
                 character such as the following:
-                ``[!#\$%\-_=\+<>0-9a-zA-Z]``
+                ``r'[!#$%-_=+<>0-9a-zA-Z]'``
         Returns:
             str: API key
         """

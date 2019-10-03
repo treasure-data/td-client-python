@@ -223,7 +223,7 @@ class BulkImportAPI:
     def perform_bulk_import(self, name, params=None):
         """Execute a job to perform bulk import with the indicated priority using the
         resource pool if indicated, else it will use the account's default.
-        
+
         Args:
             name (str): Bulk import name.
             params (dict, optional): Extra parameters.

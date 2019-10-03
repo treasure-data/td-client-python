@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import warnings
-
 from tdclient.model import Model
 
 

@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import time
-
 from tdclient.model import Model
 
 
