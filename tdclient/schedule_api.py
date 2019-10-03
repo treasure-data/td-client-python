@@ -4,9 +4,10 @@ from urllib.parse import quote as urlquote
 
 
 class ScheduleAPI:
-    ####
-    ## Schedule API
-    ##
+    """Access to Schedule API
+
+    This class is inherited by :class:`tdclient.api.API`.
+    """
 
     def create_schedule(self, name, params=None):
         """Create a new scheduled query with the specified name.

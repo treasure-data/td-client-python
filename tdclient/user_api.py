@@ -4,9 +4,10 @@ from urllib.parse import quote as urlquote
 
 
 class UserAPI:
-    ####
-    ## User API
-    ##
+    """Access to User API.
+
+    This class is inherited by :class:`tdclient.api.API`.
+    """
 
     def authenticate(self, user, password):
         """Authenticate the indicated email address which is not authenticated via SSO.

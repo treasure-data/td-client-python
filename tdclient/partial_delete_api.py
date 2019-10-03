@@ -4,9 +4,11 @@ from urllib.parse import quote as urlquote
 
 
 class PartialDeleteAPI:
-    ####
-    ## Partial delete API
-    ##
+    """Create a job to partially delete the contents of the table with the given
+    time range.
+
+    This class is inherited by :class:`tdclient.api.API`.
+    """
 
     def partial_delete(self, db, table, to, _from, params=None):
         """Create a job to partially delete the contents of the table with the given

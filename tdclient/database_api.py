@@ -4,9 +4,10 @@ from urllib.parse import quote as urlquote
 
 
 class DatabaseAPI:
-    ####
-    ## Database API
-    ##
+    """Access to Database of Treasure Data Service.
+
+    This class is inherited by :class:`tdclient.api.API`.
+    """
 
     def list_databases(self):
         """Get the list of all the databases of the account.

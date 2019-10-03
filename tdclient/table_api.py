@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 
 import json
-import warnings
 from urllib.parse import quote as urlquote
 
 import msgpack
 
 
 class TableAPI:
-    ####
-    ## Table API
-    ##
+    """Access to Table API
+
+    This class is inherited by :class:`tdclient.api.API`.
+    """
 
     def list_tables(self, db):
         """Gets the list of table in the database.

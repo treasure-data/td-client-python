@@ -2,16 +2,16 @@
 
 import codecs
 import json
-import warnings
 from urllib.parse import quote as urlquote
 
 import msgpack
 
 
 class JobAPI:
-    ####
-    ## Job API
-    ##
+    """Access to Job API
+
+    This class is inherited by :class:`tdclient.api.API`.
+    """
 
     JOB_PRIORITY = {
         "VERY LOW": -2,
@@ -27,7 +27,8 @@ class JobAPI:
     }
 
     def list_jobs(self, _from=0, to=None, status=None, conditions=None):
-        """
+        """Show the list of Jobs.
+
         Args:
             _from (int): Gets the Job from the nth index in the list. Default: 0
             to (int, optional): Gets the Job up to the nth index in the list.
@@ -108,7 +109,8 @@ class JobAPI:
             return jobs
 
     def show_job(self, job_id):
-        """Returns detailed information of a Job
+        """Return detailed information of a Job.
+
         Args:
             job_id (str): job ID
 
@@ -189,7 +191,8 @@ class JobAPI:
             return js["status"]
 
     def job_result(self, job_id):
-        """
+        """Return the job result.
+
         Args:
             job_id (int): Job ID
 
@@ -202,7 +205,8 @@ class JobAPI:
         return result
 
     def job_result_each(self, job_id):
-        """
+        """Yield a row of the job result.
+
         Args:
             job_id (int): Job ID
 
@@ -213,7 +217,8 @@ class JobAPI:
             yield row
 
     def job_result_format(self, job_id, format):
-        """
+        """Return the job result with specified format.
+
         Args:
             job_id (int): Job ID
             format (str): Output format of the job result information.
@@ -228,7 +233,8 @@ class JobAPI:
         return result
 
     def job_result_format_each(self, job_id, format):
-        """
+        """Yield a row of the job result with specified format.
+
         Args:
             job_id (int): job ID
             format (str): Output format of the job result information. "json" or "msgpack"
@@ -253,7 +259,8 @@ class JobAPI:
                 yield res.read()
 
     def kill(self, job_id):
-        """
+        """Stop the specific job if it is running.
+
         Args:
             job_id (str): Job Id to kill
 
@@ -278,7 +285,8 @@ class JobAPI:
         retry_limit=None,
         **kwargs
     ):
-        """
+        """Create a job for given query.
+
         Args:
             q (str): Query string.
             type (str): Query type. `hive`, `presto`, `bulkload`. Default: `hive`

@@ -4,9 +4,10 @@ from urllib.parse import quote as urlquote
 
 
 class ExportAPI:
-    ####
-    ## Export API
-    ##
+    """Access to Export API.
+
+    This class is inherited by :class:`tdclient.api.API`.
+    """
 
     def export_data(self, db, table, storage_type, params=None):
         """Creates a job to export the contents from the specified database and table
