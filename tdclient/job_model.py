@@ -209,13 +209,22 @@ class Job(Model):
 
         Args:
             timeout (int, optional): Timeout in seconds. No timeout by default.
-            wait_interval (int): wait interval in second. Default 5 seconds.
-            wait_callback (callable): A callable to be called on every tick of wait interval.
+            wait_interval (int, optional): wait interval in second. Default 5 seconds.
+            wait_callback (callable, optional): A callable to be called on every tick of
+                wait interval.
+            callback (callable, optional): [Deprecated] Same behavior as `wait_callback`
+                for compatibility.
         """
+        if callback is not None:
+            warnings.warn(
+                "callback will be removed from future release. Please use wait_callback instaed.",
+                category=DeprecationWarning,
+            )
         started_at = time.time()
         while not self.finished():
             if timeout is None or abs(time.time() - started_at) < timeout:
                 time.sleep(wait_interval)
+                # TODO: remove `callback` argument
                 cb = wait_callback if callable(wait_callback) else callback
                 if callable(cb):
                     cb(self)
