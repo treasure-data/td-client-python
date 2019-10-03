@@ -2,14 +2,16 @@
 
 
 class ServerStatusAPI:
-    ####
-    ## Server Status API
-    ##
+    """Access to Server Status API
+
+    This class is inherited by :class:`tdclient.api.API`.
+    """
 
     def server_status(self):
-        """
-        TODO: add docstring
-        => status:str
+        """Show the status of Treasure Data
+
+        Returns:
+            str: status
         """
         with self.get("/v3/system/server_status") as res:
             code, body = res.status, res.read()

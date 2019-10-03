@@ -99,7 +99,7 @@ class Job(Model):
 
     def _update_status(self):
         warnings.warn(
-            "_update_status() will be removed from future release. Please use update() instaed.)",
+            "_update_status() will be removed from future release. Please use update() instaed.",
             category=DeprecationWarning,
         )
         self.update()
@@ -188,15 +188,13 @@ class Job(Model):
 
     @property
     def linked_result_export_job_id(self):
-        """
-        TODO: add docstring
+        """Linked result export job ID from query job
         """
         return self._linked_result_export_job_id
 
     @property
     def result_export_target_job_id(self):
-        """
-        TODO: add docstring
+        """Associated query job ID from result export job ID
         """
         return self._result_export_target_job_id
 
@@ -210,7 +208,7 @@ class Job(Model):
         """Sleep until the job has been finished
 
         Args:
-            timeout (int): Timeout in seconds. No timeout by default.
+            timeout (int, optional): Timeout in seconds. No timeout by default.
             wait_interval (int): wait interval in second. Default 5 seconds.
             wait_callback (callable): A callable to be called on every tick of wait interval.
         """

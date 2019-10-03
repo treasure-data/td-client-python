@@ -5,14 +5,16 @@ from urllib.parse import quote as urlquote
 
 
 class ConnectorAPI:
-    ####
-    ## Data Connector API
-    ##
+    """Access Data Connector API which handles Data Connector.
+
+    This class is inherited by :class:`tdclient.api.API`.
+    """
 
     def connector_guess(self, job):
-        """
+        """Guess the Data Connector configuration
+
         Args:
-          job (dict): :class:`dict` representation of `seed.yml`
+            job (dict): :class:`dict` representation of `seed.yml`
 
         Returns:
              :class:`dict`
@@ -26,9 +28,10 @@ class ConnectorAPI:
             return self.checked_json(body, [])
 
     def connector_preview(self, job):
-        """
+        """Show the preview of the Data Connector job.
+
         Args:
-          job (dict): :class:`dict` representation of `load.yml`
+            job (dict): :class:`dict` representation of `load.yml`
 
         Returns:
              :class:`dict`
@@ -42,11 +45,12 @@ class ConnectorAPI:
             return self.checked_json(body, [])
 
     def connector_issue(self, db, table, job):
-        """
+        """Create a Data Connector job.
+
         Args:
-          db (str): name of the database to perform connector job
-          table (str): name of the table to perform connector job
-          job (dict): :class:`dict` representation of `load.yml`
+            db (str): name of the database to perform connector job
+            table (str): name of the table to perform connector job
+            job (dict): :class:`dict` representation of `load.yml`
 
         Returns:
              str: job Id
@@ -66,7 +70,8 @@ class ConnectorAPI:
             return str(js["job_id"])
 
     def connector_list(self):
-        """
+        """Show the list of available Data Connector sessions.
+
         Returns:
              :class:`list`
         """
@@ -78,12 +83,36 @@ class ConnectorAPI:
             return json.loads(body.decode("utf-8"))
 
     def connector_create(self, name, database, table, job, params=None):
-        """
+        """Create a Data Connector session.
+
         Args:
-          name (str): name of the connector job
-          database (str): name of the database to perform connector job
-          table (str): name of the table to perform connector job
-          job (dict): :class:`dict` representation of `load.yml`
+            name (str): name of the connector job
+            database (str): name of the database to perform connector job
+            table (str): name of the table to perform connector job
+            job (dict): :class:`dict` representation of `load.yml`
+            params (dict, optional): Extra parameters
+
+                - config (str):
+                     Embulk configuration as JSON format.
+                     See also https://www.embulk.org/docs/built-in.html#embulk-configuration-file-format
+                - cron (str, optional):
+                     Schedule of the query.
+                     {``"@daily"``, ``"@hourly"``, ``"10 * * * *"`` (custom cron)}
+                     See also: https://support.treasuredata.com/hc/en-us/articles/360001451088-Scheduled-Jobs-Web-Console
+                - delay (int, optional):
+                     A delay ensures all buffered events are imported
+                     before running the query. Default: 0
+                - database (str):
+                     Target databse for the Data Connector session
+                - name (str):
+                     Name of the Data Connector session
+                - table (str):
+                     Target table for the Data Connector session
+                - time_column (str, optional):
+                     Column in the table for registering config.out.time
+                - timezone (str):
+                     Timezone for scheduled Data Connector session.
+                     See here for list of supported timezones https://gist.github.com/frsyuki/4533752
 
         Returns:
              :class:`dict`
@@ -104,9 +133,10 @@ class ConnectorAPI:
             return self.checked_json(body, [])
 
     def connector_show(self, name):
-        """
+        """Show a specific Data Connector session information.
+
         Args:
-          name (str): name of the connector job
+            name (str): name of the connector job
 
         Returns:
              :class:`dict`
@@ -120,10 +150,12 @@ class ConnectorAPI:
             return self.checked_json(body, [])
 
     def connector_update(self, name, job):
-        """
+        """Update a specific Data Connector session.
+
         Args:
           name (str): name of the connector job
-          job (dict): :class:`dict` representation of `load.yml`
+          job (dict): :class:`dict` representation of `load.yml`.
+              For detailed format, see also: https://www.embulk.org/docs/built-in.html#embulk-configuration-file-format
 
         Returns:
              :class:`dict`
@@ -144,9 +176,10 @@ class ConnectorAPI:
             return self.checked_json(body, [])
 
     def connector_delete(self, name):
-        """
+        """Delete a Data Connector session.
+
         Args:
-          name (str): name of the connector job
+            name (str): name of the connector job
 
         Returns:
              :class:`dict`
@@ -160,9 +193,10 @@ class ConnectorAPI:
             return self.checked_json(body, [])
 
     def connector_history(self, name):
-        """
+        """Show the list of the executed jobs information for the Data Connector job.
+
         Args:
-          name (str): name of the connector job
+            name (str): name of the connector job
 
         Returns:
              :class:`list`
@@ -178,9 +212,17 @@ class ConnectorAPI:
             return json.loads(body.decode("utf-8"))
 
     def connector_run(self, name, **kwargs):
-        """
+        """Create a job to execute Data Connector session.
+
         Args:
-          name (str): name of the connector job
+            name (str): name of the connector job
+            **kwargs (optional): Extra parameters.
+
+                - scheduled_time (int):
+                    Time in Unix epoch format that would be set as
+                    `TD_SCHEDULED_TIME`.
+                - domain_key (str):
+                    Job domain key which is assigned to a single job.
 
         Returns:
              :class:`dict`

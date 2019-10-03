@@ -4,9 +4,10 @@ from urllib.parse import quote as urlquote
 
 
 class DatabaseAPI:
-    ####
-    ## Database API
-    ##
+    """Access to Database of Treasure Data Service.
+
+    This class is inherited by :class:`tdclient.api.API`.
+    """
 
     def list_databases(self):
         """Get the list of all the databases of the account.
@@ -31,7 +32,7 @@ class DatabaseAPI:
                     self.get_or_else(m, "updated_at", "1970-01-01T00:00:00Z"),
                     "%Y-%m-%dT%H:%M:%SZ",
                 )
-                m["org_name"] = None  # set None to org for API copatibility
+                m["org_name"] = None  # set None to org for API compatibility
                 result[name] = m
             return result
 

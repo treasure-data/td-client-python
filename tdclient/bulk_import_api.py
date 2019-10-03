@@ -11,9 +11,10 @@ import msgpack
 
 
 class BulkImportAPI:
-    ####
-    ## Bulk import API
-    ##
+    """Enable bulk importing of data to the targeted database and table.
+
+    This class is inherited by :class:`tdclient.api.API`.
+    """
 
     def create_bulk_import(self, name, db, table, params=None):
         """Enable bulk importing of data to the targeted database and table and stores
@@ -223,7 +224,7 @@ class BulkImportAPI:
     def perform_bulk_import(self, name, params=None):
         """Execute a job to perform bulk import with the indicated priority using the
         resource pool if indicated, else it will use the account's default.
-        
+
         Args:
             name (str): Bulk import name.
             params (dict, optional): Extra parameters.

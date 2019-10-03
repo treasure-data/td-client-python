@@ -4,16 +4,17 @@ from urllib.parse import quote as urlquote
 
 
 class ResultAPI:
-    ####
-    ## Result API
-    ##
+    """Access to Result API.
+
+    This class is inherited by :class:`tdclient.api.API`.
+    """
 
     def list_result(self):
         """Get the list of all the available authentications.
 
         Returns:
-            [(str, str, None)]: The list of tuple of name, Result output url, and None
-                (organization name).
+            [(str, str, None)]: The list of tuple of name, Result output url, and
+                 organization name (always `None` for api compatibility).
         """
         with self.get("/v3/result/list") as res:
             code, body = res.status, res.read()

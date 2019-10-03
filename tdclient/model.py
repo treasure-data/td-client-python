@@ -8,6 +8,6 @@ class Model:
     @property
     def client(self):
         """
-        Returns: a :class:`tdclient.Client` instance
+        Returns: a :class:`tdclient.client.Client` instance
         """
         return self._client

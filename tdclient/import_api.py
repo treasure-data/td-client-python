@@ -6,9 +6,10 @@ from urllib.parse import quote as urlquote
 
 
 class ImportAPI:
-    ####
-    ## Import API
-    ##
+    """Import data into Treasure Data Service.
+
+    This class is inherited by :class:`tdclient.api.API`.
+    """
 
     def import_data(self, db, table, format, bytes_or_stream, size, unique_id=None):
         """Import data into Treasure Data Service
