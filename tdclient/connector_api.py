@@ -83,7 +83,7 @@ class ConnectorAPI:
             return json.loads(body.decode("utf-8"))
 
     def connector_create(self, name, database, table, job, params=None):
-        """Create a DataConnector session.
+        """Create a Data Connector session.
 
         Args:
             name (str): name of the connector job
@@ -91,6 +91,28 @@ class ConnectorAPI:
             table (str): name of the table to perform connector job
             job (dict): :class:`dict` representation of `load.yml`
             params (dict, optional): Extra parameters
+
+                - config (str):
+                     Embulk configuration as JSON format.
+                     See also https://www.embulk.org/docs/built-in.html#embulk-configuration-file-format
+                - cron (str, optional):
+                     Schedule of the query.
+                     {``"@daily"``, ``"@hourly"``, ``"10 * * * *"`` (custom cron)}
+                     See also: https://support.treasuredata.com/hc/en-us/articles/360001451088-Scheduled-Jobs-Web-Console
+                - delay (int, optional):
+                     A delay ensures all buffered events are imported
+                     before running the query. Default: 0
+                - database (str):
+                     Target databse for the Data Connector session
+                - name (str):
+                     Name of the Data Connector session
+                - table (str):
+                     Target table for the Data Connector session
+                - time_column (str, optional):
+                     Column in the table for registering config.out.time
+                - timezone (str):
+                     Timezone for scheduled Data Connector session.
+                     See here for list of supported timezones https://gist.github.com/frsyuki/4533752
 
         Returns:
              :class:`dict`

@@ -11,7 +11,7 @@ import msgpack
 
 
 class BulkImportAPI:
-    """Enable bulk importing of data to the targeted database and tableAccess.
+    """Enable bulk importing of data to the targeted database and table.
 
     This class is inherited by :class:`tdclient.api.API`.
     """

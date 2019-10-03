@@ -14,7 +14,7 @@ class ResultAPI:
 
         Returns:
             [(str, str, None)]: The list of tuple of name, Result output url, and
-                 organization name (always `None`).
+                 organization name (always `None` for api compatibility).
         """
         with self.get("/v3/result/list") as res:
             code, body = res.status, res.read()
