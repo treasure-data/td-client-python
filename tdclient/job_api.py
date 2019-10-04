@@ -2,9 +2,10 @@
 
 import codecs
 import json
-from urllib.parse import quote as urlquote
 
 import msgpack
+
+from .util import create_url
 
 
 class JobAPI:
@@ -118,7 +119,7 @@ class JobAPI:
              :class:`dict`: Detailed information of a job
         """
         # use v3/job/status instead of v3/job/show to poll finish of a job
-        with self.get("/v3/job/show/%s" % (urlquote(str(job_id)))) as res:
+        with self.get(create_url("/v3/job/show/{job_id}", job_id=job_id)) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Show job failed", res, body)
@@ -182,7 +183,7 @@ class JobAPI:
         Returns:
              The status information of the given job id at last execution.
         """
-        with self.get("/v3/job/status/%s" % (urlquote(str(job_id)))) as res:
+        with self.get(create_url("/v3/job/status/{job_id}", job_id=job_id)) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Get job status failed", res, body)
@@ -243,7 +244,7 @@ class JobAPI:
              The query result of the specified job in.
         """
         with self.get(
-            "/v3/job/result/%s" % (urlquote(str(job_id))), {"format": format}
+            create_url("/v3/job/result/{job_id}", job_id=job_id), {"format": format}
         ) as res:
             code = res.status
             if code != 200:
@@ -267,7 +268,7 @@ class JobAPI:
         Returns:
              Job status before killing
         """
-        with self.post("/v3/job/kill/%s" % (urlquote(str(job_id)))) as res:
+        with self.post(create_url("/v3/job/kill/{job_id}", job_id=job_id)) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Kill job failed", res, body)
@@ -317,7 +318,7 @@ class JobAPI:
         if retry_limit is not None:
             params["retry_limit"] = retry_limit
         with self.post(
-            "/v3/job/issue/%s/%s" % (urlquote(str(type)), urlquote(str(db))), params
+            create_url("/v3/job/issue/{type}/{db}", type=type, db=db), params
         ) as res:
             code, body = res.status, res.read()
             if code != 200:

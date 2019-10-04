@@ -2,7 +2,7 @@
 
 import contextlib
 import os
-from urllib.parse import quote as urlquote
+from .util import create_url
 
 
 class ImportAPI:
@@ -28,15 +28,19 @@ class ImportAPI:
              float represents the elapsed time to import data
         """
         if unique_id is not None:
-            path = "/v3/table/import_with_id/{db}/{table}/{unique_id}/{format}".format(
-                db=urlquote(db),
-                table=urlquote(table),
+            path = create_url(
+                "/v3/table/import_with_id/{db}/{table}/{unique_id}/{format}",
+                db=db,
+                table=table,
                 unique_id=unique_id,
-                format=urlquote(format),
+                format=format,
             )
         else:
-            path = "/v3/table/import/{db}/{table}/{format}".format(
-                db=urlquote(db), table=urlquote(table), format=urlquote(format)
+            path = create_url(
+                "/v3/table/import/{db}/{table}/{format}",
+                db=db,
+                table=table,
+                format=format,
             )
 
         kwargs = {}

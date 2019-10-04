@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from urllib.parse import quote as urlquote
+from .util import create_url
 
 
 class ExportAPI:
@@ -51,7 +51,7 @@ class ExportAPI:
         params = {} if params is None else params
         params["storage_type"] = storage_type
         with self.post(
-            "/v3/export/run/%s/%s" % (urlquote(str(db)), urlquote(str(table))), params
+            create_url("/v3/export/run/{db}/{table}", db=db, table=table), params
         ) as res:
             code, body = res.status, res.read()
             if code != 200:

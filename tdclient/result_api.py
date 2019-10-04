@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from urllib.parse import quote as urlquote
+from .util import create_url
 
 
 class ResultAPI:
@@ -37,7 +37,9 @@ class ResultAPI:
         """
         params = {} if params is None else params
         params.update({"url": url})
-        with self.post("/v3/result/create/%s" % (urlquote(str(name))), params) as res:
+        with self.post(
+            create_url("/v3/result/create/{name}", name=name), params
+        ) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Create result table failed", res, body)
@@ -51,7 +53,7 @@ class ResultAPI:
         Returns:
             bool: True if succeeded.
         """
-        with self.post("/v3/result/delete/%s" % (urlquote(str(name)))) as res:
+        with self.post(create_url("/v3/result/delete/{name}", name=name)) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Delete result table failed", res, body)

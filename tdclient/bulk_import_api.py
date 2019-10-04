@@ -5,9 +5,10 @@ import contextlib
 import gzip
 import io
 import os
-from urllib.parse import quote as urlquote
 
 import msgpack
+
+from .util import create_url
 
 
 class BulkImportAPI:
@@ -31,8 +32,12 @@ class BulkImportAPI:
         """
         params = {} if params is None else params
         with self.post(
-            "/v3/bulk_import/create/%s/%s/%s"
-            % (urlquote(str(name)), urlquote(str(db)), urlquote(str(table))),
+            create_url(
+                "/v3/bulk_import/create/{name}/{db}/{table}",
+                name=name,
+                db=db,
+                table=table,
+            ),
             params,
         ) as res:
             code, body = res.status, res.read()
@@ -51,7 +56,7 @@ class BulkImportAPI:
         """
         params = {} if params is None else params
         with self.post(
-            "/v3/bulk_import/delete/%s" % (urlquote(str(name))), params
+            create_url("/v3/bulk_import/delete/{name}", name=name), params
         ) as res:
             code, body = res.status, res.read()
             if code != 200:
@@ -66,7 +71,7 @@ class BulkImportAPI:
         Returns:
             dict: Detailed information of the bulk import.
         """
-        with self.get("/v3/bulk_import/show/%s" % (urlquote(str(name)))) as res:
+        with self.get(create_url("/v3/bulk_import/show/{name}", name=name)) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Show bulk import failed", res, body)
@@ -100,7 +105,7 @@ class BulkImportAPI:
         """
         params = {} if params is None else params
         with self.get(
-            "/v3/bulk_import/list_parts/%s" % (urlquote(str(name))), params
+            create_url("/v3/bulk_import/list_parts/{name}", name=name), params
         ) as res:
             code, body = res.status, res.read()
             if code != 200:
@@ -139,8 +144,11 @@ class BulkImportAPI:
         """
         self.validate_part_name(part_name)
         with self.put(
-            "/v3/bulk_import/upload_part/%s/%s"
-            % (urlquote(str(name)), urlquote(str(part_name))),
+            create_url(
+                "/v3/bulk_import/upload_part/{name}/{part_name}",
+                name=name,
+                part_name=part_name,
+            ),
             stream,
             size,
         ) as res:
@@ -176,8 +184,11 @@ class BulkImportAPI:
         self.validate_part_name(part_name)
         params = {} if params is None else params
         with self.post(
-            "/v3/bulk_import/delete_part/%s/%s"
-            % (urlquote(str(name)), urlquote(str(part_name))),
+            create_url(
+                "/v3/bulk_import/delete_part/{name}/{part_name}",
+                name=name,
+                part_name=part_name,
+            ),
             params,
         ) as res:
             code, body = res.status, res.read()
@@ -196,7 +207,7 @@ class BulkImportAPI:
         """
         params = {} if params is None else params
         with self.post(
-            "/v3/bulk_import/freeze/%s" % (urlquote(str(name))), params
+            create_url("/v3/bulk_import/freeze/{name}", name=name), params
         ) as res:
             code, body = res.status, res.read()
             if code != 200:
@@ -214,7 +225,7 @@ class BulkImportAPI:
         """
         params = {} if params is None else params
         with self.post(
-            "/v3/bulk_import/unfreeze/%s" % (urlquote(str(name))), params
+            create_url("/v3/bulk_import/unfreeze/{name}", name=name), params
         ) as res:
             code, body = res.status, res.read()
             if code != 200:
@@ -233,7 +244,7 @@ class BulkImportAPI:
         """
         params = {} if params is None else params
         with self.post(
-            "/v3/bulk_import/perform/%s" % (urlquote(str(name))), params
+            create_url("/v3/bulk_import/perform/{name}", name=name), params
         ) as res:
             code, body = res.status, res.read()
             if code != 200:
@@ -252,7 +263,7 @@ class BulkImportAPI:
         """
         params = {} if params is None else params
         with self.post(
-            "/v3/bulk_import/commit/%s" % (urlquote(str(name))), params
+            create_url("/v3/bulk_import/commit/{name}", name=name), params
         ) as res:
             code, body = res.status, res.read()
             if code != 200:
@@ -270,7 +281,7 @@ class BulkImportAPI:
         """
         params = {} if params is None else params
         with self.get(
-            "/v3/bulk_import/error_records/%s" % (urlquote(str(name))), params
+            create_url("/v3/bulk_import/error_records/{name}", name=name), params
         ) as res:
             code = res.status
             if code != 200:
