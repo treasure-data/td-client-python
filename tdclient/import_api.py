@@ -28,17 +28,15 @@ class ImportAPI:
              float represents the elapsed time to import data
         """
         if unique_id is not None:
-            path = "/v3/table/import_with_id/%s/%s/%s/%s" % (
-                urlquote(str(db)),
-                urlquote(str(table)),
-                urlquote(str(unique_id)),
-                urlquote(str(format)),
+            path = "/v3/table/import_with_id/{db}/{table}/{unique_id}/{format}".format(
+                db=urlquote(db),
+                table=urlquote(table),
+                unique_id=unique_id,
+                format=urlquote(format),
             )
         else:
-            path = "/v3/table/import/%s/%s/%s" % (
-                urlquote(str(db)),
-                urlquote(str(table)),
-                urlquote(str(format)),
+            path = "/v3/table/import/{db}/{table}/{format}".format(
+                db=urlquote(db), table=urlquote(table), format=urlquote(format)
             )
 
         kwargs = {}

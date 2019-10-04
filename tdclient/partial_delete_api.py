@@ -39,7 +39,9 @@ class PartialDeleteAPI:
         params["to"] = str(to)
         params["from"] = str(_from)
         with self.post(
-            "/v3/table/partialdelete/%s/%s" % (urlquote(str(db)), urlquote(str(table))),
+            "/v3/table/partialdelete/{db}/{table}".format(
+                db=urlquote(db), table=urlquote(table)
+            ),
             params,
         ) as res:
             code, body = res.status, res.read()
