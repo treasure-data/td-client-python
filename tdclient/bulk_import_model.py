@@ -117,6 +117,12 @@ class BulkImport(Model):
 
     def perform(self, wait=False, wait_interval=5, wait_callback=None):
         """Perform bulk import
+
+        Args:
+            wait (bool, optional): Flag for wait bulk import job. Default `False`
+            wait_interval (int, optional): wait interval in second. Default `5`.
+            wait_callback (callable, optional): A callable to be called on every tick of
+                wait interval.
         """
         self.update()
         if not self.upload_frozen:
@@ -125,7 +131,7 @@ class BulkImport(Model):
             )
         job = self._client.perform_bulk_import(self.name)
         if wait:
-            job.wait(wait_interval=wait_interval, wait_callback=None)
+            job.wait(wait_interval=wait_interval, wait_callback=wait_callback)
         self.update()
         return job
 

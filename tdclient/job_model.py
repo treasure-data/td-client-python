@@ -204,21 +204,21 @@ class Job(Model):
         """
         return self._debug
 
-    def wait(self, timeout=None, wait_interval=5, wait_callback=None, callback=None):
+    def wait(self, timeout=None, wait_interval=5, wait_callback=None):
         """Sleep until the job has been finished
 
         Args:
             timeout (int, optional): Timeout in seconds. No timeout by default.
-            wait_interval (int): wait interval in second. Default 5 seconds.
-            wait_callback (callable): A callable to be called on every tick of wait interval.
+            wait_interval (int, optional): wait interval in second. Default 5 seconds.
+            wait_callback (callable, optional): A callable to be called on every tick of
+                wait interval.
         """
         started_at = time.time()
         while not self.finished():
             if timeout is None or abs(time.time() - started_at) < timeout:
                 time.sleep(wait_interval)
-                cb = wait_callback if callable(wait_callback) else callback
-                if callable(cb):
-                    cb(self)
+                if callable(wait_callback):
+                    wait_callback(self)
             else:
                 raise RuntimeError("timeout")  # TODO: throw proper error
         self.update()
