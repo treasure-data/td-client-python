@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from urllib.parse import quote as urlquote
+from .util import create_url
 
 
 class UserAPI:
@@ -66,7 +66,7 @@ class UserAPI:
             bool: `True` if succeeded.
         """
         params = {"organization": org, "email": email, "password": password}
-        with self.post("/v3/user/add/%s" % (urlquote(str(name))), params) as res:
+        with self.post(create_url("/v3/user/add/{name}", name=name), params) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Adding user failed", res, body)
@@ -79,7 +79,7 @@ class UserAPI:
         Returns:
             bool: `True` if succeded
         """
-        with self.post("/v3/user/remove/%s" % (urlquote(str(name)))) as res:
+        with self.post(create_url("/v3/user/remove/{name}", name=name)) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Removing user failed", res, body)
@@ -93,7 +93,7 @@ class UserAPI:
         Returns:
             [str]: List of API keys
         """
-        with self.get("/v3/user/apikey/list/%s" % (urlquote(str(name)))) as res:
+        with self.get(create_url("/v3/user/apikey/list/{name}", name=name)) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("List API keys failed", res, body)
@@ -108,7 +108,7 @@ class UserAPI:
         Returns:
             bool: `True` if succeeded.
         """
-        with self.post("/v3/user/apikey/add/%s" % (urlquote(str(name)))) as res:
+        with self.post(create_url("/v3/user/apikey/add/{name}", name=name)) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Adding API key failed", res, body)
@@ -125,7 +125,7 @@ class UserAPI:
         """
         params = {"apikey": apikey}
         with self.post(
-            "/v3/user/apikey/remove/%s" % (urlquote(str(name))), params
+            create_url("/v3/user/apikey/remove/{name}", name=name), params
         ) as res:
             code, body = res.status, res.read()
             if code != 200:

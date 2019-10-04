@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-
-from urllib.parse import quote as urlquote
+from .util import create_url
 
 
 class ScheduleAPI:
@@ -53,7 +52,9 @@ class ScheduleAPI:
         """
         params = {} if params is None else params
         params.update({"type": params.get("type", "hive")})
-        with self.post("/v3/schedule/create/%s" % (urlquote(str(name))), params) as res:
+        with self.post(
+            create_url("/v3/schedule/create/{name}", name=name), params
+        ) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Create schedule failed", res, body)
@@ -71,7 +72,7 @@ class ScheduleAPI:
         Returns:
             (str, str): Tuple of cron and query.
         """
-        with self.post("/v3/schedule/delete/%s" % (urlquote(str(name)))) as res:
+        with self.post(create_url("/v3/schedule/delete/{name}", name=name)) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Delete schedule failed", res, body)
@@ -147,7 +148,9 @@ class ScheduleAPI:
                     e.g. 'tableau://user:password@host.com:1234/datasource'
         """
         params = {} if params is None else params
-        with self.post("/v3/schedule/update/%s" % (urlquote(str(name))), params) as res:
+        with self.post(
+            create_url("/v3/schedule/update/{name}", name=name), params
+        ) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Update schedule failed", res, body)
@@ -173,7 +176,9 @@ class ScheduleAPI:
             params["from"] = str(_from)
         if to is not None:
             params["to"] = str(to)
-        with self.get("/v3/schedule/history/%s" % (urlquote(str(name))), params) as res:
+        with self.get(
+            create_url("/v3/schedule/history/{name}", name=name), params
+        ) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("List history failed", res, body)
@@ -230,8 +235,7 @@ class ScheduleAPI:
         if num is not None:
             params = {"num": num}
         with self.post(
-            "/v3/schedule/run/%s/%s" % (urlquote(str(name)), urlquote(str(time))),
-            params,
+            create_url("/v3/schedule/run/{name}/{time}", name=name, time=time), params
         ) as res:
             code, body = res.status, res.read()
         if code != 200:

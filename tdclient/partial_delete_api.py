@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from urllib.parse import quote as urlquote
+from .util import create_url
 
 
 class PartialDeleteAPI:
@@ -39,7 +39,7 @@ class PartialDeleteAPI:
         params["to"] = str(to)
         params["from"] = str(_from)
         with self.post(
-            "/v3/table/partialdelete/%s/%s" % (urlquote(str(db)), urlquote(str(table))),
+            create_url("/v3/table/partialdelete/{db}/{table}", db=db, table=table),
             params,
         ) as res:
             code, body = res.status, res.read()

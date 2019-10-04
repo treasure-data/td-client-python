@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 import json
-from urllib.parse import quote as urlquote
 
 import msgpack
+
+from .util import create_url
 
 
 class TableAPI:
@@ -43,7 +44,7 @@ class TableAPI:
               'last_import': datetime.datetime(2019, 9, 18, 7, 14, 28, tzinfo=tzutc())},
             }
         """
-        with self.get("/v3/table/list/%s" % (urlquote(str(db)))) as res:
+        with self.get(create_url("/v3/table/list/{db}", db=db)) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("List tables failed", res, body)
@@ -89,8 +90,9 @@ class TableAPI:
     def _create_table(self, db, table, type, params=None):
         params = {} if params is None else params
         with self.post(
-            "/v3/table/create/%s/%s/%s"
-            % (urlquote(str(db)), urlquote(str(table)), urlquote(str(type))),
+            create_url(
+                "/v3/table/create/{db}/{table}/{type}", db=db, table=table, type=type
+            ),
             params,
         ) as res:
             code, body = res.status, res.read()
@@ -110,8 +112,12 @@ class TableAPI:
             bool: `True` if succeeded.
         """
         with self.post(
-            "/v3/table/swap/%s/%s/%s"
-            % (urlquote(str(db)), urlquote(str(table1)), urlquote(str(table2)))
+            create_url(
+                "/v3/table/swap/{db}/{table1}/{table2}",
+                db=db,
+                table1=table1,
+                table2=table2,
+            )
         ) as res:
             code, body = res.status, res.read()
             if code != 200:
@@ -131,7 +137,7 @@ class TableAPI:
             bool: `True` if succeeded.
         """
         with self.post(
-            "/v3/table/update-schema/%s/%s" % (urlquote(str(db)), urlquote(str(table))),
+            create_url("/v3/table/update-schema/{db}/{table}", db=db, table=table),
             {"schema": schema_json},
         ) as res:
             code, body = res.status, res.read()
@@ -151,7 +157,7 @@ class TableAPI:
             bool: True if succeeded.
         """
         with self.post(
-            "/v3/table/update/%s/%s" % (urlquote(str(db)), urlquote(str(table))),
+            create_url("/v3/table/update/{db}/{table}", db=db, table=table),
             {"expire_days": expire_days},
         ) as res:
             code, body = res.status, res.read()
@@ -170,7 +176,7 @@ class TableAPI:
             str: Type information of the table (e.g. "log").
         """
         with self.post(
-            "/v3/table/delete/%s/%s" % (urlquote(str(db)), urlquote(str(table)))
+            create_url("/v3/table/delete/{db}/{table}", db=db, table=table)
         ) as res:
             code, body = res.status, res.read()
             if code != 200:
@@ -196,7 +202,7 @@ class TableAPI:
         """
         params = {"count": count, "format": "msgpack"}
         with self.get(
-            "/v3/table/tail/%s/%s" % (urlquote(str(db)), urlquote(str(table))), params
+            create_url("/v3/table/tail/{db}/{table}", db=db, table=table), params
         ) as res:
             code = res.status
             if code != 200:
@@ -222,8 +228,7 @@ class TableAPI:
         """
         params = {"dest_database_name": dest_db}
         with self.post(
-            "/v3/table/change_database/%s/%s"
-            % (urlquote(str(db)), urlquote(str(table))),
+            create_url("/v3/table/change_database/{db}/{table}", db=db, table=table),
             params,
         ) as res:
             code, body = res.status, res.read()

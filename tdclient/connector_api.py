@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 import json
-from urllib.parse import quote as urlquote
+
+from .util import create_url
 
 
 class ConnectorAPI:
@@ -61,7 +62,7 @@ class ConnectorAPI:
         params["table"] = table
         payload = json.dumps(params).encode("utf-8")
         with self.post(
-            "/v3/job/issue/bulkload/%s" % (urlquote(str(db))), payload, headers=headers
+            create_url("/v3/job/issue/bulkload/{db}", db=db), payload, headers=headers
         ) as res:
             code, body = res.status, res.read()
             if code != 200:
@@ -141,7 +142,7 @@ class ConnectorAPI:
         Returns:
              :class:`dict`
         """
-        with self.get("/v3/bulk_loads/%s" % (urlquote(str(name)),)) as res:
+        with self.get(create_url("/v3/bulk_loads/{name}", name=name)) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error(
@@ -163,7 +164,7 @@ class ConnectorAPI:
         headers = {"content-type": "application/json; charset=utf-8"}
         payload = json.dumps(job).encode("utf-8")
         with self.put(
-            "/v3/bulk_loads/%s" % (urlquote(str(name)),),
+            create_url("/v3/bulk_loads/{name}", name=name),
             payload,
             len(payload),
             headers=headers,
@@ -184,7 +185,7 @@ class ConnectorAPI:
         Returns:
              :class:`dict`
         """
-        with self.delete("/v3/bulk_loads/%s" % (urlquote(str(name)),)) as res:
+        with self.delete(create_url("/v3/bulk_loads/{name}", name=name)) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error(
@@ -201,7 +202,7 @@ class ConnectorAPI:
         Returns:
              :class:`list`
         """
-        with self.get("/v3/bulk_loads/%s/jobs" % (urlquote(str(name)),)) as res:
+        with self.get(create_url("/v3/bulk_loads/{name}/jobs", name=name)) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error(
@@ -230,7 +231,9 @@ class ConnectorAPI:
         headers = {"content-type": "application/json; charset=utf-8"}
         payload = json.dumps(kwargs).encode("utf-8")
         with self.post(
-            "/v3/bulk_loads/%s/jobs" % (urlquote(str(name)),), payload, headers=headers
+            create_url("/v3/bulk_loads/{name}/jobs", name=name),
+            payload,
+            headers=headers,
         ) as res:
             code, body = res.status, res.read()
             if code != 200:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from urllib.parse import quote as urlquote
+from .util import create_url
 
 
 class DatabaseAPI:
@@ -44,7 +44,7 @@ class DatabaseAPI:
         Returns:
             bool: `True` if succeeded.
         """
-        with self.post("/v3/database/delete/%s" % urlquote(str(db))) as res:
+        with self.post(create_url("/v3/database/delete/{db}", db=db)) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Delete database failed", res, body)
@@ -60,7 +60,7 @@ class DatabaseAPI:
             bool: `True` if succeeded.
         """
         params = {} if params is None else params
-        with self.post("/v3/database/create/%s" % urlquote(str(db)), params) as res:
+        with self.post(create_url("/v3/database/create/{db}", db=db), params) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Create database failed", res, body)
