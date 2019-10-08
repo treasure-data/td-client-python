@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
-import codecs
 import contextlib
 import csv
-import gzip
 import io
 import json
 import os
@@ -111,9 +109,11 @@ def value(s):
 def csvb(lis, columns=[], dialect=csv.excel, encoding="utf-8"):
     """list -> bytes"""
     stream = io.BytesIO()
-    writer = csv.writer(codecs.getwriter(encoding)(stream), dialect=dialect)
+    _bytes = io.TextIOWrapper(stream, encoding)
+    writer = csv.writer(_bytes, dialect=dialect)
     for item in lis:
         writer.writerow([item.get(column) for column in columns])
+    _bytes.flush()
     return stream.getvalue()
 
 
@@ -128,19 +128,20 @@ def dcsvb(lis, dialect=csv.excel, encoding="utf-8"):
     """list -> bytes"""
     cols = lis[0].keys()
     stream = io.BytesIO()
-    writer = csv.DictWriter(codecs.getwriter(encoding)(stream), cols, dialect=dialect)
+    _bytes = io.TextIOWrapper(stream, encoding)
+    writer = csv.DictWriter(_bytes, cols, dialect=dialect)
     if hasattr(writer, "writeheader"):
         writer.writeheader()
     else:
         writer.writerow(dict(zip(cols, cols)))
     for item in lis:
         writer.writerow(item)
+    _bytes.flush()
     return stream.getvalue()
 
 
 def undcsvb(bytes, dialect=csv.excel, encoding="utf-8"):
     """bytes -> list"""
-    stream = bytes
     reader = csv.DictReader(io.StringIO(bytes.decode(encoding)), dialect=dialect)
     return [dict([(k, value(v)) for (k, v) in row.items()]) for row in reader]
 

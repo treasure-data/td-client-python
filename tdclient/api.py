@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import codecs
 import contextlib
 import csv
 import email.utils
