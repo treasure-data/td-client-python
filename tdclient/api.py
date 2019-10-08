@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import codecs
 import contextlib
 import csv
 import email.utils
@@ -617,10 +616,6 @@ class API(
     def _read_csv_file(
         self, file_like, dialect=csv.excel, columns=None, encoding="utf-8", **kwargs
     ):
-        def getreader(file_like):
-            for s in codecs.getreader(encoding)(file_like):
-                yield s
-
         def value(s):
             try:
                 return int(s)
@@ -638,13 +633,13 @@ class API(
                 return s
 
         if columns is None:
-            reader = csv.DictReader(getreader(file_like), dialect=dialect)
+            reader = csv.DictReader(io.TextIOWrapper(file_like, encoding), dialect=dialect)
             for row in reader:
                 record = {k: value(v) for (k, v) in row.items()}
                 self._validate_record(record)
                 yield record
         else:
-            reader = csv.reader(getreader(file_like), dialect=dialect)
+            reader = csv.reader(io.TextIOWrapper(file_like, encoding), dialect=dialect)
             for row in reader:
                 record = dict(zip(columns, [value(col) for col in row]))
                 self._validate_record(record)
