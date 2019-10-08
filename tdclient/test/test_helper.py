@@ -108,13 +108,11 @@ def value(s):
 
 def csvb(lis, columns=[], dialect=csv.excel, encoding="utf-8"):
     """list -> bytes"""
-    stream = io.BytesIO()
-    _bytes = io.TextIOWrapper(stream, encoding)
-    writer = csv.writer(_bytes, dialect=dialect)
+    stream = io.StringIO()
+    writer = csv.writer(stream, dialect=dialect)
     for item in lis:
         writer.writerow([item.get(column) for column in columns])
-    _bytes.flush()
-    return stream.getvalue()
+    return stream.getvalue().encode(encoding)
 
 
 def uncsvb(bytes, columns=[], dialect=csv.excel, encoding="utf-8"):
@@ -127,17 +125,15 @@ def uncsvb(bytes, columns=[], dialect=csv.excel, encoding="utf-8"):
 def dcsvb(lis, dialect=csv.excel, encoding="utf-8"):
     """list -> bytes"""
     cols = lis[0].keys()
-    stream = io.BytesIO()
-    _bytes = io.TextIOWrapper(stream, encoding)
-    writer = csv.DictWriter(_bytes, cols, dialect=dialect)
+    stream = io.StringIO()
+    writer = csv.DictWriter(stream, cols, dialect=dialect)
     if hasattr(writer, "writeheader"):
         writer.writeheader()
     else:
         writer.writerow(dict(zip(cols, cols)))
     for item in lis:
         writer.writerow(item)
-    _bytes.flush()
-    return stream.getvalue()
+    return stream.getvalue().encode(encoding)
 
 
 def undcsvb(bytes, dialect=csv.excel, encoding="utf-8"):
