@@ -5,6 +5,8 @@ Version History
 Unreleased
 ----------
 
+* Fix ``wait_interval`` handling for ``BulkImport.perform`` appropriately (#74)
+* Use ``io.TextIOWrapper`` to prevent ``"x85"`` issue creating None (#77)
 
 v1.0.0 (2019-09-27)
 --------------------
