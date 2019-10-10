@@ -196,11 +196,12 @@ Then, run ``tox``.
 Release
 ^^^^^^^
 
-Release to PyPI.
+Release to PyPI. Ensure you installed twine.
 
 .. code-block:: sh
 
-   $ python setup.py bdist_wheel --universal sdist upload
+   $ python setup.py bdist_wheel sdist
+   $ twine upload dist/*
 
 License
 -------
