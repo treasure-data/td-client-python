@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
-from setuptools import setup, find_packages
-from setuptools.command.test import test as TestCommand
 import os
 import re
 import sys
+
+from setuptools import find_packages, setup
+from setuptools.command.test import test as TestCommand
 
 
 def read(fname):
@@ -12,10 +13,12 @@ def read(fname):
         return fp.read()
 
 
-m = re.search(r"^__version__ *= *\"([^\"]*)\" *$", read("tdclient/version.py"), re.MULTILINE)
+m = re.search(
+    r"^__version__ *= *\"([^\"]*)\" *$", read("tdclient/version.py"), re.MULTILINE
+)
 
 if m is None:
-    raise(RuntimeError("could not read tdclient/version.py"))
+    raise (RuntimeError("could not read tdclient/version.py"))
 else:
     version = m.group(1)
 
@@ -29,6 +32,7 @@ class PyTest(TestCommand):
 
     def run_tests(self):
         import pytest
+
         errno = pytest.main(self.pytest_args)
         sys.exit(errno)
 
@@ -43,30 +47,14 @@ setup(
     author_email="support@treasure-data.com",
     url="http://treasuredata.com/",
     python_requires=">=3.5",
-    install_requires=[
-        "msgpack>=0.5.2",
-        "python-dateutil",
-        "urllib3",
-    ],
-    tests_require=[
-        "coveralls",
-        "mock",
-        "pytest",
-        "pytest-cov",
-        "tox",
-    ],
+    install_requires=["msgpack>=0.5.2", "python-dateutil", "urllib3"],
+    tests_require=["coveralls", "mock", "pytest", "pytest-cov", "tox"],
     extras_require={
-        "dev": [
-            "black==19.3b0",
-            "isort",
-        ],
-        "docs": [
-            "sphinx",
-            "sphinx_rtd_theme",
-        ],
+        "dev": ["black==19.3b0", "isort"],
+        "docs": ["sphinx", "sphinx_rtd_theme"],
     },
     packages=find_packages(),
-    cmdclass = {"test": PyTest},
+    cmdclass={"test": PyTest},
     license="Apache Software License",
     platforms="Posix; MacOS X; Windows",
     classifiers=[

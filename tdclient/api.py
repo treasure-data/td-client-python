@@ -633,7 +633,9 @@ class API(
                 return s
 
         if columns is None:
-            reader = csv.DictReader(io.TextIOWrapper(file_like, encoding), dialect=dialect)
+            reader = csv.DictReader(
+                io.TextIOWrapper(file_like, encoding), dialect=dialect
+            )
             for row in reader:
                 record = {k: value(v) for (k, v) in row.items()}
                 self._validate_record(record)
