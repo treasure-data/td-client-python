@@ -34,7 +34,7 @@ from tdclient.schedule_api import ScheduleAPI
 from tdclient.server_status_api import ServerStatusAPI
 from tdclient.table_api import TableAPI
 from tdclient.user_api import UserAPI
-from tdclient.util import csv_value
+from tdclient.util import parse_csv_value
 
 try:
     import certifi
@@ -623,13 +623,13 @@ class API(
                 io.TextIOWrapper(file_like, encoding), dialect=dialect
             )
             for row in reader:
-                record = {k: csv_value(v) for (k, v) in row.items()}
+                record = {k: parse_csv_value(v) for (k, v) in row.items()}
                 self._validate_record(record)
                 yield record
         else:
             reader = csv.reader(io.TextIOWrapper(file_like, encoding), dialect=dialect)
             for row in reader:
-                record = dict(zip(columns, [csv_value(col) for col in row]))
+                record = dict(zip(columns, [parse_csv_value(col) for col in row]))
                 self._validate_record(record)
                 yield record
 

@@ -12,8 +12,8 @@ def create_url(tmpl, **values):
     return tmpl.format(**quoted_values)
 
 
-def csv_value(s):
-    """Convert value from csv suitably
+def parse_csv_value(s):
+    """Parse and convert value to suitabe types
 
     Args:
         s (str): value on csv
