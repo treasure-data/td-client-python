@@ -50,7 +50,7 @@ setup(
     install_requires=["msgpack>=0.5.2", "python-dateutil", "urllib3"],
     tests_require=["coveralls", "mock", "pytest", "pytest-cov", "tox"],
     extras_require={
-        "dev": ["black==19.3b0", "isort"],
+        "dev": ["black==19.3b0", "isort", "flake8"],
         "docs": ["sphinx", "sphinx_rtd_theme"],
     },
     packages=find_packages(),
