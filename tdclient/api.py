@@ -600,14 +600,14 @@ class API(
         return True
 
     def _read_msgpack_file(self, file_like, **kwargs):
-        # current impl doesn't torelate any unpack error
-        unpacker = msgpack.Unpacker(file_like)
+        # current impl doesn't tolerate any unpack error
+        unpacker = msgpack.Unpacker(file_like, raw=False)
         for record in unpacker:
             self._validate_record(record)
             yield record
 
     def _read_json_file(self, file_like, **kwargs):
-        # current impl doesn't torelate any JSON parse error
+        # current impl doesn't tolerate any JSON parse error
         for s in file_like:
             record = json.loads(s.decode("utf-8"))
             self._validate_record(record)
