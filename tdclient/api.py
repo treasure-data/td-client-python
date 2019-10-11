@@ -34,6 +34,7 @@ from tdclient.schedule_api import ScheduleAPI
 from tdclient.server_status_api import ServerStatusAPI
 from tdclient.table_api import TableAPI
 from tdclient.user_api import UserAPI
+from tdclient.util import parse_csv_value
 
 try:
     import certifi
@@ -616,34 +617,19 @@ class API(
     def _read_csv_file(
         self, file_like, dialect=csv.excel, columns=None, encoding="utf-8", **kwargs
     ):
-        def value(s):
-            try:
-                return int(s)
-            except (OverflowError, ValueError):
-                try:
-                    return float(s)
-                except (OverflowError, ValueError):
-                    pass
-            lower = s.lower()
-            if lower in ("false", "true"):
-                return "true" == lower
-            elif lower in ("", "none", "null"):
-                return None
-            else:
-                return s
 
         if columns is None:
             reader = csv.DictReader(
                 io.TextIOWrapper(file_like, encoding), dialect=dialect
             )
             for row in reader:
-                record = {k: value(v) for (k, v) in row.items()}
+                record = {k: parse_csv_value(v) for (k, v) in row.items()}
                 self._validate_record(record)
                 yield record
         else:
             reader = csv.reader(io.TextIOWrapper(file_like, encoding), dialect=dialect)
             for row in reader:
-                record = dict(zip(columns, [value(col) for col in row]))
+                record = dict(zip(columns, [parse_csv_value(col) for col in row]))
                 self._validate_record(record)
                 yield record
 
