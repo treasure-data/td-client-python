@@ -55,8 +55,6 @@ def create_msgpack(items):
         >>> create_msgpack(l1)
         ``b'\x83\xa1a\x01\xa1b\x02\xa4time\xce]\xa5X\xa1\x83\xa1a\x03\xa1b\x06\xa4time\xce]\xa5X\xa1'``
     """
-    from tdclient.api import normalized_msgpack
-
     stream = io.BytesIO()
     packer = msgpack.Packer()
     for item in items:
@@ -66,4 +64,30 @@ def create_msgpack(items):
             packer.reset()
             mp = packer.pack(normalized_msgpack(item))
         stream.write(mp)
+
     return stream.getvalue()
+
+
+def normalized_msgpack(value):
+    """Convert int to str if overflow
+
+    Args:
+        value (int, float, str, bool or None): value to be normalized
+
+    Returns:
+        Normalized value
+    """
+    if isinstance(value, (list, tuple)):
+        return [normalized_msgpack(v) for v in value]
+    elif isinstance(value, dict):
+        return dict(
+            [(normalized_msgpack(k), normalized_msgpack(v)) for (k, v) in value.items()]
+        )
+
+    if isinstance(value, int):
+        if -(1 << 63) < value < (1 << 64):
+            return value
+        else:
+            return str(value)
+    else:
+        return value

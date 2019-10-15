@@ -171,7 +171,7 @@ If you want to import data as `msgpack <https://msgpack.org/>`_ format, you can 
    import io
    import time
    import uuid
-   import warning
+   import warnings
 
    import tdclient
 
@@ -189,14 +189,7 @@ If you want to import data as `msgpack <https://msgpack.org/>`_ format, you can 
            bulk_import.delete()
            raise
        bulk_import.perform(wait=True)
-       if 0 < bulk_import.error_records:
-           warnings.warn("detected {} error records.".format(bulk_import.error_records))
-       if 0 < bulk_import.valid_records:
-           print("imported {} records.".format(bulk_import.valid_records))
-       else:
-           raise(RuntimeError("no records have been imported: {}".format(repr(bulk_import.name))))
-       bulk_import.commit(wait=True)
-       bulk_import.delete()
+       # same as the above example
 
 
 Development
