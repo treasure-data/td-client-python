@@ -122,6 +122,11 @@ Importing data into Treasure Data in streaming manner, as similar as `fluentd <h
        for file_name in sys.argv[:1]:
            td.import_file("mydb", "mytbl", "csv", file_name)
 
+
+.. Warning::
+   Importing data in streaming manner requires certain amount of time to be ready to query since schema update will be
+   executed with delay.
+
 Bulk import
 ^^^^^^^^^^^
 
@@ -131,18 +136,18 @@ Importing data into Treasure Data in batch manner.
 
    import sys
    import tdclient
-   import time
+   import uuid
    import warnings
 
    if len(sys.argv) <= 1:
        sys.exit(0)
 
    with tdclient.Client() as td:
-       session_name = "session-%d" % (int(time.time()),)
+       session_name = "session-{}".format(uuid.uuid1())
        bulk_import = td.create_bulk_import(session_name, "mydb", "mytbl")
        try:
            for file_name in sys.argv[1:]:
-               part_name = "part-%s" % (file_name,)
+               part_name = "part-{}".format{file_name}
                bulk_import.upload_file(part_name, "json", file_name)
            bulk_import.freeze()
        except:
@@ -150,13 +155,42 @@ Importing data into Treasure Data in batch manner.
            raise
        bulk_import.perform(wait=True)
        if 0 < bulk_import.error_records:
-           warnings.warn("detected %d error records." % (bulk_import.error_records,))
+           warnings.warn("detected {} error records.".format(bulk_import.error_records))
        if 0 < bulk_import.valid_records:
-           print("imported %d records." % (bulk_import.valid_records,))
+           print("imported {} records.".format(bulk_import.valid_records))
        else:
-           raise(RuntimeError("no records have been imported: %s" % (repr(bulk_import.name),)))
+           raise(RuntimeError("no records have been imported: {}".format(bulk_import.name)))
        bulk_import.commit(wait=True)
        bulk_import.delete()
+
+
+If you want to import data as `msgpack <https://msgpack.org/>`_ format, you can write as follows:
+
+.. code-block:: python
+
+   import io
+   import time
+   import uuid
+   import warnings
+
+   import tdclient
+
+   t1 = int(time.time())
+   l1 = [{"a": 1, "b": 2, "time": t1}, {"a": 3, "b": 9, "time": t1}]
+
+   with tdclient.Client() as td:
+       session_name = "session-{}".format(uuid.uuid1())
+       bulk_import = td.create_bulk_import(session_name, "mydb", "mytbl")
+       try:
+           _bytes = tdclient.util.create_msgpack(l1)
+           bulk_import.upload_file("part", "msgpack", io.BytesIO(_bytes))
+           bulk_import.freeze()
+       except:
+           bulk_import.delete()
+           raise
+       bulk_import.perform(wait=True)
+       # same as the above example
+
 
 Development
 -----------

@@ -34,7 +34,7 @@ from tdclient.schedule_api import ScheduleAPI
 from tdclient.server_status_api import ServerStatusAPI
 from tdclient.table_api import TableAPI
 from tdclient.user_api import UserAPI
-from tdclient.util import parse_csv_value
+from tdclient.util import normalized_msgpack, parse_csv_value
 
 try:
     import certifi
@@ -635,20 +635,3 @@ class API(
 
     def _read_tsv_file(self, file_like, **kwargs):
         return self._read_csv_file(file_like, dialect=csv.excel_tab, **kwargs)
-
-
-def normalized_msgpack(value):
-    if isinstance(value, (list, tuple)):
-        return [normalized_msgpack(v) for v in value]
-    elif isinstance(value, dict):
-        return dict(
-            [(normalized_msgpack(k), normalized_msgpack(v)) for (k, v) in value.items()]
-        )
-
-    if isinstance(value, int):
-        if -(1 << 63) < value < (1 << 64):
-            return value
-        else:
-            return str(value)
-    else:
-        return value

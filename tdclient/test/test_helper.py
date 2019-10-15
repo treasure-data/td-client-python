@@ -10,7 +10,7 @@ from unittest import mock
 
 import msgpack
 
-from tdclient.api import normalized_msgpack
+from tdclient.util import create_msgpack, parse_csv_value
 
 
 def unset_environ():
@@ -57,16 +57,7 @@ def make_response(*args, **kwargs):
 
 def msgpackb(lis):
     """list -> bytes"""
-    stream = io.BytesIO()
-    packer = msgpack.Packer()
-    for item in lis:
-        try:
-            mp = packer.pack(item)
-        except (OverflowError, ValueError):
-            packer.reset()
-            mp = packer.pack(normalized_msgpack(item))
-        stream.write(mp)
-    return stream.getvalue()
+    return create_msgpack(lis)
 
 
 def msgunpackb(bytes):
@@ -90,20 +81,7 @@ def unjsonb(bytes):
 
 
 def value(s):
-    try:
-        return int(s)
-    except (OverflowError, ValueError):
-        try:
-            return float(s)
-        except (OverflowError, ValueError):
-            pass
-    lower = s.lower()
-    if lower in ("false", "true"):
-        return "true" == lower
-    elif lower in ("", "none", "null"):
-        return None
-    else:
-        return s
+    return parse_csv_value(s)
 
 
 def csvb(lis, columns=[], dialect=csv.excel, encoding="utf-8"):
