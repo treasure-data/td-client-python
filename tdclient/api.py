@@ -638,6 +638,14 @@ class API(
 
 
 def normalized_msgpack(value):
+    """Convert int to str if overflow
+
+    Args:
+        value (int, float, str, bool or None): value to be normalized
+
+    Returns:
+        Normalized value
+    """
     if isinstance(value, (list, tuple)):
         return [normalized_msgpack(v) for v in value]
     elif isinstance(value, dict):

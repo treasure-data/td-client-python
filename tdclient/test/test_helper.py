@@ -10,7 +10,7 @@ from unittest import mock
 
 import msgpack
 
-from tdclient.api import normalized_msgpack
+from tdclient.util import create_msgpack
 
 
 def unset_environ():
@@ -57,16 +57,7 @@ def make_response(*args, **kwargs):
 
 def msgpackb(lis):
     """list -> bytes"""
-    stream = io.BytesIO()
-    packer = msgpack.Packer()
-    for item in lis:
-        try:
-            mp = packer.pack(item)
-        except (OverflowError, ValueError):
-            packer.reset()
-            mp = packer.pack(normalized_msgpack(item))
-        stream.write(mp)
-    return stream.getvalue()
+    return create_msgpack(lis)
 
 
 def msgunpackb(bytes):

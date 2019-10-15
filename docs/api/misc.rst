@@ -11,6 +11,16 @@ tdclient.errors
 
 
 
+tdclient.util
+----------------------
+
+.. automodule:: tdclient.util
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+
 tdclient.pseudo\_certifi
 -------------------------------
 
