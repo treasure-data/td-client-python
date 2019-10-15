@@ -159,7 +159,7 @@ Importing data into Treasure Data in batch manner.
        if 0 < bulk_import.valid_records:
            print("imported {} records.".format(bulk_import.valid_records))
        else:
-           raise(RuntimeError("no records have been imported: {}".format(repr(bulk_import.name))))
+           raise(RuntimeError("no records have been imported: {}".format(bulk_import.name)))
        bulk_import.commit(wait=True)
        bulk_import.delete()
 
