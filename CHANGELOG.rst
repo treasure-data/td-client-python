@@ -5,6 +5,13 @@ Version History
 Unreleased
 ----------
 
+v1.1.0 (2019-10-16)
+--------------------
+
+* Move ``normalized_msgpack()`` from ``tdclient.api`` to ``tdclient.util`` module (#79)
+* Add ``tdclient.util.create_msgpack()`` to support creating msgpack streaming from list (#79)
+
+
 v1.0.1 (2019-10-10)
 --------------------
 
