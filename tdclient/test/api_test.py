@@ -753,12 +753,3 @@ def test_parsedate3():
     offset = dt.utcoffset()
     total_seconds = (offset.seconds + offset.days * 24 * 3600) * 10 ** 6 / 10 ** 6
     assert total_seconds == -4 * 3600
-
-
-def test_get_or_else():
-    td = api.API("APIKEY")
-    hashmap = {"foo": "FOO"}
-    assert td.get_or_else(hashmap, "foo") == "FOO"
-    assert td.get_or_else(hashmap, "foo", "abracadabra") == "FOO"
-    assert td.get_or_else(hashmap, "bar") == None
-    assert td.get_or_else(hashmap, "bar", "BAR") == "BAR"

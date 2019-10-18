@@ -42,17 +42,7 @@ class UserAPI:
                 self.raise_error("List users failed", res, body)
             js = self.checked_json(body, ["users"])
 
-            def user(roleinfo):
-                name = roleinfo["name"]
-                email = roleinfo["email"]
-                return (
-                    name,
-                    None,
-                    None,
-                    email,
-                )  # set None to org and role for API compatibility
-
-            return [user(roleinfo) for roleinfo in js["users"]]
+            return [user_to_tuple(roleinfo) for roleinfo in js["users"]]
 
     def add_user(self, name, org, email, password):
         """Add a new user to the current account and sends invitation.
@@ -131,3 +121,9 @@ class UserAPI:
             if code != 200:
                 self.raise_error("Removing API key failed", res, body)
             return True
+
+
+def user_to_tuple(roleinfo):
+    name = roleinfo["name"]
+    email = roleinfo["email"]
+    return (name, None, None, email)  # set None to org and role for API compatibility

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from .util import create_url
+from .util import create_url, get_or_else, parse_date
 
 
 class ScheduleAPI:
@@ -59,9 +59,8 @@ class ScheduleAPI:
             if code != 200:
                 self.raise_error("Create schedule failed", res, body)
             js = self.checked_json(body, ["start"])
-            return self._parsedate(
-                self.get_or_else(js, "start", "1970-01-01T00:00:00Z"),
-                "%Y-%m-%d %H:%M:%S %Z",
+            return parse_date(
+                get_or_else(js, "start", "1970-01-01T00:00:00Z"), "%Y-%m-%d %H:%M:%S %Z"
             )
 
     def delete_schedule(self, name):
@@ -91,21 +90,7 @@ class ScheduleAPI:
                 self.raise_error("List schedules failed", res, body)
             js = self.checked_json(body, ["schedules"])
 
-            def schedule(m):
-                m = dict(m)
-                if "timezone" not in m:
-                    m["timezone"] = "UTC"
-                m["created_at"] = self._parsedate(
-                    self.get_or_else(m, "created_at", "1970-01-01T00:00:00Z"),
-                    "%Y-%m-%dT%H:%M:%SZ",
-                )
-                m["next_time"] = self._parsedate(
-                    self.get_or_else(m, "next_time", "1970-01-01T00:00:00Z"),
-                    "%Y-%m-%dT%H:%M:%SZ",
-                )
-                return m
-
-            return [schedule(m) for m in js["schedules"]]
+            return [schedule_to_tuple(m) for m in js["schedules"]]
 
     def update_schedule(self, name, params=None):
         """Update the scheduled query.
@@ -184,40 +169,7 @@ class ScheduleAPI:
                 self.raise_error("List history failed", res, body)
             js = self.checked_json(body, ["history"])
 
-            def history(m):
-                job_id = m.get("job_id")
-                t = m.get("type", "?")
-                database = m.get("database")
-                status = m.get("status")
-                query = m.get("query")
-                start_at = self._parsedate(
-                    self.get_or_else(m, "start_at", "1970-01-01T00:00:00Z"),
-                    "%Y-%m-%dT%H:%M:%SZ",
-                )
-                end_at = self._parsedate(
-                    self.get_or_else(m, "end_at", "1970-01-01T00:00:00Z"),
-                    "%Y-%m-%dT%H:%M:%SZ",
-                )
-                scheduled_at = self._parsedate(
-                    self.get_or_else(m, "scheduled_at", "1970-01-01T00:00:00Z"),
-                    "%Y-%m-%dT%H:%M:%SZ",
-                )
-                result_url = m.get("result")
-                priority = m.get("priority")
-                return (
-                    scheduled_at,
-                    job_id,
-                    t,
-                    status,
-                    query,
-                    start_at,
-                    end_at,
-                    result_url,
-                    priority,
-                    database,
-                )
-
-            return [history(m) for m in js["history"]]
+            return [history_to_tuple(m) for m in js["history"]]
 
     def run_schedule(self, name, time, num=None):
         """Execute the specified query.
@@ -242,13 +194,57 @@ class ScheduleAPI:
             self.raise_error("Run schedule failed", res, body)
         js = self.checked_json(body, ["jobs"])
 
-        def job(m):
-            job_id = m.get("job_id")
-            scheduled_at = self._parsedate(
-                self.get_or_else(m, "scheduled_at", "1970-01-01T00:00:00Z"),
-                "%Y-%m-%dT%H:%M:%SZ",
-            )
-            t = m.get("type", "?")
-            return job_id, t, scheduled_at
+        return [job_to_tuple(m) for m in js["jobs"]]
 
-        return [job(m) for m in js["jobs"]]
+
+def job_to_tuple(m):
+    job_id = m.get("job_id")
+    scheduled_at = parse_date(
+        get_or_else(m, "scheduled_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ"
+    )
+    t = m.get("type", "?")
+    return job_id, t, scheduled_at
+
+
+def schedule_to_tuple(m):
+    m = dict(m)
+    if "timezone" not in m:
+        m["timezone"] = "UTC"
+    m["created_at"] = parse_date(
+        get_or_else(m, "created_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ"
+    )
+    m["next_time"] = parse_date(
+        get_or_else(m, "next_time", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ"
+    )
+    return m
+
+
+def history_to_tuple(m):
+    job_id = m.get("job_id")
+    t = m.get("type", "?")
+    database = m.get("database")
+    status = m.get("status")
+    query = m.get("query")
+    start_at = parse_date(
+        get_or_else(m, "start_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ"
+    )
+    end_at = parse_date(
+        get_or_else(m, "end_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ"
+    )
+    scheduled_at = parse_date(
+        get_or_else(m, "scheduled_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ"
+    )
+    result_url = m.get("result")
+    priority = m.get("priority")
+    return (
+        scheduled_at,
+        job_id,
+        t,
+        status,
+        query,
+        start_at,
+        end_at,
+        result_url,
+        priority,
+        database,
+    )

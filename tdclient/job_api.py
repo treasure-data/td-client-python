@@ -5,7 +5,7 @@ import json
 
 import msgpack
 
-from .util import create_url
+from .util import create_url, get_or_else, parse_date
 
 
 class JobAPI:
@@ -67,10 +67,10 @@ class JobAPI:
                     hive_result_schema = json.loads(m["hive_result_schema"])
                 else:
                     hive_result_schema = None
-                start_at = self.get_or_else(m, "start_at")
-                end_at = self.get_or_else(m, "end_at")
-                created_at = self.get_or_else(m, "created_at")
-                updated_at = self.get_or_else(m, "updated_at")
+                start_at = get_or_else(m, "start_at")
+                end_at = get_or_else(m, "end_at")
+                created_at = get_or_else(m, "created_at")
+                updated_at = get_or_else(m, "updated_at")
                 job = {
                     "job_id": m.get("job_id"),
                     "type": m.get("type", "?"),
@@ -78,16 +78,16 @@ class JobAPI:
                     "query": m.get("query"),
                     "status": m.get("status"),
                     "debug": m.get("debug"),
-                    "start_at": self._parsedate(start_at, "%Y-%m-%dT%H:%M:%SZ")
+                    "start_at": parse_date(start_at, "%Y-%m-%dT%H:%M:%SZ")
                     if start_at
                     else None,
-                    "end_at": self._parsedate(end_at, "%Y-%m-%dT%H:%M:%SZ")
+                    "end_at": parse_date(end_at, "%Y-%m-%dT%H:%M:%SZ")
                     if end_at
                     else None,
-                    "created_at": self._parsedate(created_at, "%Y-%m-%dT%H:%M:%SZ")
+                    "created_at": parse_date(created_at, "%Y-%m-%dT%H:%M:%SZ")
                     if created_at
                     else None,
-                    "updated_at": self._parsedate(updated_at, "%Y-%m-%dT%H:%M:%SZ")
+                    "updated_at": parse_date(updated_at, "%Y-%m-%dT%H:%M:%SZ")
                     if updated_at
                     else None,
                     "cpu_time": m.get("cpu_time"),
@@ -134,10 +134,10 @@ class JobAPI:
                 hive_result_schema = json.loads(js["hive_result_schema"])
             else:
                 hive_result_schema = None
-            start_at = self.get_or_else(js, "start_at")
-            end_at = self.get_or_else(js, "end_at")
-            created_at = self.get_or_else(js, "created_at")
-            updated_at = self.get_or_else(js, "updated_at")
+            start_at = get_or_else(js, "start_at")
+            end_at = get_or_else(js, "end_at")
+            created_at = get_or_else(js, "created_at")
+            updated_at = get_or_else(js, "updated_at")
             job = {
                 "job_id": job_id,
                 "type": js.get("type", "?"),
@@ -145,16 +145,14 @@ class JobAPI:
                 "query": js.get("query"),
                 "status": js.get("status"),
                 "debug": js.get("debug"),
-                "start_at": self._parsedate(start_at, "%Y-%m-%dT%H:%M:%SZ")
+                "start_at": parse_date(start_at, "%Y-%m-%dT%H:%M:%SZ")
                 if start_at
                 else None,
-                "end_at": self._parsedate(end_at, "%Y-%m-%dT%H:%M:%SZ")
-                if end_at
-                else None,
-                "created_at": self._parsedate(created_at, "%Y-%m-%dT%H:%M:%SZ")
+                "end_at": parse_date(end_at, "%Y-%m-%dT%H:%M:%SZ") if end_at else None,
+                "created_at": parse_date(created_at, "%Y-%m-%dT%H:%M:%SZ")
                 if created_at
                 else None,
-                "updated_at": self._parsedate(updated_at, "%Y-%m-%dT%H:%M:%SZ")
+                "updated_at": parse_date(updated_at, "%Y-%m-%dT%H:%M:%SZ")
                 if updated_at
                 else None,
                 "cpu_time": js.get("cpu_time"),

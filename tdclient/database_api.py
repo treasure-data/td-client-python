@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from .util import create_url
+from .util import create_url, get_or_else, parse_date
 
 
 class DatabaseAPI:
@@ -24,12 +24,12 @@ class DatabaseAPI:
             for m in js["databases"]:
                 name = m.get("name")
                 m = dict(m)
-                m["created_at"] = self._parsedate(
-                    self.get_or_else(m, "created_at", "1970-01-01T00:00:00Z"),
+                m["created_at"] = parse_date(
+                    get_or_else(m, "created_at", "1970-01-01T00:00:00Z"),
                     "%Y-%m-%dT%H:%M:%SZ",
                 )
-                m["updated_at"] = self._parsedate(
-                    self.get_or_else(m, "updated_at", "1970-01-01T00:00:00Z"),
+                m["updated_at"] = parse_date(
+                    get_or_else(m, "updated_at", "1970-01-01T00:00:00Z"),
                     "%Y-%m-%dT%H:%M:%SZ",
                 )
                 m["org_name"] = None  # set None to org for API compatibility

@@ -278,35 +278,7 @@ class Client:
         """
         results = self.api.list_jobs(_from, to, status, conditions)
 
-        def job(d):
-            return models.Job(
-                self,
-                d["job_id"],
-                d["type"],
-                d["query"],
-                status=d.get("status"),
-                url=d.get("url"),
-                debug=d.get("debug"),
-                start_at=d.get("start_at"),
-                end_at=d.get("end_at"),
-                created_at=d.get("created_at"),
-                updated_at=d.get("updated_at"),
-                cpu_time=d.get("cpu_time"),
-                result_size=d.get("result_size"),
-                result=d.get("result"),
-                result_url=d.get("result_url"),
-                hive_result_schema=d.get("hive_result_schema"),
-                priority=d.get("priority"),
-                retry_limit=d.get("retry_limit"),
-                org_name=d.get("org_name"),
-                database=d.get("database"),
-                num_records=d.get("num_records"),
-                user_name=d.get("user_name"),
-                linked_result_export_job_id=d.get("linked_result_export_job_id"),
-                result_export_target_job_id=d.get("result_export_target_job_id"),
-            )
-
-        return [job(d) for d in results]
+        return [job_from_dict(self, d) for d in results]
 
     def job(self, job_id):
         """Get a job from `job_id`
@@ -318,32 +290,7 @@ class Client:
              :class:`tdclient.models.Job`
         """
         d = self.api.show_job(str(job_id))
-        return models.Job(
-            self,
-            job_id,
-            d["type"],
-            d["query"],
-            status=d.get("status"),
-            url=d.get("url"),
-            debug=d.get("debug"),
-            start_at=d.get("start_at"),
-            end_at=d.get("end_at"),
-            created_at=d.get("created_at"),
-            updated_at=d.get("updated_at"),
-            cpu_time=d.get("cpu_time"),
-            result_size=d.get("result_size"),
-            result=d.get("result"),
-            result_url=d.get("result_url"),
-            hive_result_schema=d.get("hive_result_schema"),
-            priority=d.get("priority"),
-            retry_limit=d.get("retry_limit"),
-            org_name=d.get("org_name"),
-            database=d.get("database"),
-            num_records=d.get("num_records"),
-            user_name=d.get("user_name"),
-            linked_result_export_job_id=d.get("linked_result_export_job_id"),
-            result_export_target_job_id=d.get("result_export_target_job_id"),
-        )
+        return job_from_dict(self, d, job_id=job_id)
 
     def job_status(self, job_id):
         """
@@ -951,3 +898,35 @@ class Client:
         """Close opened API connections.
         """
         return self._api.close()
+
+
+def job_from_dict(client, dd, **values):
+    d = dict()
+    d.update(dd)
+    d.update(values)
+    return models.Job(
+        client,
+        d["job_id"],
+        d["type"],
+        d["query"],
+        status=d.get("status"),
+        url=d.get("url"),
+        debug=d.get("debug"),
+        start_at=d.get("start_at"),
+        end_at=d.get("end_at"),
+        created_at=d.get("created_at"),
+        updated_at=d.get("updated_at"),
+        cpu_time=d.get("cpu_time"),
+        result_size=d.get("result_size"),
+        result=d.get("result"),
+        result_url=d.get("result_url"),
+        hive_result_schema=d.get("hive_result_schema"),
+        priority=d.get("priority"),
+        retry_limit=d.get("retry_limit"),
+        org_name=d.get("org_name"),
+        database=d.get("database"),
+        num_records=d.get("num_records"),
+        user_name=d.get("user_name"),
+        linked_result_export_job_id=d.get("linked_result_export_job_id"),
+        result_export_target_job_id=d.get("result_export_target_job_id"),
+    )

@@ -1,7 +1,12 @@
 import io
+import logging
 from urllib.parse import quote as urlquote
 
+import dateutil.parser
 import msgpack
+
+
+log = logging.getLogger(__name__)
 
 
 def create_url(tmpl, **values):
@@ -91,3 +96,41 @@ def normalized_msgpack(value):
             return str(value)
     else:
         return value
+
+
+def get_or_else(hashmap, key, default_value=None):
+    """ Get value or default value
+    Args:
+        hashmap (dict): target
+        key (Any): key
+        default_value (Any): default value
+    Returns:
+        value of key or default_value
+    """
+    value = hashmap.get(key)
+    if value is None:
+        return default_value
+    else:
+        if 0 < len(value.strip()):
+            return value
+        else:
+            return default_value
+
+
+def parse_date(s, fmt):
+    """Parse date from str to datetime using fmt
+
+    TODO: parse datetime with using format string
+    for now, this ignores given format string since API may return date in ambiguous format :(
+
+    Args:
+       s (str): target str
+       fmt (str): format for datetime
+    Returns:
+       datetime
+    """
+    try:
+        return dateutil.parser.parse(s)
+    except ValueError:
+        log.warning("Failed to parse date string: %s as %s" % (s, fmt))
+        return None

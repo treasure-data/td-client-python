@@ -4,7 +4,7 @@ import json
 
 import msgpack
 
-from .util import create_url
+from .util import create_url, get_or_else, parse_date
 
 
 class TableAPI:
@@ -54,20 +54,20 @@ class TableAPI:
                 m = dict(m)
                 m["type"] = m.get("type", "?")
                 m["count"] = int(m.get("count", 0))
-                m["created_at"] = self._parsedate(
-                    self.get_or_else(m, "created_at", "1970-01-01T00:00:00Z"),
+                m["created_at"] = parse_date(
+                    get_or_else(m, "created_at", "1970-01-01T00:00:00Z"),
                     "%Y-%m-%dT%H:%M:%SZ",
                 )
-                m["updated_at"] = self._parsedate(
-                    self.get_or_else(m, "updated_at", "1970-01-01T00:00:00Z"),
+                m["updated_at"] = parse_date(
+                    get_or_else(m, "updated_at", "1970-01-01T00:00:00Z"),
                     "%Y-%m-%dT%H:%M:%SZ",
                 )
-                m["last_import"] = self._parsedate(
-                    self.get_or_else(m, "counter_updated_at", "1970-01-01T00:00:00Z"),
+                m["last_import"] = parse_date(
+                    get_or_else(m, "counter_updated_at", "1970-01-01T00:00:00Z"),
                     "%Y-%m-%dT%H:%M:%SZ",
                 )
-                m["last_log_timestamp"] = self._parsedate(
-                    self.get_or_else(m, "last_log_timestamp", "1970-01-01T00:00:00Z"),
+                m["last_log_timestamp"] = parse_date(
+                    get_or_else(m, "last_log_timestamp", "1970-01-01T00:00:00Z"),
                     "%Y-%m-%dT%H:%M:%SZ",
                 )
                 m["estimated_storage_size"] = int(m["estimated_storage_size"])
