@@ -16,7 +16,6 @@ import urllib.parse as urlparse
 import warnings
 from array import array
 
-import dateutil.parser
 import msgpack
 import urllib3
 import urllib3.util
@@ -489,8 +488,6 @@ class API(
         return (url, _headers)
 
     def send_request(self, method, url, fields=None, body=None, headers=None, **kwargs):
-        def as_bytes(s, encoding):
-            return s.encode(encoding) if isinstance(s, str) else s
 
         if body is None:
             return self.http.request(
@@ -532,25 +529,6 @@ class API(
                 "Unexpected API response: %s: %s" % (repr(missing), repr(body))
             )
         return js
-
-    def _parsedate(self, s, fmt):
-        # TODO: parse datetime with using format string
-        # for now, this ignores given format string since API may return date in ambiguous format :(
-        try:
-            return dateutil.parser.parse(s)
-        except ValueError:
-            log.warning("Failed to parse date string: %s as %s" % (s, fmt))
-            return None
-
-    def get_or_else(self, hashmap, key, default_value=None):
-        value = hashmap.get(key)
-        if value is None:
-            return default_value
-        else:
-            if 0 < len(value.strip()):
-                return value
-            else:
-                return default_value
 
     def close(self):
         # urllib3 doesn't allow to close all connections immediately.
