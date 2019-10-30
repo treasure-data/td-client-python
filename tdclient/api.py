@@ -38,10 +38,7 @@ from tdclient.util import normalized_msgpack, parse_csv_value
 try:
     import certifi
 except ImportError:
-    # on py27 on windows, it tries to import pseudo "certifi" module instead of original one.
-    # to avoid the weird behavior, the pseudo "certifi" module should be named differently.
-    from tdclient import pseudo_certifi as certifi
-
+    certifi = None
 
 log = logging.getLogger(__name__)
 
@@ -113,9 +110,10 @@ class API(
             self._endpoint = self.DEFAULT_ENDPOINT
 
         pool_options = dict(kwargs)
-        certs = pool_options.get("ca_certs", certifi.where())
-        if certs is not None:
-            pool_options["ca_certs"] = certs
+        if "ca_certs" not in pool_options and certifi:
+            pool_options["ca_certs"] = certifi.where()
+
+        if pool_options.get("ca_certs") is not None:
             pool_options["cert_reqs"] = ssl.CERT_REQUIRED
 
         if "timeout" not in pool_options:
