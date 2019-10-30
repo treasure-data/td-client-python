@@ -25,12 +25,10 @@ class DatabaseAPI:
                 name = m.get("name")
                 m = dict(m)
                 m["created_at"] = parse_date(
-                    get_or_else(m, "created_at", "1970-01-01T00:00:00Z"),
-                    "%Y-%m-%dT%H:%M:%SZ",
+                    get_or_else(m, "created_at", "1970-01-01T00:00:00Z")
                 )
                 m["updated_at"] = parse_date(
-                    get_or_else(m, "updated_at", "1970-01-01T00:00:00Z"),
-                    "%Y-%m-%dT%H:%M:%SZ",
+                    get_or_else(m, "updated_at", "1970-01-01T00:00:00Z")
                 )
                 m["org_name"] = None  # set None to org for API compatibility
                 result[name] = m
