@@ -117,7 +117,7 @@ def get_or_else(hashmap, key, default_value=None):
             return default_value
 
 
-def parse_date(s, fmt):
+def parse_date(s):
     """Parse date from str to datetime using fmt
 
     TODO: parse datetime with using format string
@@ -132,5 +132,5 @@ def parse_date(s, fmt):
     try:
         return dateutil.parser.parse(s)
     except ValueError:
-        log.warning("Failed to parse date string: %s as %s" % (s, fmt))
+        log.warning("Failed to parse date string: %s", s)
         return None

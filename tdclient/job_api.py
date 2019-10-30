@@ -78,18 +78,10 @@ class JobAPI:
                     "query": m.get("query"),
                     "status": m.get("status"),
                     "debug": m.get("debug"),
-                    "start_at": parse_date(start_at, "%Y-%m-%dT%H:%M:%SZ")
-                    if start_at
-                    else None,
-                    "end_at": parse_date(end_at, "%Y-%m-%dT%H:%M:%SZ")
-                    if end_at
-                    else None,
-                    "created_at": parse_date(created_at, "%Y-%m-%dT%H:%M:%SZ")
-                    if created_at
-                    else None,
-                    "updated_at": parse_date(updated_at, "%Y-%m-%dT%H:%M:%SZ")
-                    if updated_at
-                    else None,
+                    "start_at": parse_date(start_at) if start_at else None,
+                    "end_at": parse_date(end_at) if end_at else None,
+                    "created_at": parse_date(created_at) if created_at else None,
+                    "updated_at": parse_date(updated_at) if updated_at else None,
                     "cpu_time": m.get("cpu_time"),
                     "result_size": m.get(
                         "result_size"
@@ -145,16 +137,10 @@ class JobAPI:
                 "query": js.get("query"),
                 "status": js.get("status"),
                 "debug": js.get("debug"),
-                "start_at": parse_date(start_at, "%Y-%m-%dT%H:%M:%SZ")
-                if start_at
-                else None,
-                "end_at": parse_date(end_at, "%Y-%m-%dT%H:%M:%SZ") if end_at else None,
-                "created_at": parse_date(created_at, "%Y-%m-%dT%H:%M:%SZ")
-                if created_at
-                else None,
-                "updated_at": parse_date(updated_at, "%Y-%m-%dT%H:%M:%SZ")
-                if updated_at
-                else None,
+                "start_at": parse_date(start_at) if start_at else None,
+                "end_at": parse_date(end_at) if end_at else None,
+                "created_at": parse_date(created_at) if created_at else None,
+                "updated_at": parse_date(updated_at) if updated_at else None,
                 "cpu_time": js.get("cpu_time"),
                 "result_size": js.get(
                     "result_size"

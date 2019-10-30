@@ -59,9 +59,7 @@ class ScheduleAPI:
             if code != 200:
                 self.raise_error("Create schedule failed", res, body)
             js = self.checked_json(body, ["start"])
-            return parse_date(
-                get_or_else(js, "start", "1970-01-01T00:00:00Z"), "%Y-%m-%d %H:%M:%S %Z"
-            )
+            return parse_date(get_or_else(js, "start", "1970-01-01T00:00:00Z"))
 
     def delete_schedule(self, name):
         """Delete the scheduled query with the specified name.
@@ -199,9 +197,7 @@ class ScheduleAPI:
 
 def job_to_tuple(m):
     job_id = m.get("job_id")
-    scheduled_at = parse_date(
-        get_or_else(m, "scheduled_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ"
-    )
+    scheduled_at = parse_date(get_or_else(m, "scheduled_at", "1970-01-01T00:00:00Z"))
     t = m.get("type", "?")
     return job_id, t, scheduled_at
 
@@ -210,12 +206,8 @@ def schedule_to_tuple(m):
     m = dict(m)
     if "timezone" not in m:
         m["timezone"] = "UTC"
-    m["created_at"] = parse_date(
-        get_or_else(m, "created_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ"
-    )
-    m["next_time"] = parse_date(
-        get_or_else(m, "next_time", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ"
-    )
+    m["created_at"] = parse_date(get_or_else(m, "created_at", "1970-01-01T00:00:00Z"))
+    m["next_time"] = parse_date(get_or_else(m, "next_time", "1970-01-01T00:00:00Z"))
     return m
 
 
@@ -225,15 +217,9 @@ def history_to_tuple(m):
     database = m.get("database")
     status = m.get("status")
     query = m.get("query")
-    start_at = parse_date(
-        get_or_else(m, "start_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ"
-    )
-    end_at = parse_date(
-        get_or_else(m, "end_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ"
-    )
-    scheduled_at = parse_date(
-        get_or_else(m, "scheduled_at", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ"
-    )
+    start_at = parse_date(get_or_else(m, "start_at", "1970-01-01T00:00:00Z"))
+    end_at = parse_date(get_or_else(m, "end_at", "1970-01-01T00:00:00Z"))
+    scheduled_at = parse_date(get_or_else(m, "scheduled_at", "1970-01-01T00:00:00Z"))
     result_url = m.get("result")
     priority = m.get("priority")
     return (
