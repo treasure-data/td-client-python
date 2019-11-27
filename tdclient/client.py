@@ -540,7 +540,7 @@ class Client:
         """
         return self.api.bulk_import_upload_part(name, part_name, bytes_or_stream, size)
 
-    def bulk_import_upload_file(self, name, part_name, format, file):
+    def bulk_import_upload_file(self, name, part_name, format, file, **kwargs):
         """Upload a part to Bulk Import session, from an existing file on filesystem.
 
         Args:
@@ -548,8 +548,9 @@ class Client:
             part_name (str): name of a part of the bulk import session
             format (str): format of data type (e.g. "msgpack", "json")
             file (str or file-like): a name of a file, or a file-like object contains the data
+            **kwargs: extra argments.
         """
-        return self.api.bulk_import_upload_file(name, part_name, format, file)
+        return self.api.bulk_import_upload_file(name, part_name, format, file, **kwargs)
 
     def bulk_import_delete_part(self, name, part_name):
         """Delete a part from a bulk import session

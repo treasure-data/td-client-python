@@ -20,8 +20,17 @@ def create_url(tmpl, **values):
     return tmpl.format(**quoted_values)
 
 
-def parse_csv_value(s):
-    """Parse and convert value to suitable types
+def guess_csv_value(s):
+    """Given a (string) CSV value, try to guess its type and return it
+
+    Tries to interpret s. It tries each interpretation in turn, and returns
+    the first that succeeds:
+
+    1. As an integer
+    2. As a floating point value
+    3. If it is "false" or "true" (case insensitive), then as a boolean
+    4. If it is "" or "none" or "null" (case insensitive), then as None
+    5. As the string itself, unaltered
 
     Args:
         s (str): value on csv
@@ -42,6 +51,39 @@ def parse_csv_value(s):
         return None
     else:
         return s
+
+
+# Convert our dtype names to callables that parse a string into that type
+DTYPE_TO_CALLABLE = {
+    'bool': bool,
+    'float': float,
+    'int': int,
+    'str': str,
+    'guess': guess_csv_value,
+}
+
+
+def merge_dtypes_and_converters(dtypes=None, converters=None):
+    """Generate a merged converters dictionary from the user supplied dicts.
+    """
+    our_converters = {}
+    if dtypes is not None:
+        for key, value in dtypes.items():
+            our_converters[key] = DTYPE_TO_CALLABLE[value]
+    if converters is not None:
+        for key, value in converters.items():
+            our_converters[key] = DTYPE_TO_CALLABLE[value]
+    return our_converters
+
+
+def parse_csv_value(k, s, converters=None):
+    """
+    """
+    if converters is None:
+        parse_fn = guess_csv_value
+    else:
+        parse_fn = converters.get(k, guess_csv_value)
+    return parse_fn(s)
 
 
 def create_msgpack(items):

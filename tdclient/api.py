@@ -34,6 +34,7 @@ from tdclient.server_status_api import ServerStatusAPI
 from tdclient.table_api import TableAPI
 from tdclient.user_api import UserAPI
 from tdclient.util import normalized_msgpack, parse_csv_value
+from tdclient.util import merge_dtypes_and_converters
 
 try:
     import certifi
@@ -591,21 +592,26 @@ class API(
             yield record
 
     def _read_csv_file(
-        self, file_like, dialect=csv.excel, columns=None, encoding="utf-8", **kwargs
+        self, file_like, dialect=csv.excel, columns=None, encoding="utf-8",
+            dtypes=None, converters=None, **kwargs,
     ):
+        our_converters = merge_dtypes_and_converters(dtypes, converters)
 
         if columns is None:
             reader = csv.DictReader(
                 io.TextIOWrapper(file_like, encoding), dialect=dialect
             )
             for row in reader:
-                record = {k: parse_csv_value(v) for (k, v) in row.items()}
+                record = {k: parse_csv_value(k, v, our_converters) for (k, v) in row.items()}
                 self._validate_record(record)
                 yield record
         else:
             reader = csv.reader(io.TextIOWrapper(file_like, encoding), dialect=dialect)
             for row in reader:
-                record = dict(zip(columns, [parse_csv_value(col) for col in row]))
+                record = {}
+                for k, col in zip(columns, row):
+                    record[k] = parse_csv_value(k, col, our_converters)
+                # record = dict(zip(columns, [parse_csv_value(col, our_converters) for col in row]))
                 self._validate_record(record)
                 yield record
 
