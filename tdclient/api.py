@@ -592,8 +592,14 @@ class API(
             yield record
 
     def _read_csv_file(
-        self, file_like, dialect=csv.excel, columns=None, encoding="utf-8",
-            dtypes=None, converters=None, **kwargs,
+        self,
+        file_like,
+        dialect=csv.excel,
+        columns=None,
+        encoding="utf-8",
+        dtypes=None,
+        converters=None,
+        **kwargs
     ):
         our_converters = merge_dtypes_and_converters(dtypes, converters)
 
@@ -602,7 +608,9 @@ class API(
                 io.TextIOWrapper(file_like, encoding), dialect=dialect
             )
             for row in reader:
-                record = {k: parse_csv_value(k, v, our_converters) for (k, v) in row.items()}
+                record = {
+                    k: parse_csv_value(k, v, our_converters) for (k, v) in row.items()
+                }
                 self._validate_record(record)
                 yield record
         else:

@@ -705,9 +705,18 @@ class Client:
         result = self.api.history(name, _from, to)
 
         def scheduled_job(m):
-            scheduled_at, job_id, type, status, query, start_at, end_at, result_url, priority, database = (
-                m
-            )
+            (
+                scheduled_at,
+                job_id,
+                type,
+                status,
+                query,
+                start_at,
+                end_at,
+                result_url,
+                priority,
+                database,
+            ) = m
             job_param = {
                 "url": None,
                 "debug": None,

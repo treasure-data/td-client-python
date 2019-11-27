@@ -55,11 +55,11 @@ def guess_csv_value(s):
 
 # Convert our dtype names to callables that parse a string into that type
 DTYPE_TO_CALLABLE = {
-    'bool': bool,
-    'float': float,
-    'int': int,
-    'str': str,
-    'guess': guess_csv_value,
+    "bool": bool,
+    "float": float,
+    "int": int,
+    "str": str,
+    "guess": guess_csv_value,
 }
 
 
