@@ -80,8 +80,8 @@ def unjsonb(bytes):
     return [json.loads(s.decode("utf-8")) for s in bytes.splitlines()]
 
 
-def value(s):
-    return parse_csv_value(s)
+# def value(s):
+#     return parse_csv_value(s)
 
 
 def csvb(lis, columns=[], dialect=csv.excel, encoding="utf-8"):
@@ -93,11 +93,11 @@ def csvb(lis, columns=[], dialect=csv.excel, encoding="utf-8"):
     return stream.getvalue().encode(encoding)
 
 
-def uncsvb(bytes, columns=[], dialect=csv.excel, encoding="utf-8"):
-    """bytes -> list"""
-    stream = bytes
-    reader = csv.reader(io.StringIO(bytes.decode(encoding)), dialect=dialect)
-    return [dict(zip(columns, [value(column) for column in row])) for row in reader]
+# def uncsvb(bytes, columns=[], dialect=csv.excel, encoding="utf-8"):
+#     """bytes -> list"""
+#     stream = bytes
+#     reader = csv.reader(io.StringIO(bytes.decode(encoding)), dialect=dialect)
+#     return [dict(zip(columns, [value(column) for column in row])) for row in reader]
 
 
 def dcsvb(lis, dialect=csv.excel, encoding="utf-8"):
@@ -114,10 +114,10 @@ def dcsvb(lis, dialect=csv.excel, encoding="utf-8"):
     return stream.getvalue().encode(encoding)
 
 
-def undcsvb(bytes, dialect=csv.excel, encoding="utf-8"):
-    """bytes -> list"""
-    reader = csv.DictReader(io.StringIO(bytes.decode(encoding)), dialect=dialect)
-    return [dict([(k, value(v)) for (k, v) in row.items()]) for row in reader]
+# def undcsvb(bytes, dialect=csv.excel, encoding="utf-8"):
+#     """bytes -> list"""
+#     reader = csv.DictReader(io.StringIO(bytes.decode(encoding)), dialect=dialect)
+#     return [dict([(k, value(v)) for (k, v) in row.items()]) for row in reader]
 
 
 def tsvb(lis, columns=[], encoding="utf-8"):

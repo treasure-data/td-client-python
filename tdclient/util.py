@@ -1,3 +1,4 @@
+import csv
 import io
 import logging
 from urllib.parse import quote as urlquote
@@ -18,6 +19,20 @@ def create_url(tmpl, **values):
     """
     quoted_values = {k: urlquote(str(v)) for k, v in values.items()}
     return tmpl.format(**quoted_values)
+
+
+def validate_record(record):
+    """All input records should contain a column named "time".
+
+    Since we represent records internally as dictionaries, this means
+    all record *dictionaries* should contain a key called "time".
+    """
+    if not any(k in record for k in ("time", b"time")):
+        warnings.warn(
+            'records should have "time" column to import records properly.',
+            category=RuntimeWarning,
+        )
+    return True
 
 
 def guess_csv_value(s):
@@ -84,6 +99,44 @@ def parse_csv_value(k, s, converters=None):
     else:
         parse_fn = converters.get(k, guess_csv_value)
     return parse_fn(s)
+
+
+def csv_dict_record_reader(file_like, encoding, dialect):
+    """Yield records from a CSV "file" using csv.DictReader.
+
+    The records are returned as "column name" : "column value" dictionaries.
+    """
+    reader = csv.DictReader(
+        io.TextIOWrapper(file_like, encoding), dialect=dialect
+    )
+    for row in reader:
+        yield row
+
+
+def csv_text_record_reader(file_like, encoding, dialect, columns):
+    """Yield records from a CSV "file" using csv.reader and given column names.
+
+    The records are returned as "column name" : "column value" dictionaries.
+    """
+    reader = csv.reader(
+        io.TextIOWrapper(file_like, encoding), dialect=dialect
+    )
+    for row in reader:
+        yield dict(zip(columns, row))
+
+
+def read_csv_records(csv_reader, dtypes=None, converters=None, **kwargs):
+    """Read records using csv_reader and yield the results.
+
+    """
+    our_converters = merge_dtypes_and_converters(dtypes, converters)
+
+    for row in csv_reader:
+        record = {
+            k: parse_csv_value(k, v, our_converters) for (k, v) in row.items()
+        }
+        validate_record(record)
+        yield record
 
 
 def create_msgpack(items):

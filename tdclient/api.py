@@ -33,8 +33,11 @@ from tdclient.schedule_api import ScheduleAPI
 from tdclient.server_status_api import ServerStatusAPI
 from tdclient.table_api import TableAPI
 from tdclient.user_api import UserAPI
-from tdclient.util import normalized_msgpack, parse_csv_value
-from tdclient.util import merge_dtypes_and_converters
+from tdclient.util import normalized_msgpack
+from tdclient.util import csv_dict_record_reader
+from tdclient.util import csv_text_record_reader
+from tdclient.util import read_csv_records
+from tdclient.util import validate_record
 
 try:
     import certifi
@@ -569,26 +572,18 @@ class API(
                 file_like = open(file_like, "rb")
             return reader(file_like, **kwargs)
 
-    def _validate_record(self, record):
-        if not any(k in record for k in ("time", b"time")):
-            warnings.warn(
-                'records should have "time" column to import records properly.',
-                category=RuntimeWarning,
-            )
-        return True
-
     def _read_msgpack_file(self, file_like, **kwargs):
         # current impl doesn't tolerate any unpack error
         unpacker = msgpack.Unpacker(file_like, raw=False)
         for record in unpacker:
-            self._validate_record(record)
+            validate_record(record)
             yield record
 
     def _read_json_file(self, file_like, **kwargs):
         # current impl doesn't tolerate any JSON parse error
         for s in file_like:
             record = json.loads(s.decode("utf-8"))
-            self._validate_record(record)
+            validate_record(record)
             yield record
 
     def _read_csv_file(
@@ -601,27 +596,12 @@ class API(
         converters=None,
         **kwargs
     ):
-        our_converters = merge_dtypes_and_converters(dtypes, converters)
-
         if columns is None:
-            reader = csv.DictReader(
-                io.TextIOWrapper(file_like, encoding), dialect=dialect
-            )
-            for row in reader:
-                record = {
-                    k: parse_csv_value(k, v, our_converters) for (k, v) in row.items()
-                }
-                self._validate_record(record)
-                yield record
+            reader = csv_dict_record_reader(file_like, encoding, dialect)
         else:
-            reader = csv.reader(io.TextIOWrapper(file_like, encoding), dialect=dialect)
-            for row in reader:
-                record = {}
-                for k, col in zip(columns, row):
-                    record[k] = parse_csv_value(k, col, our_converters)
-                # record = dict(zip(columns, [parse_csv_value(col, our_converters) for col in row]))
-                self._validate_record(record)
-                yield record
+            reader = csv_text_record_reader(file_like, encoding, dialect, columns)
+
+        return read_csv_records(reader, dtypes, converters, **kwargs)
 
     def _read_tsv_file(self, file_like, **kwargs):
         return self._read_csv_file(file_like, dialect=csv.excel_tab, **kwargs)
