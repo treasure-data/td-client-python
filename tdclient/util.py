@@ -1,6 +1,7 @@
 import csv
 import io
 import logging
+import warnings
 from urllib.parse import quote as urlquote
 
 import dateutil.parser
@@ -52,6 +53,7 @@ def guess_csv_value(s):
     Returns:
         Suitable value (int, float, str, bool or None)
     """
+    print(f'guess {s!r}')
     try:
         return int(s)
     except (OverflowError, ValueError):
@@ -83,11 +85,15 @@ def merge_dtypes_and_converters(dtypes=None, converters=None):
     """
     our_converters = {}
     if dtypes is not None:
-        for key, value in dtypes.items():
-            our_converters[key] = DTYPE_TO_CALLABLE[value]
+        try:
+            for column_name, dtype in dtypes.items():
+                our_converters[column_name] = DTYPE_TO_CALLABLE[dtype]
+        except KeyError as e:
+            raise ValueError(f'Unrecognized dtype {dtype!r}, must be one of '
+                             f'{", ".join(repr(k) for k in sorted(DTYPE_TO_CALLABLE))}')
     if converters is not None:
-        for key, value in converters.items():
-            our_converters[key] = DTYPE_TO_CALLABLE[value]
+        for column_name, parse_fn in converters.items():
+            our_converters[column_name] = parse_fn
     return our_converters
 
 
@@ -104,7 +110,17 @@ def parse_csv_value(k, s, converters=None):
 def csv_dict_record_reader(file_like, encoding, dialect):
     """Yield records from a CSV "file" using csv.DictReader.
 
-    The records are returned as "column name" : "column value" dictionaries.
+    Args:
+        file_like: acts like an instance of io.BufferedIOBase, returning
+            bytes when it is read from.
+        encoding (str): then name of the encoding to use when turning those
+            bytes into strings.
+        dialect (str or None): the name of the CSV dialect to use, or None.
+
+    Yields:
+        For each CSV row, yields a dictionary whose keys are column names
+        (determined by the first row in the CSV data) and whose values are
+        column values.
     """
     reader = csv.DictReader(
         io.TextIOWrapper(file_like, encoding), dialect=dialect
@@ -116,7 +132,16 @@ def csv_dict_record_reader(file_like, encoding, dialect):
 def csv_text_record_reader(file_like, encoding, dialect, columns):
     """Yield records from a CSV "file" using csv.reader and given column names.
 
-    The records are returned as "column name" : "column value" dictionaries.
+    Args:
+        file_like: acts like an instance of io.BufferedIOBase, returning
+            bytes when it is read from.
+        encoding (str): then name of the encoding to use when turning those
+            bytes into strings.
+        dialect (str or None): the name of the CSV dialect to use, or None.
+
+    Yields:
+        For each CSV row, yields a dictionary whose keys are column names
+        (determined by `columns`) and whose values are column values.
     """
     reader = csv.reader(
         io.TextIOWrapper(file_like, encoding), dialect=dialect
