@@ -9,11 +9,6 @@ from io import BytesIO
 from unittest import mock
 
 from tdclient import api, Client
-from tdclient.util import DTYPE_TO_CALLABLE
-from tdclient.util import csv_dict_record_reader
-from tdclient.util import csv_text_record_reader
-from tdclient.util import merge_dtypes_and_converters
-from tdclient.util import parse_csv_value
 from tdclient.util import read_csv_records
 
 from tdclient.test.test_helper import gunzipb
