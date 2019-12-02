@@ -88,8 +88,8 @@ def merge_dtypes_and_converters(dtypes=None, converters=None):
             for column_name, dtype in dtypes.items():
                 our_converters[column_name] = DTYPE_TO_CALLABLE[dtype]
         except KeyError as e:
-            raise ValueError(f'Unrecognized dtype {dtype!r}, must be one of '
-                             f'{", ".join(repr(k) for k in sorted(DTYPE_TO_CALLABLE))}')
+            raise ValueError('Unrecognized dtype %r, must be one of %s' % (
+                dtype, ", ".join(repr(k) for k in sorted(DTYPE_TO_CALLABLE))))
     if converters is not None:
         for column_name, parse_fn in converters.items():
             our_converters[column_name] = parse_fn
