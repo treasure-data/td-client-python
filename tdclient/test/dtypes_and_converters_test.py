@@ -6,8 +6,9 @@
 import pytest
 
 from io import BytesIO
+from unittest import mock
 
-from tdclient import api
+from tdclient import api, Client
 from tdclient.util import DTYPE_TO_CALLABLE
 from tdclient.util import csv_dict_record_reader
 from tdclient.util import csv_text_record_reader
@@ -16,6 +17,7 @@ from tdclient.util import parse_csv_value
 from tdclient.util import read_csv_records
 
 from tdclient.test.test_helper import gunzipb
+from tdclient.test.test_helper import make_response
 from tdclient.test.test_helper import msgunpackb
 
 
@@ -150,54 +152,68 @@ def test_dtypes_overridden_by_converters():
     ]
 
 
-DEFAULT_HEADER_BYTE_CSV = BytesIO(
-    b'time, col1, col2, col3, col4, col5, col6'
-    b'100, 0001, 10, 1.0, abcd, true, none'
-    b'200, 0002, 20, 2.0, edfg, false,'
+DEFAULT_HEADER_BYTE_CSV = (
+    b'time,col1,col2,col3,col4\n'
+    b'100,0001,10,1.0,abcd\n'
+    b'200,0002,20,2.0,efgh\n'
 )
-
-
-DEFAULT_NO_HEADER_BYTE_CSV = BytesIO(
-    b'100, 0001, 10, 1.0, abcd, true, none'
-    b'200, 0002, 20, 2.0, edfg, false,'
-)
-
-DEFAULT_COLUMNS = ['time', 'col1', 'col2', 'col3', 'col4', 'col5', 'col6']
-
-
-def test_import_file_supports_empty_dtypes_and_converters():
-    expected_data = [
-        {'time': '100', 'col1': '0001', 'col2': '10', 'col3': '1.0', 'col4': 'abcd', 'col5': 'true', 'col6': 'none'},
-        {'time': '200', 'col1': '0002', 'col2': '20', 'col3': '2.0', 'col4': 'efgh', 'col5': 'false', 'col6': ''},
-    ]
-    td = api.API("APIKEY")
-
-    def import_data(db, table, format, stream, size, unique_id=None):
-        assert db == "db"
-        assert table == "table"
-        assert format == "msgpack.gz"
-        print(f'size {size}')
-        data = stream.read(size)
-        print(f'data {data!r}')
-        print(f'data {gunzipb(data)!r}')
-        assert msgunpackb(gunzipb(data)) == expected_data
-        assert unique_id is None
-
-    td.import_data = import_data
-    td.import_file("db", "table", "csv", DEFAULT_HEADER_BYTE_CSV)
 
 
 def test_import_file_supports_dtypes_and_converters():
-    pass
 
+    def import_data(db, table, format, stream, size, unique_id=None):
+        data = stream.read(size)
+        assert msgunpackb(gunzipb(data)) == \
+            [
+                {'time': 100, 'col1': '0001', 'col2': 10.0, 'col3': 1.0, 'col4': 'abcd'},
+                {'time': 200, 'col1': '0002', 'col2': 20.0, 'col3': 2.0, 'col4': 'efgh'},
+            ]
 
-def test_import_file_no_headers_supports_dtypes_and_converters():
-    pass
+    td = api.API("APIKEY")
+    td.import_data = import_data
+    td.import_file(
+        "db", "table", "csv", BytesIO(DEFAULT_HEADER_BYTE_CSV),
+        dtypes = {'col1': 'str', 'col6': 'str'},
+        converters = {'col2': float},
+    )
 
 
 def test_bulk_import_upload_file_supports_dtypes_and_converters():
-    pass
+
+    def bulk_import_upload_part(name, part_name, stream, size):
+        data = stream.read(size)
+        assert msgunpackb(gunzipb(data)) == \
+            [
+                {'time': 100, 'col1': '0001', 'col2': 10.0, 'col3': 1.0, 'col4': 'abcd'},
+                {'time': 200, 'col1': '0002', 'col2': 20.0, 'col3': 2.0, 'col4': 'efgh'},
+            ]
+
+    td = api.API("APIKEY")
+    td.bulk_import_upload_part = bulk_import_upload_part
+    td.bulk_import_upload_file(
+        "name", "part-name", "csv", BytesIO(DEFAULT_HEADER_BYTE_CSV),
+        dtypes = {'col1': 'str', 'col6': 'str'},
+        converters = {'col2': float},
+    )
 
 
 def test_bulk_import_dot_upload_file_supports_dtypes_and_converters():
-    pass
+
+    def bulk_import_upload_part(name, part_name, stream, size):
+        data = stream.read(size)
+        assert msgunpackb(gunzipb(data)) == \
+            [
+                {'time': 100, 'col1': '0001', 'col2': 10.0, 'col3': 1.0, 'col4': 'abcd'},
+                {'time': 200, 'col1': '0002', 'col2': 20.0, 'col3': 2.0, 'col4': 'efgh'},
+            ]
+
+    with Client("APIKEY") as td:
+        td.api.post = mock.MagicMock(return_value=make_response(200, b""))
+        td.api.bulk_import_upload_part = bulk_import_upload_part
+        bulk_import = td.create_bulk_import('session-name', 'mydb', 'mytbl')
+        bulk_import.update = mock.MagicMock()
+        bulk_import.upload_file(
+            'part-name', 'csv', BytesIO(DEFAULT_HEADER_BYTE_CSV),
+            dtypes = {'col1': 'str', 'col6': 'str'},
+            converters = {'col2': float},
+        )

@@ -53,7 +53,6 @@ def guess_csv_value(s):
     Returns:
         Suitable value (int, float, str, bool or None)
     """
-    print(f'guess {s!r}')
     try:
         return int(s)
     except (OverflowError, ValueError):
