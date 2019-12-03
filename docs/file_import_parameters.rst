@@ -15,8 +15,8 @@ The following input formats are supported:
 * "msgpack" - the data is MessagePack_ serialized
 * "json" - the data is JSON_ serialized.
 * "csv" - the data is CSV, and will be read using the `Python CSV module`_.
-* "tsv" - the data is CSV, with ``dialect=csv.excel`` explicitly set, and will
-  be read using the Python CSV library.
+* "tsv" - the data is TSV (tab separated data), and will be read using the
+  `Python CSV module`_ with ``dialect=csv.excel_tab`` explicitly set.
 
 .. _`io.BufferedIOBase`: https://docs.python.org/3/library/io.html#io.BufferedIOBase
 .. _MessagePack: https://msgpack.org/
@@ -40,8 +40,8 @@ JSON data is read using the utf-8 encoding.
 CSV data
 --------
 
-When reading CSV data, the following parameters may also be supplied, all of
-which are optional:
+When reading CSV data, the following parameters may also be supplied,
+all of which are optional:
 
 * ``dialect`` specifies the CSV dialect. The default is ``csv.excel``.
 * ``encoding`` specifies the encoding that will be used to turn the binary
@@ -75,3 +75,14 @@ To summarise, the default for reading CSV files is:
 
   ``dialect=csv.excel, encoding="utf-8", columns=None, dtypes=None, converters=None``
   
+TSV data
+--------
+
+When reading TSV data, the parameters that may be used are the same as for
+CSV, except that:
+
+* ``dialect`` may not be specified, and ``csv.excel_tab`` will be used.
+
+The default for reading TSV files is:
+
+  ``encoding="utf-8", columns=None, dtypes=None, converters=None``
