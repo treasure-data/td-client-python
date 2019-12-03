@@ -164,7 +164,7 @@ class BulkImportAPI:
             part_name (str): Bulk import part name.
             format (str): Format name. {msgpack, json, csv, tsv}
             file (file-like): Byte string or file-like object contains the data.
-            **kwargs: Extra argments.
+            **kwargs: Extra arguments.
         """
         self.validate_part_name(part_name)
         with contextlib.closing(self._prepare_file(file, format, **kwargs)) as fp:

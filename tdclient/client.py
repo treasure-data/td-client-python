@@ -548,7 +548,7 @@ class Client:
             part_name (str): name of a part of the bulk import session
             format (str): format of data type (e.g. "msgpack", "json")
             file (str or file-like): a name of a file, or a file-like object contains the data
-            **kwargs: extra argments.
+            **kwargs: extra arguments.
         """
         return self.api.bulk_import_upload_file(name, part_name, format, file, **kwargs)
 

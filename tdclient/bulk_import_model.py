@@ -181,7 +181,7 @@ class BulkImport(Model):
             part_name (str): name of a part of the bulk import session
             fmt (str): format of data type (e.g. "msgpack", "json")
             file_like (str or file-like): a name of a file, or a file-like object contains the data
-            **kwargs: extra argments.
+            **kwargs: extra arguments.
         """
         response = self._client.bulk_import_upload_file(
             self.name, part_name, fmt, file_like, **kwargs,
