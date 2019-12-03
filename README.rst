@@ -54,7 +54,13 @@ Examples
 
 Please see also the examples at `Treasure Data Documentation <http://docs.treasuredata.com/articles/rest-api-python-client>`_.
 
-If you want to find API reference, see also `API document <https://tdclient.readthedocs.io/>`_.
+The td-client documentation is hosted at https://tdclient.readthedocs.io/,
+or you can go directly to the
+`API documentation <https://tdclient.readthedocs.io/en/latest/api/index.html>`_.
+
+For information on the parameters that may be used when reading particular
+types of data, see
+`File import parameters <https://tdclient.readthedocs.io/en/latest/api/file_import_paremeters.html>`_.
 
 Listing jobs
 ^^^^^^^^^^^^
