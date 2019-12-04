@@ -120,8 +120,10 @@ def merge_dtypes_and_converters(dtypes=None, converters=None):
             for column_name, dtype in dtypes.items():
                 our_converters[column_name] = DTYPE_TO_CALLABLE[dtype]
         except KeyError as e:
-            raise ValueError('Unrecognized dtype %r, must be one of %s' % (
-                dtype, ", ".join(repr(k) for k in sorted(DTYPE_TO_CALLABLE))))
+            raise ValueError(
+                "Unrecognized dtype %r, must be one of %s"
+                % (dtype, ", ".join(repr(k) for k in sorted(DTYPE_TO_CALLABLE)))
+            )
     if converters is not None:
         for column_name, parse_fn in converters.items():
             our_converters[column_name] = parse_fn
@@ -186,9 +188,7 @@ def csv_dict_record_reader(file_like, encoding, dialect):
         whose keys are column names (determined from the first row in the CSV
         data) and whose values are the column values.
     """
-    reader = csv.DictReader(
-        io.TextIOWrapper(file_like, encoding), dialect=dialect
-    )
+    reader = csv.DictReader(io.TextIOWrapper(file_like, encoding), dialect=dialect)
     for row in reader:
         yield row
 
@@ -213,9 +213,7 @@ def csv_text_record_reader(file_like, encoding, dialect, columns):
         whose keys are column names (determined by `columns`) and whose values
         are the column values.
     """
-    reader = csv.reader(
-        io.TextIOWrapper(file_like, encoding), dialect=dialect
-    )
+    reader = csv.reader(io.TextIOWrapper(file_like, encoding), dialect=dialect)
     for row in reader:
         yield dict(zip(columns, row))
 
@@ -227,9 +225,7 @@ def read_csv_records(csv_reader, dtypes=None, converters=None, **kwargs):
     our_converters = merge_dtypes_and_converters(dtypes, converters)
 
     for row in csv_reader:
-        record = {
-            k: parse_csv_value(k, v, our_converters) for (k, v) in row.items()
-        }
+        record = {k: parse_csv_value(k, v, our_converters) for (k, v) in row.items()}
         validate_record(record)
         yield record
 
