@@ -163,8 +163,30 @@ class BulkImportAPI:
             name (str): Bulk import name.
             part_name (str): Bulk import part name.
             format (str): Format name. {msgpack, json, csv, tsv}
-            file (file-like): Byte string or file-like object contains the data.
+            file (str or file-like): the name of a file, or a file-like object,
+              containing the data
             **kwargs: Extra arguments.
+
+        There is more documentation on `format`, `file` and `**kwargs` at
+        `file import parameters`_.
+
+        In particular, for "csv" and "tsv" data, you can change how data columns
+        are parsed using the ``dtypes`` and ``converters`` arguments.
+
+        * ``dtypes`` is a dictionary used to specify a datatype for individual
+          columns, for instance ``{"col1": "int"}``. The available datatypes
+          are ``"bool"``, ``"float"``, ``"int"``, ``"str"`` and ``"guess"``.
+          If a column is also mentioned in ``converters``, then the function
+          will be used, NOT the datatype.
+
+        * ``converters`` is a dictionary used to specify a function that will
+          be used to parse individual columns, for instace ``{"col1", int}``.
+
+        The default behaviour is ``"guess"``, which makes a best-effort to decide
+        the column datatype. See `file import parameters`_ for more details.
+        
+        .. _`file import parameters`:
+           https://tdclient.readthedocs.io/en/latest/file_import_parameters.html
         """
         self.validate_part_name(part_name)
         with contextlib.closing(self._prepare_file(file, format, **kwargs)) as fp:

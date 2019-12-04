@@ -179,9 +179,31 @@ class BulkImport(Model):
 
         Args:
             part_name (str): name of a part of the bulk import session
-            fmt (str): format of data type (e.g. "msgpack", "json")
-            file_like (str or file-like): a name of a file, or a file-like object contains the data
+            fmt (str): format of data type (e.g. "msgpack", "json", "csv", "tsv")
+            file_like (str or file-like): the name of a file, or a file-like object,
+              containing the data
             **kwargs: extra arguments.
+
+        There is more documentation on `fmt`, `file_like` and `**kwargs` at
+        `file import parameters`_.
+
+        In particular, for "csv" and "tsv" data, you can change how data columns
+        are parsed using the ``dtypes`` and ``converters`` arguments.
+
+        * ``dtypes`` is a dictionary used to specify a datatype for individual
+          columns, for instance ``{"col1": "int"}``. The available datatypes
+          are ``"bool"``, ``"float"``, ``"int"``, ``"str"`` and ``"guess"``.
+          If a column is also mentioned in ``converters``, then the function
+          will be used, NOT the datatype.
+
+        * ``converters`` is a dictionary used to specify a function that will
+          be used to parse individual columns, for instace ``{"col1", int}``.
+
+        The default behaviour is ``"guess"``, which makes a best-effort to decide
+        the column datatype. See `file import parameters`_ for more details.
+        
+        .. _`file import parameters`:
+           https://tdclient.readthedocs.io/en/latest/file_import_parameters.html
         """
         response = self._client.bulk_import_upload_file(
             self.name, part_name, fmt, file_like, **kwargs,

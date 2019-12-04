@@ -1,8 +1,8 @@
 File import parameters
 ======================
 
-``file-like`` parameters specify where to read the input data from. They can
-be:
+``str or file-like`` parameters specify where to read the input data
+from. They can be:
 
 * a file name.
 * a file object, representing a file opened in binary mode.
