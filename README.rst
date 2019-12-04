@@ -59,8 +59,10 @@ or you can go directly to the
 `API documentation <https://tdclient.readthedocs.io/en/latest/api/index.html>`_.
 
 For information on the parameters that may be used when reading particular
-types of data, see
-`File import parameters <https://tdclient.readthedocs.io/en/latest/api/file_import_paremeters.html>`_.
+types of data, see `File import parameters`_.
+
+.. _`file import parameters`:
+   https://tdclient.readthedocs.io/en/latest/api/file_import_paremeters.html
 
 Listing jobs
 ^^^^^^^^^^^^
@@ -197,6 +199,66 @@ If you want to import data as `msgpack <https://msgpack.org/>`_ format, you can 
        bulk_import.perform(wait=True)
        # same as the above example
 
+
+Changing how CSV and TSV columns are read
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``td-client`` package will generally make sensible choices on how to read
+the columns in CSV and TSV data, but sometimes the user needs to override the
+default mechanism. This can be done using the optional `file import
+parameters`_ ``dtypes`` and ``converters``.
+
+For instance, consider CSV data that starts with the following records::
+
+  time,col1,col2,col3
+  1575454204,a,0001,a;b;c
+  1575454204,b,0002,d;e;f
+
+If that data is read using the defaults, it will produce values that look
+like:
+
+.. code:: python
+
+  1575454204, "a", 1, "a;b;c"
+  1575454204, "b", 2, "d;e;f"
+  
+that is, an integer, a string, an integer and another string.
+
+If the user wants to keep the leading zeroes in ``col2``, then they can
+specify the column datatype as string. For instance, using
+``bulk_import.upload_file`` to read data from ``input_data``:
+
+.. code:: python
+
+    bulk_import.upload_file(
+        "part", "msgpack", input_data,
+        dtypes={"col2": "str"},
+    )
+
+which would produce:
+
+.. code:: python
+
+  1575454204, "a", "0001", "a;b;c"
+  1575454204, "b", "0002", "d;e;f"
+
+If they also wanted to treat ``col3`` as a sequence of strings, separated by
+semicolons, then they could specify a function to process ``col3``:
+
+.. code:: python
+
+    bulk_import.upload_file(
+        "part", "msgpack", input_data,
+        dtypes={"col2": "str"},
+        converters={"col3", lambda x: x.split(";")},
+    )
+
+which would produce:
+
+.. code:: python
+
+  1575454204, "a", "0001", ["a", "b", "c"]
+  1575454204, "b", "0002", ["d", "e", "f"]
 
 Development
 -----------
