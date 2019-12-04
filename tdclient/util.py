@@ -7,7 +7,6 @@ from urllib.parse import quote as urlquote
 import dateutil.parser
 import msgpack
 
-
 log = logging.getLogger(__name__)
 
 
@@ -347,3 +346,54 @@ def parse_date(s):
     except ValueError:
         log.warning("Failed to parse date string: %s", s)
         return None
+
+
+def normalize_connector_config(config):
+    """Normalize connector config
+
+    This is porting of TD CLI's ConnectorConfigNormalizer#normalized_config.
+    see also: https://github.com/treasure-data/td/blob/15495f12d8645a7b3f6804098f8f8aca72de90b9/lib/td/connector_config_normalizer.rb#L7-L30
+
+    Args:
+        config (dict): A config to be normalized
+
+    Returns:
+        dict: Normalized configuration
+
+    Examples:
+        Only with ``in`` key in a config.
+        >>> config = {"in": {"type": "s3"}}
+        >>> normalize_connector_config(config)
+        {'in': {'type': 's3'}, 'out': {}, 'exec': {}, 'filters': []}
+
+        With ``in``, ``out``, ``exec``, and ``filters`` in a config.
+        >>> config =  {
+        ...     "in": {"type": "s3"},
+        ...     "out": {"mode": "append"},
+        ...     "exec": {"guess_plugins": ["json"]},
+        ...     "filters": [{"type": "speedometer"}],
+        ... }
+        >>> normalize_connector_config(config)
+        {'in': {'type': 's3'},
+        'out': {'mode': 'append'},
+        'exec': {'guess_plugins': ['json']},
+        'filters': [{'type': 'speedometer'}]}
+    """
+    if "in" in config:
+        return {
+            "in": config["in"],
+            "out": config.get("out", {}),
+            "exec": config.get("exec", {}),
+            "filters": config.get("filters", []),
+        }
+    elif "config" in config:
+        if len(config) != 1:
+            raise ValueError(
+                "Setting sibling keys with 'config' key isn't support. "
+                "Set within the 'config' key, or put all the settings without 'config'"
+                "key."
+            )
+
+        return normalize_connector_config(config["config"])
+    else:
+        return {"in": config, "out": {}, "exec": {}, "filters": []}

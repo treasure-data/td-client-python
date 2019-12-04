@@ -2,7 +2,7 @@
 
 import json
 
-from .util import create_url
+from .util import create_url, normalize_connector_config
 
 
 class ConnectorAPI:
@@ -73,8 +73,7 @@ class ConnectorAPI:
         """
         headers = {"content-type": "application/json; charset=utf-8"}
         if isinstance(job, dict):
-            if "config" not in job:
-                job = {"config": job}
+            job = {"config": normalize_connector_config(job)}
             payload = json.dumps(job).encode("utf-8")
         else:
             # Not checking the format. Assuming the right format
