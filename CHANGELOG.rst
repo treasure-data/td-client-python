@@ -5,10 +5,14 @@ Version History
 Unreleased
 ----------
 
+v1.2.0 (2019-12-05)
+--------------------
+
 * Add new (optional) parameters to ``ImportApi.import_files``,
   ``BulkImportApi.bulk_import_upload_file`` and ``BulkImport.upload_file``. (#85)
   The ``dtypes`` and ``converters`` parameters allow better control of the
   import of CSV data (#83). This is modelled on the approach taken by pandas.
+* Ensure ``config`` key for ``ConnectorAPI.connector_guess`` (#84)
 
 v1.1.0 (2019-10-16)
 --------------------
