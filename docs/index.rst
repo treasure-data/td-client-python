@@ -4,6 +4,7 @@
    :maxdepth: 1
    :caption: Contents
 
+   file_import_parameters
    api/index
    changelog
 

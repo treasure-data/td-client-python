@@ -58,7 +58,7 @@ class ImportAPI:
 
         This method will decompress/deserialize records from given file, and then
         convert it into format acceptable from Treasure Data Service ("msgpack.gz").
-        This method is a warpper function to `import_data`.
+        This method is a wrapper function to `import_data`.
 
         Args:
             db (str): name of a database

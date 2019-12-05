@@ -540,16 +540,39 @@ class Client:
         """
         return self.api.bulk_import_upload_part(name, part_name, bytes_or_stream, size)
 
-    def bulk_import_upload_file(self, name, part_name, format, file):
+    def bulk_import_upload_file(self, name, part_name, format, file, **kwargs):
         """Upload a part to Bulk Import session, from an existing file on filesystem.
 
         Args:
             name (str): name of a bulk import session
             part_name (str): name of a part of the bulk import session
-            format (str): format of data type (e.g. "msgpack", "json")
-            file (str or file-like): a name of a file, or a file-like object contains the data
+            format (str): format of data type (e.g. "msgpack", "json", "csv", "tsv")
+            file (str or file-like): the name of a file, or a file-like object,
+              containing the data
+            **kwargs: extra arguments.
+
+        There is more documentation on `format`, `file` and `**kwargs` at
+        `file import parameters`_.
+
+        In particular, for "csv" and "tsv" data, you can change how data columns
+        are parsed using the ``dtypes`` and ``converters`` arguments.
+
+        * ``dtypes`` is a dictionary used to specify a datatype for individual
+          columns, for instance ``{"col1": "int"}``. The available datatypes
+          are ``"bool"``, ``"float"``, ``"int"``, ``"str"`` and ``"guess"``.
+          If a column is also mentioned in ``converters``, then the function
+          will be used, NOT the datatype.
+
+        * ``converters`` is a dictionary used to specify a function that will
+          be used to parse individual columns, for instace ``{"col1", int}``.
+
+        The default behaviour is ``"guess"``, which makes a best-effort to decide
+        the column datatype. See `file import parameters`_ for more details.
+        
+        .. _`file import parameters`:
+           https://tdclient.readthedocs.io/en/latest/file_import_parameters.html
         """
-        return self.api.bulk_import_upload_file(name, part_name, format, file)
+        return self.api.bulk_import_upload_file(name, part_name, format, file, **kwargs)
 
     def bulk_import_delete_part(self, name, part_name):
         """Delete a part from a bulk import session
@@ -704,9 +727,18 @@ class Client:
         result = self.api.history(name, _from, to)
 
         def scheduled_job(m):
-            scheduled_at, job_id, type, status, query, start_at, end_at, result_url, priority, database = (
-                m
-            )
+            (
+                scheduled_at,
+                job_id,
+                type,
+                status,
+                query,
+                start_at,
+                end_at,
+                result_url,
+                priority,
+                database,
+            ) = m
             job_param = {
                 "url": None,
                 "debug": None,
