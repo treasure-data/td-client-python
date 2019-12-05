@@ -2,7 +2,7 @@
 
 import json
 
-from .util import create_url
+from .util import create_url, normalize_connector_config
 
 
 class ConnectorAPI:
@@ -16,12 +16,69 @@ class ConnectorAPI:
 
         Args:
             job (dict): :class:`dict` representation of `seed.yml`
+                        See Also: https://www.embulk.org/docs/built-in.html#guess-executor
 
         Returns:
-             :class:`dict`
+             :class:`dict`: The configuration of the Data Connector.
+
+        Examples:
+            >>> config = {
+            ...     "in": {
+            ...         "type": "s3",
+            ...         "bucket": "your-bucket",
+            ...         "path_prefix": "logs/csv-",
+            ...         "access_key_id": "YOUR-AWS-ACCESS-KEY",
+            ...         "secret_access_key": "YOUR-AWS-SECRET-KEY"
+            ...     },
+            ...     "out": {"mode": "append"},
+            ...     "exec": {"guess_plugins": ["json", "query_string"]},
+            ... }
+            >>> td.api.connector_guess(config)
+            {'config': {'in': {'type': 's3',
+               'bucket': 'your-bucket',
+               'path_prefix': 'logs/csv-',
+               'access_key_id': 'YOUR-AWS-ACCESS-KEY',
+               'secret_access_key': 'YOU-AWS-SECRET-KEY',
+               'parser': {'charset': 'UTF-8',
+                'newline': 'LF',
+                'type': 'csv',
+                'delimiter': ',',
+                'quote': '"',
+                'escape': '"',
+                'trim_if_not_quoted': False,
+                'skip_header_lines': 1,
+                'allow_extra_columns': False,
+                'allow_optional_columns': False,
+                'columns': [{'name': 'sepal.length', 'type': 'double'},
+                 {'name': 'sepal.width', 'type': 'double'},
+                 {'name': 'petal.length', 'type': 'double'},
+                 {'name': 'petal.width', 'type': 'string'},
+                 {'name': 'variety', 'type': 'string'}]}},
+              'out': {'mode': 'append'},
+              'exec': {'guess_plugin': ['json', 'query_string']},
+              'filters': [{'rules': [{'rule': 'upper_to_lower'},
+                 {'pass_types': ['a-z', '0-9'],
+                  'pass_characters': '_',
+                  'replace': '_',
+                  'rule': 'character_types'},
+                 {'pass_types': ['a-z'],
+                  'pass_characters': '_',
+                  'prefix': '_',
+                  'rule': 'first_character_types'},
+                 {'rule': 'unique_number_suffix', 'max_length': 128}],
+                'type': 'rename'},
+               {'from_value': {'mode': 'upload_time'},
+                'to_column': {'name': 'time'},
+                'type': 'add_time'}]}}
         """
         headers = {"content-type": "application/json; charset=utf-8"}
-        payload = json.dumps(job).encode("utf-8") if isinstance(job, dict) else job
+        if isinstance(job, dict):
+            job = {"config": normalize_connector_config(job)}
+            payload = json.dumps(job).encode("utf-8")
+        else:
+            # Not checking the format. Assuming the right format
+            payload = job
+
         with self.post("/v3/bulk_loads/guess", payload, headers=headers) as res:
             code, body = res.status, res.read()
             if code != 200:

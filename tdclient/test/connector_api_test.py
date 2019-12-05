@@ -74,6 +74,22 @@ def test_connector_guess_success():
     td = api.API("APIKEY")
     td.post = mock.MagicMock(return_value=make_response(200, dumps(config)))
     res = td.connector_guess(seed)
+    seed["config"]["exec"] = {}
+    seed["config"]["filters"] = []
+    assert res == config
+    td.post.assert_called_with(
+        "/v3/bulk_loads/guess",
+        dumps(seed),
+        headers={"content-type": "application/json; charset=utf-8"},
+    )
+
+
+def test_connector_guess_without_config_success():
+    td = api.API("APIKEY")
+    td.post = mock.MagicMock(return_value=make_response(200, dumps(config)))
+    res = td.connector_guess(seed["config"])
+    seed["config"]["exec"] = {}
+    seed["config"]["filters"] = []
     assert res == config
     td.post.assert_called_with(
         "/v3/bulk_loads/guess",
