@@ -98,11 +98,3 @@ tdclient.table\_api
    :members:
    :undoc-members:
    :show-inheritance:
-
-tdclient.user\_api
--------------------------
-
-.. automodule:: tdclient.user_api
-   :members:
-   :undoc-members:
-   :show-inheritance:

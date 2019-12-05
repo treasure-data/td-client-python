@@ -71,14 +71,3 @@ tdclient.table\_model
    :members:
    :undoc-members:
    :show-inheritance:
-
-tdclient.user\_model
----------------------------
-
-.. automodule:: tdclient.user_model
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-
