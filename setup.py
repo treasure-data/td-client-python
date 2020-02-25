@@ -47,7 +47,7 @@ setup(
     author_email="support@treasure-data.com",
     url="http://treasuredata.com/",
     python_requires=">=3.5",
-    install_requires=["msgpack>=0.6.2,<1.0.0", "python-dateutil", "urllib3"],
+    install_requires=["msgpack>=0.6.2", "python-dateutil", "urllib3"],
     tests_require=["coveralls", "mock", "pytest", "pytest-cov", "tox"],
     extras_require={
         "dev": ["black==19.3b0", "isort", "flake8"],
@@ -67,6 +67,7 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
     ],
