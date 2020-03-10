@@ -155,7 +155,7 @@ Importing data into Treasure Data in batch manner.
        bulk_import = td.create_bulk_import(session_name, "mydb", "mytbl")
        try:
            for file_name in sys.argv[1:]:
-               part_name = "part-{}".format{file_name}
+               part_name = "part-{}".format(file_name)
                bulk_import.upload_file(part_name, "json", file_name)
            bulk_import.freeze()
        except:
