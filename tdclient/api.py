@@ -33,11 +33,13 @@ from tdclient.schedule_api import ScheduleAPI
 from tdclient.server_status_api import ServerStatusAPI
 from tdclient.table_api import TableAPI
 from tdclient.user_api import UserAPI
-from tdclient.util import normalized_msgpack
-from tdclient.util import csv_dict_record_reader
-from tdclient.util import csv_text_record_reader
-from tdclient.util import read_csv_records
-from tdclient.util import validate_record
+from tdclient.util import (
+    csv_dict_record_reader,
+    csv_text_record_reader,
+    normalized_msgpack,
+    read_csv_records,
+    validate_record,
+)
 
 try:
     import certifi
@@ -107,6 +109,8 @@ class API(
             self._user_agent = "TD-Client-Python/%s" % (version.__version__)
 
         if endpoint is not None:
+            if not urlparse.urlparse(endpoint).scheme:
+                endpoint = "https://{}".format(endpoint)
             self._endpoint = endpoint
         elif os.getenv("TD_API_SERVER"):
             self._endpoint = os.getenv("TD_API_SERVER")

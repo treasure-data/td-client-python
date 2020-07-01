@@ -98,6 +98,13 @@ def test_https_endpoint_with_custom_path():
     assert "https://api.example.com/v1/" == url
 
 
+def test_https_endpoint():
+    td = api.API("apikey", endpoint="api.example.com")
+    assert isinstance(td.http, urllib3.PoolManager)
+    url, headers = td.build_request()
+    assert "https://api.example.com" == url
+
+
 def test_http_proxy_from_environ():
     os.environ["HTTP_PROXY"] = "proxy1.example.com:8080"
     td = api.API("apikey")
