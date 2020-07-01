@@ -3,9 +3,9 @@ Treasure Data API library for Python
 ====================================
 
 
-.. image:: https://travis-ci.org/treasure-data/td-client-python.svg
-   :target: https://travis-ci.org/treasure-data/td-client-python
-   :alt: Build Status
+.. image:: https://github.com/treasure-data/td-client-python/workflows/Python%20testing/badge.svg
+   :target: https://github.com/treasure-data/td-client-python/actions
+   :alt: Build Status on GitHub ACtions
 
 
 .. image:: https://ci.appveyor.com/api/projects/status/eol91l1ag50xee9m/branch/master?svg=true
@@ -221,7 +221,7 @@ like:
 
   1575454204, "a", 1, "a;b;c"
   1575454204, "b", 2, "d;e;f"
-  
+
 that is, an integer, a string, an integer and another string.
 
 If the user wants to keep the leading zeroes in ``col2``, then they can
