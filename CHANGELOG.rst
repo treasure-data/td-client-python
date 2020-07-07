@@ -5,6 +5,11 @@ Version History
 Unreleased
 ----------
 
+v1.2.1 (2020-07-01)
+--------------------
+
+* Ensure ``endpoint`` starts with ``'https://'`` if scheme not given (#96)
+
 v1.2.0 (2019-12-05)
 --------------------
 
