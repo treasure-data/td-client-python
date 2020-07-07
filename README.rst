@@ -298,7 +298,13 @@ Then, run ``tox``.
 Release
 ^^^^^^^
 
-Release to PyPI. Ensure you installed twine.
+Create and push a tag to GitHub, then creating a Release on GitHub will publish new version to PyPI.
+
+
+Manual release
+~~~~~~~~~~~~~~
+
+If you want to release manually, you can upload by twine.
 
 .. code-block:: sh
 
