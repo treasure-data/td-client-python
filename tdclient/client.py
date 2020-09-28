@@ -620,7 +620,7 @@ class Client:
                      before running the query. Default: 0
                 - query (str):
                      Is a language used to retrieve, insert, update and modify
-                     data. See also: https://support.treasuredata.com/hc/en-us/articles/360012069493-SQL-Examples-of-Scheduled-Queries
+                     data. See also: https://tddocs.atlassian.net/wiki/spaces/PD/pages/1084438/SQL+Examples+of+Scheduled+Queries
                 - priority (int, optional):
                      Priority of the query.
                      Range is from -2 (very low) to 2 (very high). Default: 0
@@ -688,7 +688,7 @@ class Client:
                      before running the query. Default: 0
                 - query (str):
                      Is a language used to retrieve, insert, update and modify
-                     data. See also: https://support.treasuredata.com/hc/en-us/articles/360012069493-SQL-Examples-of-Scheduled-Queries
+                     data. See also: https://tddocs.atlassian.net/wiki/spaces/PD/pages/1084438/SQL+Examples+of+Scheduled+Queries
                 - priority (int, optional):
                      Priority of the query.
                      Range is from -2 (very low) to 2 (very high). Default: 0
