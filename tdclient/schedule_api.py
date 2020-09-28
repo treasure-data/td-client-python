@@ -25,13 +25,13 @@ class ScheduleAPI:
                 - cron (str, optional):
                     Schedule of the query.
                     {``"@daily"``, ``"@hourly"``, ``"10 * * * *"`` (custom cron)}
-                    See also: https://support.treasuredata.com/hc/en-us/articles/360001451088-Scheduled-Jobs-Web-Console
+                    See also: https://tddocs.atlassian.net/wiki/spaces/PD/pages/1084633/Scheduling+Jobs+Using+TD+Console
                 - delay (int, optional):
                     A delay ensures all buffered events are imported
                     before running the query. Default: 0
                 - query (str):
                     Is a language used to retrieve, insert, update and modify
-                    data. See also: https://support.treasuredata.com/hc/en-us/articles/360012069493-SQL-Examples-of-Scheduled-Queries
+                    data. See also: https://tddocs.atlassian.net/wiki/spaces/PD/pages/1084438/SQL+Examples+of+Scheduled+Queries
                 - priority (int, optional):
                     Priority of the query.
                     Range is from -2 (very low) to 2 (very high). Default: 0
@@ -113,7 +113,7 @@ class ScheduleAPI:
                     before running the query. Default: 0
                 - query (str):
                     Is a language used to retrieve, insert, update and modify
-                    data. See also: https://support.treasuredata.com/hc/en-us/articles/360012069493-SQL-Examples-of-Scheduled-Queries
+                    data. See also: https://tddocs.atlassian.net/wiki/spaces/PD/pages/1084438/SQL+Examples+of+Scheduled+Queries
                 - priority (int, optional):
                     Priority of the query.
                     Range is from -2 (very low) to 2 (very high). Default: 0
