@@ -52,7 +52,7 @@ It'd be better to install `certifi <https://pypi.python.org/pypi/certifi>`_ to e
 Examples
 --------
 
-Please see also the examples at `Treasure Data Documentation <http://docs.treasuredata.com/articles/rest-api-python-client>`_.
+Please see also the examples at `Treasure Data Documentation <https://tddocs.atlassian.net/wiki/spaces/PD/pages/1081648/Python+Client+for+REST+API>`_.
 
 The td-client documentation is hosted at https://tdclient.readthedocs.io/,
 or you can go directly to the
