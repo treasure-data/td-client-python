@@ -107,7 +107,7 @@ class ScheduleAPI:
                 - cron (str, optional):
                     Schedule of the query.
                     {``"@daily"``, ``"@hourly"``, ``"10 * * * *"`` (custom cron)}
-                    See also: https://support.treasuredata.com/hc/en-us/articles/360001451088-Scheduled-Jobs-Web-Console
+                    See also: https://tddocs.atlassian.net/wiki/spaces/PD/pages/1084633/Scheduling+Jobs+Using+TD+Console
                 - delay (int, optional):
                     A delay ensures all buffered events are imported
                     before running the query. Default: 0
