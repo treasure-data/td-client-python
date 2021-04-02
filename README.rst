@@ -52,7 +52,7 @@ It'd be better to install `certifi <https://pypi.python.org/pypi/certifi>`_ to e
 Examples
 --------
 
-Please see also the examples at `Treasure Data Documentation <https://tddocs.atlassian.net/wiki/spaces/PD/pages/1081648/Python+Client+for+REST+API>`_.
+Please see also the examples at `Treasure Data Documentation <https://docs.treasuredata.com/display/public/PD/Python+Client+for+REST+API>`_.
 
 The td-client documentation is hosted at https://tdclient.readthedocs.io/,
 or you can go directly to the
@@ -62,7 +62,7 @@ For information on the parameters that may be used when reading particular
 types of data, see `File import parameters`_.
 
 .. _`file import parameters`:
-   https://tdclient.readthedocs.io/en/latest/api/file_import_paremeters.html
+   https://tdclient.readthedocs.io/en/latest/file_import_parameters.html
 
 Listing jobs
 ^^^^^^^^^^^^
