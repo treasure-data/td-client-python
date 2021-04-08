@@ -13,11 +13,6 @@ Treasure Data API library for Python
    :alt: Build status
 
 
-.. image:: https://coveralls.io/repos/treasure-data/td-client-python/badge.svg
-   :target: https://coveralls.io/r/treasure-data/td-client-python
-   :alt: Coverage Status
-
-
 .. image:: https://badge.fury.io/py/td-client.svg
    :target: http://badge.fury.io/py/td-client
    :alt: PyPI version
