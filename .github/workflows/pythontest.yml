@@ -25,7 +25,11 @@ jobs:
     - name: Run test
       run: |
         coverage run --source=tdclient -m pytest tdclient/test
-    - name: Submit to coveralls
-      run: coveralls
-      env:
-        COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#
+# Disable coverage submission to avoid
+#   coveralls.exception.CoverallsException: Could not submit coverage: 422 Client Error: Unprocessable Entity for url: https://coveralls.io/api/v1/jobs
+#
+#   - name: Submit to coveralls
+#     run: coveralls
+#     env:
+#       COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
