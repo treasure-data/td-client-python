@@ -99,7 +99,7 @@ class BulkImportAPI:
 
         Args:
             name (str): Name of bulk import.
-            params (dict, optional): Extra parameteres.
+            params (dict, optional): Extra parameters.
         Returns:
             [str]: The list of bulk import part name.
         """
@@ -180,7 +180,7 @@ class BulkImportAPI:
           will be used, NOT the datatype.
 
         * ``converters`` is a dictionary used to specify a function that will
-          be used to parse individual columns, for instace ``{"col1", int}``.
+          be used to parse individual columns, for instance ``{"col1", int}``.
 
         The default behaviour is ``"guess"``, which makes a best-effort to decide
         the column datatype. See `file import parameters`_ for more details.

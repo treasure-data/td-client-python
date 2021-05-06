@@ -5,7 +5,7 @@ Treasure Data API library for Python
 
 .. image:: https://github.com/treasure-data/td-client-python/workflows/Python%20testing/badge.svg
    :target: https://github.com/treasure-data/td-client-python/actions
-   :alt: Build Status on GitHub ACtions
+   :alt: Build Status on GitHub Actions
 
 
 .. image:: https://ci.appveyor.com/api/projects/status/eol91l1ag50xee9m/branch/master?svg=true

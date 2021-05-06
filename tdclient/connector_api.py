@@ -161,7 +161,7 @@ class ConnectorAPI:
                      A delay ensures all buffered events are imported
                      before running the query. Default: 0
                 - database (str):
-                     Target databse for the Data Connector session
+                     Target database for the Data Connector session
                 - name (str):
                      Name of the Data Connector session
                 - table (str):

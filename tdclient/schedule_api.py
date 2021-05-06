@@ -95,7 +95,7 @@ class ScheduleAPI:
 
         Args:
             name (str): Target scheduled query name.
-            params (dict): Extra parameteres.
+            params (dict): Extra parameters.
 
                 - type (str):
                     Query type. {"presto", "hive"}. Default: "hive"
