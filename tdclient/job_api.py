@@ -201,34 +201,48 @@ class JobAPI:
         for row in self.job_result_format_each(job_id, "msgpack"):
             yield row
 
-    def job_result_format(self, job_id, format):
+    def job_result_format(self, job_id, format, header=False):
         """Return the job result with specified format.
 
         Args:
             job_id (int): Job ID
             format (str): Output format of the job result information.
                 "json" or "msgpack"
+            header (boolean): Includes Header or not. 
+                False or True
 
         Returns:
              The query result of the specified job in.
         """
         result = []
-        for row in self.job_result_format_each(job_id, format):
+        for row in self.job_result_format_each(job_id, format, header):
             result.append(row)
         return result
 
-    def job_result_format_each(self, job_id, format):
+    def job_result_format_each(self, job_id, format, header=False):
         """Yield a row of the job result with specified format.
 
         Args:
             job_id (int): job ID
-            format (str): Output format of the job result information. "json" or "msgpack"
-
+            format (str): Output format of the job result information. 
+                "json" or "msgpack"
+            header (bool): Include Header info or not
+                "True" or "False"
         Yields:
              The query result of the specified job in.
         """
+
+        """
+        For backward compatibility, need to convert csv and tsv to json.
+        If csv/tsv is specified as it is, the result will be like this.
+            [b'num_col,null_col\n1,\n']
+        """
+        if format != "msgpack":
+            format = "json"
+
         with self.get(
-            create_url("/v3/job/result/{job_id}", job_id=job_id), {"format": format}
+            create_url("/v3/job/result/{job_id}?format={format}&header={header}",
+                       job_id=job_id, format=format, header=header)
         ) as res:
             code = res.status
             if code != 200:
