@@ -140,7 +140,7 @@ def test_job_result_success():
         body += packer.pack(row)
     td.get = mock.MagicMock(return_value=make_response(200, body))
     result = td.job_result(12345)
-    td.get.assert_called_with("/v3/job/result/12345", {"format": "msgpack"})
+    td.get.assert_called_with("/v3/job/result/12345?format=msgpack&header=False")
     assert result == rows
 
 
@@ -155,7 +155,7 @@ def test_job_result_each_success():
     result = []
     for row in td.job_result_each(12345):
         result.append(row)
-    td.get.assert_called_with("/v3/job/result/12345", {"format": "msgpack"})
+    td.get.assert_called_with("/v3/job/result/12345?format=msgpack&header=False")
     assert result == rows
 
 
@@ -166,7 +166,18 @@ def test_job_result_json_success():
     body = "\n".join([json.dumps(row) for row in rows]).encode("utf-8")
     td.get = mock.MagicMock(return_value=make_response(200, body))
     result = td.job_result_format(12345, "json")
-    td.get.assert_called_with("/v3/job/result/12345", {"format": "json"})
+    td.get.assert_called_with("/v3/job/result/12345?format=json&header=False")
+    assert result == rows
+
+
+def test_job_result_json_with_header_success():
+    td = api.API("APIKEY")
+    rows = [["col1", "col2"], ["foo", 123], ["bar", 456], ["baz", 789]]
+    # result will be a JSON record per line (#4)
+    body = "\n".join([json.dumps(row) for row in rows]).encode("utf-8")
+    td.get = mock.MagicMock(return_value=make_response(200, body))
+    result = td.job_result_format(12345, "json", header=True)
+    td.get.assert_called_with("/v3/job/result/12345?format=json&header=True")
     assert result == rows
 
 
@@ -179,7 +190,20 @@ def test_job_result_json_each_success():
     result = []
     for row in td.job_result_format_each(12345, "json"):
         result.append(row)
-    td.get.assert_called_with("/v3/job/result/12345", {"format": "json"})
+    td.get.assert_called_with("/v3/job/result/12345?format=json&header=False")
+    assert result == rows
+
+
+def test_job_result_json_with_header_each_success():
+    td = api.API("APIKEY")
+    rows = [["col1", "col2"], ["foo", 123], ["bar", 456], ["baz", 789]]
+    # result will be a JSON record per line (#4)
+    body = "\n".join([json.dumps(row) for row in rows]).encode("utf-8")
+    td.get = mock.MagicMock(return_value=make_response(200, body))
+    result = []
+    for row in td.job_result_format_each(12345, "json", header=True):
+        result.append(row)
+    td.get.assert_called_with("/v3/job/result/12345?format=json&header=True")
     assert result == rows
 
 

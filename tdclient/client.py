@@ -323,7 +323,7 @@ class Client:
         for row in self.api.job_result_each(job_id):
             yield row
 
-    def job_result_format(self, job_id, format):
+    def job_result_format(self, job_id, format, header=False):
         """
         Args:
             job_id (str): job id
@@ -332,9 +332,9 @@ class Client:
         Returns:
              a list of each rows in result set
         """
-        return self.api.job_result_format(job_id, format)
+        return self.api.job_result_format(job_id, format, header=header)
 
-    def job_result_format_each(self, job_id, format):
+    def job_result_format_each(self, job_id, format, header=False):
         """
         Args:
             job_id (str): job id
@@ -343,7 +343,7 @@ class Client:
         Returns:
              an iterator of rows in result set
         """
-        for row in self.api.job_result_format_each(job_id, format):
+        for row in self.api.job_result_format_each(job_id, format, header=header):
             yield row
 
     def kill(self, job_id):
@@ -568,7 +568,7 @@ class Client:
 
         The default behaviour is ``"guess"``, which makes a best-effort to decide
         the column datatype. See `file import parameters`_ for more details.
-        
+
         .. _`file import parameters`:
            https://tdclient.readthedocs.io/en/latest/file_import_parameters.html
         """

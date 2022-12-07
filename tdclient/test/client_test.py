@@ -273,7 +273,7 @@ def test_job_result_format():
     rows = [[123], [456]]
     td._api.job_result_format = mock.MagicMock(return_value=rows)
     result = td.job_result_format("12345", "json")
-    td.api.job_result_format.assert_called_with("12345", "json")
+    td.api.job_result_format.assert_called_with("12345", "json", header=False)
     assert result == rows
 
 
@@ -285,7 +285,7 @@ def test_job_result_format_each():
     result = []
     for row in td.job_result_format_each("12345", "json"):
         result.append(row)
-    td.api.job_result_format_each.assert_called_with("12345", "json")
+    td.api.job_result_format_each.assert_called_with("12345", "json", header=False)
     assert result == rows
 
 
