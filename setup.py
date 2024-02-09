@@ -42,7 +42,7 @@ setup(
     version=version,
     description="Treasure Data API library for Python",
     long_description=read("README.rst"),
-    long_description_content_type="text/x-rst; charset=UTF-8;",
+    long_description_content_type="text/x-rst; charset=UTF-8",
     author="Treasure Data, Inc.",
     author_email="support@treasure-data.com",
     url="http://treasuredata.com/",
