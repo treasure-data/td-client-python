@@ -17,7 +17,7 @@ def create_url(tmpl, **values):
         tmpl (str): url template
         values (dict): values for url
     """
-    quoted_values = {k: urlquote(str(v)) for k, v in values.items()}
+    quoted_values = {k: urlquote(str(v), safe="") for k, v in values.items()}
     return tmpl.format(**quoted_values)
 
 
