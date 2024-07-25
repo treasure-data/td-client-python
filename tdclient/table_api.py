@@ -42,6 +42,8 @@ class TableAPI:
                ['species', 'string', 'species']],
               'expire_days': None,
               'last_import': datetime.datetime(2019, 9, 18, 7, 14, 28, tzinfo=tzutc())},
+              'user_id': 1,
+              'description': 'table description'
             }
         """
         with self.get(create_url("/v3/table/list/{db}", db=db)) as res:
@@ -68,6 +70,8 @@ class TableAPI:
                 )
                 m["estimated_storage_size"] = int(m["estimated_storage_size"])
                 m["schema"] = json.loads(m.get("schema", "[]"))
+                m["user_id"] = m.get("user_id")
+                m["description"] = m.get("description")
                 result[m["name"]] = m
             return result
 
