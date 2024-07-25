@@ -70,8 +70,6 @@ class TableAPI:
                 )
                 m["estimated_storage_size"] = int(m["estimated_storage_size"])
                 m["schema"] = json.loads(m.get("schema", "[]"))
-                m["user_id"] = m.get("user_id")
-                m["description"] = m.get("description")
                 result[m["name"]] = m
             return result
 
