@@ -39,6 +39,9 @@ def test_schedule():
         retry_limit="retry_limit",
         org_name="org_name",
         user_name="user_name",
+        id=123,
+        executing_user_id=1,
+        description="query description 1"
     )
     assert schedule.name == "name"
     assert schedule.cron == "cron"
@@ -51,6 +54,9 @@ def test_schedule():
     assert schedule.retry_limit == "retry_limit"
     assert schedule.org_name == "org_name"
     assert schedule.user_name == "user_name"
+    assert schedule.id == 123
+    assert schedule.executing_user_id == 1
+    assert schedule.description == "query description 1"
 
 
 def test_schedule_run():

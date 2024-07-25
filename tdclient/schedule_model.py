@@ -49,6 +49,9 @@ class Schedule(Model):
             self._result = kwargs.get("result")
         self._next_time = kwargs.get("next_time")
         self._org_name = kwargs.get("org_name")
+        self._id = kwargs.get("id")
+        self._executing_user_id = kwargs.get("executing_user_id")
+        self._description = kwargs.get("description")
 
     @property
     def name(self):
@@ -142,6 +145,24 @@ class Schedule(Model):
         """User name of a scheduled job
         """
         return self._user_name
+
+    @property
+    def id(self):
+        """int: id of the query
+        """
+        return self._id
+
+    @property
+    def executing_user_id(self):
+        """int: executor's id of the query
+        """
+        return self._executing_user_id
+
+    @property
+    def description(self):
+        """str: description of the query
+        """
+        return self._description
 
     def run(self, time, num=None):
         """Run a scheduled job
