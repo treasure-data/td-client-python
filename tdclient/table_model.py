@@ -146,13 +146,13 @@ class Table(Model):
     
     @property
     def user_id(self):
-        """a string represents the owner's id of the table
+        """int: owner's id of the table
         """
         return self._user_id
 
     @property
     def description(self):
-        """a string represents the description of the table
+        """str: description of the table
         """
         return self._description
 

@@ -54,14 +54,14 @@ class Database(Model):
     @property
     def id(self):
         """
-        str: id of the database
+        int: id of the database
         """
         return self._id
 
     @property
     def user_id(self):
         """
-        str: owner's id of the database
+        int: owner's id of the database
         """
         return self._user_id
 
