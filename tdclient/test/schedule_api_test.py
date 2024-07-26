@@ -88,7 +88,10 @@ def test_list_schedules_success():
                     "priority": 0,
                     "retry_limit": 0,
                     "result": "",
-                    "next_time": null
+                    "next_time": null,
+                    "id": 123,
+                    "executing_user_id": 1,
+                    "description": "query description 1"
                 },
                 {
                     "name": "bar",
@@ -103,7 +106,10 @@ def test_list_schedules_success():
                     "priority": 0,
                     "retry_limit": 0,
                     "result": "",
-                    "next_time": "2016-09-24T00:00:00Z"
+                    "next_time": "2016-09-24T00:00:00Z",
+                    "id": 124,
+                    "executing_user_id": 1,
+                    "description": "query description 2"
                 },
                 {
                     "name": "baz",
@@ -118,7 +124,10 @@ def test_list_schedules_success():
                     "priority": 0,
                     "retry_limit": 0,
                     "result": "",
-                    "next_time": "2016-07-06T00:00:00Z"
+                    "next_time": "2016-07-06T00:00:00Z",
+                    "id": 125,
+                    "executing_user_id": 1,
+                    "description": "query description 3"
                 }
             ]
         }

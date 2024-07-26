@@ -27,6 +27,8 @@ def test_table():
         expire_days="expire_days",
         primary_key="primary_key",
         primary_key_type="primary_key_type",
+        user_id=1,
+        description='table description'
     )
     assert table.type == "type"
     assert table.db_name == "db_name"
@@ -44,6 +46,8 @@ def test_table():
     assert table.last_log_timestamp == "last_log_timestamp"
     assert table.expire_days == "expire_days"
     assert table.identifier == "db_name.table_name"
+    assert table.user_id == 1
+    assert table.description == "table description"
 
 
 def test_table_permission():

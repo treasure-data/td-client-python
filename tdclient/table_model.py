@@ -23,6 +23,8 @@ class Table(Model):
             self._schema = kwargs.get("schema")
             self._count = kwargs.get("count")
 
+        self._user_id = kwargs.get("user_id")
+        self._description = kwargs.get("description")
         self._created_at = kwargs.get("created_at")
         self._updated_at = kwargs.get("updated_at")
         self._estimated_storage_size = kwargs.get("estimated_storage_size")
@@ -141,6 +143,18 @@ class Table(Model):
         """a string identifier of the table
         """
         return "%s.%s" % (self._db_name, self._table_name)
+    
+    @property
+    def user_id(self):
+        """int: owner's id of the table
+        """
+        return self._user_id
+
+    @property
+    def description(self):
+        """str: description of the table
+        """
+        return self._description
 
     def delete(self):
         """a string represents the type of deleted table

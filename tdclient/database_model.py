@@ -19,6 +19,9 @@ class Database(Model):
         self._updated_at = kwargs.get("updated_at")
         self._org_name = kwargs.get("org_name")
         self._permission = kwargs.get("permission")
+        self._id = kwargs.get("id")
+        self._user_id = kwargs.get("user_id")
+        self._description = kwargs.get("description")
 
     @property
     def org_name(self):
@@ -47,6 +50,27 @@ class Database(Model):
         str: a name of the database
         """
         return self._db_name
+    
+    @property
+    def id(self):
+        """
+        int: id of the database
+        """
+        return self._id
+
+    @property
+    def user_id(self):
+        """
+        int: owner's id of the database
+        """
+        return self._user_id
+
+    @property
+    def description(self):
+        """
+        str: description of the database
+        """
+        return self._description
 
     def tables(self):
         """

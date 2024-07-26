@@ -828,8 +828,8 @@ class Client:
         results = self.api.list_result()
 
         def result(m):
-            name, url, organizations = m
-            return models.Result(self, name, url, organizations)
+            name, url, organizations, id, user_id = m
+            return models.Result(self, name, url, organizations, id, user_id)
 
         return [result(m) for m in results]
 
