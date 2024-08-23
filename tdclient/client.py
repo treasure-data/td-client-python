@@ -346,6 +346,17 @@ class Client:
         for row in self.api.job_result_format_each(job_id, format, header=header):
             yield row
 
+    def download_job_result(self, job_id, path):
+        """Save the job result into a msgpack.gz file.
+        Args:
+            job_id (str): job id
+            path (str): path to save the result
+
+        Returns:
+             `True` if success
+        """
+        return self.api.download_job_result(job_id, path)
+
     def kill(self, job_id):
         """
         Args:

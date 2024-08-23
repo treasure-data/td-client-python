@@ -2,10 +2,16 @@
 
 import codecs
 import json
+import logging
+import os
+from concurrent.futures import ThreadPoolExecutor
 
 import msgpack
 
 from .util import create_url, get_or_else, parse_date
+
+
+log = logging.getLogger(__name__)
 
 
 class JobAPI:
@@ -160,7 +166,7 @@ class JobAPI:
             return job
 
     def job_status(self, job_id):
-        """"Show job status
+        """Show job status
         Args:
             job_id (str): job ID
 
@@ -256,6 +262,70 @@ class JobAPI:
                     yield json.loads(row)
             else:
                 yield res.read()
+
+    def download_job_result(self, job_id, path, num_threads=4):
+        """Download the job result to the specified path.
+
+        Args:
+            job_id (int): Job ID
+            path (str): Path to save the job result
+            num_threads (int): Number of threads to download the job result. Default is 4.
+        """
+
+        # Format should be msgpack.gz because file size of job is compressed in msgpack.gz format.
+        file_size = self.show_job(job_id)["result_size"]
+        url = create_url(
+            "/v3/job/result/{job_id}?format={format}",
+            job_id=job_id,
+            format="msgpack.gz",
+        )
+
+        def get_chunk(url, start, end):
+            chunk_headers = {"Range": f"bytes={start}-{end}"}
+
+            response = self.get(url, headers=chunk_headers)
+            return response
+
+        def download_chunk(url, start, end, index, file_name):
+            with get_chunk(url, start, end) as response:
+                if response.status == 206:  # Partial content (range supported)
+                    with open(f"{file_name}.part{index}", "wb") as f:
+                        for chunk in response.stream(1024):
+                            f.write(chunk)
+                    return True
+                else:
+                    log.warning(
+                        f"Unexpected response status: {response.status}. Body: {response.data}"
+                    )
+                    return False
+
+        def combine_chunks(file_name, total_parts):
+            with open(file_name, "wb") as final_file:
+                for i in range(total_parts):
+                    with open(f"{file_name}.part{i}", "rb") as part_file:
+                        final_file.write(part_file.read())
+                    os.remove(f"{file_name}.part{i}")
+
+        def download_file_multithreaded(
+            url, file_name, file_size, num_threads=4, chunk_size=100 * 1024**2
+        ):
+            start = 0
+            part_index = 0
+
+            with ThreadPoolExecutor(max_workers=num_threads) as executor:
+                while start < file_size:
+                    end = min(start + chunk_size - 1, file_size - 1)
+                    executor.submit(
+                        download_chunk, url, start, end, part_index, file_name
+                    )
+
+                    start += chunk_size
+                    part_index += 1
+
+            combine_chunks(file_name, part_index)
+
+        download_file_multithreaded(url, path, file_size, num_threads=num_threads)
+        return True
 
     def kill(self, job_id):
         """Stop the specific job if it is running.
