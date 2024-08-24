@@ -346,16 +346,18 @@ class Client:
         for row in self.api.job_result_format_each(job_id, format, header=header):
             yield row
 
-    def download_job_result(self, job_id, path):
+    def download_job_result(self, job_id, path, num_threads=4):
         """Save the job result into a msgpack.gz file.
         Args:
             job_id (str): job id
             path (str): path to save the result
+            num_threads (int, optional): number of threads to download the result.
+                Default: 4
 
         Returns:
              `True` if success
         """
-        return self.api.download_job_result(job_id, path)
+        return self.api.download_job_result(job_id, path, num_threads=num_threads)
 
     def kill(self, job_id):
         """
