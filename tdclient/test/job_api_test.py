@@ -2,7 +2,8 @@
 
 import datetime
 import json
-from tempfile import NamedTemporaryFile
+import tempfile
+import uuid
 from unittest import mock
 
 import dateutil.tz
@@ -247,13 +248,14 @@ def test_download_job_result():
     body_download = gzipb(msgpackb(data))
     td.get = mock.MagicMock()
     td.get.side_effect = [make_response(200, body), make_response(206, body_download)]
-    with NamedTemporaryFile() as f:
-        td.download_job_result(12345, f.name)
+    with tempfile.TemporaryDirectory() as tempdir:
+        temp = os.path.join(tempdir, str(uuid.uuid4()))
+        td.download_job_result(12345, temp)
         td.get.assert_any_call("/v3/job/show/12345")
         td.get.assert_any_call("/v3/job/result/12345?format=msgpack.gz", headers={'Range': 'bytes=0-21'})
-        f.seek(0)
-        result = msgunpackb(gunzipb(f.read()))
-        assert result == data
+        with open(temp, "rb") as f:
+            result = msgunpackb(gunzipb(f.read()))
+            assert result == data
 
 def test_kill_success():
     td = api.API("APIKEY")
