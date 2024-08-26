@@ -93,7 +93,7 @@ class API(
         retry_post_requests=False,
         max_cumul_retry_delay=600,
         http_proxy=None,
-        **kwargs
+        **kwargs,
     ):
         headers = {} if headers is None else headers
         if apikey is not None:
@@ -599,7 +599,7 @@ class API(
         encoding="utf-8",
         dtypes=None,
         converters=None,
-        **kwargs
+        **kwargs,
     ):
         if columns is None:
             reader = csv_dict_record_reader(file_like, encoding, dialect)
