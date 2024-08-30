@@ -265,7 +265,7 @@ Run tests.
 
 .. code-block:: sh
 
-   $ python setup.py test
+   $ pytest tdclient
 
 Running tests (tox)
 ^^^^^^^^^^^^^^^^^^^
@@ -303,7 +303,7 @@ If you want to release manually, you can upload by twine.
 
 .. code-block:: sh
 
-   $ python setup.py bdist_wheel sdist
+   $ python -m build
    $ twine upload dist/*
 
 License
