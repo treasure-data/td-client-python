@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 
 import io
-import json
+import sys
 import tempfile
 import time
-import zlib
 from unittest import mock
 
-import msgpack
 import pytest
 
 from tdclient import api
@@ -302,6 +300,9 @@ def test_import_file_csv_dict_success():
     td.import_file("db", "table", "csv", stream)
 
 
+@pytest.mark.skipif(
+    sys.version_info > (3, 11), reason="Python 3.11+ changed CSV behavior"
+)
 def test_import_file_csv_dict_failure():
     td = api.API("APIKEY")
     td.import_data = mock.MagicMock()
@@ -329,6 +330,9 @@ def test_import_file_tsv_dict_success():
     td.import_file("db", "table", "tsv", stream)
 
 
+@pytest.mark.skipif(
+    sys.version_info > (3, 11), reason="Python 3.11+ changed CSV behavior"
+)
 def test_import_file_tsv_dict_failure():
     td = api.API("APIKEY")
     td.import_data = mock.MagicMock()
