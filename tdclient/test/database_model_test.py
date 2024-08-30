@@ -26,7 +26,7 @@ def test_database():
         permission="administrator",
         id=123,
         user_id=1,
-        description="database description"
+        description="database description",
     )
     assert database.org_name == "org_name"
     assert database.permission == "administrator"

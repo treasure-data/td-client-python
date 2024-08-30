@@ -41,7 +41,7 @@ def test_schedule():
         user_name="user_name",
         id=123,
         executing_user_id=1,
-        description="query description 1"
+        description="query description 1",
     )
     assert schedule.name == "name"
     assert schedule.cron == "cron"

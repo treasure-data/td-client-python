@@ -6,8 +6,7 @@ from tdclient import api, models
 
 
 class Client:
-    """API Client for Treasure Data Service
-    """
+    """API Client for Treasure Data Service"""
 
     def __init__(self, *args, **kwargs):
         self._api = api.API(*args, **kwargs)
@@ -79,7 +78,7 @@ class Client:
              :class:`tdclient.models.Database`
         """
         databases = self.api.list_databases()
-        for (name, kwargs) in databases.items():
+        for name, kwargs in databases.items():
             if name == db_name:
                 return models.Database(self, name, **kwargs)
         raise api.NotFoundError("Database '%s' does not exist" % (db_name))
@@ -229,7 +228,7 @@ class Client:
         priority=None,
         retry_limit=None,
         type="hive",
-        **kwargs
+        **kwargs,
     ):
         """Run a query on specified database table.
 
@@ -258,7 +257,7 @@ class Client:
             result_url=result_url,
             priority=priority,
             retry_limit=retry_limit,
-            **kwargs
+            **kwargs,
         )
         return models.Job(self, job_id, type, q)
 
@@ -927,8 +926,7 @@ class Client:
         return self.api.remove_apikey(name, apikey)
 
     def close(self):
-        """Close opened API connections.
-        """
+        """Close opened API connections."""
         return self._api.close()
 
 

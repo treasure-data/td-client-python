@@ -184,7 +184,7 @@ class BulkImportAPI:
 
         The default behaviour is ``"guess"``, which makes a best-effort to decide
         the column datatype. See `file import parameters`_ for more details.
-        
+
         .. _`file import parameters`:
            https://tdclient.readthedocs.io/en/latest/file_import_parameters.html
         """

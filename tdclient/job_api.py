@@ -160,7 +160,7 @@ class JobAPI:
             return job
 
     def job_status(self, job_id):
-        """"Show job status
+        """ "Show job status
         Args:
             job_id (str): job ID
 
@@ -208,7 +208,7 @@ class JobAPI:
             job_id (int): Job ID
             format (str): Output format of the job result information.
                 "json" or "msgpack"
-            header (boolean): Includes Header or not. 
+            header (boolean): Includes Header or not.
                 False or True
 
         Returns:
@@ -224,7 +224,7 @@ class JobAPI:
 
         Args:
             job_id (int): job ID
-            format (str): Output format of the job result information. 
+            format (str): Output format of the job result information.
                 "json" or "msgpack"
             header (bool): Include Header info or not
                 "True" or "False"
@@ -241,8 +241,12 @@ class JobAPI:
             format = "json"
 
         with self.get(
-            create_url("/v3/job/result/{job_id}?format={format}&header={header}",
-                       job_id=job_id, format=format, header=header)
+            create_url(
+                "/v3/job/result/{job_id}?format={format}&header={header}",
+                job_id=job_id,
+                format=format,
+                header=header,
+            )
         ) as res:
             code = res.status
             if code != 200:
@@ -282,7 +286,7 @@ class JobAPI:
         result_url=None,
         priority=None,
         retry_limit=None,
-        **kwargs
+        **kwargs,
     ):
         """Create a job for given query.
 

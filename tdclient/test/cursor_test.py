@@ -161,7 +161,7 @@ def test_fetchone():
     assert td.fetchone() == ["foo", 1]
     assert td.fetchone() == ["bar", 1]
     assert td.fetchone() == ["baz", 2]
-    assert td.fetchone() == None
+    assert td.fetchone() is None
 
 
 def test_fetchmany():

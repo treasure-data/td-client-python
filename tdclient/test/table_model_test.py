@@ -28,7 +28,7 @@ def test_table():
         primary_key="primary_key",
         primary_key_type="primary_key_type",
         user_id=1,
-        description='table description'
+        description="table description",
     )
     assert table.type == "type"
     assert table.db_name == "db_name"

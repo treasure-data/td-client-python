@@ -1,10 +1,13 @@
 import pytest
 
 try:
-    from urllib3.contrib.pyopenssl import inject_into_urllib3, extract_from_urllib3
+    from urllib3.contrib.pyopenssl import (
+        extract_from_urllib3,
+        inject_into_urllib3,
+    )
 except ImportError:
-    inject_into_urllib3 = lambda: None
-    extract_from_urllib3 = lambda: None
+    inject_into_urllib3 = lambda: None  # noqa: E731
+    extract_from_urllib3 = lambda: None  # noqa: E731
 
 
 @pytest.fixture(autouse=True)

@@ -4,8 +4,7 @@ from tdclient.model import Model
 
 
 class Database(Model):
-    """Database on Treasure Data Service
-    """
+    """Database on Treasure Data Service"""
 
     PERMISSIONS = ["administrator", "full_access", "import_only", "query_only"]
     PERMISSION_LIST_TABLES = ["administrator", "full_access"]
@@ -50,7 +49,7 @@ class Database(Model):
         str: a name of the database
         """
         return self._db_name
-    
+
     @property
     def id(self):
         """

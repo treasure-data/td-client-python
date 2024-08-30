@@ -4,8 +4,7 @@ from tdclient.model import Model
 
 
 class Table(Model):
-    """Database table on Treasure Data Service
-    """
+    """Database table on Treasure Data Service"""
 
     def __init__(self, *args, **kwargs):
         super(Table, self).__init__(args[0])
@@ -36,20 +35,17 @@ class Table(Model):
 
     @property
     def type(self):
-        """a string represents the type of the table
-        """
+        """a string represents the type of the table"""
         return self._type
 
     @property
     def db_name(self):
-        """a string represents the name of the database
-        """
+        """a string represents the name of the database"""
         return self._db_name
 
     @property
     def table_name(self):
-        """a string represents the name of the table
-        """
+        """a string represents the name of the table"""
         return self._table_name
 
     @property
@@ -61,14 +57,12 @@ class Table(Model):
 
     @property
     def count(self):
-        """int: total number of the table
-        """
+        """int: total number of the table"""
         return self._count
 
     @property
     def estimated_storage_size(self):
-        """estimated storage size
-        """
+        """estimated storage size"""
         return self._estimated_storage_size
 
     @property
@@ -87,14 +81,12 @@ class Table(Model):
 
     @property
     def database_name(self):
-        """a string represents the name of the database
-        """
+        """a string represents the name of the database"""
         return self._db_name
 
     @property
     def name(self):
-        """a string represents the name of the table
-        """
+        """a string represents the name of the table"""
         return self._table_name
 
     @property
@@ -113,20 +105,17 @@ class Table(Model):
 
     @property
     def last_import(self):
-        """:class:`datetime.datetime`
-        """
+        """:class:`datetime.datetime`"""
         return self._last_import
 
     @property
     def last_log_timestamp(self):
-        """:class:`datetime.datetime`
-        """
+        """:class:`datetime.datetime`"""
         return self._last_log_timestamp
 
     @property
     def expire_days(self):
-        """an int represents the days until expiration
-        """
+        """an int represents the days until expiration"""
         return self._expire_days
 
     @property
@@ -140,25 +129,21 @@ class Table(Model):
 
     @property
     def identifier(self):
-        """a string identifier of the table
-        """
+        """a string identifier of the table"""
         return "%s.%s" % (self._db_name, self._table_name)
-    
+
     @property
     def user_id(self):
-        """int: owner's id of the table
-        """
+        """int: owner's id of the table"""
         return self._user_id
 
     @property
     def description(self):
-        """str: description of the table
-        """
+        """str: description of the table"""
         return self._description
 
     def delete(self):
-        """a string represents the type of deleted table
-        """
+        """a string represents the type of deleted table"""
         return self._client.delete_table(self._db_name, self._table_name)
 
     def tail(self, count, to=None, _from=None):
@@ -252,8 +237,7 @@ class Table(Model):
 
     @property
     def estimated_storage_size_string(self):
-        """a string represents estimated size of the table in human-readable format
-        """
+        """a string represents estimated size of the table in human-readable format"""
         if self._estimated_storage_size <= 1024 * 1024:
             return "0.0 GB"
         elif self._estimated_storage_size <= 60 * 1024 * 1024:

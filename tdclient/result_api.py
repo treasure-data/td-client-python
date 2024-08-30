@@ -22,7 +22,8 @@ class ResultAPI:
                 self.raise_error("List result table failed", res, body)
             js = self.checked_json(body, ["results"])
             return [
-                (m["name"], m["url"], None, m["id"], m["user_id"]) for m in js["results"]
+                (m["name"], m["url"], None, m["id"], m["user_id"])
+                for m in js["results"]
             ]  # same as database
 
     def create_result(self, name, url, params=None):
