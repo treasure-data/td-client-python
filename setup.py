@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import os
-import re
 import sys
 
 from setuptools import find_packages, setup
@@ -11,16 +10,6 @@ from setuptools.command.test import test as TestCommand
 def read(fname):
     with open(os.path.join(os.path.dirname(__file__), fname)) as fp:
         return fp.read()
-
-
-m = re.search(
-    r"^__version__ *= *\"([^\"]*)\" *$", read("tdclient/version.py"), re.MULTILINE
-)
-
-if m is None:
-    raise (RuntimeError("could not read tdclient/version.py"))
-else:
-    version = m.group(1)
 
 
 class PyTest(TestCommand):
@@ -39,7 +28,7 @@ class PyTest(TestCommand):
 
 setup(
     name="td-client",
-    version=version,
+    version="1.2.2.dev0",
     description="Treasure Data API library for Python",
     long_description=read("README.rst"),
     long_description_content_type="text/x-rst; charset=UTF-8",
