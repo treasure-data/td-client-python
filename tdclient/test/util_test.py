@@ -1,6 +1,6 @@
 import pytest
 
-from tdclient.util import normalize_connector_config
+from tdclient.util import create_url, normalize_connector_config
 
 
 def test_normalize_connector_config():
@@ -64,3 +64,7 @@ def test_normalize_conector_has_sibling_keys():
 
     with pytest.raises(ValueError):
         normalize_connector_config(config)
+
+
+def test_create_url_with_slash():
+    assert create_url("/query/{query_name}", query_name="foo/bar") == "/query/foo%2Fbar"
