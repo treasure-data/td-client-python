@@ -10,11 +10,9 @@ import logging
 import os
 import socket
 import ssl
-import sys
 import tempfile
 import time
 import urllib.parse as urlparse
-import warnings
 from array import array
 
 import msgpack

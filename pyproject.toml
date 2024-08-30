@@ -34,22 +34,22 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["black==24.8.0", "isort", "flake8"]
+dev = ["ruff"]
 docs = ["sphinx", "sphinx_rtd_theme"]
 
 [tool.setuptools]
 packages = ["tdclient"]
 
-[tool.black]
+[tool.ruff]
 line-length = 88
 
-[tool.isort]
-known_third_party = ["dateutil","msgpack","pkg_resources","pytest","setuptools","urllib3"]
-include_trailing_comma = true
-multi_line_output = 3
-
-[tool.flake8]
-max-line-length = 88
-max_complexity = 10
-exclude = "test"
+[tool.ruff.lint]
+select = [
+  "E",
+  "F",
+]
+exclude = ["tdclient/test/*"]
 ignore = ["E203", "E501"]
+
+[tool.ruff.lint.isort]
+known-third-party = ["dateutil","msgpack","pkg_resources","pytest","setuptools","urllib3"]
