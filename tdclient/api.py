@@ -4,6 +4,7 @@ import contextlib
 import csv
 import email.utils
 import gzip
+import http
 import io
 import json
 import logging
@@ -13,7 +14,6 @@ import ssl
 import tempfile
 import time
 import urllib.parse as urlparse
-import warnings
 from array import array
 
 import msgpack
@@ -206,6 +206,8 @@ class API(
                 urllib3.exceptions.TimeoutStateError,
                 urllib3.exceptions.TimeoutError,
                 urllib3.exceptions.PoolError,
+                http.client.IncompleteRead,
+                TimeoutError,
                 socket.error,
             ):
                 pass
@@ -494,7 +496,6 @@ class API(
         return (url, _headers)
 
     def send_request(self, method, url, fields=None, body=None, headers=None, **kwargs):
-
         if body is None:
             return self.http.request(
                 method, url, fields=fields, headers=headers, **kwargs

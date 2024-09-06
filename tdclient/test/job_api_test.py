@@ -2,6 +2,8 @@
 
 import datetime
 import json
+import tempfile
+import uuid
 from unittest import mock
 
 import dateutil.tz
@@ -206,6 +208,54 @@ def test_job_result_json_with_header_each_success():
     td.get.assert_called_with("/v3/job/result/12345?format=json&header=True")
     assert result == rows
 
+
+def test_download_job_result():
+    td = api.API("APIKEY")
+    body = b"""
+        {
+            "cpu_time": null,
+            "created_at": "2015-02-09 11:44:25 UTC",
+            "database": "sample_datasets",
+            "debug": {
+                "cmdout": "started at 2015-02-09T11:44:27Z\\nexecuting query: SELECT COUNT(1) FROM nasdaq\\n",
+                "stderr": null
+            },
+            "duration": 1,
+            "end_at": "2015-02-09 11:44:28 UTC",
+            "hive_result_schema": "[[\\"cnt\\", \\"bigint\\"]]",
+            "job_id": "12345",
+            "organization": null,
+            "priority": 1,
+            "query": "SELECT COUNT(1) FROM nasdaq",
+            "result": "",
+            "result_size": 22,
+            "retry_limit": 0,
+            "start_at": "2015-02-09 11:44:27 UTC",
+            "status": "success",
+            "type": "presto",
+            "updated_at": "2015-02-09 11:44:28 UTC",
+            "url": "http://console.example.com/jobs/12345",
+            "user_name": "nobody@example.com",
+            "linked_result_export_job_id": null,
+            "result_export_target_job_id": null,
+            "num_records": 4
+        }
+    """
+    data = [
+        {"str": "value1", "int": 1, "float": 2.3},
+        {"str": "value3", "int": 4, "float": 5.6},
+    ]
+    body_download = gzipb(msgpackb(data))
+    td.get = mock.MagicMock()
+    td.get.side_effect = [make_response(200, body), make_response(206, body_download)]
+    with tempfile.TemporaryDirectory() as tempdir:
+        temp = os.path.join(tempdir, str(uuid.uuid4()))
+        td.download_job_result(12345, temp)
+        td.get.assert_any_call("/v3/job/show/12345")
+        td.get.assert_any_call("/v3/job/result/12345?format=msgpack.gz", headers={'Range': 'bytes=0-21'})
+        with open(temp, "rb") as f:
+            result = msgunpackb(gunzipb(f.read()))
+            assert result == data
 
 def test_kill_success():
     td = api.API("APIKEY")
