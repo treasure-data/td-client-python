@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "td-client"
+version = "1.2.2.dev0"
+description = "Treasure Data API library for Python"
+readme = {file = "README.rst", content-type = "text/x-rst; charset=UTF-8"}
+requires-python = ">=3.8"
+license = {text = "Apache Software License"}
+authors = [{name = "Treasure Data, Inc.", email = "support@treasure-data.com"}]
+urls = {homepage = "http://treasuredata.com/"}
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Topic :: Internet",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+
+dependencies = [
+  "python-dateutil",
+  "msgpack>=0.6.2",
+  "urllib3",
+]
+
+[project.optional-dependencies]
+dev = ["ruff"]
+docs = ["sphinx", "sphinx_rtd_theme"]
+
+[tool.setuptools]
+packages = ["tdclient"]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+  "E",
+  "F",
+]
+exclude = ["tdclient/test/*"]
+ignore = ["E203", "E501"]
+
+[tool.ruff.lint.isort]
+known-third-party = ["dateutil","msgpack","pkg_resources","pytest","setuptools","urllib3"]

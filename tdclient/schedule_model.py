@@ -5,8 +5,7 @@ from tdclient.model import Model
 
 
 class ScheduledJob(Job):
-    """Scheduled job on Treasure Data Service
-    """
+    """Scheduled job on Treasure Data Service"""
 
     def __init__(self, client, scheduled_at, job_id, type, query, **kwargs):
         super(ScheduledJob, self).__init__(client, job_id, type, query, **kwargs)
@@ -14,14 +13,12 @@ class ScheduledJob(Job):
 
     @property
     def scheduled_at(self):
-        """a :class:`datetime.datetime` represents the schedule of next invocation of the job
-        """
+        """a :class:`datetime.datetime` represents the schedule of next invocation of the job"""
         return self._scheduled_at
 
 
 class Schedule(Model):
-    """Schedule on Treasure Data Service
-    """
+    """Schedule on Treasure Data Service"""
 
     def __init__(self, client, *args, **kwargs):
         super(Schedule, self).__init__(client)
@@ -55,8 +52,7 @@ class Schedule(Model):
 
     @property
     def name(self):
-        """The name of a scheduled job
-        """
+        """The name of a scheduled job"""
         return self._name
 
     @property
@@ -70,38 +66,32 @@ class Schedule(Model):
 
     @property
     def query(self):
-        """The query string of a scheduled job
-        """
+        """The query string of a scheduled job"""
         return self._query
 
     @property
     def database(self):
-        """The target database of a scheduled job
-        """
+        """The target database of a scheduled job"""
         return self._database
 
     @property
     def result_url(self):
-        """The result output configuration in URL form of a scheduled job
-        """
+        """The result output configuration in URL form of a scheduled job"""
         return self._result
 
     @property
     def timezone(self):
-        """The time zone of a scheduled job
-        """
+        """The time zone of a scheduled job"""
         return self._timezone
 
     @property
     def delay(self):
-        """A delay ensures all buffered events are imported before running the query.
-        """
+        """A delay ensures all buffered events are imported before running the query."""
         return self._delay
 
     @property
     def priority(self):
-        """The priority of a scheduled job
-        """
+        """The priority of a scheduled job"""
         if self._priority in Job.JOB_PRIORITY:
             return Job.JOB_PRIORITY[self._priority]
         else:
@@ -109,8 +99,7 @@ class Schedule(Model):
 
     @property
     def retry_limit(self):
-        """Automatic retry count.
-        """
+        """Automatic retry count."""
         return self._retry_limit
 
     @property
@@ -136,32 +125,27 @@ class Schedule(Model):
 
     @property
     def type(self):
-        """Query type. {"presto", "hive"}.
-        """
+        """Query type. {"presto", "hive"}."""
         return self._type
 
     @property
     def user_name(self):
-        """User name of a scheduled job
-        """
+        """User name of a scheduled job"""
         return self._user_name
 
     @property
     def id(self):
-        """int: id of the query
-        """
+        """int: id of the query"""
         return self._id
 
     @property
     def executing_user_id(self):
-        """int: executor's id of the query
-        """
+        """int: executor's id of the query"""
         return self._executing_user_id
 
     @property
     def description(self):
-        """str: description of the query
-        """
+        """str: description of the query"""
         return self._description
 
     def run(self, time, num=None):

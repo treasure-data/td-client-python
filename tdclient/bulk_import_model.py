@@ -6,8 +6,7 @@ from tdclient.model import Model
 
 
 class BulkImport(Model):
-    """Bulk-import session on Treasure Data Service
-    """
+    """Bulk-import session on Treasure Data Service"""
 
     STATUS_UPLOADING = "uploading"
     STATUS_PERFORMING = "performing"
@@ -38,79 +37,66 @@ class BulkImport(Model):
 
     @property
     def name(self):
-        """A name of the bulk import session
-        """
+        """A name of the bulk import session"""
         return self._name
 
     @property
     def database(self):
-        """A database name in a string which the bulk import session is working on
-        """
+        """A database name in a string which the bulk import session is working on"""
         return self._database
 
     @property
     def table(self):
-        """A table name in a string which the bulk import session is working on
-        """
+        """A table name in a string which the bulk import session is working on"""
         return self._table
 
     @property
     def status(self):
-        """The status of the bulk import session in a string
-        """
+        """The status of the bulk import session in a string"""
         return self._status
 
     @property
     def job_id(self):
-        """Job ID
-        """
+        """Job ID"""
         return self._job_id
 
     @property
     def valid_records(self):
-        """The number of valid records.
-        """
+        """The number of valid records."""
         return self._valid_records
 
     @property
     def error_records(self):
-        """The number of error records.
-        """
+        """The number of error records."""
         return self._error_records
 
     @property
     def valid_parts(self):
-        """The number of valid parts.
-        """
+        """The number of valid parts."""
         return self._valid_parts
 
     @property
     def error_parts(self):
-        """The number of error parts.
-        """
+        """The number of error parts."""
         return self._error_parts
 
     @property
     def upload_frozen(self):
-        """The number of upload frozen.
-        """
+        """The number of upload frozen."""
         return self._upload_frozen
 
     def delete(self):
-        """Delete bulk import
-        """
+        """Delete bulk import"""
         return self._client.delete_bulk_import(self.name)
 
     def freeze(self):
-        """Freeze bulk import
-        """
+        """Freeze bulk import"""
         response = self._client.freeze_bulk_import(self.name)
         self.update()
         return response
 
     def unfreeze(self):
-        """Unfreeze bulk import
-        """
+        """Unfreeze bulk import"""
         response = self._client.unfreeze_bulk_import(self.name)
         self.update()
         return response
@@ -136,8 +122,7 @@ class BulkImport(Model):
         return job
 
     def commit(self, wait=False, wait_interval=5, timeout=None):
-        """Commit bulk import
-        """
+        """Commit bulk import"""
         response = self._client.commit_bulk_import(self.name)
         if wait:
             started_at = time.time()
@@ -201,12 +186,16 @@ class BulkImport(Model):
 
         The default behaviour is ``"guess"``, which makes a best-effort to decide
         the column datatype. See `file import parameters`_ for more details.
-        
+
         .. _`file import parameters`:
            https://tdclient.readthedocs.io/en/latest/file_import_parameters.html
         """
         response = self._client.bulk_import_upload_file(
-            self.name, part_name, fmt, file_like, **kwargs,
+            self.name,
+            part_name,
+            fmt,
+            file_like,
+            **kwargs,
         )
         self.update()
         return response

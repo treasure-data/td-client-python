@@ -23,7 +23,7 @@ def create_url(tmpl, **values):
 
 def validate_record(record):
     """Check that `record` contains a key called "time".
-    
+
     Args:
         record (dict): a dictionary representing a data record, where the
         keys name the "columns".
@@ -52,7 +52,7 @@ def guess_csv_value(s):
     3. If it is "false" or "true" (case insensitive), then as a boolean
     4. If it is "" or "none" or "null" (case insensitive), then as None
     5. As the string itself, unaltered
-    
+
     Args:
         s (str): a string value, assumed to have been read from a CSV file.
     Returns:
@@ -86,7 +86,7 @@ DTYPE_TO_CALLABLE = {
 
 def merge_dtypes_and_converters(dtypes=None, converters=None):
     """Generate a merged dictionary from those given.
-    
+
     Args:
         dtypes (optional dict): A dictionary mapping column name to "dtype"
           (datatype), where "dtype" may be any of the strings 'bool', 'float',
@@ -94,7 +94,7 @@ def merge_dtypes_and_converters(dtypes=None, converters=None):
         converters (optional dict): A dictionary mapping column name to a
           callable. The callable should take a string as its single argument,
           and return the result of parsing that string.
-    
+
     Internally, the `dtypes` dictionary is converted to a temporary dictionary
     of the same form as `converters` - that is, mapping column names to
     callables. The "data type" string values in `dtypes` are converted to the
@@ -118,7 +118,7 @@ def merge_dtypes_and_converters(dtypes=None, converters=None):
         try:
             for column_name, dtype in dtypes.items():
                 our_converters[column_name] = DTYPE_TO_CALLABLE[dtype]
-        except KeyError as e:
+        except KeyError:
             raise ValueError(
                 "Unrecognized dtype %r, must be one of %s"
                 % (dtype, ", ".join(repr(k) for k in sorted(DTYPE_TO_CALLABLE)))
@@ -136,7 +136,7 @@ def parse_csv_value(k, s, converters=None):
         k (str): The name of the column that the value belongs to.
         s (str): The value as read from the CSV input.
         converters (optional dict): A dictionary mapping column name to callable.
-    
+
     If `converters` is given, and there is a key matching `k` in `converters`,
     then ``converters[k](s)`` will be called to work out the return value.
     Otherwise, `tdclient.util.guess_csv_value`_ will be called with `s` as its
@@ -169,9 +169,9 @@ def parse_csv_value(k, s, converters=None):
 
 def csv_dict_record_reader(file_like, encoding, dialect):
     """Yield records from a CSV input using csv.DictReader.
-    
+
     This is a reader suitable for use by `tdclient.util.read_csv_records`_.
-    
+
     It is used to read CSV data when the column names are read from the first
     row in the CSV data.
 
@@ -194,9 +194,9 @@ def csv_dict_record_reader(file_like, encoding, dialect):
 
 def csv_text_record_reader(file_like, encoding, dialect, columns):
     """Yield records from a CSV input using csv.reader and explicit column names.
-    
+
     This is a reader suitable for use by `tdclient.util.read_csv_records`_.
-    
+
     It is used to read CSV data when the column names are supplied as an
     explicit `columns` parameter.
 
@@ -218,9 +218,7 @@ def csv_text_record_reader(file_like, encoding, dialect, columns):
 
 
 def read_csv_records(csv_reader, dtypes=None, converters=None, **kwargs):
-    """Read records using csv_reader and yield the results.
-
-    """
+    """Read records using csv_reader and yield the results."""
     our_converters = merge_dtypes_and_converters(dtypes, converters)
 
     for row in csv_reader:
@@ -269,7 +267,7 @@ def normalized_msgpack(value):
 
     If `value` is a dictionary, then all the dictionary keys and values are
     (recursively) normalized.
-    
+
     If `value` is an integer, and outside the range ``-(1 << 63)`` to
     ``(1 << 64)``, then it is converted to a string.
 
@@ -295,8 +293,8 @@ def normalized_msgpack(value):
 
 
 def get_or_else(hashmap, key, default_value=None):
-    """ Get value or default value
-    
+    """Get value or default value
+
     It differs from the standard dict ``get`` method in its behaviour when
     `key` is present but has a value that is an empty string or a string of
     only spaces.
@@ -305,7 +303,7 @@ def get_or_else(hashmap, key, default_value=None):
         hashmap (dict): target
         key (Any): key
         default_value (Any): default value
-    
+
     Example:
 
         >>> get_or_else({'k': 'nonspace'}, 'k', 'default')
@@ -332,7 +330,7 @@ def parse_date(s):
     """Parse date from str to datetime
 
     TODO: parse datetime using an optional format string
-    
+
     For now, this does not use a format string since API may return date in ambiguous format :(
 
     Args:

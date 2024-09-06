@@ -13,7 +13,7 @@ class Connection:
         retry_limit=None,
         wait_interval=None,
         wait_callback=None,
-        **kwargs
+        **kwargs,
     ):
         cursor_kwargs = dict()
         if type is not None:

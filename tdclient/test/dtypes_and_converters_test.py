@@ -1,20 +1,15 @@
 #!/usr/bin/env python
 
-"""Tests for the dtypes and converters arguments to CSV import.
-"""
-
-import pytest
+"""Tests for the dtypes and converters arguments to CSV import."""
 
 from io import BytesIO
 from unittest import mock
 
-from tdclient import api, Client
+import pytest
+
+from tdclient import Client, api
+from tdclient.test.test_helper import gunzipb, make_response, msgunpackb
 from tdclient.util import read_csv_records
-
-from tdclient.test.test_helper import gunzipb
-from tdclient.test.test_helper import make_response
-from tdclient.test.test_helper import msgunpackb
-
 
 DEFAULT_DATA = [
     {
@@ -39,15 +34,13 @@ DEFAULT_DATA = [
 
 
 def sample_reader(data=DEFAULT_DATA):
-    """A very simple emulation of the actual CSV readers.
-    """
+    """A very simple emulation of the actual CSV readers."""
     for item in data:
         yield item
 
 
 def test_basic_read_csv_records():
-    """The base test of read_csv_records - no customisation.
-    """
+    """The base test of read_csv_records - no customisation."""
     reader = sample_reader()
 
     result = list(read_csv_records(reader))
@@ -128,7 +121,12 @@ def test_dtypes_change_parsing():
 
     result = list(
         read_csv_records(
-            reader, dtypes={"col1": "str", "col2": "float", "col6": "str",}
+            reader,
+            dtypes={
+                "col1": "str",
+                "col2": "float",
+                "col6": "str",
+            },
         )
     )
 
@@ -158,7 +156,14 @@ def test_converters_change_parsing():
     reader = sample_reader()
 
     result = list(
-        read_csv_records(reader, converters={"col1": str, "col2": float, "col6": str,})
+        read_csv_records(
+            reader,
+            converters={
+                "col1": str,
+                "col2": float,
+                "col6": str,
+            },
+        )
     )
 
     assert result == [
@@ -188,7 +193,14 @@ def test_dtypes_plus_converters_change_parsing():
 
     result = list(
         read_csv_records(
-            reader, dtypes={"col1": "str", "col6": "str",}, converters={"col2": float,}
+            reader,
+            dtypes={
+                "col1": "str",
+                "col6": "str",
+            },
+            converters={
+                "col2": float,
+            },
         )
     )
 
@@ -226,7 +238,11 @@ def test_dtypes_overridden_by_converters():
                 "col2": "int",  # overridden by converters
                 "col6": "str",
             },
-            converters={"time": int, "col2": float, "col5": str,},
+            converters={
+                "time": int,
+                "col2": float,
+                "col5": str,
+            },
         )
     )
 
