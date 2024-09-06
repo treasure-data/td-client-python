@@ -248,9 +248,11 @@ class JobAPI:
             if code != 200:
                 self.raise_error("Get job result failed", res, "")
             if format == "msgpack":
-                unpacker = msgpack.Unpacker(res, raw=False)
-                for row in unpacker:
-                    yield row
+                unpacker = msgpack.Unpacker(raw=False, max_buffer_size=1000 * 1024 ** 2)
+                for chunk in res.stream(1024 ** 2):
+                    unpacker.feed(chunk)
+                    for row in unpacker:
+                        yield row
             elif format == "json":
                 for row in codecs.getreader("utf-8")(res):
                     yield json.loads(row)

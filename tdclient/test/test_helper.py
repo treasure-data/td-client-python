@@ -46,7 +46,11 @@ def make_raw_response(status, body, headers={}):
         else:
             return b""
 
+    def stream(size=None):
+        yield read(size)
+
     response.read.side_effect = read
+    response.stream.side_effect = stream
     return response
 
 
