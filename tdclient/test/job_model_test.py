@@ -176,7 +176,7 @@ def test_job_result_failure():
 def test_job_result_format_generator():
     client = mock.MagicMock()
 
-    def job_result_format_each(job_id, format):
+    def job_result_format_each(job_id, format, store_tmpfile=False, num_threads=1):
         assert job_id == "12345"
         assert format == "msgpack.gz"
         yield ["foo", 123]

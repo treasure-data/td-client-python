@@ -7,8 +7,7 @@ from tdclient.model import Model
 
 
 class Schema:
-    """Schema of a database table on Treasure Data Service
-    """
+    """Schema of a database table on Treasure Data Service"""
 
     class Field:
         def __init__(self, name, type):
@@ -48,8 +47,7 @@ class Schema:
 
 
 class Job(Model):
-    """Job on Treasure Data Service
-    """
+    """Job on Treasure Data Service"""
 
     STATUS_QUEUED = "queued"
     STATUS_BOOTING = "booting"
@@ -92,8 +90,7 @@ class Job(Model):
         self._result_export_target_job_id = data.get("result_export_target_job_id")
 
     def update(self):
-        """Update all fields of the job
-        """
+        """Update all fields of the job"""
         data = self._client.api.show_job(self._job_id)
         self._feed(data)
 
@@ -105,57 +102,48 @@ class Job(Model):
         self.update()
 
     def _update_progress(self):
-        """Update `_status` field of the job if it's not finished
-        """
+        """Update `_status` field of the job if it's not finished"""
         if self._status not in self.FINISHED_STATUS:
             self._status = self._client.job_status(self._job_id)
 
     @property
     def id(self):
-        """a string represents the identifier of the job
-        """
+        """a string represents the identifier of the job"""
         return self._job_id
 
     @property
     def job_id(self):
-        """a string represents the identifier of the job
-        """
+        """a string represents the identifier of the job"""
         return self._job_id
 
     @property
     def type(self):
-        """a string represents the engine type of the job (e.g. "hive", "presto", etc.)
-        """
+        """a string represents the engine type of the job (e.g. "hive", "presto", etc.)"""
         return self._type
 
     @property
     def result_size(self):
-        """the length of job result
-        """
+        """the length of job result"""
         return self._result_size
 
     @property
     def num_records(self):
-        """the number of records of job result
-        """
+        """the number of records of job result"""
         return self._num_records
 
     @property
     def result_url(self):
-        """a string of URL of the result on Treasure Data Service
-        """
+        """a string of URL of the result on Treasure Data Service"""
         return self._result_url
 
     @property
     def result_schema(self):
-        """an array of array represents the type of result columns (Hive specific) (e.g. [["_c1", "string"], ["_c2", "bigint"]])
-        """
+        """an array of array represents the type of result columns (Hive specific) (e.g. [["_c1", "string"], ["_c2", "bigint"]])"""
         return self._hive_result_schema
 
     @property
     def priority(self):
-        """a string represents the priority of the job (e.g. "NORMAL", "HIGH", etc.)
-        """
+        """a string represents the priority of the job (e.g. "NORMAL", "HIGH", etc.)"""
         if self._priority in self.JOB_PRIORITY:
             return self.JOB_PRIORITY[self._priority]
         else:
@@ -164,44 +152,37 @@ class Job(Model):
 
     @property
     def retry_limit(self):
-        """a number for automatic retry count
-        """
+        """a number for automatic retry count"""
         return self._retry_limit
 
     @property
     def org_name(self):
-        """organization name
-        """
+        """organization name"""
         return self._org_name
 
     @property
     def user_name(self):
-        """executing user name
-        """
+        """executing user name"""
         return self._user_name
 
     @property
     def database(self):
-        """a string represents the name of a database that job is running on
-        """
+        """a string represents the name of a database that job is running on"""
         return self._database
 
     @property
     def linked_result_export_job_id(self):
-        """Linked result export job ID from query job
-        """
+        """Linked result export job ID from query job"""
         return self._linked_result_export_job_id
 
     @property
     def result_export_target_job_id(self):
-        """Associated query job ID from result export job ID
-        """
+        """Associated query job ID from result export job ID"""
         return self._result_export_target_job_id
 
     @property
     def debug(self):
-        """a :class:`dict` of debug output (e.g. "cmdout", "stderr")
-        """
+        """a :class:`dict` of debug output (e.g. "cmdout", "stderr")"""
         return self._debug
 
     def wait(self, timeout=None, wait_interval=5, wait_callback=None):
@@ -235,8 +216,7 @@ class Job(Model):
 
     @property
     def query(self):
-        """a string represents the query string of the job
-        """
+        """a string represents the query string of the job"""
         return self._query
 
     def status(self):
@@ -250,8 +230,7 @@ class Job(Model):
 
     @property
     def url(self):
-        """a string of URL of the job on Treasure Data Service
-        """
+        """a string of URL of the job on Treasure Data Service"""
         return self._url
 
     def result(self):
@@ -270,10 +249,14 @@ class Job(Model):
                 for row in self._result:
                     yield row
 
-    def result_format(self, fmt):
+    def result_format(self, fmt, store_tmpfile=False, num_threads=4):
         """
         Args:
             fmt (str): output format of result set
+            store_tmpfile (bool, optional): store result to a temporary file.
+                Works only when fmt is "msgpack". Default is False.
+            num_threads (int, optional): number of threads to download result.
+                Works only when store_tmpfile is True. Default is 4.
 
         Yields:
              an iterator of rows in result set
@@ -283,7 +266,12 @@ class Job(Model):
         else:
             self.update()
             if self._result is None:
-                for row in self._client.job_result_format_each(self._job_id, fmt):
+                for row in self._client.job_result_format_each(
+                    self._job_id,
+                    fmt,
+                    store_tmpfile=store_tmpfile,
+                    num_threads=num_threads,
+                ):
                     yield row
             else:
                 for row in self._result:

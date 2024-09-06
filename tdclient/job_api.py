@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
 import codecs
+import gzip
 import json
 import logging
 import os
+import tempfile
 from concurrent.futures import ThreadPoolExecutor
 
 import msgpack
@@ -214,7 +216,7 @@ class JobAPI:
             job_id (int): Job ID
             format (str): Output format of the job result information.
                 "json" or "msgpack"
-            header (boolean): Includes Header or not. 
+            header (boolean): Includes Header or not.
                 False or True
 
         Returns:
@@ -225,15 +227,22 @@ class JobAPI:
             result.append(row)
         return result
 
-    def job_result_format_each(self, job_id, format, header=False):
+    def job_result_format_each(
+        self, job_id, format, header=False, store_tmpfile=False, num_threads=4
+    ):
         """Yield a row of the job result with specified format.
 
         Args:
             job_id (int): job ID
-            format (str): Output format of the job result information. 
+            format (str): Output format of the job result information.
                 "json" or "msgpack"
             header (bool): Include Header info or not
                 "True" or "False"
+            store_tmpfile (bool): Download job result as a temporary file or not. Default is False.
+                It works only when format is "msgpack".
+                "True" or "False"
+            num_threads (int): Number of threads to download the job result when store_tmpfile is True.
+                Default is 4.
         Yields:
              The query result of the specified job in.
         """
@@ -246,16 +255,37 @@ class JobAPI:
         if format != "msgpack":
             format = "json"
 
+        if store_tmpfile:
+            if format != "msgpack":
+                raise ValueError("store_tmpfile works only when format is msgpack")
+
+            with tempfile.TemporaryDirectory() as tempdir:
+                path = os.path.join(tempdir, f"{job_id}.msgpack.gz")
+                self.download_job_result(job_id, path, num_threads)
+                with gzip.GzipFile(path, "rb") as f:
+                    unpacker = msgpack.Unpacker(
+                        f, raw=False, max_buffer_size=1000 * 1024**2
+                    )
+                    for row in unpacker:
+                        yield row
+            return
+
         with self.get(
-            create_url("/v3/job/result/{job_id}?format={format}&header={header}",
-                       job_id=job_id, format=format, header=header)
+            create_url(
+                "/v3/job/result/{job_id}?format={format}&header={header}",
+                job_id=job_id,
+                format=format,
+                header=header,
+            )
         ) as res:
             code = res.status
             if code != 200:
                 self.raise_error("Get job result failed", res, "")
             if format == "msgpack":
-                unpacker = msgpack.Unpacker(raw=False, max_buffer_size=1000 * 1024 ** 2)
-                for chunk in res.stream(1024 ** 2):
+                unpacker = msgpack.Unpacker(
+                    raw=False, max_buffer_size=1000 * 1024**2
+                )
+                for chunk in res.stream(1024**2):
                     unpacker.feed(chunk)
                     for row in unpacker:
                         yield row
@@ -354,7 +384,7 @@ class JobAPI:
         result_url=None,
         priority=None,
         retry_limit=None,
-        **kwargs
+        **kwargs,
     ):
         """Create a job for given query.
 

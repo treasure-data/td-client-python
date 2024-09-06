@@ -6,8 +6,7 @@ from tdclient import api, models
 
 
 class Client:
-    """API Client for Treasure Data Service
-    """
+    """API Client for Treasure Data Service"""
 
     def __init__(self, *args, **kwargs):
         self._api = api.API(*args, **kwargs)
@@ -79,7 +78,7 @@ class Client:
              :class:`tdclient.models.Database`
         """
         databases = self.api.list_databases()
-        for (name, kwargs) in databases.items():
+        for name, kwargs in databases.items():
             if name == db_name:
                 return models.Database(self, name, **kwargs)
         raise api.NotFoundError("Database '%s' does not exist" % (db_name))
@@ -229,7 +228,7 @@ class Client:
         priority=None,
         retry_limit=None,
         type="hive",
-        **kwargs
+        **kwargs,
     ):
         """Run a query on specified database table.
 
@@ -258,7 +257,7 @@ class Client:
             result_url=result_url,
             priority=priority,
             retry_limit=retry_limit,
-            **kwargs
+            **kwargs,
         )
         return models.Job(self, job_id, type, q)
 
@@ -334,16 +333,30 @@ class Client:
         """
         return self.api.job_result_format(job_id, format, header=header)
 
-    def job_result_format_each(self, job_id, format, header=False):
+    def job_result_format_each(
+        self, job_id, format, header=False, store_tmpfile=False, num_threads=4
+    ):
         """
         Args:
             job_id (str): job id
             format (str): output format of result set
+            header (bool, optional): include header in the result set. Default: False
+            store_tmpfile (bool, optional): store result to a temporary file.
+                Works only when fmt is "msgpack". Default is False.
+            num_threads (int, optional): number of threads to download result.
+                Works only when store_tmpfile is True. Default is 4.
+
 
         Returns:
              an iterator of rows in result set
         """
-        for row in self.api.job_result_format_each(job_id, format, header=header):
+        for row in self.api.job_result_format_each(
+            job_id,
+            format,
+            header=header,
+            store_tmpfile=store_tmpfile,
+            num_threads=num_threads,
+        ):
             yield row
 
     def download_job_result(self, job_id, path, num_threads=4):
@@ -940,8 +953,7 @@ class Client:
         return self.api.remove_apikey(name, apikey)
 
     def close(self):
-        """Close opened API connections.
-        """
+        """Close opened API connections."""
         return self._api.close()
 
 

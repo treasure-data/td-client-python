@@ -285,7 +285,9 @@ def test_job_result_format_each():
     result = []
     for row in td.job_result_format_each("12345", "json"):
         result.append(row)
-    td.api.job_result_format_each.assert_called_with("12345", "json", header=False)
+    td.api.job_result_format_each.assert_called_with(
+        "12345", "json", header=False, store_tmpfile=False, num_threads=4
+    )
     assert result == rows
 
 
