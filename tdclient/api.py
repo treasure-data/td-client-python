@@ -4,12 +4,14 @@ import contextlib
 import csv
 import email.utils
 import gzip
+import http
 import io
 import json
 import logging
 import os
 import socket
 import ssl
+import sys
 import tempfile
 import time
 import urllib.parse as urlparse
@@ -205,6 +207,8 @@ class API(
                 urllib3.exceptions.TimeoutStateError,
                 urllib3.exceptions.TimeoutError,
                 urllib3.exceptions.PoolError,
+                http.client.IncompleteRead,
+                TimeoutError,
                 socket.error,
             ):
                 pass
