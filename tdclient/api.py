@@ -11,6 +11,7 @@ import logging
 import os
 import socket
 import ssl
+import sys
 import tempfile
 import time
 import urllib.parse as urlparse
@@ -506,7 +507,7 @@ class API(
             body = memoryview(body)
         if urllib3.util.IS_PYOPENSSL and isinstance(body, array):
             # workaround for https://github.com/pyca/pyopenssl/issues/621
-            body = body.tostring()
+            body = body.tobytes()
         return self.http.urlopen(method, url, body=body, headers=headers, **kwargs)
 
     def raise_error(self, msg, res, body):

@@ -1,1 +1,3 @@
-__version__ = "1.2.2.dev0"
+import importlib.metadata
+
+__version__ = importlib.metadata.version("td-client")
