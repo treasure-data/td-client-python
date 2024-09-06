@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import os
-import re
 import sys
 
 from setuptools import find_packages, setup
@@ -11,16 +10,6 @@ from setuptools.command.test import test as TestCommand
 def read(fname):
     with open(os.path.join(os.path.dirname(__file__), fname)) as fp:
         return fp.read()
-
-
-m = re.search(
-    r"^__version__ *= *\"([^\"]*)\" *$", read("tdclient/version.py"), re.MULTILINE
-)
-
-if m is None:
-    raise (RuntimeError("could not read tdclient/version.py"))
-else:
-    version = m.group(1)
 
 
 class PyTest(TestCommand):
@@ -39,14 +28,14 @@ class PyTest(TestCommand):
 
 setup(
     name="td-client",
-    version=version,
+    version="1.2.2.dev0",
     description="Treasure Data API library for Python",
     long_description=read("README.rst"),
-    long_description_content_type="text/x-rst; charset=UTF-8;",
+    long_description_content_type="text/x-rst; charset=UTF-8",
     author="Treasure Data, Inc.",
     author_email="support@treasure-data.com",
     url="http://treasuredata.com/",
-    python_requires=">=3.5",
+    python_requires=">=3.8",
     install_requires=["msgpack>=0.6.2", "python-dateutil", "urllib3"],
     tests_require=["coveralls", "mock", "pytest", "pytest-cov", "tox"],
     extras_require={
@@ -64,10 +53,11 @@ setup(
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
         "Topic :: Internet",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
     ],
