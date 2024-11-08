@@ -24,9 +24,6 @@ def test_database():
         updated_at="updated_at",
         org_name="org_name",
         permission="administrator",
-        id=123,
-        user_id=1,
-        description="database description",
     )
     assert database.org_name == "org_name"
     assert database.permission == "administrator"
@@ -35,9 +32,6 @@ def test_database():
     assert database.tables() == ["nasdaq", "www_access"]
     assert database.created_at == "created_at"
     assert database.updated_at == "updated_at"
-    assert database.id == 123
-    assert database.user_id == 1
-    assert database.description == "database description"
 
 
 def test_database_update_tables():

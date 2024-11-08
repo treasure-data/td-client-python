@@ -42,8 +42,6 @@ class TableAPI:
                ['species', 'string', 'species']],
               'expire_days': None,
               'last_import': datetime.datetime(2019, 9, 18, 7, 14, 28, tzinfo=tzutc())},
-              'user_id': 1,
-              'description': 'table description'
             }
         """
         with self.get(create_url("/v3/table/list/{db}", db=db)) as res:
