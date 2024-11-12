@@ -13,8 +13,8 @@ class ResultAPI:
         """Get the list of all the available authentications.
 
         Returns:
-            [(str, str, None, int, int)]: The list of tuple of name, Result output url,
-                 organization name (always `None` for api compatibility), result id and user id
+            [(str, str, None)]: The list of tuple of name, Result output url, and
+                 organization name (always `None` for api compatibility).
         """
         with self.get("/v3/result/list") as res:
             code, body = res.status, res.read()
@@ -22,8 +22,7 @@ class ResultAPI:
                 self.raise_error("List result table failed", res, body)
             js = self.checked_json(body, ["results"])
             return [
-                (m["name"], m["url"], None, m["id"], m["user_id"])
-                for m in js["results"]
+                (m["name"], m["url"], None) for m in js["results"]
             ]  # same as database
 
     def create_result(self, name, url, params=None):

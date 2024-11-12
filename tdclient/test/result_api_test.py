@@ -20,23 +20,17 @@ def test_list_result_success():
                 {
                     "name": "foo",
                     "organization": null,
-                    "url": "mysql://example.com/db/foo",
-                    "id": 123,
-                    "user_id": 1
+                    "url": "mysql://example.com/db/foo"
                 },
                 {
                     "name": "bar",
                     "organization": null,
-                    "url": "postgresql://example.com/db/bar",
-                    "id": 124,
-                    "user_id": 1
+                    "url": "postgresql://example.com/db/bar"
                 },
                 {
                     "name": "baz",
                     "organization": null,
-                    "url": "s3://s3.example.com/baz.csv",
-                    "id": 125,
-                    "user_id": 1
+                    "url": "s3://s3.example.com/baz.csv"
                 }
             ]
         }
@@ -45,9 +39,9 @@ def test_list_result_success():
     results = td.list_result()
     td.get.assert_called_with("/v3/result/list")
     assert len(results) == 3
-    assert results[0] == ("foo", "mysql://example.com/db/foo", None, 123, 1)
-    assert results[1] == ("bar", "postgresql://example.com/db/bar", None, 124, 1)
-    assert results[2] == ("baz", "s3://s3.example.com/baz.csv", None, 125, 1)
+    assert results[0] == ("foo", "mysql://example.com/db/foo", None)
+    assert results[1] == ("bar", "postgresql://example.com/db/bar", None)
+    assert results[2] == ("baz", "s3://s3.example.com/baz.csv", None)
 
 
 def test_list_result_failure():

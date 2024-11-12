@@ -17,9 +17,9 @@ def test_list_databases_success():
     body = b"""
         {
             "databases":[
-                {"name":"sample_datasets","count":8812278,"created_at":"2014-10-04 01:13:11 UTC","updated_at":"2014-10-08 18:42:12 UTC","organization":null,"permission":"administrator","id":123,"user_id":1,"description":"database description 1"},
-                {"name":"jma_weather","count":29545,"created_at":"2014-10-12 06:33:01 UTC","updated_at":"2014-10-12 06:33:01 UTC","organization":null,"permission":"administrator","id":124,"user_id":1,"description":"database description 2"},
-                {"name":"test_db","count":15,"created_at":"2014-10-16 09:48:44 UTC","updated_at":"2014-10-16 09:48:44 UTC","organization":null,"permission":"administrator","id":125,"user_id":1,"description":"database description 3"}
+                {"name":"sample_datasets","count":8812278,"created_at":"2014-10-04 01:13:11 UTC","updated_at":"2014-10-08 18:42:12 UTC","organization":null,"permission":"administrator"},
+                {"name":"jma_weather","count":29545,"created_at":"2014-10-12 06:33:01 UTC","updated_at":"2014-10-12 06:33:01 UTC","organization":null,"permission":"administrator"},
+                {"name":"test_db","count":15,"created_at":"2014-10-16 09:48:44 UTC","updated_at":"2014-10-16 09:48:44 UTC","organization":null,"permission":"administrator"}
             ]
         }
     """
