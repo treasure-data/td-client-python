@@ -293,8 +293,10 @@ Then, run ``tox``.
 Release
 ^^^^^^^
 
-Create and push a tag to GitHub, then creating a Release on GitHub will publish new version to PyPI.
-
+1. Update version `x.x.x` in `pyproject.toml`.
+2. Create a PR with `release-x.x.x` branch. Request and merge the PR.
+3. Create and push a tag `x.x.x` on `release-x.x.x` merge commit.
+4. Create a Release on GitHub will publish new version to PyPI.
 
 Manual release
 ~~~~~~~~~~~~~~
