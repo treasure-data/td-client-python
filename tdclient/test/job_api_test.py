@@ -242,7 +242,7 @@ def test_job_result_msgpack_each_store_tmpfile_success():
         }
     """
     rows = [["foo", 123], ["bar", 456], ["baz", 789]]
-    body_download = gzipb(msgpackb(rows))
+    body_download = msgpackb(rows)
     td.get = mock.MagicMock()
     td.get.side_effect = [
         make_response(200, body),
@@ -252,7 +252,7 @@ def test_job_result_msgpack_each_store_tmpfile_success():
     for row in td.job_result_format_each(12345, "msgpack", store_tmpfile=True):
         result.append(row)
     td.get.assert_called_with(
-        "/v3/job/result/12345?format=msgpack.gz", headers={"Range": "bytes=0-21"}
+        "/v3/job/result/12345?format=msgpack", headers={"Range": "bytes=0-21"}
     )
     assert result == rows
 
