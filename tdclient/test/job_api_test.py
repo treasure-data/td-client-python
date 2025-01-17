@@ -293,7 +293,7 @@ def test_download_job_result():
         {"str": "value1", "int": 1, "float": 2.3},
         {"str": "value3", "int": 4, "float": 5.6},
     ]
-    body_download = gzipb(msgpackb(data))
+    body_download = msgpackb(data)
     td.get = mock.MagicMock()
     td.get.side_effect = [make_response(200, body), make_response(206, body_download)]
     with tempfile.TemporaryDirectory() as tempdir:
@@ -301,10 +301,10 @@ def test_download_job_result():
         td.download_job_result(12345, temp)
         td.get.assert_any_call("/v3/job/show/12345")
         td.get.assert_any_call(
-            "/v3/job/result/12345?format=msgpack.gz", headers={"Range": "bytes=0-21"}
+            "/v3/job/result/12345?format=msgpack", headers={"Range": "bytes=0-21"}
         )
         with open(temp, "rb") as f:
-            result = msgunpackb(gunzipb(f.read()))
+            result = msgunpackb(f.read())
             assert result == data
 
 
