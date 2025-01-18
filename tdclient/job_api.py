@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import codecs
+import gzip
 import json
 import logging
 import os
@@ -259,9 +260,9 @@ class JobAPI:
                 raise ValueError("store_tmpfile works only when format is msgpack")
 
             with tempfile.TemporaryDirectory() as tempdir:
-                path = os.path.join(tempdir, f"{job_id}.msgpack")
+                path = os.path.join(tempdir, f"{job_id}.msgpack.gz")
                 self.download_job_result(job_id, path, num_threads)
-                with open(path, "rb") as f:
+                with gzip.GzipFile(path, "rb") as f:
                     unpacker = msgpack.Unpacker(
                         f, raw=False, max_buffer_size=1000 * 1024**2
                     )
@@ -308,7 +309,7 @@ class JobAPI:
         url = create_url(
             "/v3/job/result/{job_id}?format={format}",
             job_id=job_id,
-            format="msgpack",
+            format="msgpack.gz",
         )
 
         def get_chunk(url, start, end):
@@ -321,10 +322,8 @@ class JobAPI:
             with get_chunk(url, start, end) as response:
                 if response.status == 206:  # Partial content (range supported)
                     with open(f"{file_name}.part{index}", "wb") as f:
-                        for chunk in response.stream(128 * 1024):
-                            if chunk:
-                                f.write(chunk)
-
+                        for chunk in response.stream(1024):
+                            f.write(chunk)
                     return True
                 else:
                     log.warning(
