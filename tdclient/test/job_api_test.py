@@ -242,7 +242,7 @@ def test_job_result_msgpack_each_store_tmpfile_success():
         }
     """
     rows = [["foo", 123], ["bar", 456], ["baz", 789]]
-    body_download = msgpackb(rows)
+    body_download = gzipb(msgpackb(rows))
     td.get = mock.MagicMock()
     td.get.side_effect = [
         make_response(200, body),
@@ -252,7 +252,7 @@ def test_job_result_msgpack_each_store_tmpfile_success():
     for row in td.job_result_format_each(12345, "msgpack", store_tmpfile=True):
         result.append(row)
     td.get.assert_called_with(
-        "/v3/job/result/12345?format=msgpack", headers={"Range": "bytes=0-21"}
+        "/v3/job/result/12345?format=msgpack.gz", headers={"Range": "bytes=0-21"}
     )
     assert result == rows
 
@@ -293,7 +293,7 @@ def test_download_job_result():
         {"str": "value1", "int": 1, "float": 2.3},
         {"str": "value3", "int": 4, "float": 5.6},
     ]
-    body_download = msgpackb(data)
+    body_download = gzipb(msgpackb(data))
     td.get = mock.MagicMock()
     td.get.side_effect = [make_response(200, body), make_response(206, body_download)]
     with tempfile.TemporaryDirectory() as tempdir:
@@ -301,10 +301,10 @@ def test_download_job_result():
         td.download_job_result(12345, temp)
         td.get.assert_any_call("/v3/job/show/12345")
         td.get.assert_any_call(
-            "/v3/job/result/12345?format=msgpack", headers={"Range": "bytes=0-21"}
+            "/v3/job/result/12345?format=msgpack.gz", headers={"Range": "bytes=0-21"}
         )
         with open(temp, "rb") as f:
-            result = msgunpackb(f.read())
+            result = msgunpackb(gunzipb(f.read()))
             assert result == data
 
 
