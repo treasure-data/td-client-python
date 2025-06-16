@@ -8,6 +8,7 @@
 /.eggs
 /.envrc
 /.tox
+/.venv
 /build
 /dist
 /tmp
