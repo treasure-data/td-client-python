@@ -201,7 +201,7 @@ def test_trino_query():
     td = client.Client("APIKEY")
     td._api = mock.MagicMock()
     td._api.query = mock.MagicMock(return_value=("12345"))
-    job = td.query("tung_db", "SELECT * LIMIT 1 from tung_table", type="trino")
+    job = td.query("sample_datasets", "SELECT 1", type="trino")
     td.api.query.assert_called_with(
         "SELECT 1",
         db="sample_datasets",
