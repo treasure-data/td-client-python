@@ -390,7 +390,7 @@ class JobAPI:
 
         Args:
             q (str): Query string.
-            type (str): Query type. `hive`, `presto`, `bulkload`. Default: `hive`
+            type (str): Query type. `hive`, `presto`, `trino`, `bulkload`. Default: `hive`
             db (str): Database name.
             result_url (str): Result output URL. e.g.,
                 ``postgresql://<username>:<password>@<hostname>:<port>/<database>/<table>``

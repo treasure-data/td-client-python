@@ -197,6 +197,20 @@ def test_query():
     )
     assert job.job_id == "12345"
 
+def test_trino_query():
+    td = client.Client("APIKEY")
+    td._api = mock.MagicMock()
+    td._api.query = mock.MagicMock(return_value=("12345"))
+    job = td.query("sample_datasets", "SELECT 1", type="trino")
+    td.api.query.assert_called_with(
+        "SELECT 1",
+        db="sample_datasets",
+        type="trino",
+        retry_limit=None,
+        priority=None,
+        result_url=None,
+    )
+    assert job.job_id == "12345"
 
 def test_jobs():
     td = client.Client("APIKEY")

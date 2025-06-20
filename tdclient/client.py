@@ -248,7 +248,7 @@ class Client:
             ValueError: if unknown query type has been specified
         """
         # for compatibility, assume type is hive unless specifically specified
-        if type not in ["hive", "pig", "impala", "presto"]:
+        if type not in ["hive", "pig", "impala", "presto", "trino"]:
             raise ValueError("The specified query type is not supported: %s" % (type))
         job_id = self.api.query(
             q,
