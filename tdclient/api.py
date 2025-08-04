@@ -28,7 +28,6 @@ from tdclient.database_api import DatabaseAPI
 from tdclient.export_api import ExportAPI
 from tdclient.import_api import ImportAPI
 from tdclient.job_api import JobAPI
-from tdclient.partial_delete_api import PartialDeleteAPI
 from tdclient.result_api import ResultAPI
 from tdclient.schedule_api import ScheduleAPI
 from tdclient.server_status_api import ServerStatusAPI
@@ -63,7 +62,6 @@ class API(
     ExportAPI,
     ImportAPI,
     JobAPI,
-    PartialDeleteAPI,
     ResultAPI,
     ScheduleAPI,
     ServerStatusAPI,
