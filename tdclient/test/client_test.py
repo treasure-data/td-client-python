@@ -313,15 +313,6 @@ def test_kill():
     td.api.kill.assert_called_with("12345")
 
 
-def test_partial_delete():
-    td = client.Client("APIKEY")
-    td._api = mock.MagicMock()
-    td._api.partial_delete = mock.MagicMock(return_value=("12345"))
-    job = td.partial_delete("db_name", "table_name", 0, 2)
-    td.api.partial_delete.assert_called_with("db_name", "table_name", 0, 2, {})
-    assert job.job_id == "12345"
-
-
 def test_create_bulk_import():
     td = client.Client("APIKEY")
     td._api = mock.MagicMock()

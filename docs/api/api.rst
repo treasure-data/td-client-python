@@ -59,13 +59,6 @@ tdclient.job\_api
    :undoc-members:
    :show-inheritance:
 
-tdclient.partial\_delete\_api
-------------------------------------
-
-.. automodule:: tdclient.partial_delete_api
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 tdclient.result\_api
 ---------------------------
