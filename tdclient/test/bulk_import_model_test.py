@@ -120,6 +120,32 @@ def test_bulk_import_perfom():
     assert bulk_import.update.called
 
 
+def test_bulk_import_perform_with_timeout():
+    client = mock.MagicMock()
+    job_mock = mock.MagicMock()
+    client.perform_bulk_import.return_value = job_mock
+    
+    bulk_import = models.BulkImport(
+        client,
+        name="name",
+        database="database",
+        table="table",
+        status="status",
+        upload_frozen=True,
+        job_id="job_id",
+        valid_records="valid_records",
+        error_records="error_records",
+        valid_parts="valid_parts",
+        error_parts="error_parts",
+    )
+    bulk_import.update = mock.MagicMock()
+    bulk_import.perform(wait=True, timeout=300, wait_interval=10)
+    
+    client.perform_bulk_import.assert_called_with("name")
+    job_mock.wait.assert_called_with(timeout=300, wait_interval=10, wait_callback=None)
+    assert bulk_import.update.called
+
+
 def test_bulk_import_commit():
     client = mock.MagicMock()
     bulk_import = models.BulkImport(
