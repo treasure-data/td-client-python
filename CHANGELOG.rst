@@ -5,7 +5,7 @@ Version History
 v1.5.0 (2025-08-14)
 --------------------
 
-* Added timeout=None parameter to BulkImport.perform() method
+* Added timeout parameter to BulkImport.perform() method
 
 v1.4.0 (2025-08-05)
 --------------------
