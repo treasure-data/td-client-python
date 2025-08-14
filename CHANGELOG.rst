@@ -2,11 +2,16 @@
 Version History
 ===============
 
+v1.5.0 (2025-08-14)
+--------------------
+
+* Added timeout parameter to BulkImport.perform() method
+
 v1.4.0 (2025-08-05)
+--------------------
 
 * Support trino type query
 * Remove partial_delete api
-
 
 v1.2.1 (2020-07-01)
 --------------------

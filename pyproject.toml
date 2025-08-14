@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "td-client"
-version = "1.4.0"
+version = "1.5.0"
 description = "Treasure Data API library for Python"
 readme = {file = "README.rst", content-type = "text/x-rst; charset=UTF-8"}
 requires-python = ">=3.8"
