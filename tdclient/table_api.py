@@ -33,7 +33,6 @@ class TableAPI:
               'created_at': datetime.datetime(2019, 1, 30, 5, 34, 42, tzinfo=tzutc()),
               'updated_at': datetime.datetime(2019, 1, 30, 5, 34, 46, tzinfo=tzutc()),
               'type': 'log',
-              'include_v': True,
               'count': 150,
               'schema': [['sepal_length', 'double', 'sepal_length'],
                ['sepal_width', 'double', 'sepal_width'],
