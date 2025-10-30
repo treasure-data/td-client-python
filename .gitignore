@@ -8,10 +8,11 @@
 /.eggs
 /.envrc
 /.tox
-/.venv
+/.venv*
 /build
 /dist
 /tmp
+/.agent
 
 # JetBrains IDE
 .idea/
