@@ -26,4 +26,3 @@ class Result(Model):
     def org_name(self):
         """str: organization name"""
         return self._org_name
-

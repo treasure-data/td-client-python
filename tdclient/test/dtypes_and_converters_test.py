@@ -269,7 +269,7 @@ def test_dtypes_overridden_by_converters():
 
 
 DEFAULT_HEADER_BYTE_CSV = (
-    b"time,col1,col2,col3,col4\n" b"100,0001,10,1.0,abcd\n" b"200,0002,20,2.0,efgh\n"
+    b"time,col1,col2,col3,col4\n100,0001,10,1.0,abcd\n200,0002,20,2.0,efgh\n"
 )
 
 

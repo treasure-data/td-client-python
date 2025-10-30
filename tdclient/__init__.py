@@ -1,4 +1,8 @@
+from __future__ import annotations
+
 import datetime
+import time
+from typing import Any
 
 from tdclient import client, connection, errors, version
 
@@ -7,7 +11,7 @@ __version__ = version.__version__
 Client = client.Client
 
 
-def connect(*args, **kwargs):
+def connect(*args: Any, **kwargs: Any) -> connection.Connection:
     """Returns a DBAPI compatible connection object
 
     Args:
@@ -44,19 +48,19 @@ Time = datetime.time
 Timestamp = datetime.datetime
 
 
-def DateFromTicks(ticks):
-    return datetime.date(*datetime.localtime(ticks)[:3])
+def DateFromTicks(ticks: float) -> datetime.date:
+    return datetime.date(*time.localtime(ticks)[:3])
 
 
-def TimeFromTicks(ticks):
-    return datetime.time(*datetime.localtime(ticks)[3:6])
+def TimeFromTicks(ticks: float) -> datetime.time:
+    return datetime.time(*time.localtime(ticks)[3:6])
 
 
-def TimestampFromTicks(ticks):
-    return datetime.datetime(*datetime.localtime(ticks)[:6])
+def TimestampFromTicks(ticks: float) -> datetime.datetime:
+    return datetime.datetime(*time.localtime(ticks)[:6])
 
 
-def Binary(string):
+def Binary(string: bytes) -> bytes:
     return bytes(string)
 
 

@@ -118,7 +118,11 @@ class BulkImport(Model):
             )
         job = self._client.perform_bulk_import(self.name)
         if wait:
-            job.wait(timeout=timeout, wait_interval=wait_interval, wait_callback=wait_callback)
+            job.wait(
+                timeout=timeout,
+                wait_interval=wait_interval,
+                wait_callback=wait_callback,
+            )
         self.update()
         return job
 
