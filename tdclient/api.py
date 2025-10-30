@@ -1,21 +1,23 @@
 #!/usr/bin/env python
 
+from __future__ import annotations
+
 import contextlib
 import csv
 import email.utils
 import gzip
-import http
+import http.client
 import io
 import json
 import logging
 import os
 import socket
 import ssl
-import sys
 import tempfile
 import time
 import urllib.parse as urlparse
 from array import array
+from typing import IO, Any, cast
 
 import msgpack
 import urllib3
@@ -32,6 +34,7 @@ from tdclient.result_api import ResultAPI
 from tdclient.schedule_api import ScheduleAPI
 from tdclient.server_status_api import ServerStatusAPI
 from tdclient.table_api import TableAPI
+from tdclient.types import BytesOrStream
 from tdclient.user_api import UserAPI
 from tdclient.util import (
     csv_dict_record_reader,
@@ -85,15 +88,15 @@ class API(
 
     def __init__(
         self,
-        apikey=None,
-        user_agent=None,
-        endpoint=None,
-        headers=None,
-        retry_post_requests=False,
-        max_cumul_retry_delay=600,
-        http_proxy=None,
-        **kwargs,
-    ):
+        apikey: str | None = None,
+        user_agent: str | None = None,
+        endpoint: str | None = None,
+        headers: dict[str, str] | None = None,
+        retry_post_requests: bool = False,
+        max_cumul_retry_delay: int = 600,
+        http_proxy: str | None = None,
+        **kwargs: Any,
+    ) -> None:
         headers = {} if headers is None else headers
         if apikey is not None:
             self._apikey = apikey
@@ -134,14 +137,17 @@ class API(
         self._headers = {key.lower(): value for (key, value) in headers.items()}
 
     @property
-    def apikey(self):
+    def apikey(self) -> str | None:
         return self._apikey
 
     @property
-    def endpoint(self):
+    def endpoint(self) -> str:
+        assert self._endpoint is not None  # Always set in __init__
         return self._endpoint
 
-    def _init_http(self, http_proxy=None, **kwargs):
+    def _init_http(
+        self, http_proxy: str | None = None, **kwargs: Any
+    ) -> urllib3.PoolManager | urllib3.ProxyManager:
         if http_proxy is None:
             return urllib3.PoolManager(**kwargs)
         else:
@@ -150,7 +156,7 @@ class API(
             else:
                 return self._init_http_proxy("http://%s" % (http_proxy,), **kwargs)
 
-    def _init_http_proxy(self, http_proxy, **kwargs):
+    def _init_http_proxy(self, http_proxy: str, **kwargs: Any) -> urllib3.ProxyManager:
         pool_options = dict(kwargs)
         p = urlparse.urlparse(http_proxy)
         scheme = p.scheme
@@ -160,7 +166,13 @@ class API(
             pool_options["proxy_headers"] = urllib3.make_headers(proxy_basic_auth=auth)
         return urllib3.ProxyManager("%s://%s" % (scheme, netloc), **pool_options)
 
-    def get(self, path, params=None, headers=None, **kwargs):
+    def get(
+        self,
+        path: str,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
+    ) -> contextlib.AbstractContextManager[urllib3.BaseHTTPResponse]:
         headers = {} if headers is None else dict(headers)
         headers["accept-encoding"] = "deflate, gzip"
         url, headers = self.build_request(path=path, headers=headers, **kwargs)
@@ -239,7 +251,13 @@ class API(
 
         return contextlib.closing(response)
 
-    def post(self, path, params=None, headers=None, **kwargs):
+    def post(
+        self,
+        path: str,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
+    ) -> contextlib.AbstractContextManager[urllib3.BaseHTTPResponse]:
         headers = {} if headers is None else dict(headers)
         url, headers = self.build_request(path=path, headers=headers, **kwargs)
 
@@ -332,7 +350,14 @@ class API(
 
         return contextlib.closing(response)
 
-    def put(self, path, bytes_or_stream, size, headers=None, **kwargs):
+    def put(
+        self,
+        path: str,
+        bytes_or_stream: BytesOrStream,
+        size: int,
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
+    ) -> contextlib.AbstractContextManager[urllib3.BaseHTTPResponse]:
         headers = {} if headers is None else dict(headers)
         headers["content-length"] = str(size)
         if "content-type" not in headers:
@@ -345,23 +370,28 @@ class API(
             repr(path),
         )
 
+        stream: array[int] | IO[bytes]
         if hasattr(bytes_or_stream, "read"):
             # file-like must support `read` and `fileno` to work with `httplib`
-            fileno_supported = hasattr(bytes_or_stream, "fileno")
+            # Type guard: if it has 'read', it's IO[bytes]
+            file_like = cast(IO[bytes], bytes_or_stream)
+            fileno_supported = hasattr(file_like, "fileno")
             if fileno_supported:
                 try:
-                    bytes_or_stream.fileno()
+                    file_like.fileno()
                 except io.UnsupportedOperation:
                     # `io.BytesIO` doesn't support `fileno`
                     fileno_supported = False
             if fileno_supported:
-                stream = bytes_or_stream
+                stream = file_like
             else:
-                stream = array("b", bytes_or_stream.read())
+                stream = array("b", file_like.read())
 
         else:
             # send request body as an `array.array` since `httplib` requires the request body to be a unicode string
-            stream = array("b", bytes_or_stream)
+            # Type guard: if it doesn't have 'read', it's bytes | bytearray
+            byte_data = cast("bytes | bytearray", bytes_or_stream)
+            stream = array("b", byte_data)
 
         response = None
         try:
@@ -393,7 +423,13 @@ class API(
 
         return contextlib.closing(response)
 
-    def delete(self, path, params=None, headers=None, **kwargs):
+    def delete(
+        self,
+        path: str,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
+    ) -> contextlib.AbstractContextManager[urllib3.BaseHTTPResponse]:
         headers = {} if headers is None else dict(headers)
         url, headers = self.build_request(path=path, headers=headers, **kwargs)
 
@@ -469,19 +505,32 @@ class API(
 
         return contextlib.closing(response)
 
-    def build_request(self, path=None, headers=None, endpoint=None):
+    def build_request(
+        self,
+        path: str | None = None,
+        headers: dict[str, str] | None = None,
+        endpoint: str | None = None,
+    ) -> tuple[str, dict[str, str]]:
         headers = {} if headers is None else headers
         if endpoint is None:
             endpoint = self._endpoint
+        assert endpoint is not None  # endpoint is always set in __init__
         if path is None:
-            url = endpoint
+            url: str = endpoint
         else:
             p = urlparse.urlparse(endpoint)
             # should not use `os.path.join` since it returns path string like "/foo\\bar"
-            request_path = path if p.path == "/" else "/".join([p.path, path])
+            # Type assertion: urlparse components are str not bytes for str input
+            p_path = str(p.path)
+            p_scheme = str(p.scheme)
+            p_netloc = str(p.netloc)
+            p_params = str(p.params)
+            p_query = str(p.query)
+            p_fragment = str(p.fragment)
+            request_path = path if p_path == "/" else "/".join([p_path, path])
             url = urlparse.urlunparse(
                 urlparse.ParseResult(
-                    p.scheme, p.netloc, request_path, p.params, p.query, p.fragment
+                    p_scheme, p_netloc, request_path, p_params, p_query, p_fragment
                 )
             )
         # use default headers first
@@ -494,7 +543,15 @@ class API(
         _headers.update({key.lower(): value for (key, value) in headers.items()})
         return (url, _headers)
 
-    def send_request(self, method, url, fields=None, body=None, headers=None, **kwargs):
+    def send_request(
+        self,
+        method: str,
+        url: str,
+        fields: dict[str, Any] | None = None,
+        body: bytes | bytearray | memoryview | array[int] | IO[bytes] | None = None,
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
+    ) -> urllib3.BaseHTTPResponse:
         if body is None:
             return self.http.request(
                 method, url, fields=fields, headers=headers, **kwargs
@@ -508,7 +565,9 @@ class API(
             body = body.tobytes()
         return self.http.urlopen(method, url, body=body, headers=headers, **kwargs)
 
-    def raise_error(self, msg, res, body):
+    def raise_error(
+        self, msg: str, res: urllib3.BaseHTTPResponse, body: bytes | str
+    ) -> None:
         status_code = res.status
         s = body if isinstance(body, str) else body.decode("utf-8")
         if status_code == 404:
@@ -522,7 +581,7 @@ class API(
         else:
             raise errors.APIError("%d: %s: %s" % (status_code, msg, s))
 
-    def checked_json(self, body, required):
+    def checked_json(self, body: bytes, required: list[str]) -> dict[str, Any]:
         js = None
         try:
             js = json.loads(body.decode("utf-8"))
@@ -536,7 +595,7 @@ class API(
             )
         return js
 
-    def close(self):
+    def close(self) -> None:
         # urllib3 doesn't allow to close all connections immediately.
         # all connections in pool will be closed eventually during gc.
         self.http.clear()

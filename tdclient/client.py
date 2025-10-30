@@ -5,70 +5,18 @@ from __future__ import annotations
 import datetime
 import json
 from collections.abc import Iterator
-from typing import IO, Any, Literal, TypedDict
-
-from typing_extensions import TypeAlias
+from typing import Any
 
 from tdclient import api, models
-
-
-# Type aliases for file-like objects
-FileLike: TypeAlias = "str | bytes | IO[bytes]"
-
-# Common literal types
-QueryEngineType: TypeAlias = 'Literal["presto", "hive"]'
-EngineVersion: TypeAlias = 'Literal["stable", "experimental"]'
-Priority: TypeAlias = "Literal[-2, -1, 0, 1, 2]"
-ExportFileFormat: TypeAlias = 'Literal["jsonl.gz", "tsv.gz", "json.gz"]'
-DataFormat: TypeAlias = 'Literal["msgpack", "msgpack.gz", "json", "json.gz", "csv", "csv.gz", "tsv", "tsv.gz"]'
-ResultFormat: TypeAlias = 'Literal["msgpack", "json", "csv", "tsv"]'
-
-
-class ScheduleParams(TypedDict, total=False):
-    """Parameters for create_schedule and update_schedule"""
-
-    type: QueryEngineType  # Query type
-    database: str  # Target database name
-    timezone: str  # Timezone e.g. "UTC"
-    cron: str  # Schedule: "@daily", "@hourly", or cron expression
-    delay: int  # Delay in seconds before running
-    query: str  # SQL query to execute
-    priority: Priority  # Priority: -2 (very low) to 2 (very high)
-    retry_limit: int  # Automatic retry count
-    engine_version: EngineVersion  # Engine version
-    pool_name: str  # For Presto only: pool name
-    result: str  # Result output location URL
-
-
-class ExportParams(TypedDict, total=False):
-    """Parameters for export_data"""
-
-    access_key_id: str  # ID to access the export destination
-    secret_access_key: str  # Password for access_key_id
-    file_prefix: str  # Filename prefix for exported file
-    file_format: ExportFileFormat  # File format
-    from_: (
-        int  # Start time in Unix epoch format (use 'from_' to avoid keyword conflict)
-    )
-    to: int  # End time in Unix epoch format
-    assume_role: str  # Assume role ARN
-    bucket: str  # Bucket name
-    domain_key: str  # Job domain key
-    pool_name: str  # For Presto only: pool name
-
-
-class BulkImportParams(TypedDict, total=False):
-    """Parameters for create_bulk_import"""
-
-    # Add any optional parameters for bulk import if needed
-    pass
-
-
-class ResultParams(TypedDict, total=False):
-    """Parameters for create_result"""
-
-    # Add any optional parameters for result creation if needed
-    pass
+from tdclient.types import (
+    BulkImportParams,
+    DataFormat,
+    ExportParams,
+    FileLike,
+    ResultFormat,
+    ResultParams,
+    ScheduleParams,
+)
 
 
 class Client:
