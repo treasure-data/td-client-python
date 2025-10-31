@@ -314,7 +314,9 @@ class API(
                 urllib3.exceptions.PoolError,
             ):
                 if not self._retry_post_requests:
-                    raise APIError("Retrying stopped by retry_post_requests == False")
+                    raise APIError(
+                        "Retrying stopped by retry_post_requests == False"
+                    ) from None
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
                 log.warning(
@@ -402,7 +404,7 @@ class API(
             urllib3.exceptions.TimeoutError,
             urllib3.exceptions.PoolError,
         ):
-            raise APIError(f"Error: {repr(response)}")
+            raise APIError(f"Error: {repr(response)}") from None
 
         log.debug(
             "REST PUT response:\n  headers: %s\n  status: %d\n  body: <omitted>",
@@ -570,7 +572,7 @@ class API(
         try:
             js = json.loads(body.decode("utf-8"))
         except ValueError as error:
-            raise APIError(f"Unexpected API response: {error}: {repr(body)}")
+            raise APIError(f"Unexpected API response: {error}: {repr(body)}") from error
         js = dict(js)
         if 0 < [k in js for k in required].count(False):
             missing = [k for k in required if k not in js]

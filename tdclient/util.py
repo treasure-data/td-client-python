@@ -43,6 +43,7 @@ def validate_record(record: Record) -> bool:
     if not any(k in record for k in ("time", b"time")):
         warnings.warn(
             'records should have "time" column to import records properly.',
+            stacklevel=2,
             category=RuntimeWarning,
         )
     return True
@@ -132,7 +133,7 @@ def merge_dtypes_and_converters(
                     "Unrecognized dtype {!r}, must be one of {}".format(
                         dtype, ", ".join(repr(k) for k in sorted(DTYPE_TO_CALLABLE))
                     )
-                )
+                ) from None
     if converters is not None:
         for column_name, parse_fn in converters.items():
             our_converters[column_name] = parse_fn

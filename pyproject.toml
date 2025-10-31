@@ -54,7 +54,7 @@ select = [
   "F",
   "I",
   "UP",
-  # "B",
+  "B",
 ]
 exclude = ["tdclient/test/*"]
 ignore = ["E203", "E501"]
