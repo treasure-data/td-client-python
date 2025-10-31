@@ -7,7 +7,7 @@ name = "td-client"
 version = "1.5.0"
 description = "Treasure Data API library for Python"
 readme = {file = "README.rst", content-type = "text/x-rst; charset=UTF-8"}
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 license = {text = "Apache Software License"}
 authors = [{name = "Treasure Data, Inc.", email = "support@treasure-data.com"}]
 urls = {homepage = "http://treasuredata.com/"}
@@ -18,11 +18,11 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Topic :: Internet",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
@@ -66,7 +66,7 @@ known-third-party = ["dateutil","msgpack","pkg_resources","pytest","setuptools",
 include = ["tdclient"]
 exclude = ["**/__pycache__", "tdclient/test", "docs"]
 typeCheckingMode = "basic"
-pythonVersion = "3.9"
+pythonVersion = "3.10"
 pythonPlatform = "All"
 reportMissingTypeStubs = false
 reportUnknownMemberType = false
