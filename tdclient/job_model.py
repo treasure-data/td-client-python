@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
-
 import time
 import warnings
 from collections.abc import Callable, Iterator
@@ -35,12 +33,12 @@ class Schema:
             """
             return self._type
 
-    def __init__(self, fields: list[Schema.Field] | None = None) -> None:
+    def __init__(self, fields: list["Schema.Field"] | None = None) -> None:
         fields = [] if fields is None else fields
         self._fields = fields
 
     @property
-    def fields(self) -> list[Schema.Field]:
+    def fields(self) -> list["Schema.Field"]:
         """
         TODO: add docstring
         """
@@ -67,7 +65,7 @@ class Job(Model):
     JOB_PRIORITY = {-2: "VERY LOW", -1: "LOW", 0: "NORMAL", 1: "HIGH", 2: "VERY HIGH"}
 
     def __init__(
-        self, client: Client, job_id: str, type: str, query: str | None, **kwargs: Any
+        self, client: "Client", job_id: str, type: str, query: str | None, **kwargs: Any
     ) -> None:
         super().__init__(client)
         self._job_id = job_id
@@ -205,7 +203,7 @@ class Job(Model):
         self,
         timeout: float | None = None,
         wait_interval: int = 5,
-        wait_callback: Callable[[Job], None] | None = None,
+        wait_callback: Callable[["Job"], None] | None = None,
     ) -> None:
         """Sleep until the job has been finished
 

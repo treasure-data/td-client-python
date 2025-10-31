@@ -31,7 +31,6 @@ dependencies = [
   "python-dateutil",
   "msgpack>=0.6.2",
   "urllib3",
-  "typing-extensions>=4.0.0",
 ]
 
 [project.optional-dependencies]
@@ -46,6 +45,7 @@ tdclient = ["py.typed"]
 
 [tool.ruff]
 line-length = 88
+target-version = "py310"
 
 [tool.ruff.lint]
 select = [

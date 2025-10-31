@@ -1,16 +1,11 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
-
 import json
-from typing import TYPE_CHECKING, Any
+from contextlib import AbstractContextManager
+from typing import Any
 
 import msgpack
-
-if TYPE_CHECKING:
-    from contextlib import AbstractContextManager
-
-    import urllib3
+import urllib3
 
 from tdclient.util import create_url, get_or_else, parse_date
 

@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
-
 import codecs
 import gzip
 import json
@@ -10,14 +8,11 @@ import os
 import tempfile
 from collections.abc import Iterator
 from concurrent.futures import ThreadPoolExecutor
-from typing import TYPE_CHECKING, Any, Literal
+from contextlib import AbstractContextManager
+from typing import Any, Literal
 
 import msgpack
-
-if TYPE_CHECKING:
-    from contextlib import AbstractContextManager
-
-    import urllib3
+import urllib3
 
 from tdclient.types import Priority
 from tdclient.util import create_url, get_or_else, parse_date
