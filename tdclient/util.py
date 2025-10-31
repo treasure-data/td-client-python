@@ -231,7 +231,7 @@ def csv_text_record_reader(
     """
     reader = csv.reader(io.TextIOWrapper(file_like, encoding), dialect=dialect)
     for row in reader:
-        yield dict(zip(columns, row, strict=False))
+        yield dict(zip(columns, row))
 
 
 def read_csv_records(
