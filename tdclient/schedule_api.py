@@ -22,10 +22,18 @@ class ScheduleAPI:
 
     # Methods from API class
     def get(
-        self, url: str, params: dict[str, Any] | None = None
+        self,
+        path: str,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
     ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
     def post(
-        self, url: str, params: dict[str, Any] | None = None
+        self,
+        path: str,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
     ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
     def raise_error(
         self, msg: str, res: urllib3.BaseHTTPResponse, body: bytes

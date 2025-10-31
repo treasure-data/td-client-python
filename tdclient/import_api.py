@@ -24,7 +24,12 @@ class ImportAPI:
 
     # Methods from API class
     def put(
-        self, url: str, stream: BytesOrStream, size: int, **kwargs: Any
+        self,
+        path: str,
+        bytes_or_stream: BytesOrStream,
+        size: int,
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
     ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
     def raise_error(
         self, msg: str, res: urllib3.BaseHTTPResponse, body: bytes

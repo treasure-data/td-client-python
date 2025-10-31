@@ -18,7 +18,11 @@ class ServerStatusAPI:
 
     # Methods from API class
     def get(
-        self, url: str, params: dict[str, Any] | None = None
+        self,
+        path: str,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
     ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
     def checked_json(self, body: bytes, required: list[str]) -> dict[str, Any]: ...
 

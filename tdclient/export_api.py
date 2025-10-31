@@ -21,10 +21,14 @@ class ExportAPI:
 
     # Methods from API class
     def post(
-        self, url: str, params: dict[str, Any] | None = None
+        self,
+        path: str,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
     ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
     def raise_error(
-        self, msg: str, res: urllib3.BaseHTTPResponse, body: bytes
+        self, msg: str, res: urllib3.BaseHTTPResponse, body: bytes | str
     ) -> None: ...
     def checked_json(self, body: bytes, required: list[str]) -> dict[str, Any]: ...
 
