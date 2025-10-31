@@ -60,7 +60,7 @@ known-third-party = ["dateutil","msgpack","pkg_resources","pytest","setuptools",
 
 [tool.pyright]
 include = ["tdclient"]
-exclude = ["**/__pycache__", "tdclient/test"]
+exclude = ["**/__pycache__", "tdclient/test", "docs"]
 typeCheckingMode = "basic"
 pythonVersion = "3.9"
 pythonPlatform = "All"
@@ -68,3 +68,8 @@ reportMissingTypeStubs = false
 reportUnknownMemberType = false
 reportUnknownArgumentType = false
 reportUnknownVariableType = false
+reportMissingImports = "warning"
+
+# Pre-commit venv configuration
+venvPath = "."
+venv = ".venv"

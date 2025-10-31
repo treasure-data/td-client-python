@@ -20,3 +20,10 @@ repos:
     rev: v1.1.407
     hooks:
       - id: pyright
+        exclude: ^docs/
+        additional_dependencies:
+          - msgpack>=0.6.2
+          - urllib3
+          - python-dateutil
+          - typing-extensions>=4.0.0
+          - certifi
