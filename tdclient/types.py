@@ -3,9 +3,13 @@
 from __future__ import annotations
 
 from array import array
-from typing import IO
+from typing import IO, TYPE_CHECKING
 
 from typing_extensions import Literal, TypeAlias, TypedDict
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+    from typing import Any
 
 # File-like types
 FileLike: TypeAlias = "str | bytes | IO[bytes]"
@@ -38,6 +42,16 @@ DataFormat: TypeAlias = 'Literal["msgpack", "msgpack.gz", "json", "json.gz", "cs
 
 ResultFormat: TypeAlias = 'Literal["msgpack", "json", "csv", "tsv"]'
 """Type for query result formats."""
+
+# Utility types for CSV parsing and data processing
+CSVValue: TypeAlias = "int | float | str | bool | None"
+"""Type for values parsed from CSV files."""
+
+Converter: TypeAlias = "Callable[[str], Any]"
+"""Type for converter functions that parse string values."""
+
+Record: TypeAlias = "dict[str, Any]"
+"""Type for data records (dictionaries with string keys and any values)."""
 
 
 # TypedDict classes for structured parameters
