@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 from array import array
-from typing import IO, TYPE_CHECKING
+from typing import IO, TYPE_CHECKING, Literal, TypeAlias
 
-from typing_extensions import Literal, TypeAlias, TypedDict
+from typing_extensions import TypedDict
 
 if TYPE_CHECKING:
     from collections.abc import Callable
