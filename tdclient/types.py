@@ -24,8 +24,10 @@ QueryEngineType: TypeAlias = 'Literal["presto", "hive"]'
 EngineVersion: TypeAlias = 'Literal["stable", "experimental"]'
 """Type for engine version selection."""
 
-Priority: TypeAlias = "Literal[-2, -1, 0, 1, 2]"
-"""Type for job priority levels."""
+Priority: TypeAlias = (
+    'Literal[-2, -1, 0, 1, 2, "VERY LOW", "LOW", "NORMAL", "HIGH", "VERY HIGH"]'
+)
+"""Type for job priority levels (numeric or string)."""
 
 # Data format types
 ExportFileFormat: TypeAlias = 'Literal["jsonl.gz", "tsv.gz", "json.gz"]'

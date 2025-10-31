@@ -1,20 +1,30 @@
 #!/usr/bin/env python
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Callable
+
 from tdclient import api, cursor, errors
+from tdclient.types import Priority
+
+if TYPE_CHECKING:
+    from types import TracebackType
+
+    from tdclient.cursor import Cursor
 
 
 class Connection:
     def __init__(
         self,
-        type=None,
-        db=None,
-        result_url=None,
-        priority=None,
-        retry_limit=None,
-        wait_interval=None,
-        wait_callback=None,
-        **kwargs,
-    ):
+        type: str | None = None,
+        db: str | None = None,
+        result_url: str | None = None,
+        priority: Priority | None = None,
+        retry_limit: int | None = None,
+        wait_interval: int | None = None,
+        wait_callback: Callable[[Cursor], None] | None = None,
+        **kwargs: Any,
+    ) -> None:
         cursor_kwargs = dict()
         if type is not None:
             cursor_kwargs["type"] = type
@@ -33,24 +43,29 @@ class Connection:
         self._api = api.API(**kwargs)
         self._cursor_kwargs = cursor_kwargs
 
-    def __enter__(self):
+    def __enter__(self) -> Connection:
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(
+        self,
+        type: type[BaseException] | None,
+        value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
         self._api.close()
 
     @property
-    def api(self):
+    def api(self) -> api.API:
         return self._api
 
-    def close(self):
+    def close(self) -> None:
         self._api.close()
 
-    def commit(self):
+    def commit(self) -> None:
         raise errors.NotSupportedError
 
-    def rollback(self):
+    def rollback(self) -> None:
         raise errors.NotSupportedError
 
-    def cursor(self):
+    def cursor(self) -> Cursor:
         return cursor.Cursor(self._api, **self._cursor_kwargs)
