@@ -12,7 +12,7 @@ from urllib.parse import quote as urlquote
 import dateutil.parser
 import msgpack
 
-from tdclient.types import CSVValue, Converter, Record
+from tdclient.types import Converter, CSVValue, Record
 
 log = logging.getLogger(__name__)
 

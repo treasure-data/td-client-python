@@ -22,7 +22,6 @@ if TYPE_CHECKING:
 from tdclient.types import Priority
 from tdclient.util import create_url, get_or_else, parse_date
 
-
 log = logging.getLogger(__name__)
 
 

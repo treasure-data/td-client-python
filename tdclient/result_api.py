@@ -9,8 +9,8 @@ if TYPE_CHECKING:
 
     import urllib3
 
-from tdclient.util import create_url
 from tdclient.types import ResultParams
+from tdclient.util import create_url
 
 
 class ResultAPI:

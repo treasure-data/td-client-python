@@ -5,8 +5,7 @@ from __future__ import annotations
 import datetime
 import json
 from collections.abc import Iterator
-from typing import Any, cast, Literal
-
+from typing import Any, Literal, cast
 
 from tdclient import api, models
 from tdclient.types import (
