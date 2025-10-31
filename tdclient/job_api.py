@@ -35,13 +35,13 @@ class JobAPI:
     def get(
         self,
         url: str,
-        params: dict[str, Any] | None = None,
+        params: dict[str, Any] | bytes | None = None,
         headers: dict[str, str] | None = None,
     ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
     def post(
         self,
         path: str,
-        params: dict[str, Any] | None = None,
+        params: dict[str, Any] | bytes | None = None,
         headers: dict[str, str] | None = None,
         **kwargs: Any,
     ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...

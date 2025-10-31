@@ -248,7 +248,7 @@ class API(
     def post(
         self,
         path: str,
-        params: dict[str, Any] | None = None,
+        params: dict[str, Any] | bytes | None = None,
         headers: dict[str, str] | None = None,
         **kwargs: Any,
     ) -> contextlib.AbstractContextManager[urllib3.BaseHTTPResponse]:
