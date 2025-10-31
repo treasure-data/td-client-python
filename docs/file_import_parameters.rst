@@ -74,7 +74,7 @@ contains ``"not-an-int"``, the resulting ``ValueError`` will not be caught.
 To summarise, the default for reading CSV files is:
 
   ``dialect=csv.excel, encoding="utf-8", columns=None, dtypes=None, converters=None``
-  
+
 TSV data
 --------
 

@@ -255,6 +255,46 @@ which would produce:
   1575454204, "a", "0001", ["a", "b", "c"]
   1575454204, "b", "0002", ["d", "e", "f"]
 
+Type Hints
+----------
+
+td-client-python includes comprehensive type hints (PEP 484) for improved development experience with static type checkers like mypy and pyright. Type hints are available for all public APIs.
+
+**Features:**
+
+
+* Fully typed public API with precise type annotations
+* ``py.typed`` marker file for PEP 561 compliance
+* Type aliases in ``tdclient.types`` for common patterns
+* Support for type checking with mypy, pyright, and other tools
+
+**Example with type checking:**
+
+.. code-block:: python
+
+   import tdclient
+
+   # Type checkers will understand the types
+   with tdclient.Client(apikey="your_api_key") as client:
+       # client is inferred as tdclient.Client
+       job = client.query("sample_db", "SELECT COUNT(1) FROM table", type="presto")
+       # job is inferred as tdclient.models.Job
+       job.wait()
+       for row in job.result():
+           # row is inferred as dict[str, Any]
+           print(row)
+
+**Using type aliases:**
+
+.. code-block:: python
+
+   from tdclient.types import QueryEngineType, Priority
+
+   def run_query(engine: QueryEngineType, priority: Priority) -> None:
+       with tdclient.Client() as client:
+           job = client.query("mydb", "SELECT 1", type=engine, priority=priority)
+           job.wait()
+
 Development
 -----------
 
