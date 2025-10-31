@@ -67,7 +67,7 @@ class Job(Model):
     JOB_PRIORITY = {-2: "VERY LOW", -1: "LOW", 0: "NORMAL", 1: "HIGH", 2: "VERY HIGH"}
 
     def __init__(
-        self, client: Client, job_id: str, type: str, query: str, **kwargs: Any
+        self, client: Client, job_id: str, type: str, query: str | None, **kwargs: Any
     ) -> None:
         super(Job, self).__init__(client)
         self._job_id = job_id
@@ -235,7 +235,7 @@ class Job(Model):
         return response
 
     @property
-    def query(self) -> str:
+    def query(self) -> str | None:
         """a string represents the query string of the job"""
         return self._query
 

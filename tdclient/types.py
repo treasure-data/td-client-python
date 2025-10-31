@@ -60,7 +60,6 @@ class ScheduleParams(TypedDict, total=False):
 class ExportParams(TypedDict, total=False):
     """Parameters for export operations."""
 
-    storage_type: str  # Storage type (e.g. "s3")
     bucket: str  # Bucket name
     access_key_id: str  # ID to access the export destination
     secret_access_key: str  # Password for access_key_id

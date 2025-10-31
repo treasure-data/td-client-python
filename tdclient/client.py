@@ -5,14 +5,17 @@ from __future__ import annotations
 import datetime
 import json
 from collections.abc import Iterator
-from typing import Any
+from typing import Any, cast, Literal
+
 
 from tdclient import api, models
 from tdclient.types import (
     BulkImportParams,
+    BytesOrStream,
     DataFormat,
     ExportParams,
     FileLike,
+    Priority,
     ResultFormat,
     ResultParams,
     ScheduleParams,
@@ -254,7 +257,7 @@ class Client:
         db_name: str,
         q: str,
         result_url: str | None = None,
-        priority: int | str | None = None,
+        priority: Priority | None = None,
         retry_limit: int | None = None,
         type: str = "hive",
         **kwargs: Any,
@@ -279,9 +282,11 @@ class Client:
         # for compatibility, assume type is hive unless specifically specified
         if type not in ["hive", "pig", "impala", "presto", "trino"]:
             raise ValueError("The specified query type is not supported: %s" % (type))
+        # Cast type to expected literal since we've validated it
+        query_type = cast(Literal["hive", "presto", "trino", "bulkload"], type)
         job_id = self.api.query(
             q,
-            type=type,
+            type=query_type,
             db=db_name,
             result_url=result_url,
             priority=priority,
@@ -295,7 +300,7 @@ class Client:
         _from: int | None = None,
         to: int | None = None,
         status: str | None = None,
-        conditions: str | None = None,
+        conditions: dict[str, Any] | None = None,
     ) -> list[models.Job]:
         """List jobs
 
@@ -304,7 +309,7 @@ class Client:
             to (int, optional): Gets the Job up to the nth index in the list.
                 By default, the first 20 jobs in the list are displayed
             status (str, optional): Filter by given status. {"queued", "running", "success", "error"}
-            conditions (str, optional): Condition for ``TIMESTAMPDIFF()`` to search for slow queries.
+            conditions (dict[str, Any], optional): Condition for ``TIMESTAMPDIFF()`` to search for slow queries.
                 Avoid using this parameter as it can be dangerous.
 
         Returns:
@@ -334,7 +339,7 @@ class Client:
         Returns:
              a string represents the status of the job ("success", "error", "killed", "queued", "running")
         """
-        return self.api.job_status(job_id)
+        return self.api.job_status(str(job_id))
 
     def job_result(self, job_id: str | int) -> list[Any]:
         """
@@ -344,7 +349,7 @@ class Client:
         Returns:
              a list of each rows in result set
         """
-        return self.api.job_result(job_id)
+        return self.api.job_result(str(job_id))
 
     def job_result_each(self, job_id: str | int) -> Iterator[dict[str, Any]]:
         """
@@ -354,7 +359,7 @@ class Client:
         Returns:
              an iterator of result set
         """
-        for row in self.api.job_result_each(job_id):
+        for row in self.api.job_result_each(str(job_id)):
             yield row
 
     def job_result_format(
@@ -368,7 +373,7 @@ class Client:
         Returns:
              a list of each rows in result set
         """
-        return self.api.job_result_format(job_id, format, header=header)
+        return self.api.job_result_format(str(job_id), format, header=header)
 
     def job_result_format_each(
         self,
@@ -393,7 +398,7 @@ class Client:
              an iterator of rows in result set
         """
         for row in self.api.job_result_format_each(
-            job_id,
+            str(job_id),
             format,
             header=header,
             store_tmpfile=store_tmpfile,
@@ -414,9 +419,9 @@ class Client:
         Returns:
              `True` if success
         """
-        return self.api.download_job_result(job_id, path, num_threads=num_threads)
+        return self.api.download_job_result(str(job_id), path, num_threads=num_threads)
 
-    def kill(self, job_id: str | int) -> str:
+    def kill(self, job_id: str | int) -> str | None:
         """
         Args:
             job_id (str): job id
@@ -424,7 +429,7 @@ class Client:
         Returns:
              a string represents the status of killed job ("queued", "running")
         """
-        return self.api.kill(job_id)
+        return self.api.kill(str(job_id))
 
     def export_data(
         self,
@@ -582,7 +587,7 @@ class Client:
         ]
 
     def bulk_import_upload_part(
-        self, name: str, part_name: str, bytes_or_stream: FileLike, size: int
+        self, name: str, part_name: str, bytes_or_stream: BytesOrStream, size: int
     ) -> None:
         """Upload a part to a bulk import session
 
@@ -849,7 +854,7 @@ class Client:
         db_name: str,
         table_name: str,
         format: DataFormat,
-        bytes_or_stream: FileLike,
+        bytes_or_stream: BytesOrStream,
         size: int,
         unique_id: str | None = None,
     ) -> float:

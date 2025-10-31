@@ -21,7 +21,7 @@ class ScheduledJob(Job):
         scheduled_at: datetime.datetime,
         job_id: str,
         type: str,
-        query: str,
+        query: str | None,
         **kwargs: Any,
     ) -> None:
         super(ScheduledJob, self).__init__(client, job_id, type, query, **kwargs)

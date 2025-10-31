@@ -74,6 +74,7 @@ class Cursor:
 
     def _do_execute(self) -> None:
         self._check_executed()
+        assert self._executed is not None
         if self._rows is None:
             status = self._api.job_status(self._executed)
             if status == "success":
@@ -167,6 +168,7 @@ class Cursor:
              :class:`dict`: Detailed information of a job
         """
         self._check_executed()
+        assert self._executed is not None
         return self._api.show_job(self._executed)
 
     def job_status(self) -> str:
@@ -176,6 +178,7 @@ class Cursor:
              The status information of the given job id at last execution.
         """
         self._check_executed()
+        assert self._executed is not None
         return self._api.job_status(self._executed)
 
     def job_result(self) -> list[dict[str, Any]]:
@@ -185,4 +188,5 @@ class Cursor:
              Job result in :class:`list`
         """
         self._check_executed()
+        assert self._executed is not None
         return self._api.job_result(self._executed)
