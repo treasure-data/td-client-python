@@ -23,6 +23,10 @@ jobs:
           pip install ".[dev]"
           pip install -r requirements.txt -r test-requirements.txt
           pip install -U coveralls pyyaml
+      - name: lint with ruff
+        run: |
+          ruff format tdclient --diff --exit-non-zero-on-fix
+          ruff check tdclient tests
       - name: Run pyright
         run: |
           pyright tdclient
