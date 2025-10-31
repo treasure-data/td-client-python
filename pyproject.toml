@@ -50,10 +50,10 @@ line-length = 88
 [tool.ruff.lint]
 select = [
   "E",
-  # "W",
+  "W",
   "F",
   "I",
-  # "UP",
+  "UP",
   # "B",
 ]
 exclude = ["tdclient/test/*"]

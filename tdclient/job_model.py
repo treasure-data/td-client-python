@@ -69,7 +69,7 @@ class Job(Model):
     def __init__(
         self, client: Client, job_id: str, type: str, query: str | None, **kwargs: Any
     ) -> None:
-        super(Job, self).__init__(client)
+        super().__init__(client)
         self._job_id = job_id
         self._type = type
         self._query = query

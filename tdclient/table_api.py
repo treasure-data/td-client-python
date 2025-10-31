@@ -114,7 +114,7 @@ class TableAPI:
         ) as res:
             code, body = res.status, res.read()
             if code != 200:
-                self.raise_error("Create %s table failed" % (type), res, body)
+                self.raise_error(f"Create {type} table failed", res, body)
             return True
 
     def swap_table(self, db: str, table1: str, table2: str) -> bool:

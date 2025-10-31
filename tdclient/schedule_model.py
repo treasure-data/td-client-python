@@ -24,7 +24,7 @@ class ScheduledJob(Job):
         query: str | None,
         **kwargs: Any,
     ) -> None:
-        super(ScheduledJob, self).__init__(client, job_id, type, query, **kwargs)
+        super().__init__(client, job_id, type, query, **kwargs)
         self._scheduled_at = scheduled_at
 
     @property
@@ -37,7 +37,7 @@ class Schedule(Model):
     """Schedule on Treasure Data Service"""
 
     def __init__(self, client: Client, *args: Any, **kwargs: Any) -> None:
-        super(Schedule, self).__init__(client)
+        super().__init__(client)
         if 0 < len(args):
             self._name: str | None = args[0]
             self._cron: str | None = args[1]

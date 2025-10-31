@@ -164,11 +164,11 @@ class BulkImportAPI:
 
         if 1 < d["."]:
             raise ValueError(
-                "part names cannot contain multiple periods: %s" % (repr(part_name))
+                f"part names cannot contain multiple periods: {repr(part_name)}"
             )
 
         if 0 < part_name.find("/"):
-            raise ValueError("part name must not contain '/': %s" % (repr(part_name)))
+            raise ValueError(f"part name must not contain '/': {repr(part_name)}")
 
     def bulk_import_upload_part(
         self, name: str, part_name: str, stream: BytesOrStream, size: int
@@ -372,5 +372,4 @@ class BulkImportAPI:
             decompressor = gzip.GzipFile(fileobj=body)
 
             unpacker = msgpack.Unpacker(decompressor, raw=False)
-            for row in unpacker:
-                yield row
+            yield from unpacker

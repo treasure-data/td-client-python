@@ -14,7 +14,7 @@ class Result(Model):
     """Result on Treasure Data Service"""
 
     def __init__(self, client: Client, name: str, url: str, org_name: str) -> None:
-        super(Result, self).__init__(client)
+        super().__init__(client)
         self._name = name
         self._url = url
         self._org_name = org_name
