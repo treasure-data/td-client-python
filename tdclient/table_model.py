@@ -1,140 +1,155 @@
 #!/usr/bin/env python
 
+from __future__ import annotations
+
+import datetime
+from typing import TYPE_CHECKING, Any
+
 from tdclient.model import Model
+from tdclient.types import DataFormat, FileLike
+
+if TYPE_CHECKING:
+    from tdclient.database_model import Database
+    from tdclient.job_model import Job
 
 
 class Table(Model):
     """Database table on Treasure Data Service"""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super(Table, self).__init__(args[0])
 
-        self.database = None
-        self._db_name = args[1]
-        self._table_name = args[2]
+        self.database: Database | None = None
+        self._db_name: str = args[1]
+        self._table_name: str = args[2]
 
         if 3 < len(args):
-            self._type = args[3]
-            self._schema = args[4]
-            self._count = args[5]
+            self._type: str | None = args[3]
+            self._schema: list[tuple[str, str, str]] | None = args[4]
+            self._count: int | None = args[5]
         else:
             self._type = kwargs.get("type")
             self._schema = kwargs.get("schema")
             self._count = kwargs.get("count")
 
-        self._created_at = kwargs.get("created_at")
-        self._updated_at = kwargs.get("updated_at")
-        self._estimated_storage_size = kwargs.get("estimated_storage_size")
-        self._last_import = kwargs.get("last_import")
-        self._last_log_timestamp = kwargs.get("last_log_timestamp")
-        self._expire_days = kwargs.get("expire_days")
-        self._primary_key = kwargs.get("primary_key")
-        self._primary_key_type = kwargs.get("primary_key_type")
+        self._created_at: datetime.datetime | None = kwargs.get("created_at")
+        self._updated_at: datetime.datetime | None = kwargs.get("updated_at")
+        self._estimated_storage_size: int | None = kwargs.get("estimated_storage_size")
+        self._last_import: datetime.datetime | None = kwargs.get("last_import")
+        self._last_log_timestamp: datetime.datetime | None = kwargs.get(
+            "last_log_timestamp"
+        )
+        self._expire_days: int | None = kwargs.get("expire_days")
+        self._primary_key: str | None = kwargs.get("primary_key")
+        self._primary_key_type: str | None = kwargs.get("primary_key_type")
 
     @property
-    def type(self):
+    def type(self) -> str | None:
         """a string represents the type of the table"""
         return self._type
 
     @property
-    def db_name(self):
+    def db_name(self) -> str:
         """a string represents the name of the database"""
         return self._db_name
 
     @property
-    def table_name(self):
+    def table_name(self) -> str:
         """a string represents the name of the table"""
         return self._table_name
 
     @property
-    def schema(self):
+    def schema(self) -> list[tuple[str, str, str]] | None:
         """
         [[column_name:str, column_type:str, alias:str]]: The :obj:`list` of a schema
         """
         return self._schema
 
     @property
-    def count(self):
+    def count(self) -> int | None:
         """int: total number of the table"""
         return self._count
 
     @property
-    def estimated_storage_size(self):
+    def estimated_storage_size(self) -> int | None:
         """estimated storage size"""
         return self._estimated_storage_size
 
     @property
-    def primary_key(self):
+    def primary_key(self) -> str | None:
         """
         TODO: add docstring
         """
         return self._primary_key
 
     @property
-    def primary_key_type(self):
+    def primary_key_type(self) -> str | None:
         """
         TODO: add docstring
         """
         return self._primary_key_type
 
     @property
-    def database_name(self):
+    def database_name(self) -> str:
         """a string represents the name of the database"""
         return self._db_name
 
     @property
-    def name(self):
+    def name(self) -> str:
         """a string represents the name of the table"""
         return self._table_name
 
     @property
-    def created_at(self):
+    def created_at(self) -> datetime.datetime | None:
         """
         :class:`datetime.datetime`: Created datetime
         """
         return self._created_at
 
     @property
-    def updated_at(self):
+    def updated_at(self) -> datetime.datetime | None:
         """
         :class:`datetime.datetime`: Updated datetime
         """
         return self._updated_at
 
     @property
-    def last_import(self):
+    def last_import(self) -> datetime.datetime | None:
         """:class:`datetime.datetime`"""
         return self._last_import
 
     @property
-    def last_log_timestamp(self):
+    def last_log_timestamp(self) -> datetime.datetime | None:
         """:class:`datetime.datetime`"""
         return self._last_log_timestamp
 
     @property
-    def expire_days(self):
+    def expire_days(self) -> int | None:
         """an int represents the days until expiration"""
         return self._expire_days
 
     @property
-    def permission(self):
+    def permission(self) -> str | None:
         """
         str: permission for the database (e.g. "administrator", "full_access", etc.)
         """
         if self.database is None:
             self._update_database()
+        assert self.database is not None
         return self.database.permission
 
     @property
-    def identifier(self):
+    def identifier(self) -> str:
         """a string identifier of the table"""
         return "%s.%s" % (self._db_name, self._table_name)
 
-    def delete(self):
+    def delete(self) -> str:
         """a string represents the type of deleted table"""
         return self._client.delete_table(self._db_name, self._table_name)
 
-    def tail(self, count, to=None, _from=None):
+    def tail(
+        self, count: int, to: int | None = None, _from: int | None = None
+    ) -> list[dict[str, Any]]:
         """
         Args:
             count (int): Number for record to show up from the end.
@@ -147,7 +162,13 @@ class Table(Model):
         """
         return self._client.tail(self._db_name, self._table_name, count, to, _from)
 
-    def import_data(self, format, bytes_or_stream, size, unique_id=None):
+    def import_data(
+        self,
+        format: DataFormat,
+        bytes_or_stream: FileLike,
+        size: int,
+        unique_id: str | None = None,
+    ) -> float:
         """Import data into Treasure Data Service
 
         Args:
@@ -168,7 +189,9 @@ class Table(Model):
             unique_id=unique_id,
         )
 
-    def import_file(self, format, file, unique_id=None):
+    def import_file(
+        self, format: DataFormat, file: FileLike, unique_id: str | None = None
+    ) -> float:
         """Import data into Treasure Data Service, from an existing file on filesystem.
 
         This method will decompress/deserialize records from given file, and then
@@ -185,7 +208,7 @@ class Table(Model):
             self._db_name, self._table_name, format, file, unique_id=unique_id
         )
 
-    def export_data(self, storage_type, **kwargs):
+    def export_data(self, storage_type: str, **kwargs: Any) -> Job:
         """Export data from Treasure Data Service
 
         Args:
@@ -224,9 +247,11 @@ class Table(Model):
         )
 
     @property
-    def estimated_storage_size_string(self):
+    def estimated_storage_size_string(self) -> str:
         """a string represents estimated size of the table in human-readable format"""
-        if self._estimated_storage_size <= 1024 * 1024:
+        if self._estimated_storage_size is None:
+            return "0.0 GB"
+        elif self._estimated_storage_size <= 1024 * 1024:
             return "0.0 GB"
         elif self._estimated_storage_size <= 60 * 1024 * 1024:
             return "0.01 GB"
@@ -239,5 +264,5 @@ class Table(Model):
                 float(self._estimated_storage_size) / (1024 * 1024 * 1024)
             )
 
-    def _update_database(self):
+    def _update_database(self) -> None:
         self.database = self._client.database(self._db_name)

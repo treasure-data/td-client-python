@@ -346,7 +346,7 @@ class Client:
         """
         return self.api.job_result(job_id)
 
-    def job_result_each(self, job_id: str | int) -> Iterator[Any]:
+    def job_result_each(self, job_id: str | int) -> Iterator[dict[str, Any]]:
         """
         Args:
             job_id (str): job id
@@ -377,7 +377,7 @@ class Client:
         header: bool = False,
         store_tmpfile: bool = False,
         num_threads: int = 4,
-    ) -> Iterator[Any]:
+    ) -> Iterator[dict[str, Any]]:
         """
         Args:
             job_id (str): job id
@@ -548,7 +548,7 @@ class Client:
         """
         return self.api.commit_bulk_import(name)
 
-    def bulk_import_error_records(self, name: str) -> Iterator[Any]:
+    def bulk_import_error_records(self, name: str) -> Iterator[dict[str, Any]]:
         """
         Args:
             name (str): name of a bulk import session

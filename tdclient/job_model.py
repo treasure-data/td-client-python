@@ -1,45 +1,52 @@
 #!/usr/bin/env python
 
+from __future__ import annotations
+
 import time
 import warnings
+from collections.abc import Callable, Iterator
+from typing import TYPE_CHECKING, Any
 
 from tdclient.model import Model
+
+if TYPE_CHECKING:
+    from tdclient.client import Client
 
 
 class Schema:
     """Schema of a database table on Treasure Data Service"""
 
     class Field:
-        def __init__(self, name, type):
+        def __init__(self, name: str, type: str) -> None:
             self._name = name
             self._type = type
 
         @property
-        def name(self):
+        def name(self) -> str:
             """
             TODO: add docstring
             """
             return self._name
 
         @property
-        def type(self):
+        def type(self) -> str:
             """
             TODO: add docstring
             """
             return self._type
 
-    def __init__(self, fields=None):
+    def __init__(self, fields: list[Schema.Field] | None = None) -> None:
         fields = [] if fields is None else fields
         self._fields = fields
 
     @property
-    def fields(self):
+    def fields(self) -> list[Schema.Field]:
         """
         TODO: add docstring
         """
         return self._fields
 
-    def add_field(self, name, type):
+    def add_field(self, name: str, type: str) -> None:
         """
         TODO: add docstring
         """
@@ -59,90 +66,98 @@ class Job(Model):
 
     JOB_PRIORITY = {-2: "VERY LOW", -1: "LOW", 0: "NORMAL", 1: "HIGH", 2: "VERY HIGH"}
 
-    def __init__(self, client, job_id, type, query, **kwargs):
+    def __init__(
+        self, client: Client, job_id: str, type: str, query: str, **kwargs: Any
+    ) -> None:
         super(Job, self).__init__(client)
         self._job_id = job_id
         self._type = type
         self._query = query
         self._feed(kwargs)
 
-    def _feed(self, data=None):
+    def _feed(self, data: dict[str, Any] | None = None) -> None:
         data = {} if data is None else data
-        self._url = data.get("url")
-        self._status = data.get("status")
-        self._debug = data.get("debug")
-        self._start_at = data.get("start_at")
-        self._end_at = data.get("end_at")
-        self._created_at = data.get("created_at")
-        self._updated_at = data.get("updated_at")
-        self._cpu_time = data.get("cpu_time")
-        self._result = data.get("result")
-        self._result_size = data.get("result_size")
-        self._result_url = data.get("result_url")
-        self._hive_result_schema = data.get("hive_result_schema")
-        self._priority = data.get("priority")
-        self._retry_limit = data.get("retry_limit")
-        self._org_name = data.get("org_name")
-        self._database = data.get("database")
-        self._num_records = data.get("num_records")
-        self._user_name = data.get("user_name")
-        self._linked_result_export_job_id = data.get("linked_result_export_job_id")
-        self._result_export_target_job_id = data.get("result_export_target_job_id")
+        self._url: str | None = data.get("url")
+        self._status: str | None = data.get("status")
+        self._debug: dict[str, Any] | None = data.get("debug")
+        self._start_at: str | None = data.get("start_at")
+        self._end_at: str | None = data.get("end_at")
+        self._created_at: str | None = data.get("created_at")
+        self._updated_at: str | None = data.get("updated_at")
+        self._cpu_time: float | None = data.get("cpu_time")
+        self._result: str | None = data.get("result")
+        self._result_size: int | None = data.get("result_size")
+        self._result_url: str | None = data.get("result_url")
+        self._hive_result_schema: list[list[str]] | None = data.get(
+            "hive_result_schema"
+        )
+        self._priority: int | None = data.get("priority")
+        self._retry_limit: int | None = data.get("retry_limit")
+        self._org_name: str | None = data.get("org_name")
+        self._database: str | None = data.get("database")
+        self._num_records: int | None = data.get("num_records")
+        self._user_name: str | None = data.get("user_name")
+        self._linked_result_export_job_id: str | None = data.get(
+            "linked_result_export_job_id"
+        )
+        self._result_export_target_job_id: str | None = data.get(
+            "result_export_target_job_id"
+        )
 
-    def update(self):
+    def update(self) -> None:
         """Update all fields of the job"""
         data = self._client.api.show_job(self._job_id)
         self._feed(data)
 
-    def _update_status(self):
+    def _update_status(self) -> None:
         warnings.warn(
             "_update_status() will be removed from future release. Please use update() instaed.",
             category=DeprecationWarning,
         )
         self.update()
 
-    def _update_progress(self):
+    def _update_progress(self) -> None:
         """Update `_status` field of the job if it's not finished"""
         if self._status not in self.FINISHED_STATUS:
             self._status = self._client.job_status(self._job_id)
 
     @property
-    def id(self):
+    def id(self) -> str:
         """a string represents the identifier of the job"""
         return self._job_id
 
     @property
-    def job_id(self):
+    def job_id(self) -> str:
         """a string represents the identifier of the job"""
         return self._job_id
 
     @property
-    def type(self):
+    def type(self) -> str:
         """a string represents the engine type of the job (e.g. "hive", "presto", etc.)"""
         return self._type
 
     @property
-    def result_size(self):
+    def result_size(self) -> int | None:
         """the length of job result"""
         return self._result_size
 
     @property
-    def num_records(self):
+    def num_records(self) -> int | None:
         """the number of records of job result"""
         return self._num_records
 
     @property
-    def result_url(self):
+    def result_url(self) -> str | None:
         """a string of URL of the result on Treasure Data Service"""
         return self._result_url
 
     @property
-    def result_schema(self):
+    def result_schema(self) -> list[list[str]] | None:
         """an array of array represents the type of result columns (Hive specific) (e.g. [["_c1", "string"], ["_c2", "bigint"]])"""
         return self._hive_result_schema
 
     @property
-    def priority(self):
+    def priority(self) -> str:
         """a string represents the priority of the job (e.g. "NORMAL", "HIGH", etc.)"""
         if self._priority in self.JOB_PRIORITY:
             return self.JOB_PRIORITY[self._priority]
@@ -151,41 +166,46 @@ class Job(Model):
             return str(self._priority)
 
     @property
-    def retry_limit(self):
+    def retry_limit(self) -> int | None:
         """a number for automatic retry count"""
         return self._retry_limit
 
     @property
-    def org_name(self):
+    def org_name(self) -> str | None:
         """organization name"""
         return self._org_name
 
     @property
-    def user_name(self):
+    def user_name(self) -> str | None:
         """executing user name"""
         return self._user_name
 
     @property
-    def database(self):
+    def database(self) -> str | None:
         """a string represents the name of a database that job is running on"""
         return self._database
 
     @property
-    def linked_result_export_job_id(self):
+    def linked_result_export_job_id(self) -> str | None:
         """Linked result export job ID from query job"""
         return self._linked_result_export_job_id
 
     @property
-    def result_export_target_job_id(self):
+    def result_export_target_job_id(self) -> str | None:
         """Associated query job ID from result export job ID"""
         return self._result_export_target_job_id
 
     @property
-    def debug(self):
+    def debug(self) -> dict[str, Any] | None:
         """a :class:`dict` of debug output (e.g. "cmdout", "stderr")"""
         return self._debug
 
-    def wait(self, timeout=None, wait_interval=5, wait_callback=None):
+    def wait(
+        self,
+        timeout: float | None = None,
+        wait_interval: int = 5,
+        wait_callback: Callable[[Job], None] | None = None,
+    ) -> None:
         """Sleep until the job has been finished
 
         Args:
@@ -204,7 +224,7 @@ class Job(Model):
                 raise RuntimeError("timeout")  # TODO: throw proper error
         self.update()
 
-    def kill(self):
+    def kill(self) -> str:
         """Kill the job
 
         Returns:
@@ -215,11 +235,11 @@ class Job(Model):
         return response
 
     @property
-    def query(self):
+    def query(self) -> str:
         """a string represents the query string of the job"""
         return self._query
 
-    def status(self):
+    def status(self) -> str | None:
         """
         Returns:
              str: a string represents the status of the job ("success", "error", "killed", "queued", "running")
@@ -229,11 +249,11 @@ class Job(Model):
         return self._status
 
     @property
-    def url(self):
+    def url(self) -> str | None:
         """a string of URL of the job on Treasure Data Service"""
         return self._url
 
-    def result(self):
+    def result(self) -> Iterator[dict[str, Any]]:
         """
         Yields:
              an iterator of rows in result set
@@ -246,10 +266,12 @@ class Job(Model):
                 for row in self._client.job_result_each(self._job_id):
                     yield row
             else:
-                for row in self._result:
-                    yield row
+                for row in self._result:  # type: ignore[union-attr]
+                    yield row  # type: ignore[misc]
 
-    def result_format(self, fmt, store_tmpfile=False, num_threads=4):
+    def result_format(
+        self, fmt: str, store_tmpfile: bool = False, num_threads: int = 4
+    ) -> Iterator[dict[str, Any]]:
         """
         Args:
             fmt (str): output format of result set
@@ -274,10 +296,10 @@ class Job(Model):
                 ):
                     yield row
             else:
-                for row in self._result:
-                    yield row
+                for row in self._result:  # type: ignore[union-attr]
+                    yield row  # type: ignore[misc]
 
-    def finished(self):
+    def finished(self) -> bool:
         """
         Returns:
              `True` if the job has been finished in success, error or killed
@@ -285,7 +307,7 @@ class Job(Model):
         self._update_progress()
         return self._status in self.FINISHED_STATUS
 
-    def success(self):
+    def success(self) -> bool:
         """
         Returns:
              `True` if the job has been finished in success
@@ -293,7 +315,7 @@ class Job(Model):
         self._update_progress()
         return self._status == self.STATUS_SUCCESS
 
-    def error(self):
+    def error(self) -> bool:
         """
         Returns:
              `True` if the job has been finished in error
@@ -301,7 +323,7 @@ class Job(Model):
         self._update_progress()
         return self._status == self.STATUS_ERROR
 
-    def killed(self):
+    def killed(self) -> bool:
         """
         Returns:
              `True` if the job has been finished in killed
@@ -309,7 +331,7 @@ class Job(Model):
         self._update_progress()
         return self._status == self.STATUS_KILLED
 
-    def queued(self):
+    def queued(self) -> bool:
         """
         Returns:
              `True` if the job is queued
@@ -317,7 +339,7 @@ class Job(Model):
         self._update_progress()
         return self._status == self.STATUS_QUEUED
 
-    def running(self):
+    def running(self) -> bool:
         """
         Returns:
              `True` if the job is running

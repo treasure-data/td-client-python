@@ -1,8 +1,17 @@
 #!/usr/bin/env python
 
+from __future__ import annotations
+
 import time
+from collections.abc import Callable, Iterator
+from typing import TYPE_CHECKING, Any
 
 from tdclient.model import Model
+from tdclient.types import FileLike
+
+if TYPE_CHECKING:
+    from tdclient.client import Client
+    from tdclient.job_model import Job
 
 
 class BulkImport(Model):
@@ -14,94 +23,100 @@ class BulkImport(Model):
     STATUS_COMMITTING = "committing"
     STATUS_COMMITTED = "committed"
 
-    def __init__(self, client, **kwargs):
+    def __init__(self, client: Client, **kwargs: Any) -> None:
         super(BulkImport, self).__init__(client)
         self._feed(kwargs)
 
-    def _feed(self, data=None):
+    def _feed(self, data: dict[str, Any] | None = None) -> None:
         data = {} if data is None else data
-        self._name = data["name"]
-        self._database = data.get("database")
-        self._table = data.get("table")
-        self._status = data.get("status")
-        self._upload_frozen = data.get("upload_frozen")
-        self._job_id = data.get("job_id")
-        self._valid_records = data.get("valid_records")
-        self._error_records = data.get("error_records")
-        self._valid_parts = data.get("valid_parts")
-        self._error_parts = data.get("error_parts")
+        self._name: str = data["name"]
+        self._database: str | None = data.get("database")
+        self._table: str | None = data.get("table")
+        self._status: str | None = data.get("status")
+        self._upload_frozen: bool | None = data.get("upload_frozen")
+        self._job_id: str | None = data.get("job_id")
+        self._valid_records: int | None = data.get("valid_records")
+        self._error_records: int | None = data.get("error_records")
+        self._valid_parts: int | None = data.get("valid_parts")
+        self._error_parts: int | None = data.get("error_parts")
 
-    def update(self):
+    def update(self) -> None:
         data = self._client.api.show_bulk_import(self.name)
         self._feed(data)
 
     @property
-    def name(self):
+    def name(self) -> str:
         """A name of the bulk import session"""
         return self._name
 
     @property
-    def database(self):
+    def database(self) -> str | None:
         """A database name in a string which the bulk import session is working on"""
         return self._database
 
     @property
-    def table(self):
+    def table(self) -> str | None:
         """A table name in a string which the bulk import session is working on"""
         return self._table
 
     @property
-    def status(self):
+    def status(self) -> str | None:
         """The status of the bulk import session in a string"""
         return self._status
 
     @property
-    def job_id(self):
+    def job_id(self) -> str | None:
         """Job ID"""
         return self._job_id
 
     @property
-    def valid_records(self):
+    def valid_records(self) -> int | None:
         """The number of valid records."""
         return self._valid_records
 
     @property
-    def error_records(self):
+    def error_records(self) -> int | None:
         """The number of error records."""
         return self._error_records
 
     @property
-    def valid_parts(self):
+    def valid_parts(self) -> int | None:
         """The number of valid parts."""
         return self._valid_parts
 
     @property
-    def error_parts(self):
+    def error_parts(self) -> int | None:
         """The number of error parts."""
         return self._error_parts
 
     @property
-    def upload_frozen(self):
+    def upload_frozen(self) -> bool | None:
         """The number of upload frozen."""
         return self._upload_frozen
 
-    def delete(self):
+    def delete(self) -> bool:
         """Delete bulk import"""
         return self._client.delete_bulk_import(self.name)
 
-    def freeze(self):
+    def freeze(self) -> bool:
         """Freeze bulk import"""
         response = self._client.freeze_bulk_import(self.name)
         self.update()
         return response
 
-    def unfreeze(self):
+    def unfreeze(self) -> bool:
         """Unfreeze bulk import"""
         response = self._client.unfreeze_bulk_import(self.name)
         self.update()
         return response
 
-    def perform(self, wait=False, wait_interval=5, wait_callback=None, timeout=None):
+    def perform(
+        self,
+        wait: bool = False,
+        wait_interval: int = 5,
+        wait_callback: Callable[[], None] | None = None,
+        timeout: float | None = None,
+    ) -> Job:
         """Perform bulk import
 
         Args:
@@ -126,7 +141,9 @@ class BulkImport(Model):
         self.update()
         return job
 
-    def commit(self, wait=False, wait_interval=5, timeout=None):
+    def commit(
+        self, wait: bool = False, wait_interval: int = 5, timeout: float | None = None
+    ) -> bool:
         """Commit bulk import"""
         response = self._client.commit_bulk_import(self.name)
         if wait:
@@ -141,7 +158,7 @@ class BulkImport(Model):
             self.update()
         return response
 
-    def error_record_items(self):
+    def error_record_items(self) -> Iterator[dict[str, Any]]:
         """Fetch error record rows.
 
         Yields:
@@ -150,7 +167,7 @@ class BulkImport(Model):
         for record in self._client.bulk_import_error_records(self.name):
             yield record
 
-    def upload_part(self, part_name, bytes_or_stream, size):
+    def upload_part(self, part_name: str, bytes_or_stream: FileLike, size: int) -> bool:
         """Upload a part to bulk import session
 
         Args:
@@ -164,7 +181,9 @@ class BulkImport(Model):
         self.update()
         return response
 
-    def upload_file(self, part_name, fmt, file_like, **kwargs):
+    def upload_file(
+        self, part_name: str, fmt: str, file_like: FileLike, **kwargs: Any
+    ) -> float:
         """Upload a part to Bulk Import session, from an existing file on filesystem.
 
         Args:
@@ -205,7 +224,7 @@ class BulkImport(Model):
         self.update()
         return response
 
-    def delete_part(self, part_name):
+    def delete_part(self, part_name: str) -> bool:
         """Delete a part of a Bulk Import session
 
         Args:
@@ -217,7 +236,7 @@ class BulkImport(Model):
         self.update()
         return response
 
-    def list_parts(self):
+    def list_parts(self) -> list[str]:
         """Return the list of available parts uploaded through
         :func:`~BulkImportAPI.bulk_import_upload_part`.
 
