@@ -26,7 +26,7 @@ Requirements
 ``td-client`` supports the following versions of Python.
 
 
-* Python 3.5+
+* Python 3.10+
 * PyPy
 
 Install
