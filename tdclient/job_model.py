@@ -111,7 +111,7 @@ class Job(Model):
 
     def _update_status(self) -> None:
         warnings.warn(
-            "_update_status() will be removed from future release. Please use update() instaed.",
+            "_update_status() will be removed from future release. Please use update() instead.",
             stacklevel=2,
             category=DeprecationWarning,
         )
