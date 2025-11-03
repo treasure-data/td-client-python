@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
-
 import datetime
 from typing import TYPE_CHECKING, Any
 
@@ -17,7 +15,7 @@ class ScheduledJob(Job):
 
     def __init__(
         self,
-        client: Client,
+        client: "Client",
         scheduled_at: datetime.datetime,
         job_id: str,
         type: str,
@@ -36,7 +34,7 @@ class ScheduledJob(Job):
 class Schedule(Model):
     """Schedule on Treasure Data Service"""
 
-    def __init__(self, client: Client, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, client: "Client", *args: Any, **kwargs: Any) -> None:
         super().__init__(client)
         if 0 < len(args):
             self._name: str | None = args[0]

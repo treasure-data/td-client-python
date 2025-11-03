@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
-
 from typing import TYPE_CHECKING, Any
 
 from tdclient.model import Model
@@ -15,7 +13,7 @@ class User(Model):
 
     def __init__(
         self,
-        client: Client,
+        client: "Client",
         name: str,
         org_name: str,
         role_names: list[str],
