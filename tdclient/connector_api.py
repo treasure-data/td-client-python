@@ -196,7 +196,7 @@ class ConnectorAPI:
                 - cron (str, optional):
                      Schedule of the query.
                      {``"@daily"``, ``"@hourly"``, ``"10 * * * *"`` (custom cron)}
-                     See also: https://docs.treasuredata.com/display/PD/Scheduling+Jobs+Using+TD+Console
+                     See also: https://docs.treasuredata.com/articles/#!pd/Scheduling-Jobs-Using-TD-Console
                 - delay (int, optional):
                      A delay ensures all buffered events are imported
                      before running the query. Default: 0
