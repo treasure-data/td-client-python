@@ -31,14 +31,18 @@ dependencies = [
   "python-dateutil",
   "msgpack>=0.6.2",
   "urllib3",
+  "typing-extensions>=4.0.0",
 ]
 
 [project.optional-dependencies]
-dev = ["ruff"]
+dev = ["ruff", "pyright"]
 docs = ["sphinx", "sphinx_rtd_theme"]
 
 [tool.setuptools]
 packages = ["tdclient"]
+
+[tool.setuptools.package-data]
+tdclient = ["py.typed"]
 
 [tool.ruff]
 line-length = 88
@@ -53,3 +57,19 @@ ignore = ["E203", "E501"]
 
 [tool.ruff.lint.isort]
 known-third-party = ["dateutil","msgpack","pkg_resources","pytest","setuptools","urllib3"]
+
+[tool.pyright]
+include = ["tdclient"]
+exclude = ["**/__pycache__", "tdclient/test", "docs"]
+typeCheckingMode = "basic"
+pythonVersion = "3.9"
+pythonPlatform = "All"
+reportMissingTypeStubs = false
+reportUnknownMemberType = false
+reportUnknownArgumentType = false
+reportUnknownVariableType = false
+reportMissingImports = "warning"
+
+# Pre-commit venv configuration
+venvPath = "."
+venv = ".venv"

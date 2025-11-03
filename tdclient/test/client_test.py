@@ -197,6 +197,7 @@ def test_query():
     )
     assert job.job_id == "12345"
 
+
 def test_trino_query():
     td = client.Client("APIKEY")
     td._api = mock.MagicMock()
@@ -211,6 +212,7 @@ def test_trino_query():
         result_url=None,
     )
     assert job.job_id == "12345"
+
 
 def test_jobs():
     td = client.Client("APIKEY")

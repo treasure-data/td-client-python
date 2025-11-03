@@ -1,41 +1,53 @@
 #!/usr/bin/env python
 
+from __future__ import annotations
+
 import time
+from typing import TYPE_CHECKING, Any, Callable
 
 from tdclient import errors
 
+if TYPE_CHECKING:
+    from tdclient.api import API
+
 
 class Cursor:
-    def __init__(self, api, wait_interval=5, wait_callback=None, **kwargs):
+    def __init__(
+        self,
+        api: API,
+        wait_interval: int = 5,
+        wait_callback: Callable[[Cursor], None] | None = None,
+        **kwargs: Any,
+    ) -> None:
         self._api = api
         self._query_kwargs = kwargs
-        self._executed = None
-        self._rows = None
+        self._executed: str | None = None  # Job ID
+        self._rows: list[Any] | None = None
         self._rownumber = 0
         self._rowcount = -1
-        self._description = []
+        self._description: list[Any] = []
         self.wait_interval = wait_interval
         self.wait_callback = wait_callback
 
     @property
-    def api(self):
+    def api(self) -> API:
         return self._api
 
     @property
-    def description(self):
+    def description(self) -> list[Any]:
         return self._description
 
     @property
-    def rowcount(self):
+    def rowcount(self) -> int:
         return self._rowcount
 
-    def callproc(self, procname, *parameters):
+    def callproc(self, procname: str, *parameters: Any) -> None:
         raise errors.NotSupportedError
 
-    def close(self):
+    def close(self) -> None:
         self._api.close()
 
-    def execute(self, query, args=None):
+    def execute(self, query: str, args: dict[str, Any] | None = None) -> str | None:
         if args is not None:
             if isinstance(args, dict):
                 query = query.format(**args)
@@ -49,17 +61,20 @@ class Cursor:
         self._do_execute()
         return self._executed
 
-    def executemany(self, operation, seq_of_parameters):
+    def executemany(
+        self, operation: str, seq_of_parameters: list[dict[str, Any]]
+    ) -> list[str | None]:
         return [
             self.execute(operation, args=parameter) for parameter in seq_of_parameters
         ]
 
-    def _check_executed(self):
+    def _check_executed(self) -> None:
         if self._executed is None:
             raise errors.ProgrammingError("execute() first")
 
-    def _do_execute(self):
+    def _do_execute(self) -> None:
         self._check_executed()
+        assert self._executed is not None
         if self._rows is None:
             status = self._api.job_status(self._executed)
             if status == "success":
@@ -81,18 +96,21 @@ class Cursor:
                         self.wait_callback(self)
                     return self._do_execute()
 
-    def _result_description(self, result_schema):
+    def _result_description(
+        self, result_schema: list[Any] | None
+    ) -> list[tuple[Any, ...]]:
         if result_schema is None:
             result_schema = []
         return [
             (column[0], None, None, None, None, None, None) for column in result_schema
         ]
 
-    def fetchone(self):
+    def fetchone(self) -> Any | None:
         """
         Fetch the next row of a query result set, returning a single sequence, or `None` when no more data is available.
         """
         self._check_executed()
+        assert self._rows is not None
         if self._rownumber < self._rowcount:
             row = self._rows[self._rownumber]
             self._rownumber += 1
@@ -100,7 +118,7 @@ class Cursor:
         else:
             return None
 
-    def fetchmany(self, size=None):
+    def fetchmany(self, size: int | None = None) -> list[Any]:
         """
         Fetch the next set of rows of a query result, returning a sequence of sequences (e.g. a list of tuples).
         An empty sequence is returned when no more rows are available.
@@ -109,6 +127,7 @@ class Cursor:
             return self.fetchall()
         else:
             self._check_executed()
+            assert self._rows is not None
             if self._rownumber + size - 1 < self._rowcount:
                 rows = self._rows[self._rownumber : self._rownumber + size]
                 self._rownumber += size
@@ -119,12 +138,13 @@ class Cursor:
                     % (self._rownumber, self._rowcount)
                 )
 
-    def fetchall(self):
+    def fetchall(self) -> list[Any]:
         """
         Fetch all (remaining) rows of a query result, returning them as a sequence of sequences (e.g. a list of tuples).
         Note that the cursor's arraysize attribute can affect the performance of this operation.
         """
         self._check_executed()
+        assert self._rows is not None
         if self._rownumber < self._rowcount:
             rows = self._rows[self._rownumber :]
             self._rownumber = self._rowcount
@@ -132,38 +152,41 @@ class Cursor:
         else:
             return []
 
-    def nextset(self):
+    def nextset(self) -> None:
         raise errors.NotSupportedError
 
-    def setinputsizes(self, sizes):
+    def setinputsizes(self, sizes: Any) -> None:
         raise errors.NotSupportedError
 
-    def setoutputsize(self, size, column=None):
+    def setoutputsize(self, size: Any, column: Any = None) -> None:
         raise errors.NotSupportedError
 
-    def show_job(self):
+    def show_job(self) -> dict[str, Any]:
         """Returns detailed information of a Job
 
         Returns:
              :class:`dict`: Detailed information of a job
         """
         self._check_executed()
+        assert self._executed is not None
         return self._api.show_job(self._executed)
 
-    def job_status(self):
+    def job_status(self) -> str:
         """Show job status
 
         Returns:
              The status information of the given job id at last execution.
         """
         self._check_executed()
+        assert self._executed is not None
         return self._api.job_status(self._executed)
 
-    def job_result(self):
+    def job_result(self) -> list[dict[str, Any]]:
         """Fetch job results
 
         Returns:
              Job result in :class:`list`
         """
         self._check_executed()
+        assert self._executed is not None
         return self._api.job_result(self._executed)

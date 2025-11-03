@@ -1,5 +1,17 @@
 #!/usr/bin/env python
-from .util import create_url, get_or_else, parse_date
+
+from __future__ import annotations
+
+import datetime
+from typing import TYPE_CHECKING, Any
+
+from tdclient.types import ScheduleParams
+from tdclient.util import create_url, get_or_else, parse_date
+
+if TYPE_CHECKING:
+    from contextlib import AbstractContextManager
+
+    import urllib3
 
 
 class ScheduleAPI:
@@ -8,7 +20,29 @@ class ScheduleAPI:
     This class is inherited by :class:`tdclient.api.API`.
     """
 
-    def create_schedule(self, name, params=None):
+    # Methods from API class
+    def get(
+        self,
+        path: str,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
+    ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
+    def post(
+        self,
+        path: str,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
+    ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
+    def raise_error(
+        self, msg: str, res: urllib3.BaseHTTPResponse, body: bytes
+    ) -> None: ...
+    def checked_json(self, body: bytes, required: list[str]) -> dict[str, Any]: ...
+
+    def create_schedule(
+        self, name: str, params: ScheduleParams | None = None
+    ) -> datetime.datetime | None:
         """Create a new scheduled query with the specified name.
 
         Args:
@@ -50,10 +84,10 @@ class ScheduleAPI:
         Returns:
             datetime.datetime: Start date time.
         """
-        params = {} if params is None else params
-        params.update({"type": params.get("type", "hive")})
+        post_params = {} if params is None else dict(params)
+        post_params.update({"type": post_params.get("type", "hive")})
         with self.post(
-            create_url("/v3/schedule/create/{name}", name=name), params
+            create_url("/v3/schedule/create/{name}", name=name), post_params
         ) as res:
             code, body = res.status, res.read()
             if code != 200:
@@ -61,7 +95,7 @@ class ScheduleAPI:
             js = self.checked_json(body, ["start"])
             return parse_date(get_or_else(js, "start", "1970-01-01T00:00:00Z"))
 
-    def delete_schedule(self, name):
+    def delete_schedule(self, name: str) -> tuple[str, str]:
         """Delete the scheduled query with the specified name.
 
         Args:
@@ -76,7 +110,7 @@ class ScheduleAPI:
             js = self.checked_json(body, ["cron", "query"])
             return js["cron"], js["query"]
 
-    def list_schedules(self):
+    def list_schedules(self) -> list[dict[str, Any]]:
         """Get the list of all the scheduled queries.
 
         Returns:
@@ -90,12 +124,14 @@ class ScheduleAPI:
 
             return [schedule_to_tuple(m) for m in js["schedules"]]
 
-    def update_schedule(self, name, params=None):
+    def update_schedule(
+        self, name: str, params: ScheduleParams | None = None
+    ) -> datetime.datetime | None:
         """Update the scheduled query.
 
         Args:
             name (str): Target scheduled query name.
-            params (dict): Extra parameters.
+            params (ScheduleParams | None): Extra parameters.
 
                 - type (str):
                     Query type. {"presto", "hive"}. Default: "hive"
@@ -130,15 +166,17 @@ class ScheduleAPI:
                     Location where to store the result of the query.
                     e.g. 'tableau://user:password@host.com:1234/datasource'
         """
-        params = {} if params is None else params
+        post_params = {} if params is None else dict(params)
         with self.post(
-            create_url("/v3/schedule/update/{name}", name=name), params
+            create_url("/v3/schedule/update/{name}", name=name), post_params
         ) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Update schedule failed", res, body)
 
-    def history(self, name, _from=0, to=None):
+    def history(
+        self, name: str, _from: int = 0, to: int | None = None
+    ) -> list[tuple[Any, ...]]:
         """Get the history details of the saved query for the past 90days.
 
         Args:
@@ -169,7 +207,9 @@ class ScheduleAPI:
 
             return [history_to_tuple(m) for m in js["history"]]
 
-    def run_schedule(self, name, time, num=None):
+    def run_schedule(
+        self, name: str, time: int, num: int | None = None
+    ) -> list[tuple[Any, Any, datetime.datetime | None]]:
         """Execute the specified query.
 
         Args:

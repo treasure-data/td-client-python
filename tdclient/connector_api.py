@@ -1,8 +1,17 @@
 #!/usr/bin/env python
 
-import json
+from __future__ import annotations
 
-from .util import create_url, normalize_connector_config
+import json
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from contextlib import AbstractContextManager
+
+    import urllib3
+
+from tdclient.types import BytesOrStream
+from tdclient.util import create_url, normalize_connector_config
 
 
 class ConnectorAPI:
@@ -11,7 +20,38 @@ class ConnectorAPI:
     This class is inherited by :class:`tdclient.api.API`.
     """
 
-    def connector_guess(self, job):
+    # Methods from API class
+    def get(
+        self,
+        path: str,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
+    ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
+    def post(
+        self, url: str, params: Any, headers: dict[str, str] | None = None
+    ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
+    def put(
+        self,
+        path: str,
+        bytes_or_stream: BytesOrStream,
+        size: int,
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
+    ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
+    def delete(
+        self,
+        path: str,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
+    ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
+    def raise_error(
+        self, msg: str, res: urllib3.BaseHTTPResponse, body: bytes
+    ) -> None: ...
+    def checked_json(self, body: bytes, required: list[str]) -> dict[str, Any]: ...
+
+    def connector_guess(self, job: dict[str, Any] | bytes) -> dict[str, Any]:
         """Guess the Data Connector configuration
 
         Args:

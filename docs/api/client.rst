@@ -11,5 +11,3 @@ tdclient.client
    :members:
    :undoc-members:
    :show-inheritance:
-
-

@@ -1,14 +1,25 @@
 #!/usr/bin/env python
 
+from __future__ import annotations
+
 import collections
 import contextlib
 import gzip
 import io
 import os
+from collections.abc import Iterator
+from typing import TYPE_CHECKING, Any
 
 import msgpack
 
-from .util import create_url
+if TYPE_CHECKING:
+    from contextlib import AbstractContextManager
+    from typing import IO
+
+    import urllib3
+
+from tdclient.types import BulkImportParams, BytesOrStream, DataFormat, FileLike
+from tdclient.util import create_url
 
 
 class BulkImportAPI:
@@ -17,7 +28,40 @@ class BulkImportAPI:
     This class is inherited by :class:`tdclient.api.API`.
     """
 
-    def create_bulk_import(self, name, db, table, params=None):
+    # Methods from API class
+    def get(
+        self,
+        path: str,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
+    ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
+    def post(
+        self,
+        path: str,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
+    ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
+    def put(
+        self,
+        path: str,
+        bytes_or_stream: BytesOrStream,
+        size: int,
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
+    ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
+    def raise_error(
+        self, msg: str, res: urllib3.BaseHTTPResponse, body: bytes | str
+    ) -> None: ...
+    def checked_json(self, body: bytes, required: list[str]) -> dict[str, Any]: ...
+    def _prepare_file(
+        self, file: FileLike, format: str, **kwargs: Any
+    ) -> IO[bytes]: ...
+
+    def create_bulk_import(
+        self, name: str, db: str, table: str, params: BulkImportParams | None = None
+    ) -> bool:
         """Enable bulk importing of data to the targeted database and table and stores
         it in the default resource pool. Default expiration for bulk import is 30days.
 
@@ -30,7 +74,7 @@ class BulkImportAPI:
         Returns:
              True if succeeded
         """
-        params = {} if params is None else params
+        post_params = {} if params is None else dict(params)
         with self.post(
             create_url(
                 "/v3/bulk_import/create/{name}/{db}/{table}",
@@ -38,14 +82,16 @@ class BulkImportAPI:
                 db=db,
                 table=table,
             ),
-            params,
+            post_params,
         ) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("Create bulk import failed", res, body)
             return True
 
-    def delete_bulk_import(self, name, params=None):
+    def delete_bulk_import(
+        self, name: str, params: dict[str, Any] | None = None
+    ) -> bool:
         """Delete the imported information with the specified name
 
         Args:
@@ -63,7 +109,7 @@ class BulkImportAPI:
                 self.raise_error("Delete bulk import failed", res, body)
             return True
 
-    def show_bulk_import(self, name):
+    def show_bulk_import(self, name: str) -> dict[str, Any]:
         """Show the details of the bulk import with the specified name
 
         Args:
@@ -78,7 +124,9 @@ class BulkImportAPI:
             js = self.checked_json(body, ["status"])
             return js
 
-    def list_bulk_imports(self, params=None):
+    def list_bulk_imports(
+        self, params: dict[str, Any] | None = None
+    ) -> list[dict[str, Any]]:
         """Return the list of available bulk imports
         Args:
             params (dict, optional): Extra parameters.
@@ -93,7 +141,9 @@ class BulkImportAPI:
             js = self.checked_json(body, ["bulk_imports"])
             return js["bulk_imports"]
 
-    def list_bulk_import_parts(self, name, params=None):
+    def list_bulk_import_parts(
+        self, name: str, params: dict[str, Any] | None = None
+    ) -> list[str]:
         """Return the list of available parts uploaded through
         :func:`~BulkImportAPI.bulk_import_upload_part`.
 
@@ -114,7 +164,7 @@ class BulkImportAPI:
             return js["parts"]
 
     @staticmethod
-    def validate_part_name(part_name):
+    def validate_part_name(part_name: str) -> None:
         """Make sure the part_name is valid
 
         Args:
@@ -133,7 +183,9 @@ class BulkImportAPI:
         if 0 < part_name.find("/"):
             raise ValueError("part name must not contain '/': %s" % (repr(part_name)))
 
-    def bulk_import_upload_part(self, name, part_name, stream, size):
+    def bulk_import_upload_part(
+        self, name: str, part_name: str, stream: BytesOrStream, size: int
+    ) -> None:
         """Upload bulk import having the specified name and part in the path.
 
         Args:
@@ -156,7 +208,14 @@ class BulkImportAPI:
             if code / 100 != 2:
                 self.raise_error("Upload a part failed", res, body)
 
-    def bulk_import_upload_file(self, name, part_name, format, file, **kwargs):
+    def bulk_import_upload_file(
+        self,
+        name: str,
+        part_name: str,
+        format: DataFormat,
+        file: FileLike,
+        **kwargs: Any,
+    ) -> None:
         """Upload a file with bulk import having the specified name.
 
         Args:
@@ -193,7 +252,9 @@ class BulkImportAPI:
             size = os.fstat(fp.fileno()).st_size
             return self.bulk_import_upload_part(name, part_name, fp, size)
 
-    def bulk_import_delete_part(self, name, part_name, params=None):
+    def bulk_import_delete_part(
+        self, name: str, part_name: str, params: dict[str, Any] | None = None
+    ) -> bool:
         """Delete the imported information with the specified name.
 
         Args:
@@ -218,7 +279,9 @@ class BulkImportAPI:
                 self.raise_error("Delete a part failed", res, body)
             return True
 
-    def freeze_bulk_import(self, name, params=None):
+    def freeze_bulk_import(
+        self, name: str, params: dict[str, Any] | None = None
+    ) -> bool:
         """Freeze the bulk import with the specified name.
 
         Args:
@@ -236,7 +299,9 @@ class BulkImportAPI:
                 self.raise_error("Freeze bulk import failed", res, body)
             return True
 
-    def unfreeze_bulk_import(self, name, params=None):
+    def unfreeze_bulk_import(
+        self, name: str, params: dict[str, Any] | None = None
+    ) -> bool:
         """Unfreeze bulk_import with the specified name.
 
         Args:
@@ -254,7 +319,9 @@ class BulkImportAPI:
                 self.raise_error("Unfreeze bulk import failed", res, body)
             return True
 
-    def perform_bulk_import(self, name, params=None):
+    def perform_bulk_import(
+        self, name: str, params: dict[str, Any] | None = None
+    ) -> str:
         """Execute a job to perform bulk import with the indicated priority using the
         resource pool if indicated, else it will use the account's default.
 
@@ -274,7 +341,9 @@ class BulkImportAPI:
             js = self.checked_json(body, ["job_id"])
             return str(js["job_id"])
 
-    def commit_bulk_import(self, name, params=None):
+    def commit_bulk_import(
+        self, name: str, params: dict[str, Any] | None = None
+    ) -> bool:
         """Commit the bulk import information having the specified name.
 
         Args:
@@ -292,7 +361,9 @@ class BulkImportAPI:
                 self.raise_error("Commit bulk import failed", res, body)
             return True
 
-    def bulk_import_error_records(self, name, params=None):
+    def bulk_import_error_records(
+        self, name: str, params: dict[str, Any] | None = None
+    ) -> Iterator[dict[str, Any]]:
         """List the records that have errors under the specified bulk import name.
 
         Args:

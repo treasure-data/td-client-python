@@ -1,16 +1,23 @@
+from __future__ import annotations
+
 import csv
 import io
 import logging
 import warnings
+from collections.abc import Iterator
+from datetime import datetime
+from typing import Any, BinaryIO
 from urllib.parse import quote as urlquote
 
 import dateutil.parser
 import msgpack
 
+from tdclient.types import CSVValue, Converter, Record
+
 log = logging.getLogger(__name__)
 
 
-def create_url(tmpl, **values):
+def create_url(tmpl: str, **values: Any) -> str:
     """Create url with values
 
     Args:
@@ -21,7 +28,7 @@ def create_url(tmpl, **values):
     return tmpl.format(**quoted_values)
 
 
-def validate_record(record):
+def validate_record(record: Record) -> bool:
     """Check that `record` contains a key called "time".
 
     Args:
@@ -41,7 +48,7 @@ def validate_record(record):
     return True
 
 
-def guess_csv_value(s):
+def guess_csv_value(s: str) -> CSVValue:
     """Determine the most appropriate type for `s` and return it.
 
     Tries to interpret `s` as a more specific datatype, in the following
@@ -75,7 +82,7 @@ def guess_csv_value(s):
 
 
 # Convert our dtype names to callables that parse a string into that type
-DTYPE_TO_CALLABLE = {
+DTYPE_TO_CALLABLE: dict[str, Converter] = {
     "bool": bool,
     "float": float,
     "int": int,
@@ -84,7 +91,9 @@ DTYPE_TO_CALLABLE = {
 }
 
 
-def merge_dtypes_and_converters(dtypes=None, converters=None):
+def merge_dtypes_and_converters(
+    dtypes: dict[str, str] | None = None, converters: dict[str, Converter] | None = None
+) -> dict[str, Converter]:
     """Generate a merged dictionary from those given.
 
     Args:
@@ -113,23 +122,25 @@ def merge_dtypes_and_converters(dtypes=None, converters=None):
         If a column name occurs in both input dictionaries, the callable
         specified in `converters` is used.
     """
-    our_converters = {}
+    our_converters: dict[str, Converter] = {}
     if dtypes is not None:
-        try:
-            for column_name, dtype in dtypes.items():
+        for column_name, dtype in dtypes.items():
+            try:
                 our_converters[column_name] = DTYPE_TO_CALLABLE[dtype]
-        except KeyError:
-            raise ValueError(
-                "Unrecognized dtype %r, must be one of %s"
-                % (dtype, ", ".join(repr(k) for k in sorted(DTYPE_TO_CALLABLE)))
-            )
+            except KeyError:
+                raise ValueError(
+                    "Unrecognized dtype %r, must be one of %s"
+                    % (dtype, ", ".join(repr(k) for k in sorted(DTYPE_TO_CALLABLE)))
+                )
     if converters is not None:
         for column_name, parse_fn in converters.items():
             our_converters[column_name] = parse_fn
     return our_converters
 
 
-def parse_csv_value(k, s, converters=None):
+def parse_csv_value(
+    k: str, s: str, converters: dict[str, Converter] | None = None
+) -> Any:
     """Given a CSV (string) value, work out an actual value.
 
     Args:
@@ -167,7 +178,9 @@ def parse_csv_value(k, s, converters=None):
     return parse_fn(s)
 
 
-def csv_dict_record_reader(file_like, encoding, dialect):
+def csv_dict_record_reader(
+    file_like: BinaryIO, encoding: str, dialect: str | type[csv.Dialect]
+) -> Iterator[dict[str, str]]:
     """Yield records from a CSV input using csv.DictReader.
 
     This is a reader suitable for use by `tdclient.util.read_csv_records`_.
@@ -180,7 +193,7 @@ def csv_dict_record_reader(file_like, encoding, dialect):
             returns bytes.
         encoding (str): the name of the encoding to use when turning those
             bytes into strings.
-        dialect (str): the name of the CSV dialect to use.
+        dialect (str | type[csv.Dialect]): the name of the CSV dialect to use, or a Dialect class.
 
     Yields:
         For each row of CSV data read from `file_like`, yields a dictionary
@@ -192,7 +205,12 @@ def csv_dict_record_reader(file_like, encoding, dialect):
         yield row
 
 
-def csv_text_record_reader(file_like, encoding, dialect, columns):
+def csv_text_record_reader(
+    file_like: BinaryIO,
+    encoding: str,
+    dialect: str | type[csv.Dialect],
+    columns: list[str],
+) -> Iterator[dict[str, str]]:
     """Yield records from a CSV input using csv.reader and explicit column names.
 
     This is a reader suitable for use by `tdclient.util.read_csv_records`_.
@@ -205,7 +223,7 @@ def csv_text_record_reader(file_like, encoding, dialect, columns):
             returns bytes.
         encoding (str): the name of the encoding to use when turning those
             bytes into strings.
-        dialect (str): the name of the CSV dialect to use.
+        dialect (str | type[csv.Dialect]): the name of the CSV dialect to use, or a Dialect class.
 
     Yields:
         For each row of CSV data read from `file_like`, yields a dictionary
@@ -217,7 +235,12 @@ def csv_text_record_reader(file_like, encoding, dialect, columns):
         yield dict(zip(columns, row))
 
 
-def read_csv_records(csv_reader, dtypes=None, converters=None, **kwargs):
+def read_csv_records(
+    csv_reader: Iterator[dict[str, str]],
+    dtypes: dict[str, str] | None = None,
+    converters: dict[str, Converter] | None = None,
+    **kwargs: Any,
+) -> Iterator[Record]:
     """Read records using csv_reader and yield the results."""
     our_converters = merge_dtypes_and_converters(dtypes, converters)
 
@@ -227,7 +250,7 @@ def read_csv_records(csv_reader, dtypes=None, converters=None, **kwargs):
         yield record
 
 
-def create_msgpack(items):
+def create_msgpack(items: list[dict[str, Any]]) -> bytes:
     """Create msgpack streaming bytes from list
 
     Args:
@@ -256,7 +279,7 @@ def create_msgpack(items):
     return stream.getvalue()
 
 
-def normalized_msgpack(value):
+def normalized_msgpack(value: Any) -> Any:
     """Recursively convert int to str if the int "overflows".
 
     Args:
@@ -292,7 +315,9 @@ def normalized_msgpack(value):
         return value
 
 
-def get_or_else(hashmap, key, default_value=None):
+def get_or_else(
+    hashmap: dict[str, str], key: str, default_value: str | None = None
+) -> str | None:
     """Get value or default value
 
     It differs from the standard dict ``get`` method in its behaviour when
@@ -300,9 +325,9 @@ def get_or_else(hashmap, key, default_value=None):
     only spaces.
 
     Args:
-        hashmap (dict): target
-        key (Any): key
-        default_value (Any): default value
+        hashmap (dict): target dictionary with string values
+        key (str): key to look up
+        default_value (str | None): default value to return if key is missing or value is empty/whitespace
 
     Example:
 
@@ -326,7 +351,7 @@ def get_or_else(hashmap, key, default_value=None):
             return default_value
 
 
-def parse_date(s):
+def parse_date(s: str | None) -> datetime | None:
     """Parse date from str to datetime
 
     TODO: parse datetime using an optional format string
@@ -334,11 +359,13 @@ def parse_date(s):
     For now, this does not use a format string since API may return date in ambiguous format :(
 
     Args:
-       s (str): target str
+       s (str | None): target str, or None
 
     Returns:
-       datetime
+       datetime or None
     """
+    if s is None:
+        return None
     try:
         return dateutil.parser.parse(s)
     except ValueError:
@@ -346,7 +373,7 @@ def parse_date(s):
         return None
 
 
-def normalize_connector_config(config):
+def normalize_connector_config(config: dict[str, Any]) -> dict[str, Any]:
     """Normalize connector config
 
     This is porting of TD CLI's ConnectorConfigNormalizer#normalized_config.

@@ -1,5 +1,14 @@
 #!/usr/bin/env python
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from contextlib import AbstractContextManager
+
+    import urllib3
+
 
 class ServerStatusAPI:
     """Access to Server Status API
@@ -7,7 +16,17 @@ class ServerStatusAPI:
     This class is inherited by :class:`tdclient.api.API`.
     """
 
-    def server_status(self):
+    # Methods from API class
+    def get(
+        self,
+        path: str,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
+    ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
+    def checked_json(self, body: bytes, required: list[str]) -> dict[str, Any]: ...
+
+    def server_status(self) -> str:
         """Show the status of Treasure Data
 
         Returns:

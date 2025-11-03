@@ -1,6 +1,16 @@
 #!/usr/bin/env python
 
-from .util import create_url
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from contextlib import AbstractContextManager
+
+    import urllib3
+
+from tdclient.util import create_url
+from tdclient.types import ExportParams
 
 
 class ExportAPI:
@@ -9,7 +19,22 @@ class ExportAPI:
     This class is inherited by :class:`tdclient.api.API`.
     """
 
-    def export_data(self, db, table, storage_type, params=None):
+    # Methods from API class
+    def post(
+        self,
+        path: str,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
+    ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
+    def raise_error(
+        self, msg: str, res: urllib3.BaseHTTPResponse, body: bytes | str
+    ) -> None: ...
+    def checked_json(self, body: bytes, required: list[str]) -> dict[str, Any]: ...
+
+    def export_data(
+        self, db: str, table: str, storage_type: str, params: ExportParams | None = None
+    ) -> str:
         """Creates a job to export the contents from the specified database and table
         names.
 
@@ -48,10 +73,10 @@ class ExportAPI:
         Returns:
             str: Job ID.
         """
-        params = {} if params is None else params
-        params["storage_type"] = storage_type
+        post_params = {} if params is None else dict(params)
+        post_params["storage_type"] = storage_type
         with self.post(
-            create_url("/v3/export/run/{db}/{table}", db=db, table=table), params
+            create_url("/v3/export/run/{db}/{table}", db=db, table=table), post_params
         ) as res:
             code, body = res.status, res.read()
             if code != 200:
