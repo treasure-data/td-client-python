@@ -27,7 +27,6 @@ Requirements
 
 
 * Python 3.10+
-* PyPy
 
 Install
 -------
