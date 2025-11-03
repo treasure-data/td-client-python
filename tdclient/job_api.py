@@ -22,7 +22,6 @@ if TYPE_CHECKING:
 from tdclient.types import Priority
 from tdclient.util import create_url, get_or_else, parse_date
 
-
 log = logging.getLogger(__name__)
 
 
@@ -241,8 +240,7 @@ class JobAPI:
         Yields:
              Row in a result
         """
-        for row in self.job_result_format_each(job_id, "msgpack"):
-            yield row
+        yield from self.job_result_format_each(job_id, "msgpack")
 
     def job_result_format(
         self, job_id: str, format: str, header: bool = False
@@ -454,7 +452,7 @@ class JobAPI:
                 if priority_name in self.JOB_PRIORITY:
                     priority_value = self.JOB_PRIORITY[priority_name]
                 else:
-                    raise ValueError("unknown job priority: %s" % (priority_name,))
+                    raise ValueError(f"unknown job priority: {priority_name}")
             else:
                 priority_value = priority
             params["priority"] = priority_value

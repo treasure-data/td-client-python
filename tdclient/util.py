@@ -12,7 +12,7 @@ from urllib.parse import quote as urlquote
 import dateutil.parser
 import msgpack
 
-from tdclient.types import CSVValue, Converter, Record
+from tdclient.types import Converter, CSVValue, Record
 
 log = logging.getLogger(__name__)
 
@@ -43,6 +43,7 @@ def validate_record(record: Record) -> bool:
     if not any(k in record for k in ("time", b"time")):
         warnings.warn(
             'records should have "time" column to import records properly.',
+            stacklevel=2,
             category=RuntimeWarning,
         )
     return True
@@ -129,9 +130,10 @@ def merge_dtypes_and_converters(
                 our_converters[column_name] = DTYPE_TO_CALLABLE[dtype]
             except KeyError:
                 raise ValueError(
-                    "Unrecognized dtype %r, must be one of %s"
-                    % (dtype, ", ".join(repr(k) for k in sorted(DTYPE_TO_CALLABLE)))
-                )
+                    "Unrecognized dtype {!r}, must be one of {}".format(
+                        dtype, ", ".join(repr(k) for k in sorted(DTYPE_TO_CALLABLE))
+                    )
+                ) from None
     if converters is not None:
         for column_name, parse_fn in converters.items():
             our_converters[column_name] = parse_fn
@@ -201,8 +203,7 @@ def csv_dict_record_reader(
         data) and whose values are the column values.
     """
     reader = csv.DictReader(io.TextIOWrapper(file_like, encoding), dialect=dialect)
-    for row in reader:
-        yield row
+    yield from reader
 
 
 def csv_text_record_reader(

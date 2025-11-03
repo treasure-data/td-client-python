@@ -87,9 +87,7 @@ class Cursor:
                 )
             else:
                 if status in ["error", "killed"]:
-                    raise errors.InternalError(
-                        "job error: %s: %s" % (self._executed, status)
-                    )
+                    raise errors.InternalError(f"job error: {self._executed}: {status}")
                 else:
                     time.sleep(self.wait_interval)
                     if callable(self.wait_callback):
@@ -134,8 +132,7 @@ class Cursor:
                 return rows
             else:
                 raise errors.InternalError(
-                    "index out of bound (%d out of %d)"
-                    % (self._rownumber, self._rowcount)
+                    f"index out of bound ({self._rownumber} out of {self._rowcount})"
                 )
 
     def fetchall(self) -> list[Any]:

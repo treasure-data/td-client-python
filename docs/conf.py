@@ -71,9 +71,7 @@ def linkcode_resolve(domain, info):
     except Exception:
         linenum = ""
 
-    return "https://github.com/{}/{}/blob/{}/{}/{}#L{}".format(
-        GH_ORGANIZATION, GH_PROJECT, revision, MODULE, relpath, linenum
-    )
+    return f"https://github.com/{GH_ORGANIZATION}/{GH_PROJECT}/blob/{revision}/{MODULE}/{relpath}#L{linenum}"
 
 
 # -- Project information -----------------------------------------------------

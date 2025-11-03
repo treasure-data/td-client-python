@@ -226,7 +226,7 @@ class ConnectorAPI:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error(
-                    "DataConnectorSession: %s created failed" % (name,), res, body
+                    f"DataConnectorSession: {name} created failed", res, body
                 )
             return self.checked_json(body, [])
 
@@ -243,7 +243,7 @@ class ConnectorAPI:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error(
-                    "DataConnectorSession: %s retrieve failed" % (name,), res, body
+                    f"DataConnectorSession: {name} retrieve failed", res, body
                 )
             return self.checked_json(body, [])
 
@@ -269,7 +269,7 @@ class ConnectorAPI:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error(
-                    "DataConnectorSession: %s update failed" % (name,), res, body
+                    f"DataConnectorSession: {name} update failed", res, body
                 )
             return self.checked_json(body, [])
 
@@ -286,7 +286,7 @@ class ConnectorAPI:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error(
-                    "DataConnectorSession: %s delete failed" % (name,), res, body
+                    f"DataConnectorSession: {name} delete failed", res, body
                 )
             return self.checked_json(body, [])
 
@@ -303,7 +303,7 @@ class ConnectorAPI:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error(
-                    "history of DataConnectorSession: %s retrieve failed" % (name,),
+                    f"history of DataConnectorSession: {name} retrieve failed",
                     res,
                     body,
                 )
@@ -335,6 +335,6 @@ class ConnectorAPI:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error(
-                    "DataConnectorSession: %s job create failed" % (name,), res, body
+                    f"DataConnectorSession: {name} job create failed", res, body
                 )
             return self.checked_json(body, [])

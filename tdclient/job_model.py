@@ -69,7 +69,7 @@ class Job(Model):
     def __init__(
         self, client: Client, job_id: str, type: str, query: str | None, **kwargs: Any
     ) -> None:
-        super(Job, self).__init__(client)
+        super().__init__(client)
         self._job_id = job_id
         self._type = type
         self._query = query
@@ -111,7 +111,8 @@ class Job(Model):
 
     def _update_status(self) -> None:
         warnings.warn(
-            "_update_status() will be removed from future release. Please use update() instaed.",
+            "_update_status() will be removed from future release. Please use update() instead.",
+            stacklevel=2,
             category=DeprecationWarning,
         )
         self.update()

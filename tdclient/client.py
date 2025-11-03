@@ -5,8 +5,7 @@ from __future__ import annotations
 import datetime
 import json
 from collections.abc import Iterator
-from typing import Any, cast, Literal
-
+from typing import Any, Literal, cast
 
 from tdclient import api, models
 from tdclient.types import (
@@ -103,7 +102,7 @@ class Client:
         for name, kwargs in databases.items():
             if name == db_name:
                 return models.Database(self, name, **kwargs)
-        raise api.NotFoundError("Database '%s' does not exist" % (db_name))
+        raise api.NotFoundError(f"Database '{db_name}' does not exist")
 
     def create_log_table(self, db_name: str, table_name: str) -> bool:
         """
@@ -212,7 +211,7 @@ class Client:
         for table in tables:
             if table.table_name == table_name:
                 return table
-        raise api.NotFoundError("Table '%s.%s' does not exist" % (db_name, table_name))
+        raise api.NotFoundError(f"Table '{db_name}.{table_name}' does not exist")
 
     def tail(
         self,
@@ -281,7 +280,7 @@ class Client:
         """
         # for compatibility, assume type is hive unless specifically specified
         if type not in ["hive", "pig", "impala", "presto", "trino"]:
-            raise ValueError("The specified query type is not supported: %s" % (type))
+            raise ValueError(f"The specified query type is not supported: {type}")
         # Cast type to expected literal since we've validated it
         query_type = cast(Literal["hive", "presto", "trino", "bulkload"], type)
         job_id = self.api.query(
@@ -359,8 +358,7 @@ class Client:
         Returns:
              an iterator of result set
         """
-        for row in self.api.job_result_each(str(job_id)):
-            yield row
+        yield from self.api.job_result_each(str(job_id))
 
     def job_result_format(
         self, job_id: str | int, format: ResultFormat, header: bool = False
@@ -397,14 +395,13 @@ class Client:
         Returns:
              an iterator of rows in result set
         """
-        for row in self.api.job_result_format_each(
+        yield from self.api.job_result_format_each(
             str(job_id),
             format,
             header=header,
             store_tmpfile=store_tmpfile,
             num_threads=num_threads,
-        ):
-            yield row
+        )
 
     def download_job_result(
         self, job_id: str | int, path: str, num_threads: int = 4
@@ -561,8 +558,7 @@ class Client:
         Returns:
              an iterator of error records
         """
-        for record in self.api.bulk_import_error_records(name):
-            yield record
+        yield from self.api.bulk_import_error_records(name)
 
     def bulk_import(self, name: str) -> models.BulkImport:
         """Get a bulk import session

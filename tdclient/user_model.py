@@ -22,7 +22,7 @@ class User(Model):
         email: str,
         **kwargs: Any,
     ) -> None:
-        super(User, self).__init__(client)
+        super().__init__(client)
         self._name = name
         self._org_name = org_name
         self._role_names = role_names

@@ -20,7 +20,7 @@ class Database(Model):
     PERMISSION_LIST_TABLES = ["administrator", "full_access"]
 
     def __init__(self, client: Client, db_name: str, **kwargs: Any) -> None:
-        super(Database, self).__init__(client)
+        super().__init__(client)
         self._db_name = db_name
         self._tables: list[Table] | None = kwargs.get("tables")
         self._count: int | None = kwargs.get("count")
