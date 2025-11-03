@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
-
 import time
-from typing import TYPE_CHECKING, Any, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
 from tdclient import errors
 
@@ -14,9 +13,9 @@ if TYPE_CHECKING:
 class Cursor:
     def __init__(
         self,
-        api: API,
+        api: "API",
         wait_interval: int = 5,
-        wait_callback: Callable[[Cursor], None] | None = None,
+        wait_callback: Callable[["Cursor"], None] | None = None,
         **kwargs: Any,
     ) -> None:
         self._api = api
@@ -30,7 +29,7 @@ class Cursor:
         self.wait_callback = wait_callback
 
     @property
-    def api(self) -> API:
+    def api(self) -> "API":
         return self._api
 
     @property

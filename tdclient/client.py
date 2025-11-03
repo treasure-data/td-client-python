@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
-
 import datetime
 import json
 from collections.abc import Iterator
@@ -27,7 +25,7 @@ class Client:
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         self._api = api.API(*args, **kwargs)
 
-    def __enter__(self) -> Client:
+    def __enter__(self) -> "Client":
         return self
 
     def __exit__(

@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
-
 import contextlib
 import csv
 import email.utils
@@ -33,7 +31,7 @@ from tdclient.result_api import ResultAPI
 from tdclient.schedule_api import ScheduleAPI
 from tdclient.server_status_api import ServerStatusAPI
 from tdclient.table_api import TableAPI
-from tdclient.types import BytesOrStream
+from tdclient.types import BytesOrStream, StreamBody
 from tdclient.user_api import UserAPI
 from tdclient.util import (
     csv_dict_record_reader,
@@ -534,7 +532,7 @@ class API(
         method: str,
         url: str,
         fields: dict[str, Any] | None = None,
-        body: bytes | bytearray | memoryview | array[int] | IO[bytes] | None = None,
+        body: StreamBody = None,
         headers: dict[str, str] | None = None,
         **kwargs: Any,
     ) -> urllib3.BaseHTTPResponse:

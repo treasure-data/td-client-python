@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import csv
 import io
 import logging
@@ -233,7 +231,7 @@ def csv_text_record_reader(
     """
     reader = csv.reader(io.TextIOWrapper(file_like, encoding), dialect=dialect)
     for row in reader:
-        yield dict(zip(columns, row))
+        yield dict(zip(columns, row, strict=False))
 
 
 def read_csv_records(
@@ -300,7 +298,7 @@ def normalized_msgpack(value: Any) -> Any:
     Returns:
         Normalized value
     """
-    if isinstance(value, (list, tuple)):
+    if isinstance(value, list | tuple):
         return [normalized_msgpack(v) for v in value]
     elif isinstance(value, dict):
         return dict(

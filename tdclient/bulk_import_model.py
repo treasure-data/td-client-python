@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
-
 import time
 from collections.abc import Callable, Iterator
 from typing import TYPE_CHECKING, Any
@@ -23,7 +21,7 @@ class BulkImport(Model):
     STATUS_COMMITTING = "committing"
     STATUS_COMMITTED = "committed"
 
-    def __init__(self, client: Client, **kwargs: Any) -> None:
+    def __init__(self, client: "Client", **kwargs: Any) -> None:
         super().__init__(client)
         self._feed(kwargs)
 
@@ -116,7 +114,7 @@ class BulkImport(Model):
         wait_interval: int = 5,
         wait_callback: Callable[[], None] | None = None,
         timeout: float | None = None,
-    ) -> Job:
+    ) -> "Job":
         """Perform bulk import
 
         Args:

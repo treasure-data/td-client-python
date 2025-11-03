@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
-
 import datetime
 from typing import TYPE_CHECKING, Any
 
@@ -208,7 +206,7 @@ class Table(Model):
             self._db_name, self._table_name, format, file, unique_id=unique_id
         )
 
-    def export_data(self, storage_type: str, **kwargs: Any) -> Job:
+    def export_data(self, storage_type: str, **kwargs: Any) -> "Job":
         """Export data from Treasure Data Service
 
         Args:

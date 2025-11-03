@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
-
-from typing import TYPE_CHECKING, Any, Callable
+from collections.abc import Callable
+from types import TracebackType
+from typing import TYPE_CHECKING, Any
 
 from tdclient import api, cursor, errors
 from tdclient.types import Priority
 
 if TYPE_CHECKING:
-    from types import TracebackType
-
     from tdclient.cursor import Cursor
 
 
@@ -22,7 +20,7 @@ class Connection:
         priority: Priority | None = None,
         retry_limit: int | None = None,
         wait_interval: int | None = None,
-        wait_callback: Callable[[Cursor], None] | None = None,
+        wait_callback: Callable[["Cursor"], None] | None = None,
         **kwargs: Any,
     ) -> None:
         cursor_kwargs = dict()
@@ -43,7 +41,7 @@ class Connection:
         self._api = api.API(**kwargs)
         self._cursor_kwargs = cursor_kwargs
 
-    def __enter__(self) -> Connection:
+    def __enter__(self) -> "Connection":
         return self
 
     def __exit__(
@@ -67,5 +65,5 @@ class Connection:
     def rollback(self) -> None:
         raise errors.NotSupportedError
 
-    def cursor(self) -> Cursor:
+    def cursor(self) -> "Cursor":
         return cursor.Cursor(self._api, **self._cursor_kwargs)
