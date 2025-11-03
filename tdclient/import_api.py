@@ -1,16 +1,11 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
-
 import contextlib
 import os
-from typing import TYPE_CHECKING, Any
+from contextlib import AbstractContextManager
+from typing import IO, Any
 
-if TYPE_CHECKING:
-    from contextlib import AbstractContextManager
-    from typing import IO
-
-    import urllib3
+import urllib3
 
 from tdclient.types import BytesOrStream, DataFormat, FileLike
 from tdclient.util import create_url

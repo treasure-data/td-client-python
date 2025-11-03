@@ -3,13 +3,33 @@ name: Python testing
 on: [push, pull_request]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ".[dev]"
+      - name: lint with ruff
+        run: |
+          ruff format tdclient --diff --exit-non-zero-on-fix
+          ruff check tdclient
+      - name: Run pyright
+        run: |
+          pyright tdclient
+
   test:
     runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 4
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
     steps:
       - uses: actions/checkout@v4
@@ -23,9 +43,6 @@ jobs:
           pip install ".[dev]"
           pip install -r requirements.txt -r test-requirements.txt
           pip install -U coveralls pyyaml
-      - name: Run pyright
-        run: |
-          pyright tdclient
       - name: Run test
         run: |
           coverage run --source=tdclient -m pytest tdclient/test

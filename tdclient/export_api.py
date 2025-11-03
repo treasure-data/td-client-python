@@ -1,16 +1,12 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
+from contextlib import AbstractContextManager
+from typing import Any
 
-from typing import TYPE_CHECKING, Any
+import urllib3
 
-if TYPE_CHECKING:
-    from contextlib import AbstractContextManager
-
-    import urllib3
-
-from tdclient.util import create_url
 from tdclient.types import ExportParams
+from tdclient.util import create_url
 
 
 class ExportAPI:
@@ -23,7 +19,7 @@ class ExportAPI:
     def post(
         self,
         path: str,
-        params: dict[str, Any] | None = None,
+        params: dict[str, Any] | bytes | None = None,
         headers: dict[str, str] | None = None,
         **kwargs: Any,
     ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...

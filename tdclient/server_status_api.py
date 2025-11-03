@@ -1,13 +1,9 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
+from contextlib import AbstractContextManager
+from typing import Any
 
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:
-    from contextlib import AbstractContextManager
-
-    import urllib3
+import urllib3
 
 
 class ServerStatusAPI:
@@ -35,7 +31,7 @@ class ServerStatusAPI:
         with self.get("/v3/system/server_status") as res:
             code, body = res.status, res.read()
             if code != 200:
-                return "Server is down (%d)" % (code,)
+                return f"Server is down ({code})"
             js = self.checked_json(body, ["status"])
             status = js["status"]
             return status

@@ -1,17 +1,13 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
-
 import datetime
-from typing import TYPE_CHECKING, Any
+from contextlib import AbstractContextManager
+from typing import Any
+
+import urllib3
 
 from tdclient.types import ScheduleParams
 from tdclient.util import create_url, get_or_else, parse_date
-
-if TYPE_CHECKING:
-    from contextlib import AbstractContextManager
-
-    import urllib3
 
 
 class ScheduleAPI:
@@ -24,14 +20,14 @@ class ScheduleAPI:
     def get(
         self,
         path: str,
-        params: dict[str, Any] | None = None,
+        params: dict[str, Any] | bytes | None = None,
         headers: dict[str, str] | None = None,
         **kwargs: Any,
     ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
     def post(
         self,
         path: str,
-        params: dict[str, Any] | None = None,
+        params: dict[str, Any] | bytes | None = None,
         headers: dict[str, str] | None = None,
         **kwargs: Any,
     ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...

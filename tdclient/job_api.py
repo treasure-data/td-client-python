@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
-
 import codecs
 import gzip
 import json
@@ -10,18 +8,14 @@ import os
 import tempfile
 from collections.abc import Iterator
 from concurrent.futures import ThreadPoolExecutor
-from typing import TYPE_CHECKING, Any, Literal
+from contextlib import AbstractContextManager
+from typing import Any, Literal
 
 import msgpack
-
-if TYPE_CHECKING:
-    from contextlib import AbstractContextManager
-
-    import urllib3
+import urllib3
 
 from tdclient.types import Priority
 from tdclient.util import create_url, get_or_else, parse_date
-
 
 log = logging.getLogger(__name__)
 
@@ -36,13 +30,13 @@ class JobAPI:
     def get(
         self,
         url: str,
-        params: dict[str, Any] | None = None,
+        params: dict[str, Any] | bytes | None = None,
         headers: dict[str, str] | None = None,
     ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
     def post(
         self,
         path: str,
-        params: dict[str, Any] | None = None,
+        params: dict[str, Any] | bytes | None = None,
         headers: dict[str, str] | None = None,
         **kwargs: Any,
     ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
@@ -241,8 +235,7 @@ class JobAPI:
         Yields:
              Row in a result
         """
-        for row in self.job_result_format_each(job_id, "msgpack"):
-            yield row
+        yield from self.job_result_format_each(job_id, "msgpack")
 
     def job_result_format(
         self, job_id: str, format: str, header: bool = False
@@ -454,7 +447,7 @@ class JobAPI:
                 if priority_name in self.JOB_PRIORITY:
                     priority_value = self.JOB_PRIORITY[priority_name]
                 else:
-                    raise ValueError("unknown job priority: %s" % (priority_name,))
+                    raise ValueError(f"unknown job priority: {priority_name}")
             else:
                 priority_value = priority
             params["priority"] = priority_value

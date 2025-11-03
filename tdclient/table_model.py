@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
-
 import datetime
 from typing import TYPE_CHECKING, Any
 
@@ -17,7 +15,7 @@ class Table(Model):
     """Database table on Treasure Data Service"""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super(Table, self).__init__(args[0])
+        super().__init__(args[0])
 
         self.database: Database | None = None
         self._db_name: str = args[1]
@@ -141,7 +139,7 @@ class Table(Model):
     @property
     def identifier(self) -> str:
         """a string identifier of the table"""
-        return "%s.%s" % (self._db_name, self._table_name)
+        return f"{self._db_name}.{self._table_name}"
 
     def delete(self) -> str:
         """a string represents the type of deleted table"""
@@ -208,7 +206,7 @@ class Table(Model):
             self._db_name, self._table_name, format, file, unique_id=unique_id
         )
 
-    def export_data(self, storage_type: str, **kwargs: Any) -> Job:
+    def export_data(self, storage_type: str, **kwargs: Any) -> "Job":
         """Export data from Treasure Data Service
 
         Args:
@@ -260,8 +258,8 @@ class Table(Model):
                 float(self._estimated_storage_size) / (1024 * 1024 * 1024)
             )
         else:
-            return "%d GB" % int(
-                float(self._estimated_storage_size) / (1024 * 1024 * 1024)
+            return (
+                f"{int(float(self._estimated_storage_size) / (1024 * 1024 * 1024))} GB"
             )
 
     def _update_database(self) -> None:

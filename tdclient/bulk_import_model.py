@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
-
 import time
 from collections.abc import Callable, Iterator
 from typing import TYPE_CHECKING, Any
@@ -23,8 +21,8 @@ class BulkImport(Model):
     STATUS_COMMITTING = "committing"
     STATUS_COMMITTED = "committed"
 
-    def __init__(self, client: Client, **kwargs: Any) -> None:
-        super(BulkImport, self).__init__(client)
+    def __init__(self, client: "Client", **kwargs: Any) -> None:
+        super().__init__(client)
         self._feed(kwargs)
 
     def _feed(self, data: dict[str, Any] | None = None) -> None:
@@ -116,7 +114,7 @@ class BulkImport(Model):
         wait_interval: int = 5,
         wait_callback: Callable[[], None] | None = None,
         timeout: float | None = None,
-    ) -> Job:
+    ) -> "Job":
         """Perform bulk import
 
         Args:
@@ -128,9 +126,7 @@ class BulkImport(Model):
         """
         self.update()
         if not self.upload_frozen:
-            raise (
-                RuntimeError('bulk import session "%s" is not frozen' % (self.name,))
-            )
+            raise (RuntimeError(f'bulk import session "{self.name}" is not frozen'))
         job = self._client.perform_bulk_import(self.name)
         if wait:
             job.wait(
@@ -164,8 +160,7 @@ class BulkImport(Model):
         Yields:
             Error record
         """
-        for record in self._client.bulk_import_error_records(self.name):
-            yield record
+        yield from self._client.bulk_import_error_records(self.name)
 
     def upload_part(self, part_name: str, bytes_or_stream: FileLike, size: int) -> bool:
         """Upload a part to bulk import session

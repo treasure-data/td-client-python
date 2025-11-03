@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
-
 import contextlib
 import csv
 import email.utils
@@ -11,7 +9,6 @@ import io
 import json
 import logging
 import os
-import socket
 import ssl
 import tempfile
 import time
@@ -34,7 +31,7 @@ from tdclient.result_api import ResultAPI
 from tdclient.schedule_api import ScheduleAPI
 from tdclient.server_status_api import ServerStatusAPI
 from tdclient.table_api import TableAPI
-from tdclient.types import BytesOrStream
+from tdclient.types import BytesOrStream, StreamBody
 from tdclient.user_api import UserAPI
 from tdclient.util import (
     csv_dict_record_reader,
@@ -108,11 +105,11 @@ class API(
         if user_agent is not None:
             self._user_agent = user_agent
         else:
-            self._user_agent = "TD-Client-Python/%s" % (version.__version__)
+            self._user_agent = f"TD-Client-Python/{version.__version__}"
 
         if endpoint is not None:
             if not urlparse.urlparse(endpoint).scheme:
-                endpoint = "https://{}".format(endpoint)
+                endpoint = f"https://{endpoint}"
             self._endpoint = endpoint
         elif os.getenv("TD_API_SERVER"):
             self._endpoint = os.getenv("TD_API_SERVER")
@@ -154,7 +151,7 @@ class API(
             if http_proxy.startswith("http://"):
                 return self._init_http_proxy(http_proxy, **kwargs)
             else:
-                return self._init_http_proxy("http://%s" % (http_proxy,), **kwargs)
+                return self._init_http_proxy(f"http://{http_proxy}", **kwargs)
 
     def _init_http_proxy(self, http_proxy: str, **kwargs: Any) -> urllib3.ProxyManager:
         pool_options = dict(kwargs)
@@ -164,7 +161,7 @@ class API(
         if "@" in netloc:
             auth, netloc = netloc.split("@", 2)
             pool_options["proxy_headers"] = urllib3.make_headers(proxy_basic_auth=auth)
-        return urllib3.ProxyManager("%s://%s" % (scheme, netloc), **pool_options)
+        return urllib3.ProxyManager(f"{scheme}://{netloc}", **pool_options)
 
     def get(
         self,
@@ -214,12 +211,12 @@ class API(
                         self._max_cumul_retry_delay,
                     )
             except (
+                OSError,
                 urllib3.exceptions.TimeoutStateError,
                 urllib3.exceptions.TimeoutError,
                 urllib3.exceptions.PoolError,
                 http.client.IncompleteRead,
                 TimeoutError,
-                socket.error,
             ):
                 pass
 
@@ -235,12 +232,7 @@ class API(
                 retry_delay *= 2
             else:
                 raise APIError(
-                    "Retrying stopped after %d seconds. (cumulative: %d/%d)"
-                    % (
-                        self._max_cumul_retry_delay,
-                        cumul_retry_delay,
-                        self._max_cumul_retry_delay,
-                    )
+                    f"Retrying stopped after {self._max_cumul_retry_delay} seconds. (cumulative: {cumul_retry_delay}/{self._max_cumul_retry_delay})"
                 )
 
         log.debug(
@@ -254,7 +246,7 @@ class API(
     def post(
         self,
         path: str,
-        params: dict[str, Any] | None = None,
+        params: dict[str, Any] | bytes | None = None,
         headers: dict[str, str] | None = None,
         **kwargs: Any,
     ) -> contextlib.AbstractContextManager[urllib3.BaseHTTPResponse]:
@@ -314,13 +306,15 @@ class API(
                         self._max_cumul_retry_delay,
                     )
             except (
+                OSError,
                 urllib3.exceptions.TimeoutStateError,
                 urllib3.exceptions.TimeoutError,
                 urllib3.exceptions.PoolError,
-                socket.error,
             ):
                 if not self._retry_post_requests:
-                    raise APIError("Retrying stopped by retry_post_requests == False")
+                    raise APIError(
+                        "Retrying stopped by retry_post_requests == False"
+                    ) from None
 
             if cumul_retry_delay <= self._max_cumul_retry_delay:
                 log.warning(
@@ -334,12 +328,7 @@ class API(
                 retry_delay *= 2
             else:
                 raise APIError(
-                    "Retrying stopped after %d seconds. (cumulative: %d/%d)"
-                    % (
-                        self._max_cumul_retry_delay,
-                        cumul_retry_delay,
-                        self._max_cumul_retry_delay,
-                    )
+                    f"Retrying stopped after {self._max_cumul_retry_delay} seconds. (cumulative: {cumul_retry_delay}/{self._max_cumul_retry_delay})"
                 )
 
         log.debug(
@@ -408,12 +397,12 @@ class API(
             else:
                 raise APIError("Error %d: %s", response.status, response.data)
         except (
+            OSError,
             urllib3.exceptions.TimeoutStateError,
             urllib3.exceptions.TimeoutError,
             urllib3.exceptions.PoolError,
-            socket.error,
         ):
-            raise APIError("Error: %s" % (repr(response)))
+            raise APIError(f"Error: {repr(response)}") from None
 
         log.debug(
             "REST PUT response:\n  headers: %s\n  status: %d\n  body: <omitted>",
@@ -470,10 +459,10 @@ class API(
                         self._max_cumul_retry_delay,
                     )
             except (
+                OSError,
                 urllib3.exceptions.TimeoutStateError,
                 urllib3.exceptions.TimeoutError,
                 urllib3.exceptions.PoolError,
-                socket.error,
             ):
                 pass
 
@@ -489,12 +478,7 @@ class API(
                 retry_delay *= 2
             else:
                 raise APIError(
-                    "Retrying stopped after %d seconds. (cumulative: %d/%d)"
-                    % (
-                        self._max_cumul_retry_delay,
-                        cumul_retry_delay,
-                        self._max_cumul_retry_delay,
-                    )
+                    f"Retrying stopped after {self._max_cumul_retry_delay} seconds. (cumulative: {cumul_retry_delay}/{self._max_cumul_retry_delay})"
                 )
 
         log.debug(
@@ -536,7 +520,7 @@ class API(
         # use default headers first
         _headers = dict(self._headers)
         # add default headers
-        _headers["authorization"] = "TD1 %s" % (self._apikey,)
+        _headers["authorization"] = f"TD1 {self._apikey}"
         _headers["date"] = email.utils.formatdate(time.time())
         _headers["user-agent"] = self._user_agent
         # override given headers
@@ -548,7 +532,7 @@ class API(
         method: str,
         url: str,
         fields: dict[str, Any] | None = None,
-        body: bytes | bytearray | memoryview | array[int] | IO[bytes] | None = None,
+        body: StreamBody = None,
         headers: dict[str, str] | None = None,
         **kwargs: Any,
     ) -> urllib3.BaseHTTPResponse:
@@ -571,28 +555,26 @@ class API(
         status_code = res.status
         s = body if isinstance(body, str) else body.decode("utf-8")
         if status_code == 404:
-            raise errors.NotFoundError("%s: %s" % (msg, s))
+            raise errors.NotFoundError(f"{msg}: {s}")
         elif status_code == 409:
-            raise errors.AlreadyExistsError("%s: %s" % (msg, s))
+            raise errors.AlreadyExistsError(f"{msg}: {s}")
         elif status_code == 401:
-            raise errors.AuthError("%s: %s" % (msg, s))
+            raise errors.AuthError(f"{msg}: {s}")
         elif status_code == 403:
-            raise errors.ForbiddenError("%s: %s" % (msg, s))
+            raise errors.ForbiddenError(f"{msg}: {s}")
         else:
-            raise errors.APIError("%d: %s: %s" % (status_code, msg, s))
+            raise errors.APIError(f"{status_code}: {msg}: {s}")
 
     def checked_json(self, body: bytes, required: list[str]) -> dict[str, Any]:
         js = None
         try:
             js = json.loads(body.decode("utf-8"))
         except ValueError as error:
-            raise APIError("Unexpected API response: %s: %s" % (error, repr(body)))
+            raise APIError(f"Unexpected API response: {error}: {repr(body)}") from error
         js = dict(js)
         if 0 < [k in js for k in required].count(False):
             missing = [k for k in required if k not in js]
-            raise APIError(
-                "Unexpected API response: %s: %s" % (repr(missing), repr(body))
-            )
+            raise APIError(f"Unexpected API response: {repr(missing)}: {repr(body)}")
         return js
 
     def close(self) -> None:
@@ -619,11 +601,11 @@ class API(
         compressed = fmt.endswith(".gz")
         if compressed:
             fmt = fmt[0 : len(fmt) - len(".gz")]
-        reader_name = "_read_%s_file" % (fmt,)
+        reader_name = f"_read_{fmt}_file"
         if hasattr(self, reader_name):
             reader = getattr(self, reader_name)
         else:
-            raise TypeError("unknown format: %s" % (fmt,))
+            raise TypeError(f"unknown format: {fmt}")
         if hasattr(file_like, "read"):
             if compressed:
                 file_like = gzip.GzipFile(fileobj=file_like)

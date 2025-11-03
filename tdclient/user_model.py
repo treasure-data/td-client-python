@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
-
 from typing import TYPE_CHECKING, Any
 
 from tdclient.model import Model
@@ -15,14 +13,14 @@ class User(Model):
 
     def __init__(
         self,
-        client: Client,
+        client: "Client",
         name: str,
         org_name: str,
         role_names: list[str],
         email: str,
         **kwargs: Any,
     ) -> None:
-        super(User, self).__init__(client)
+        super().__init__(client)
         self._name = name
         self._org_name = org_name
         self._role_names = role_names

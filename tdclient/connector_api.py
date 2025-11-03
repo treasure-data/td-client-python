@@ -1,14 +1,10 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
-
 import json
-from typing import TYPE_CHECKING, Any
+from contextlib import AbstractContextManager
+from typing import Any
 
-if TYPE_CHECKING:
-    from contextlib import AbstractContextManager
-
-    import urllib3
+import urllib3
 
 from tdclient.types import BytesOrStream
 from tdclient.util import create_url, normalize_connector_config
@@ -29,7 +25,11 @@ class ConnectorAPI:
         **kwargs: Any,
     ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
     def post(
-        self, url: str, params: Any, headers: dict[str, str] | None = None
+        self,
+        path: str,
+        params: dict[str, Any] | bytes | None = None,
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
     ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
     def put(
         self,
@@ -226,7 +226,7 @@ class ConnectorAPI:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error(
-                    "DataConnectorSession: %s created failed" % (name,), res, body
+                    f"DataConnectorSession: {name} created failed", res, body
                 )
             return self.checked_json(body, [])
 
@@ -243,7 +243,7 @@ class ConnectorAPI:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error(
-                    "DataConnectorSession: %s retrieve failed" % (name,), res, body
+                    f"DataConnectorSession: {name} retrieve failed", res, body
                 )
             return self.checked_json(body, [])
 
@@ -269,7 +269,7 @@ class ConnectorAPI:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error(
-                    "DataConnectorSession: %s update failed" % (name,), res, body
+                    f"DataConnectorSession: {name} update failed", res, body
                 )
             return self.checked_json(body, [])
 
@@ -286,7 +286,7 @@ class ConnectorAPI:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error(
-                    "DataConnectorSession: %s delete failed" % (name,), res, body
+                    f"DataConnectorSession: {name} delete failed", res, body
                 )
             return self.checked_json(body, [])
 
@@ -303,7 +303,7 @@ class ConnectorAPI:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error(
-                    "history of DataConnectorSession: %s retrieve failed" % (name,),
+                    f"history of DataConnectorSession: {name} retrieve failed",
                     res,
                     body,
                 )
@@ -335,6 +335,6 @@ class ConnectorAPI:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error(
-                    "DataConnectorSession: %s job create failed" % (name,), res, body
+                    f"DataConnectorSession: {name} job create failed", res, body
                 )
             return self.checked_json(body, [])

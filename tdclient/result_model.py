@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
-
 from typing import TYPE_CHECKING
 
 from tdclient.model import Model
@@ -13,8 +11,8 @@ if TYPE_CHECKING:
 class Result(Model):
     """Result on Treasure Data Service"""
 
-    def __init__(self, client: Client, name: str, url: str, org_name: str) -> None:
-        super(Result, self).__init__(client)
+    def __init__(self, client: "Client", name: str, url: str, org_name: str) -> None:
+        super().__init__(client)
         self._name = name
         self._url = url
         self._org_name = org_name

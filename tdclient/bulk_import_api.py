@@ -1,22 +1,16 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
-
 import collections
 import contextlib
 import gzip
 import io
 import os
 from collections.abc import Iterator
-from typing import TYPE_CHECKING, Any
+from contextlib import AbstractContextManager
+from typing import IO, Any
 
 import msgpack
-
-if TYPE_CHECKING:
-    from contextlib import AbstractContextManager
-    from typing import IO
-
-    import urllib3
+import urllib3
 
 from tdclient.types import BulkImportParams, BytesOrStream, DataFormat, FileLike
 from tdclient.util import create_url
@@ -32,14 +26,14 @@ class BulkImportAPI:
     def get(
         self,
         path: str,
-        params: dict[str, Any] | None = None,
+        params: dict[str, Any] | bytes | None = None,
         headers: dict[str, str] | None = None,
         **kwargs: Any,
     ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
     def post(
         self,
         path: str,
-        params: dict[str, Any] | None = None,
+        params: dict[str, Any] | bytes | None = None,
         headers: dict[str, str] | None = None,
         **kwargs: Any,
     ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
@@ -177,11 +171,11 @@ class BulkImportAPI:
 
         if 1 < d["."]:
             raise ValueError(
-                "part names cannot contain multiple periods: %s" % (repr(part_name))
+                f"part names cannot contain multiple periods: {repr(part_name)}"
             )
 
         if 0 < part_name.find("/"):
-            raise ValueError("part name must not contain '/': %s" % (repr(part_name)))
+            raise ValueError(f"part name must not contain '/': {repr(part_name)}")
 
     def bulk_import_upload_part(
         self, name: str, part_name: str, stream: BytesOrStream, size: int
@@ -385,5 +379,4 @@ class BulkImportAPI:
             decompressor = gzip.GzipFile(fileobj=body)
 
             unpacker = msgpack.Unpacker(decompressor, raw=False)
-            for row in unpacker:
-                yield row
+            yield from unpacker

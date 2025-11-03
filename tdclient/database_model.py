@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
-
 import datetime
 from typing import TYPE_CHECKING, Any
 
@@ -19,8 +17,8 @@ class Database(Model):
     PERMISSIONS = ["administrator", "full_access", "import_only", "query_only"]
     PERMISSION_LIST_TABLES = ["administrator", "full_access"]
 
-    def __init__(self, client: Client, db_name: str, **kwargs: Any) -> None:
-        super(Database, self).__init__(client)
+    def __init__(self, client: "Client", db_name: str, **kwargs: Any) -> None:
+        super().__init__(client)
         self._db_name = db_name
         self._tables: list[Table] | None = kwargs.get("tables")
         self._count: int | None = kwargs.get("count")
@@ -57,7 +55,7 @@ class Database(Model):
         """
         return self._db_name
 
-    def tables(self) -> list[Table]:
+    def tables(self) -> list["Table"]:
         """
         Returns:
              a list of :class:`tdclient.model.Table`
@@ -67,7 +65,7 @@ class Database(Model):
         assert self._tables is not None
         return self._tables
 
-    def create_log_table(self, name: str) -> Table:
+    def create_log_table(self, name: str) -> "Table":
         """
         Args:
             name (str): name of new log table
@@ -77,7 +75,7 @@ class Database(Model):
         """
         return self._client.create_log_table(self._db_name, name)
 
-    def table(self, table_name: str) -> Table:
+    def table(self, table_name: str) -> "Table":
         """
         Args:
             table_name (str): name of a table
@@ -95,7 +93,7 @@ class Database(Model):
         """
         return self._client.delete_database(self._db_name)
 
-    def query(self, q: str, **kwargs: Any) -> Job:
+    def query(self, q: str, **kwargs: Any) -> "Job":
         """Run a query on the database
 
         Args:
