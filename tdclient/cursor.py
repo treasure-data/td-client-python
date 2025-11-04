@@ -48,6 +48,10 @@ class Cursor:
 
     def execute(self, query: str, args: dict[str, Any] | None = None) -> str | None:
         if args is not None:
+            if not isinstance(args, dict):  # type: ignore[reportUnnecessaryIsInstance]
+                raise errors.NotSupportedError(
+                    "args must be a dict for named placeholders"
+                )
             query = query.format(**args)
         self._executed = self._api.query(query, **self._query_kwargs)
         self._rows = None

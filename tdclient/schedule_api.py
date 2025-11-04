@@ -212,7 +212,6 @@ class ScheduleAPI:
             time (int): Time in Unix epoch format that would be set as TD_SCHEDULED_TIME
             num (int, optional): Indicates how many times the query will be executed.
                 Value should be 9 or less.
-                Default: 1
         Returns:
             list of tuple: [(job_id:int, type:str, scheduled_at:str)]
         """

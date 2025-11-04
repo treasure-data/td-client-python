@@ -155,5 +155,4 @@ class Schedule(Model):
             [:class:`tdclient.models.ScheduledJob`]
         """
         assert self.name is not None, "schedule name is required"
-        assert num is not None, "num parameter is required"
         return self._client.run_schedule(self.name, time, num)

@@ -824,7 +824,9 @@ class Client:
 
         return [scheduled_job(m) for m in result]
 
-    def run_schedule(self, name: str, time: int, num: int) -> list[models.ScheduledJob]:
+    def run_schedule(
+        self, name: str, time: int, num: int | None = None
+    ) -> list[models.ScheduledJob]:
         """Execute the specified query.
 
         Args:
