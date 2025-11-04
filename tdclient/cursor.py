@@ -48,10 +48,7 @@ class Cursor:
 
     def execute(self, query: str, args: dict[str, Any] | None = None) -> str | None:
         if args is not None:
-            if isinstance(args, dict):
-                query = query.format(**args)
-            else:
-                raise errors.NotSupportedError
+            query = query.format(**args)
         self._executed = self._api.query(query, **self._query_kwargs)
         self._rows = None
         self._rownumber = 0

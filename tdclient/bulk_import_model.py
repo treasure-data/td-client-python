@@ -5,7 +5,7 @@ from collections.abc import Callable, Iterator
 from typing import TYPE_CHECKING, Any
 
 from tdclient.model import Model
-from tdclient.types import FileLike
+from tdclient.types import BytesOrStream, DataFormat, FileLike
 
 if TYPE_CHECKING:
     from tdclient.client import Client
@@ -112,7 +112,7 @@ class BulkImport(Model):
         self,
         wait: bool = False,
         wait_interval: int = 5,
-        wait_callback: Callable[[], None] | None = None,
+        wait_callback: Callable[["Job"], None] | None = None,
         timeout: float | None = None,
     ) -> "Job":
         """Perform bulk import
@@ -162,7 +162,9 @@ class BulkImport(Model):
         """
         yield from self._client.bulk_import_error_records(self.name)
 
-    def upload_part(self, part_name: str, bytes_or_stream: FileLike, size: int) -> bool:
+    def upload_part(
+        self, part_name: str, bytes_or_stream: BytesOrStream, size: int
+    ) -> None:
         """Upload a part to bulk import session
 
         Args:
@@ -177,8 +179,8 @@ class BulkImport(Model):
         return response
 
     def upload_file(
-        self, part_name: str, fmt: str, file_like: FileLike, **kwargs: Any
-    ) -> float:
+        self, part_name: str, fmt: DataFormat, file_like: FileLike, **kwargs: Any
+    ) -> None:
         """Upload a part to Bulk Import session, from an existing file on filesystem.
 
         Args:

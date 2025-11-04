@@ -790,12 +790,12 @@ class Client:
         """
         result = self.api.history(name, _from or 0, to)
 
-        def scheduled_job(m):
+        def scheduled_job(m: tuple[Any, ...]) -> models.ScheduledJob:
             (
                 scheduled_at,
                 job_id,
                 type,
-                status,
+                _status,
                 query,
                 start_at,
                 end_at,
@@ -837,8 +837,11 @@ class Client:
         """
         results = self.api.run_schedule(name, time, num)
 
-        def scheduled_job(m):
+        def scheduled_job(
+            m: tuple[Any, str, datetime.datetime | None],
+        ) -> models.ScheduledJob:
             job_id, type, scheduled_at = m
+            assert scheduled_at is not None
             return models.ScheduledJob(self, scheduled_at, job_id, type, None)
 
         return [scheduled_job(m) for m in results]
@@ -904,7 +907,7 @@ class Client:
         """
         results = self.api.list_result()
 
-        def result(m):
+        def result(m: tuple[str, str, None]) -> models.Result:
             name, url, organizations = m
             return models.Result(self, name, url, organizations)
 
@@ -943,7 +946,7 @@ class Client:
         """
         results = self.api.list_users()
 
-        def user(m):
+        def user(m: tuple[str, None, None, str]) -> models.User:
             name, org, roles, email = m
             return models.User(self, name, org, roles, email)
 
@@ -1011,7 +1014,7 @@ class Client:
 
 
 def job_from_dict(client: Client, dd: dict[str, Any], **values: Any) -> models.Job:
-    d = dict()
+    d: dict[str, Any] = dict()
     d.update(dd)
     d.update(values)
     return models.Job(

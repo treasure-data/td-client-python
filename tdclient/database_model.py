@@ -65,7 +65,7 @@ class Database(Model):
         assert self._tables is not None
         return self._tables
 
-    def create_log_table(self, name: str) -> "Table":
+    def create_log_table(self, name: str) -> bool:
         """
         Args:
             name (str): name of new log table

@@ -14,11 +14,11 @@ import tempfile
 import time
 import urllib.parse as urlparse
 from array import array
+from collections.abc import Iterator
 from typing import IO, Any, cast
 
 import msgpack
 import urllib3
-import urllib3.util
 
 from tdclient import errors, version
 from tdclient.bulk_import_api import BulkImportAPI
@@ -31,7 +31,7 @@ from tdclient.result_api import ResultAPI
 from tdclient.schedule_api import ScheduleAPI
 from tdclient.server_status_api import ServerStatusAPI
 from tdclient.table_api import TableAPI
-from tdclient.types import BytesOrStream, StreamBody
+from tdclient.types import BytesOrStream, DataFormat, FileLike, StreamBody
 from tdclient.user_api import UserAPI
 from tdclient.util import (
     csv_dict_record_reader,
@@ -42,7 +42,7 @@ from tdclient.util import (
 )
 
 try:
-    import certifi
+    import certifi  # type: ignore[reportMissingImports]
 except ImportError:
     certifi = None
 
@@ -576,7 +576,9 @@ class API(
         # all connections in pool will be closed eventually during gc.
         self.http.clear()
 
-    def _prepare_file(self, file_like, fmt, **kwargs):
+    def _prepare_file(
+        self, file_like: FileLike, fmt: DataFormat, **kwargs: Any
+    ) -> IO[bytes]:
         fp = tempfile.TemporaryFile()
         with contextlib.closing(gzip.GzipFile(mode="wb", fileobj=fp)) as gz:
             packer = msgpack.Packer()
@@ -591,34 +593,41 @@ class API(
         fp.seek(0)
         return fp
 
-    def _read_file(self, file_like, fmt, **kwargs):
+    def _read_file(self, file_like: FileLike, fmt: DataFormat, **kwargs: Any) -> Any:
         compressed = fmt.endswith(".gz")
+        fmt_str = str(fmt)
         if compressed:
-            fmt = fmt[0 : len(fmt) - len(".gz")]
-        reader_name = f"_read_{fmt}_file"
+            fmt_str = fmt_str[0 : len(fmt_str) - len(".gz")]
+        reader_name = f"_read_{fmt_str}_file"
         if hasattr(self, reader_name):
             reader = getattr(self, reader_name)
         else:
             raise TypeError(f"unknown format: {fmt}")
         if hasattr(file_like, "read"):
             if compressed:
-                file_like = gzip.GzipFile(fileobj=file_like)
+                file_like = gzip.GzipFile(fileobj=file_like)  # type: ignore[arg-type]
             return reader(file_like, **kwargs)
         else:
+            # At this point, file_like must be str or bytes (not IO[bytes])
+            file_path = cast("str | bytes", file_like)
             if compressed:
-                file_like = gzip.GzipFile(fileobj=open(file_like, "rb"))
+                file_like = gzip.GzipFile(fileobj=open(file_path, "rb"))  # type: ignore[arg-type]
             else:
-                file_like = open(file_like, "rb")
+                file_like = open(file_path, "rb")
             return reader(file_like, **kwargs)
 
-    def _read_msgpack_file(self, file_like, **kwargs):
+    def _read_msgpack_file(
+        self, file_like: IO[bytes], **kwargs: Any
+    ) -> Iterator[dict[str, Any]]:
         # current impl doesn't tolerate any unpack error
-        unpacker = msgpack.Unpacker(file_like, raw=False)
+        unpacker = msgpack.Unpacker(file_like, raw=False)  # type: ignore[arg-type]
         for record in unpacker:
             validate_record(record)
             yield record
 
-    def _read_json_file(self, file_like, **kwargs):
+    def _read_json_file(
+        self, file_like: IO[bytes], **kwargs: Any
+    ) -> Iterator[dict[str, Any]]:
         # current impl doesn't tolerate any JSON parse error
         for s in file_like:
             record = json.loads(s.decode("utf-8"))
@@ -627,20 +636,22 @@ class API(
 
     def _read_csv_file(
         self,
-        file_like,
-        dialect=csv.excel,
-        columns=None,
-        encoding="utf-8",
-        dtypes=None,
-        converters=None,
-        **kwargs,
-    ):
+        file_like: IO[bytes],
+        dialect: type[csv.Dialect] = csv.excel,
+        columns: list[str] | None = None,
+        encoding: str = "utf-8",
+        dtypes: dict[str, Any] | None = None,
+        converters: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> Iterator[dict[str, Any]]:
         if columns is None:
-            reader = csv_dict_record_reader(file_like, encoding, dialect)
+            reader = csv_dict_record_reader(file_like, encoding, dialect)  # type: ignore[arg-type]
         else:
-            reader = csv_text_record_reader(file_like, encoding, dialect, columns)
+            reader = csv_text_record_reader(file_like, encoding, dialect, columns)  # type: ignore[arg-type]
 
         return read_csv_records(reader, dtypes, converters, **kwargs)
 
-    def _read_tsv_file(self, file_like, **kwargs):
+    def _read_tsv_file(
+        self, file_like: IO[bytes], **kwargs: Any
+    ) -> Iterator[dict[str, Any]]:
         return self._read_csv_file(file_like, dialect=csv.excel_tab, **kwargs)

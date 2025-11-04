@@ -17,7 +17,7 @@ jobs:
         with:
           python-version: "3.13"
       - name: Install dependencies
-        run: uv sync --extra dev
+        run: uv sync --dev
       - name: lint with ruff
         run: |
           uv run ruff format tdclient --diff --exit-non-zero-on-fix

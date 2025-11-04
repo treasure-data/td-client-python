@@ -299,10 +299,10 @@ def normalized_msgpack(value: Any) -> Any:
         Normalized value
     """
     if isinstance(value, list | tuple):
-        return [normalized_msgpack(v) for v in value]
+        return [normalized_msgpack(v) for v in value]  # type: ignore[reportUnknownVariableType]
     elif isinstance(value, dict):
         return dict(
-            [(normalized_msgpack(k), normalized_msgpack(v)) for (k, v) in value.items()]
+            [(normalized_msgpack(k), normalized_msgpack(v)) for (k, v) in value.items()]  # type: ignore[reportUnknownVariableType]
         )
 
     if isinstance(value, int):

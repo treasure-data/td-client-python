@@ -125,7 +125,7 @@ class ConnectorAPI:
                 self.raise_error("DataConnector configuration guess failed", res, body)
             return self.checked_json(body, [])
 
-    def connector_preview(self, job):
+    def connector_preview(self, job: dict[str, Any]) -> dict[str, Any]:
         """Show the preview of the Data Connector job.
 
         Args:
@@ -135,14 +135,14 @@ class ConnectorAPI:
              :class:`dict`
         """
         headers = {"content-type": "application/json; charset=utf-8"}
-        payload = json.dumps(job).encode("utf-8") if isinstance(job, dict) else job
+        payload = json.dumps(job).encode("utf-8")
         with self.post("/v3/bulk_loads/preview", payload, headers=headers) as res:
             code, body = res.status, res.read()
             if code != 200:
                 self.raise_error("DataConnector job preview failed", res, body)
             return self.checked_json(body, [])
 
-    def connector_issue(self, db, table, job):
+    def connector_issue(self, db: str, table: str, job: dict[str, Any]) -> str:
         """Create a Data Connector job.
 
         Args:
@@ -167,7 +167,7 @@ class ConnectorAPI:
             js = self.checked_json(body, ["job_id"])
             return str(js["job_id"])
 
-    def connector_list(self):
+    def connector_list(self) -> list[dict[str, Any]]:
         """Show the list of available Data Connector sessions.
 
         Returns:
@@ -180,7 +180,14 @@ class ConnectorAPI:
             # cannot use `checked_json` since `GET /v3/bulk_loads` returns an array
             return json.loads(body.decode("utf-8"))
 
-    def connector_create(self, name, database, table, job, params=None):
+    def connector_create(
+        self,
+        name: str,
+        database: str,
+        table: str,
+        job: dict[str, Any],
+        params: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Create a Data Connector session.
 
         Args:
@@ -230,7 +237,7 @@ class ConnectorAPI:
                 )
             return self.checked_json(body, [])
 
-    def connector_show(self, name):
+    def connector_show(self, name: str) -> dict[str, Any]:
         """Show a specific Data Connector session information.
 
         Args:
@@ -247,7 +254,7 @@ class ConnectorAPI:
                 )
             return self.checked_json(body, [])
 
-    def connector_update(self, name, job):
+    def connector_update(self, name: str, job: dict[str, Any]) -> dict[str, Any]:
         """Update a specific Data Connector session.
 
         Args:
@@ -273,7 +280,7 @@ class ConnectorAPI:
                 )
             return self.checked_json(body, [])
 
-    def connector_delete(self, name):
+    def connector_delete(self, name: str) -> dict[str, Any]:
         """Delete a Data Connector session.
 
         Args:
@@ -290,7 +297,7 @@ class ConnectorAPI:
                 )
             return self.checked_json(body, [])
 
-    def connector_history(self, name):
+    def connector_history(self, name: str) -> list[dict[str, Any]]:
         """Show the list of the executed jobs information for the Data Connector job.
 
         Args:
@@ -309,7 +316,7 @@ class ConnectorAPI:
                 )
             return json.loads(body.decode("utf-8"))
 
-    def connector_run(self, name, **kwargs):
+    def connector_run(self, name: str, **kwargs: Any) -> dict[str, Any]:
         """Create a job to execute Data Connector session.
 
         Args:

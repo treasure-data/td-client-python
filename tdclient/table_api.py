@@ -20,7 +20,7 @@ class TableAPI:
     def get(
         self,
         path: str,
-        params: dict[str, Any] | bytes | None = None,
+        params: dict[str, Any] | None = None,
         headers: dict[str, str] | None = None,
         **kwargs: Any,
     ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
@@ -71,7 +71,7 @@ class TableAPI:
             if code != 200:
                 self.raise_error("List tables failed", res, body)
             js = self.checked_json(body, ["tables"])
-            result = {}
+            result: dict[str, dict[str, Any]] = {}
             for m in js["tables"]:
                 m = dict(m)
                 m["type"] = m.get("type", "?")
@@ -236,8 +236,8 @@ class TableAPI:
             if code != 200:
                 self.raise_error("Tail table failed", res, "")
 
-            unpacker = msgpack.Unpacker(res, raw=False)
-            result = []
+            unpacker = msgpack.Unpacker(res, raw=False)  # type: ignore[arg-type]
+            result: list[dict[str, Any]] = []
             for row in unpacker:
                 result.append(row)
 

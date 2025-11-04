@@ -34,11 +34,6 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = [
-  "ruff",
-  "pyright",
-  "tox>=4",
-]
 docs = [
   "sphinx",
   "sphinx_rtd_theme",
@@ -78,15 +73,23 @@ known-third-party = ["dateutil","msgpack","pkg_resources","pytest","setuptools",
 [tool.pyright]
 include = ["tdclient"]
 exclude = ["**/__pycache__", "tdclient/test", "docs"]
-typeCheckingMode = "basic"
+typeCheckingMode = "strict"
 pythonVersion = "3.10"
 pythonPlatform = "All"
-reportMissingTypeStubs = false
-reportUnknownMemberType = false
-reportUnknownArgumentType = false
-reportUnknownVariableType = false
-reportMissingImports = "warning"
+reportMissingTypeStubs = "warning"
+reportUnknownMemberType = "error"
+reportUnknownArgumentType = "error"
+reportMissingImports = "error"
 
 # Pre-commit venv configuration
 venvPath = "."
 venv = ".venv"
+
+[dependency-groups]
+dev = [
+    "ruff",
+    "pyright",
+    "tox>=4",
+    "msgpack-types>=0.5.0",
+    "types-certifi",
+]

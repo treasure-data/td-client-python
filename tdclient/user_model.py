@@ -15,8 +15,8 @@ class User(Model):
         self,
         client: "Client",
         name: str,
-        org_name: str,
-        role_names: list[str],
+        org_name: str | None,
+        role_names: list[str] | None,
         email: str,
         **kwargs: Any,
     ) -> None:
@@ -34,14 +34,14 @@ class User(Model):
         return self._name
 
     @property
-    def org_name(self) -> str:
+    def org_name(self) -> str | None:
         """
         Returns: organization name
         """
         return self._org_name
 
     @property
-    def role_names(self) -> list[str]:
+    def role_names(self) -> list[str] | None:
         """
         TODO: add docstring
         """
