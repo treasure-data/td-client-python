@@ -319,7 +319,7 @@ Install the development extras and invoke ``ruff`` and ``pyright`` using
 
 .. code-block:: sh
 
-    $ uv sync --extra dev
+    $ uv sync --dev
     $ uv run ruff format tdclient --diff --exit-non-zero-on-fix
     $ uv run ruff check tdclient
     $ uv run pyright tdclient
@@ -341,7 +341,7 @@ Install the development extras (which include ``tox``) with ``uv``.
 
 .. code-block:: sh
 
-    $ uv sync --extra dev
+    $ uv sync --dev
 
 Then, run ``tox`` via ``uv``.
 
