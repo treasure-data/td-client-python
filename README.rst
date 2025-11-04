@@ -8,11 +8,6 @@ Treasure Data API library for Python
    :alt: Build Status on GitHub Actions
 
 
-.. image:: https://ci.appveyor.com/api/projects/status/eol91l1ag50xee9m/branch/master?svg=true
-   :target: https://ci.appveyor.com/project/treasure-data/td-client-python/branch/master
-   :alt: Build status
-
-
 .. image:: https://badge.fury.io/py/td-client.svg
    :target: http://badge.fury.io/py/td-client
    :alt: PyPI version
