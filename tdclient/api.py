@@ -541,12 +541,6 @@ class API(
                 method, url, fields=fields, headers=headers, **kwargs
             )
 
-        if urllib3.util.IS_PYOPENSSL and isinstance(body, bytearray):
-            # workaround for https://github.com/pyca/pyopenssl/issues/621
-            body = memoryview(body)
-        if urllib3.util.IS_PYOPENSSL and isinstance(body, array):
-            # workaround for https://github.com/pyca/pyopenssl/issues/621
-            body = body.tobytes()
         return self.http.urlopen(method, url, body=body, headers=headers, **kwargs)
 
     def raise_error(

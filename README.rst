@@ -301,16 +301,40 @@ Development
 Running tests
 ^^^^^^^^^^^^^
 
-Run tests.
+Install the project dependencies with `uv <https://docs.astral.sh/uv/>`_ (runtime
+and test extras) and execute pytest via ``uv run``.
 
 .. code-block:: sh
 
-   $ pytest tdclient
+    $ uv sync --extra test
+    $ uv run pytest tdclient/test
+
+To run the coverage suite locally, use:
+
+.. code-block:: sh
+
+    $ uv run coverage run --source=tdclient -m pytest tdclient/test
+    $ uv run coverage report
+
+Linting and type checking
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Install the development extras and invoke ``ruff`` and ``pyright`` using
+``uv run``.
+
+.. code-block:: sh
+
+    $ uv sync --extra dev
+    $ uv run ruff format tdclient --diff --exit-non-zero-on-fix
+    $ uv run ruff check tdclient
+    $ uv run pyright tdclient
 
 Running tests (tox)
 ^^^^^^^^^^^^^^^^^^^
 
-You can run tests against all supported Python versions. I'd recommend you to install `pyenv <https://github.com/yyuu/pyenv>`_ to manage Pythons.
+You can run tests against all supported Python versions with ``tox``. I'd
+recommend you to install `pyenv <https://github.com/yyuu/pyenv>`_ to manage
+additional interpreters.
 
 .. code-block:: sh
 
@@ -318,17 +342,17 @@ You can run tests against all supported Python versions. I'd recommend you to in
    $ for version in $(cat .python-version); do [ -d "$(pyenv root)/versions/${version}" ] || pyenv install "${version}"; done
    $ pyenv shell --unset
 
-Install `tox <https://pypi.python.org/pypi/tox>`_.
+Install the development extras (which include ``tox``) with ``uv``.
 
 .. code-block:: sh
 
-   $ pip install tox
+    $ uv sync --extra dev
 
-Then, run ``tox``.
+Then, run ``tox`` via ``uv``.
 
 .. code-block:: sh
 
-   $ tox
+    $ uv run tox
 
 Release
 ^^^^^^^
