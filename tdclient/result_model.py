@@ -11,7 +11,9 @@ if TYPE_CHECKING:
 class Result(Model):
     """Result on Treasure Data Service"""
 
-    def __init__(self, client: "Client", name: str, url: str, org_name: str) -> None:
+    def __init__(
+        self, client: "Client", name: str, url: str, org_name: str | None
+    ) -> None:
         super().__init__(client)
         self._name = name
         self._url = url
@@ -28,6 +30,6 @@ class Result(Model):
         return self._url
 
     @property
-    def org_name(self) -> str:
+    def org_name(self) -> str | None:
         """str: organization name"""
         return self._org_name

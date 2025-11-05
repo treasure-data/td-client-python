@@ -20,7 +20,7 @@ class ScheduleAPI:
     def get(
         self,
         path: str,
-        params: dict[str, Any] | bytes | None = None,
+        params: dict[str, Any] | None = None,
         headers: dict[str, str] | None = None,
         **kwargs: Any,
     ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
@@ -188,9 +188,8 @@ class ScheduleAPI:
         Returns:
             dict: History of the scheduled query.
         """
-        params = {}
-        if _from is not None:
-            params["from"] = str(_from)
+        params: dict[str, Any] = {}
+        params["from"] = str(_from)
         if to is not None:
             params["to"] = str(to)
         with self.get(
@@ -213,7 +212,6 @@ class ScheduleAPI:
             time (int): Time in Unix epoch format that would be set as TD_SCHEDULED_TIME
             num (int, optional): Indicates how many times the query will be executed.
                 Value should be 9 or less.
-                Default: 1
         Returns:
             list of tuple: [(job_id:int, type:str, scheduled_at:str)]
         """
@@ -231,14 +229,14 @@ class ScheduleAPI:
         return [job_to_tuple(m) for m in js["jobs"]]
 
 
-def job_to_tuple(m):
+def job_to_tuple(m: dict[str, Any]) -> tuple[str | None, str, datetime.datetime | None]:
     job_id = m.get("job_id")
     scheduled_at = parse_date(get_or_else(m, "scheduled_at", "1970-01-01T00:00:00Z"))
     t = m.get("type", "?")
     return job_id, t, scheduled_at
 
 
-def schedule_to_tuple(m):
+def schedule_to_tuple(m: dict[str, Any]) -> dict[str, Any]:
     m = dict(m)
     if "timezone" not in m:
         m["timezone"] = "UTC"
@@ -247,7 +245,20 @@ def schedule_to_tuple(m):
     return m
 
 
-def history_to_tuple(m):
+def history_to_tuple(
+    m: dict[str, Any],
+) -> tuple[
+    datetime.datetime | None,
+    Any,
+    str,
+    Any,
+    Any,
+    datetime.datetime | None,
+    datetime.datetime | None,
+    Any,
+    Any,
+    Any,
+]:
     job_id = m.get("job_id")
     t = m.get("type", "?")
     database = m.get("database")

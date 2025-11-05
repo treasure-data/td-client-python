@@ -18,7 +18,7 @@ class DatabaseAPI:
     def get(
         self,
         path: str,
-        params: dict[str, Any] | bytes | None = None,
+        params: dict[str, Any] | None = None,
         headers: dict[str, str] | None = None,
         **kwargs: Any,
     ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
@@ -45,7 +45,7 @@ class DatabaseAPI:
             if code != 200:
                 self.raise_error("List databases failed", res, body)
             js = self.checked_json(body, ["databases"])
-            result = {}
+            result: dict[str, dict[str, Any]] = {}
             for m in js["databases"]:
                 name = m.get("name")
                 m = dict(m)

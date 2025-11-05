@@ -31,7 +31,7 @@ class ImportAPI:
     ) -> None: ...
     def checked_json(self, body: bytes, required: list[str]) -> dict[str, Any]: ...
     def _prepare_file(
-        self, file_like: FileLike, fmt: str, **kwargs: Any
+        self, file_like: FileLike, fmt: DataFormat, **kwargs: Any
     ) -> IO[bytes]: ...
 
     def import_data(
@@ -74,7 +74,7 @@ class ImportAPI:
                 format=format,
             )
 
-        kwargs = {}
+        kwargs: dict[str, Any] = {}
         with self.put(path, bytes_or_stream, size, **kwargs) as res:
             code, body = res.status, res.read()
             if code / 100 != 2:

@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
 import datetime
-from typing import TYPE_CHECKING, Any
+import warnings
+from typing import TYPE_CHECKING, Any, cast
 
 from tdclient.model import Model
-from tdclient.types import DataFormat, FileLike
+from tdclient.types import BytesOrStream, DataFormat, ExportParams, FileLike
 
 if TYPE_CHECKING:
     from tdclient.database_model import Database
@@ -158,12 +159,18 @@ class Table(Model):
              the contents of the table in reverse order based on the registered time
              (last data first).
         """
-        return self._client.tail(self._db_name, self._table_name, count, to, _from)
+        if to is not None or _from is not None:
+            warnings.warn(
+                "'to' and '_from' parameters are deprecated and ignored",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        return self._client.tail(self._db_name, self._table_name, count, None, None)
 
     def import_data(
         self,
         format: DataFormat,
-        bytes_or_stream: FileLike,
+        bytes_or_stream: BytesOrStream,
         size: int,
         unique_id: str | None = None,
     ) -> float:
@@ -241,7 +248,7 @@ class Table(Model):
              :class:`tdclient.models.Job`
         """
         return self._client.export_data(
-            self._db_name, self._table_name, storage_type, kwargs
+            self._db_name, self._table_name, storage_type, cast("ExportParams", kwargs)
         )
 
     @property

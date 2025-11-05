@@ -9,6 +9,7 @@ from tdclient.model import Model
 
 if TYPE_CHECKING:
     from tdclient.client import Client
+    from tdclient.types import ResultFormat
 
 
 class Schema:
@@ -223,7 +224,7 @@ class Job(Model):
                 raise RuntimeError("timeout")  # TODO: throw proper error
         self.update()
 
-    def kill(self) -> str:
+    def kill(self) -> str | None:
         """Kill the job
 
         Returns:
@@ -269,7 +270,7 @@ class Job(Model):
                     yield row  # type: ignore[misc]
 
     def result_format(
-        self, fmt: str, store_tmpfile: bool = False, num_threads: int = 4
+        self, fmt: "ResultFormat", store_tmpfile: bool = False, num_threads: int = 4
     ) -> Iterator[dict[str, Any]]:
         """
         Args:

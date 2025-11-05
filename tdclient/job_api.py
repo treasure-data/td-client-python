@@ -29,8 +29,8 @@ class JobAPI:
     # Methods from API class
     def get(
         self,
-        url: str,
-        params: dict[str, Any] | bytes | None = None,
+        path: str,
+        params: dict[str, Any] | None = None,
         headers: dict[str, str] | None = None,
     ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
     def post(
@@ -78,9 +78,8 @@ class JobAPI:
         Returns:
              a list of :class:`dict` which represents a job
         """
-        params = {}
-        if _from is not None:
-            params["from"] = str(_from)
+        params: dict[str, Any] = {}
+        params["from"] = str(_from)
         if to is not None:
             params["to"] = str(to)
         if status is not None:
@@ -92,7 +91,7 @@ class JobAPI:
             if code != 200:
                 self.raise_error("List jobs failed", res, body)
             js = self.checked_json(body, ["jobs"])
-            jobs = []
+            jobs: list[dict[str, Any]] = []
             for m in js["jobs"]:
                 if m.get("result") is not None and 0 < len(str(m["result"])):
                     result = m["result"]
@@ -221,7 +220,7 @@ class JobAPI:
         Returns:
              Job result in :class:`list`
         """
-        result = []
+        result: list[dict[str, Any]] = []
         for row in self.job_result_format_each(job_id, "msgpack"):
             result.append(row)
         return result
@@ -252,7 +251,7 @@ class JobAPI:
         Returns:
              The query result of the specified job in.
         """
-        result = []
+        result: list[dict[str, Any]] = []
         for row in self.job_result_format_each(job_id, format, header):
             result.append(row)
         return result
@@ -299,7 +298,9 @@ class JobAPI:
                 self.download_job_result(job_id, path, num_threads)
                 with gzip.GzipFile(path, "rb") as f:
                     unpacker = msgpack.Unpacker(
-                        f, raw=False, max_buffer_size=1000 * 1024**2
+                        f,  # type: ignore[arg-type]
+                        raw=False,
+                        max_buffer_size=1000 * 1024**2,  # type: ignore[arg-type]
                     )
                     for row in unpacker:
                         yield row
@@ -345,13 +346,17 @@ class JobAPI:
             format="msgpack.gz",
         )
 
-        def get_chunk(url, start, end):
+        def get_chunk(
+            url: str, start: int, end: int
+        ) -> AbstractContextManager[urllib3.BaseHTTPResponse]:
             chunk_headers = {"Range": f"bytes={start}-{end}"}
 
             response = self.get(url, headers=chunk_headers)
             return response
 
-        def download_chunk(url, start, end, index, file_name):
+        def download_chunk(
+            url: str, start: int, end: int, index: int, file_name: str
+        ) -> bool:
             with get_chunk(url, start, end) as response:
                 if response.status == 206:  # Partial content (range supported)
                     with open(f"{file_name}.part{index}", "wb") as f:
@@ -364,7 +369,7 @@ class JobAPI:
                     )
                     return False
 
-        def combine_chunks(file_name, total_parts):
+        def combine_chunks(file_name: str, total_parts: int) -> None:
             with open(file_name, "wb") as final_file:
                 for i in range(total_parts):
                     with open(f"{file_name}.part{i}", "rb") as part_file:
@@ -372,8 +377,12 @@ class JobAPI:
                     os.remove(f"{file_name}.part{i}")
 
         def download_file_multithreaded(
-            url, file_name, file_size, num_threads=4, chunk_size=100 * 1024**2
-        ):
+            url: str,
+            file_name: str,
+            file_size: int,
+            num_threads: int = 4,
+            chunk_size: int = 100 * 1024**2,
+        ) -> None:
             start = 0
             part_index = 0
 

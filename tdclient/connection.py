@@ -23,7 +23,7 @@ class Connection:
         wait_callback: Callable[["Cursor"], None] | None = None,
         **kwargs: Any,
     ) -> None:
-        cursor_kwargs = dict()
+        cursor_kwargs: dict[str, Any] = dict()
         if type is not None:
             cursor_kwargs["type"] = type
         if db is not None:

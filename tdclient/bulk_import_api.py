@@ -26,7 +26,7 @@ class BulkImportAPI:
     def get(
         self,
         path: str,
-        params: dict[str, Any] | bytes | None = None,
+        params: dict[str, Any] | None = None,
         headers: dict[str, str] | None = None,
         **kwargs: Any,
     ) -> AbstractContextManager[urllib3.BaseHTTPResponse]: ...
@@ -50,7 +50,7 @@ class BulkImportAPI:
     ) -> None: ...
     def checked_json(self, body: bytes, required: list[str]) -> dict[str, Any]: ...
     def _prepare_file(
-        self, file_like: FileLike, fmt: str, **kwargs: Any
+        self, file_like: FileLike, fmt: DataFormat, **kwargs: Any
     ) -> IO[bytes]: ...
 
     def create_bulk_import(
@@ -165,7 +165,7 @@ class BulkImportAPI:
             part_name (str): The part name the user is trying to use
         """
         # Check for duplicate periods
-        d = collections.defaultdict(int)
+        d: collections.defaultdict[str, int] = collections.defaultdict(int)
         for char in part_name:
             d[char] += 1
 
@@ -378,5 +378,5 @@ class BulkImportAPI:
             body = io.BytesIO(res.read())
             decompressor = gzip.GzipFile(fileobj=body)
 
-            unpacker = msgpack.Unpacker(decompressor, raw=False)
+            unpacker = msgpack.Unpacker(decompressor, raw=False)  # type: ignore[arg-type]
             yield from unpacker
