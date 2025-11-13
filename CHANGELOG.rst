@@ -2,6 +2,12 @@
 Version History
 ===============
 
+v1.6.0 (2025-11-14)
+--------------------
+
+* Support Python 3.13 and 3.14, drop 3.8 and 3.9
+* Support type hints
+
 v1.5.0 (2025-08-14)
 --------------------
 
