@@ -28,9 +28,9 @@ classifiers = [
 ]
 
 dependencies = [
-  "python-dateutil",
-  "msgpack>=0.6.2",
-  "urllib3",
+  "python-dateutil>=2.9.0.post0",  # 2.9.0 supports Python 3.12+
+  "msgpack>=1.1.2",  # 1.1.2 supports Python 3.9+
+  "urllib3>=2.0.0",  # To ensure type hinting not breaks
 ]
 
 [project.optional-dependencies]
