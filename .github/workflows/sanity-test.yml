@@ -22,7 +22,7 @@ jobs:
           TD_API_ENDPOINT: https://api.treasuredata.com
           TD_API_KEY: ${{ secrets.TD_API_KEY }}
         run: |
-          yes | td workflow
+          yes | td -e "${TD_API_ENDPOINT}" -k "${TD_API_KEY}" workflow
       - name: Run workflow sanity test
         env:
           TD_API_ENDPOINT: https://api.treasuredata.com
