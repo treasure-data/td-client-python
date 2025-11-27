@@ -1,0 +1,25 @@
+name: Sanity test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  create:
+
+jobs:
+    
+  workflow-sanity-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install td
+        run: |
+          gem install td
+      - name: Run workflow sanity test
+        env:
+          TD_API_ENDPOINT: https://api.treasuredata.com
+          TD_API_KEY: ${{ secrets.TD_API_KEY }}
+        run: |
+          chmod +x .github/workflows/scripts/workflow-sanity-test.sh
+          .github/workflows/scripts/workflow-sanity-test.sh
