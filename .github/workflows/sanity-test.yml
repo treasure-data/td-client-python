@@ -18,6 +18,9 @@ jobs:
         run: |
           gem install td
       - name: Install workflow module
+        env:
+          TD_API_ENDPOINT: https://api.treasuredata.com
+          TD_API_KEY: ${{ secrets.TD_API_KEY }}
         run: |
           yes | td workflow
       - name: Run workflow sanity test
