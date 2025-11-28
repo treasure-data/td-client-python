@@ -2,6 +2,8 @@ name: Sanity test
 
 on:
   push:
+    branches:
+      - main
   pull_request:
   create:
 
