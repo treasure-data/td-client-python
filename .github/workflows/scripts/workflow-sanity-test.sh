@@ -1,10 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-echo "${TD_API_ENDPOINT}"
-echo "${TD_API_KEY}"
-
-RESPONSE=$(td -e "${TD_API_ENDPOINT}" -k "${TD_API_KEY}" workflow start aki_pytd_test aki_pytd_test --session now)
+RESPONSE=$(td -e "${TD_API_ENDPOINT}" -k "${TD_API_KEY}" workflow start td-client-python-sanity-test td-client-python-sanity-test --session now)
 SESSION_ID=$(echo "${RESPONSE}" | sed -nE 's/^[ \t]*session id:[ \t]+([0-9]+)$/\1/p')
 
 if [ -z "${SESSION_ID}" ]; then

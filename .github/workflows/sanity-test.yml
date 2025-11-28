@@ -25,7 +25,7 @@ jobs:
           yes | td -e "${TD_API_ENDPOINT}" -k "${TD_API_KEY}" workflow
       - name: Run workflow sanity test
         env:
-          TD_API_ENDPOINT: https://api.treasuredata.com
+          TD_API_ENDPOINT: https://api-development.treasuredata.com
           TD_API_KEY: ${{ secrets.TD_API_KEY }}
         run: |
           chmod +x .github/workflows/scripts/workflow-sanity-test.sh
