@@ -1,6 +1,10 @@
 
 Version History
 ===============
+v1.7.0 (2026-01-28)
+--------------------
+
+* Set minimum version of dependencies
 
 v1.6.0 (2025-11-14)
 --------------------
