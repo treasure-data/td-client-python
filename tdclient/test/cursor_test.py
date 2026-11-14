@@ -230,3 +230,25 @@ def test_cursor_setoutputsize():
     td = cursor.Cursor(mock.MagicMock())
     with pytest.raises(errors.NotSupportedError) as error:
         td.setoutputsize(42)
+
+
+def test_do_execute_wait_exceeds_recursion_limit():
+    # Polling must be iterative: many polls must not hit RecursionError.
+    import sys
+
+    polls = sys.getrecursionlimit() * 2
+    td = cursor.Cursor(
+        mock.MagicMock(),
+        db="sample_datasets",
+        wait_interval=5,
+        wait_callback=mock.MagicMock(),
+    )
+    td._executed = "42"
+    td.api.job_status = mock.MagicMock(side_effect=["running"] * polls + ["success"])
+    td.api.job_result = mock.MagicMock(return_value=[["foo", 1]])
+    td.api.show_job = mock.MagicMock(return_value={"hive_result_schema": []})
+    with mock.patch("time.sleep") as t_sleep:
+        td._do_execute()
+        assert t_sleep.call_count == polls
+        assert td.wait_callback.call_count == polls
+    assert td._rowcount == 1

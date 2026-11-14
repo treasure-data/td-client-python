@@ -1,6 +1,11 @@
 
 Version History
 ===============
+v1.8.8 (2026-11-16)
+--------------------
+
+* Fix ``RecursionError`` in ``Cursor._do_execute()`` for long-running jobs by polling iteratively instead of recursively
+
 v1.7.0 (2026-01-29)
 --------------------
 
