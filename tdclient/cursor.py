@@ -75,7 +75,8 @@ class Cursor:
     def _do_execute(self) -> None:
         self._check_executed()
         assert self._executed is not None
-        if self._rows is None:
+        # Poll iteratively (not recursively) so long-running jobs cannot exceed Python's recursion limit.
+        while self._rows is None:
             status = self._api.job_status(self._executed)
             if status == "success":
                 self._rows = self._api.job_result(self._executed)
@@ -85,14 +86,12 @@ class Cursor:
                 self._description = self._result_description(
                     job.get("hive_result_schema", [])
                 )
+            elif status in ["error", "killed"]:
+                raise errors.InternalError(f"job error: {self._executed}: {status}")
             else:
-                if status in ["error", "killed"]:
-                    raise errors.InternalError(f"job error: {self._executed}: {status}")
-                else:
-                    time.sleep(self.wait_interval)
-                    if callable(self.wait_callback):
-                        self.wait_callback(self)
-                    return self._do_execute()
+                time.sleep(self.wait_interval)
+                if callable(self.wait_callback):
+                    self.wait_callback(self)
 
     def _result_description(
         self, result_schema: list[Any] | None
