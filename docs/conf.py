@@ -19,7 +19,7 @@ import os
 import subprocess
 import sys
 
-import pkg_resources
+from importlib.metadata import version as _dist_version
 
 GH_ORGANIZATION = "treasure-data"
 GH_PROJECT = "td-client-python"
@@ -81,7 +81,7 @@ copyright = "2019, Arm Treasure Data"
 author = "Arm Treasure Data"
 
 # The full version, including alpha/beta/rc tags
-release = pkg_resources.get_distribution(PACKAGE).version
+release = _dist_version(PACKAGE)
 
 # -- General configuration ---------------------------------------------------
 
